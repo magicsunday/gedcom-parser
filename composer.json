@@ -1,0 +1,37 @@
+{
+  "name": "magicsunday/gedcom-parser",
+  "description": "A GEDCOM 5.5 file parser",
+  "license": "GPL-3.0-or-later",
+  "type": "library",
+  "homepage": "http://github.com/magicsunday/gedcom-parser",
+  "keywords": [
+    "gedcom",
+    "parser"
+  ],
+  "authors": [
+    {
+      "name": "Rico Sonntag",
+      "email": "mail@ricosonntag.de",
+      "homepage": "https://ricosonntag.de",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "MagicSunday\\Gedcom\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MagicSunday\\Gedcom\\Test\\": "test/"
+    }
+  },
+  "require": {
+    "php": "~7.0",
+    "psr/log": "~1.0.0",
+    "magicsunday/gedcom-reader": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/PHPUnit": "~6.0"
+  }
+}
