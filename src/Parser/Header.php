@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header as HeaderModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
+use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
 
 /**
  * A HEAD parser.
@@ -59,6 +60,8 @@ class Header extends AbstractParser
                     break;
 
                 case 'GEDC':
+                    $gedcomInfoParser = new GedcomInfo($this->reader, $this->logger);
+                    $header->setGedcomInfo($gedcomInfoParser->parse());
                     break;
 
                 case 'CHAR':
