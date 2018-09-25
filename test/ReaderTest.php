@@ -19,11 +19,6 @@ use PHPUnit\Framework\TestCase;
 class ReaderTest extends TestCase
 {
     /**
-     * @var Reader
-     */
-    private $reader;
-
-    /**
      * @test
      *
      * @expectedException        \RuntimeException
@@ -50,9 +45,9 @@ class ReaderTest extends TestCase
      */
     public function open()
     {
-        $this->reader = new Reader(__DIR__ . '/files/simple.ged');
+        $reader = new Reader(__DIR__ . '/files/simple.ged');
 
-        self::assertInstanceOf(Reader::class, $this->reader);
+        self::assertInstanceOf(Reader::class, $reader);
     }
 
     /**
@@ -60,19 +55,19 @@ class ReaderTest extends TestCase
      */
     public function back()
     {
-        $this->reader = new Reader(__DIR__ . '/files/simple.ged');
+        $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read two lines
-        $this->reader->read();
-        $this->reader->read();
+        $reader->read();
+        $reader->read();
 
-        $line1 = $this->reader->current();
+        $line1 = $reader->current();
 
         // Move cursor one line back and reread the line
-        $this->reader->back();
-        $this->reader->read();
+        $reader->back();
+        $reader->read();
 
-        $line2 = $this->reader->current();
+        $line2 = $reader->current();
 
         self::assertSame($line1, $line2);
     }
@@ -82,15 +77,15 @@ class ReaderTest extends TestCase
      */
     public function identifier()
     {
-        $this->reader = new Reader(__DIR__ . '/files/simple.ged');
+        $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read to the first INDI record
-        while ($this->reader->read()) {
-            if ($this->reader->value() === 'INDI') {
+        while ($reader->read()) {
+            if ($reader->value() === 'INDI') {
                 // Grab the identifier
-                $id = $this->reader->identifier();
+                $id = $reader->identifier();
 
-                self::assertSame($this->reader->current(), '0 @' . $id . '@ INDI');
+                self::assertSame($reader->current(), '0 @' . $id . '@ INDI');
             }
         }
     }
@@ -100,29 +95,29 @@ class ReaderTest extends TestCase
      */
     public function level()
     {
-        $this->reader = new Reader(__DIR__ . '/files/simple.ged');
+        $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read to the first INDI record
-        while ($this->reader->read()) {
+        while ($reader->read()) {
 
-            if ($this->reader->value() === 'INDI') {
-                self::assertSame(0, $this->reader->level());
+            if ($reader->value() === 'INDI') {
+                self::assertSame(0, $reader->level());
             }
 
-            if ($this->reader->type() === 'HEAD') {
-                self::assertSame(0, $this->reader->level());
+            if ($reader->type() === 'HEAD') {
+                self::assertSame(0, $reader->level());
             }
 
-            if ($this->reader->type() === 'GEDC') {
-                self::assertSame(1, $this->reader->level());
+            if ($reader->type() === 'GEDC') {
+                self::assertSame(1, $reader->level());
             }
 
-            if ($this->reader->type() === 'VERS') {
-                self::assertSame(2, $this->reader->level());
+            if ($reader->type() === 'VERS') {
+                self::assertSame(2, $reader->level());
             }
 
-            if ($this->reader->type() === 'TRLR') {
-                self::assertSame(0, $this->reader->level());
+            if ($reader->type() === 'TRLR') {
+                self::assertSame(0, $reader->level());
             }
         }
     }
@@ -132,23 +127,23 @@ class ReaderTest extends TestCase
      */
     public function type()
     {
-        $this->reader = new Reader(__DIR__ . '/files/simple.ged');
+        $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read to the first INDI record
-        while ($this->reader->read()) {
-            if ($this->reader->type() === 'HEAD') {
+        while ($reader->read()) {
+            if ($reader->type() === 'HEAD') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($this->reader->type() === 'GEDC') {
+            if ($reader->type() === 'GEDC') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($this->reader->type() === 'VERS') {
+            if ($reader->type() === 'VERS') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($this->reader->type() === 'TRLR') {
+            if ($reader->type() === 'TRLR') {
                 $this->addToAssertionCount(1);
             }
         }

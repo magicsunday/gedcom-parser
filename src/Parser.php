@@ -7,6 +7,7 @@ declare(strict_types = 1);
 namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Parser\Header;
+use MagicSunday\Gedcom\Parser\Individual;
 use MagicSunday\Gedcom\Parser\Submission;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

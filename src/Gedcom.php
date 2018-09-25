@@ -165,6 +165,19 @@ class Gedcom
     }
 
     /**
+     * Adds an individual to the list.
+     *
+     * @param Individual $individual
+     *
+     * @return self
+     */
+    public function addIndividual(Individual $individual): self
+    {
+        $this->individuals[] = $individual;
+        return $this;
+    }
+
+    /**
      * @return Media[]
      */
     public function getMedias(): array
