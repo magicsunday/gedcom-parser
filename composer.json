@@ -28,8 +28,7 @@
   },
   "require": {
     "php": "~7.0",
-    "psr/log": "~1.0.0",
-    "magicsunday/gedcom-reader": "dev-master"
+    "psr/log": "~1.0.0"
   },
   "require-dev": {
     "phpunit/PHPUnit": "~6.0"

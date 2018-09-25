@@ -1,0 +1,80 @@
+<?php
+/**
+ * See LICENSE.md file for further details.
+ */
+declare(strict_types = 1);
+
+namespace MagicSunday\Gedcom\Model;
+
+/**
+ * The change date is intended to only record the last change to a record. Some systems may want to
+ * manage the change process with more detail, but it is sufficient for GEDCOM purposes to indicate
+ * the last time that a record was modified.
+ *
+ * @author  Rico Sonntag <mail@ricosonntag.de>
+ * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @link    https://github.com/magicsunday/gedcom-parser/
+ */
+class ChangeDate implements NoteInterface
+{
+    /**
+     * The date that this data was changed.
+     *
+     * @var Date
+     */
+    private $date;
+
+    /**
+     * A list of assigned notes.
+     *
+     * @var array
+     */
+    private $notes = [];
+
+    /**
+     * @return Date
+     */
+    public function getDate(): Date
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param Date $date
+     *
+     * @return self
+     */
+    public function setDate(Date $date): self
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNotes(): array
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @param array $notes
+     *
+     * @return self
+     */
+    public function setNotes(array $notes): self
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addNote(Note $note): NoteInterface
+    {
+        $this->notes[] = $note;
+        return $this;
+    }
+}
