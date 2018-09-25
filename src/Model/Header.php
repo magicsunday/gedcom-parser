@@ -16,36 +16,53 @@ namespace MagicSunday\Gedcom\Model;
 class Header
 {
     /**
+     * The source.
+     *
      * @var Source
      */
     private $source;
 
     /**
+     * The destination system name identifies the intended receiving system.
+     *
      * @var string
      */
     private $destination;
 
     /**
-     * @var Date
+     * The date that this transmission was created.
+     *
+     * @var DateExact
      */
     private $date;
 
     /**
+     * The submitter identifier. The submitter record identifies an individual or organization that contributed
+     * information contained in the GEDCOM transmission.
+     *
      * @var string
      */
     private $submitter;
 
     /**
+     * The submission identifier. The sending system uses a submission record to send instructions and
+     * information to the receiving system.
+     *
      * @var string
      */
     private $submission;
 
     /**
+     * The name of the GEDCOM transmission file. If the file name includes a file extension it must be
+     * shown in the form (filename.ext).
+     *
      * @var string
      */
     private $file;
 
     /**
+     * A copyright statement needed to protect the copyrights of the submitter of this GEDCOM file.
+     *
      * @var string
      */
     private $copyright;
@@ -58,23 +75,32 @@ class Header
     private $gedcomInfo;
 
     /**
-     * Information about the use of GEDCOM in a transmission.
+     * A code value that represents the character set to be used to interpret this data.
      *
      * @var CharacterSet
      */
     private $characterSet;
 
     /**
+     * The human language in which the data in the transmission is normally read or written.
+     *
      * @var string
      */
     private $language;
 
     /**
+     * A place. This shows the jurisdictional entities that are named in a sequence from the lowest to the
+     * highest jurisdiction.
+     *
      * @var Place
      */
     private $place;
 
     /**
+     * A note that a user enters to describe the contents of the lineage-linked file in terms of
+     * "ancestors or descendants of" so that the person receiving the data knows what genealogical
+     * information the transmission contains.
+     *
      * @var Note
      */
     private $note;
@@ -119,19 +145,19 @@ class Header
     }
 
     /**
-     * @return Date
+     * @return DateExact
      */
-    public function getDate(): Date
+    public function getDate(): DateExact
     {
         return $this->date;
     }
 
     /**
-     * @param Date $date
+     * @param DateExact $date
      *
      * @return self
      */
-    public function setDate(Date $date): self
+    public function setDate(DateExact $date): self
     {
         $this->date = $date;
         return $this;

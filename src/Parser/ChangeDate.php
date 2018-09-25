@@ -29,7 +29,7 @@ class ChangeDate extends AbstractParser
 
         while ($this->reader->read() && $this->valid()) {
             if ($this->reader->type() === 'DATE') {
-                $dateParser = new Date($this->reader, $this->logger);
+                $dateParser = new DateExact($this->reader, $this->logger);
                 $date       = $dateParser->parse();
 
                 $changeDate->setDate($date);

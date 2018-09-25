@@ -7,7 +7,7 @@ declare(strict_types = 1);
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\Date as DateModel;
+use MagicSunday\Gedcom\Model\DateExact as DateExactModel;
 
 /**
  * A DATE parser.
@@ -16,23 +16,18 @@ use MagicSunday\Gedcom\Model\Date as DateModel;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Date extends AbstractParser
+class DateExact extends AbstractParser
 {
     /**
      * Parses a DATE block.
      *
-     * @return DateModel
+     * @return DateExactModel
      */
-    public function parse(): DateModel
+    public function parse(): DateExactModel
     {
-        $date = new DateModel($this->reader->value());
+        $date = new DateExactModel($this->reader->value());
 
-        while ($this->reader->read()) { // && $this->valid()) {
-//            if ($this->reader->level() !== $this->previousLevel) {
-//                $this->reader->back();
-//                break;
-//            }
-
+        while ($this->reader->read() && $this->valid()) {
             if ($this->reader->type() === 'TIME') {
                 $date->setTime($this->reader->value());
             }

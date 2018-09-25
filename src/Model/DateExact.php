@@ -15,7 +15,7 @@ use DateTime;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Date
+class DateExact
 {
     const DATE_FORMAT = 'd M Y';
     const TIME_FORMAT = 'H:i:s.u';
@@ -65,6 +65,9 @@ class Date
         if (!$this->dateTime) {
             throw new \InvalidArgumentException('Failed to parse date. Required format: d M Y');
         }
+
+        // Unset time
+        $this->dateTime->setTime(0, 0);
 
         return $this;
     }

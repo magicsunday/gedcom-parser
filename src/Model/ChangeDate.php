@@ -20,7 +20,7 @@ class ChangeDate implements NoteInterface
     /**
      * The date that this data was changed.
      *
-     * @var Date
+     * @var DateExact
      */
     private $date;
 
@@ -32,19 +32,19 @@ class ChangeDate implements NoteInterface
     private $notes = [];
 
     /**
-     * @return Date
+     * @return DateExact
      */
-    public function getDate(): Date
+    public function getDate(): DateExact
     {
         return $this->date;
     }
 
     /**
-     * @param Date $date
+     * @param DateExact $date
      *
      * @return self
      */
-    public function setDate(Date $date): self
+    public function setDate(DateExact $date): self
     {
         $this->date = $date;
         return $this;

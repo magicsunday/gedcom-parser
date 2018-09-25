@@ -37,7 +37,10 @@ class Header extends AbstractParser
             }
 
             if ($this->reader->type() === 'DATE') {
-                //
+                $dateParser = new DateExact($this->reader, $this->logger);
+                $date       = $dateParser->parse();
+
+                $header->setDate($date);
             }
 
             if ($this->reader->type() === 'SUBM') {
