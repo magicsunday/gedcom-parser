@@ -4,10 +4,10 @@
  */
 declare(strict_types = 1);
 
-namespace MagicSunday\Gedcom\Parser;
+namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\ChangeDate as ChangeDateModel;
+use MagicSunday\Gedcom\Model\Common\ChangeDate as ChangeDateModel;
 
 /**
  * A CHAN parser.

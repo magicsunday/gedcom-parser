@@ -6,6 +6,8 @@ declare(strict_types = 1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Common\ChangeDate;
+
 /**
  * The sending system uses a submission record to send instructions and information to the receiving
  * system. TempleReady processes submission records to determine which temple the cleared records

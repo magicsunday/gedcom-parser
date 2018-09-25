@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Submission as SubmissionModel;
+use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 
 /**
  * A SUBN parser.

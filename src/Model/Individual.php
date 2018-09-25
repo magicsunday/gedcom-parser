@@ -6,6 +6,7 @@ declare(strict_types = 1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Common\ChangeDate;
 use MagicSunday\Gedcom\Model\Individual\Name;
 
 /**

@@ -4,9 +4,10 @@
  */
 declare(strict_types = 1);
 
-namespace MagicSunday\Gedcom\Model;
+namespace MagicSunday\Gedcom\Model\Common;
 
 use DateTime;
+use InvalidArgumentException;
 
 /**
  * A date.
@@ -63,7 +64,7 @@ class DateExact
         }
 
         if (!$this->dateTime) {
-            throw new \InvalidArgumentException('Failed to parse date. Required format: d M Y');
+            throw new InvalidArgumentException('Failed to parse date. Required format: d M Y');
         }
 
         // Unset time
@@ -91,13 +92,13 @@ class DateExact
      */
     public function setTime(string $time): self
     {
-        $time = DateTime::createFromFormat(self::TIME_FORMAT, $time);
+        $tmp = DateTime::createFromFormat(self::TIME_FORMAT, $time);
 
         // TODO Add milliseconds part (available only in PHP7.1+)
         $this->dateTime->setTime(
-            (int) $time->format('H'),
-            (int) $time->format('i'),
-            (int) $time->format('s')
+            (int) $tmp->format('H'),
+            (int) $tmp->format('i'),
+            (int) $tmp->format('s')
         );
 
         return $this;

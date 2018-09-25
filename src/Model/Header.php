@@ -6,6 +6,8 @@ declare(strict_types = 1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Common\DateExact;
+
 /**
  * The header structure provides information about the entire transmission.
  *

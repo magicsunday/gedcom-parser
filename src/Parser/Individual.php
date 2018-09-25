@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Individual as IndividualModel;
+use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 
 /**
  * A INDI parser.

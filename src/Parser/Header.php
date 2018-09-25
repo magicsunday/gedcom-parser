@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header as HeaderModel;
+use MagicSunday\Gedcom\Parser\Common\DateExact;
 
 /**
  * A HEAD parser.

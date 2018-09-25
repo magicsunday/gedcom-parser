@@ -4,10 +4,10 @@
  */
 declare(strict_types = 1);
 
-namespace MagicSunday\Gedcom\Parser;
+namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\DateExact as DateExactModel;
+use MagicSunday\Gedcom\Model\Common\DateExact as DateExactModel;
 
 /**
  * A DATE_EXACT parser.

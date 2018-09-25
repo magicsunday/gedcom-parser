@@ -4,7 +4,10 @@
  */
 declare(strict_types = 1);
 
-namespace MagicSunday\Gedcom\Model;
+namespace MagicSunday\Gedcom\Model\Common;
+
+use MagicSunday\Gedcom\Model\NoteInterface;
+use MagicSunday\Gedcom\Model\Note;
 
 /**
  * The change date is intended to only record the last change to a record. Some systems may want to
