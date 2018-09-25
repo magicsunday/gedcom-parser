@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header as HeaderModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
+use MagicSunday\Gedcom\Parser\Header\CharacterSet;
 use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
 
 /**
@@ -65,6 +66,8 @@ class Header extends AbstractParser
                     break;
 
                 case 'CHAR':
+                    $charSetParser = new CharacterSet($this->reader, $this->logger);
+                    $header->setCharacterSet($charSetParser->parse());
                     break;
 
                 case 'LANG':

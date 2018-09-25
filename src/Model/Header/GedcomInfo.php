@@ -69,5 +69,4 @@ class GedcomInfo
         $this->form = $form;
         return $this;
     }
-
 }
