@@ -55,7 +55,7 @@ abstract class AbstractParser
      */
     protected function valid(): bool
     {
-        if ($this->reader->level() === $this->previousLevel) {
+        if ($this->reader->level() <= $this->previousLevel) {
             $this->reader->back();
             return false;
         }
