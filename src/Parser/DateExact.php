@@ -10,7 +10,7 @@ use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\DateExact as DateExactModel;
 
 /**
- * A DATE parser.
+ * A DATE_EXACT parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Model\DateExact as DateExactModel;
 class DateExact extends AbstractParser
 {
     /**
-     * Parses a DATE block.
+     * Parses a DATE_EXACT block.
      *
      * @return DateExactModel
      */
@@ -28,8 +28,10 @@ class DateExact extends AbstractParser
         $date = new DateExactModel($this->reader->value());
 
         while ($this->reader->read() && $this->valid()) {
-            if ($this->reader->type() === 'TIME') {
-                $date->setTime($this->reader->value());
+            switch ($this->reader->type()) {
+                case 'TIME':
+                    $date->setTime($this->reader->value());
+                    break;
             }
         }
 

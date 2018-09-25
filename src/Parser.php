@@ -46,20 +46,28 @@ class Parser
         $gedcom = new Gedcom();
 
         while ($reader->read()) {
-            // Header
-            if ($reader->type() === 'HEAD') {
-                $headerParser = new Header($reader, $this->logger);
-                $header       = $headerParser->parse();
-
-                $gedcom->setHeader($header);
+            switch ($reader->type()) {
+                // Header
+                case 'HEAD':
+                    $headerParser = new Header($reader, $this->logger);
+                    $gedcom->setHeader($headerParser->parse());
+                    break;
             }
 
-            // Submission record
-            if ($reader->value() === 'SUBN') {
-                $submissionParser = new Submission($reader, $this->logger);
-                $submission       = $submissionParser->parse();
+            switch ($reader->value()) {
+                // Submission record
+                case 'SUBN':
+                    $submissionParser = new Submission($reader, $this->logger);
+                    $gedcom->setSubmission($submissionParser->parse());
+                    break;
 
-                $gedcom->setSubmission($submission);
+                // Records
+                case 'INDI':
+                    $individualParser = new Individual($reader, $this->logger);
+                    $individual       = $individualParser->parse();
+
+                    $gedcom->addIndividual($individual);
+                    break;
             }
         }
 

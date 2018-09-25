@@ -28,15 +28,14 @@ class ChangeDate extends AbstractParser
         $changeDate = new ChangeDateModel();
 
         while ($this->reader->read() && $this->valid()) {
-            if ($this->reader->type() === 'DATE') {
-                $dateParser = new DateExact($this->reader, $this->logger);
-                $date       = $dateParser->parse();
+            switch ($this->reader->type()) {
+                case 'DATE':
+                    $dateParser = new DateExact($this->reader, $this->logger);
+                    $changeDate->setDate($dateParser->parse());
+                    break;
 
-                $changeDate->setDate($date);
-            }
-
-            if ($this->reader->type() === 'NOTE') {
-                //
+                case 'NOTE':
+                    break;
             }
         }
 

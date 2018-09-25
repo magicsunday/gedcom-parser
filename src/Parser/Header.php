@@ -28,55 +28,50 @@ class Header extends AbstractParser
         $header = new HeaderModel();
 
         while ($this->reader->read() && $this->valid()) {
-            if ($this->reader->type() === 'SOUR') {
-                //
-            }
+            switch ($this->reader->type()) {
+                case 'SOUR':
+                    break;
 
-            if ($this->reader->type() === 'DEST') {
-                $header->setDestination($this->reader->value());
-            }
+                case 'DEST':
+                    $header->setDestination($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'DATE') {
-                $dateParser = new DateExact($this->reader, $this->logger);
-                $date       = $dateParser->parse();
+                case 'DATE':
+                    $dateParser = new DateExact($this->reader, $this->logger);
+                    $header->setDate($dateParser->parse());
+                    break;
 
-                $header->setDate($date);
-            }
+                case 'SUBM':
+                    $header->setSubmitter($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'SUBM') {
-                $header->setSubmitter($this->reader->value());
-            }
+                case 'SUBN':
+                    $header->setSubmission($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'SUBN') {
-                $header->setSubmission($this->reader->value());
-            }
+                case 'FILE':
+                    $header->setFile($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'FILE') {
-                $header->setFile($this->reader->value());
-            }
+                case 'COPR':
+                    $header->setCopyright($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'COPR') {
-                $header->setCopyright($this->reader->value());
-            }
+                case 'GEDC':
+                    break;
 
-            if ($this->reader->type() === 'GEDC') {
-                //
-            }
+                case 'CHAR':
+                    break;
 
-            if ($this->reader->type() === 'CHAR') {
-                //
-            }
+                case 'LANG':
+                    $header->setLanguage($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'LANG') {
-                $header->setLanguage($this->reader->value());
-            }
+                case 'PLAC':
+                    break;
 
-            if ($this->reader->type() === 'PLAC') {
-                //
-            }
-
-            if ($this->reader->type() === 'NOTE') {
-                //
+                case 'NOTE':
+                    break;
             }
         }
 

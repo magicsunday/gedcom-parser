@@ -29,43 +29,42 @@ class Submission extends AbstractParser
         $submission->setSubmitter($this->reader->identifier());
 
         while ($this->reader->read() && $this->valid()) {
-            if ($this->reader->type() === 'SUBM') {
-                $submission->setSubmitter($this->reader->value());
-            }
+            switch ($this->reader->type()) {
+                case 'SUBM':
+                    $submission->setSubmitter($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'FAMF') {
-                $submission->setFamilyFile($this->reader->value());
-            }
+                case 'FAMF':
+                    $submission->setFamilyFile($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'TEMP') {
-                $submission->setTempleCode($this->reader->value());
-            }
+                case 'TEMP':
+                    $submission->setTempleCode($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'ANCE') {
-                $submission->setAncestorGenerations($this->reader->value());
-            }
+                case 'ANCE':
+                    $submission->setAncestorGenerations($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'DESC') {
-                $submission->setDescendantGenerations($this->reader->value());
-            }
+                case 'DESC':
+                    $submission->setDescendantGenerations($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'ORDI') {
-                $submission->setOrdinanceFlag($this->reader->value() === 'yes');
-            }
+                case 'ORDI':
+                    $submission->setOrdinanceFlag($this->reader->value() === 'yes');
+                    break;
 
-            if ($this->reader->type() === 'RIN') {
-                $submission->setRecordIdentificationNumber($this->reader->value());
-            }
+                case 'RIN':
+                    $submission->setRecordIdentificationNumber($this->reader->value());
+                    break;
 
-            if ($this->reader->type() === 'NOTE') {
-                //
-            }
+                case 'NOTE':
+                    break;
 
-            if ($this->reader->type() === 'CHAN') {
-                $changeDateParser = new ChangeDate($this->reader, $this->logger);
-                $changeDate       = $changeDateParser->parse();
-
-                $submission->setChangeDate($changeDate);
+                case 'CHAN':
+                    $changeDateParser = new ChangeDate($this->reader, $this->logger);
+                    $submission->setChangeDate($changeDateParser->parse());
+                    break;
             }
         }
 

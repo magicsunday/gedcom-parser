@@ -58,6 +58,13 @@ class Reader
     private $data;
 
     /**
+     * Number of read lines of the file.
+     *
+     * @var int
+     */
+    private $lineCount = 0;
+
+    /**
      * Reader constructor.
      *
      * @param string $filename The file to open
@@ -88,11 +95,13 @@ class Reader
         $this->lastPosition = $this->file->ftell();
         $this->lastLine     = $this->file->fgets();
 
+        ++$this->lineCount;
+
         if ($this->lastLine !== false) {
             $this->lastLine = trim($this->lastLine);
 
             // Ignore empty lines
-            if ($this->lastLine === '') {
+            if (!$this->valid()) {
                 return $this->read();
             }
 
@@ -102,6 +111,26 @@ class Reader
         }
 
         return $this->lastLine !== false;
+    }
+
+    /**
+     * Returns the current read line (without line breaks).
+     *
+     * @return string
+     */
+    public function current(): string
+    {
+        return $this->lastLine;
+    }
+
+    /**
+     * Returns TRUE if the last read line is not empty.
+     *
+     * @return bool
+     */
+    public function valid(): bool
+    {
+        return $this->current() !== '';
     }
 
     /**
@@ -155,12 +184,12 @@ class Reader
     }
 
     /**
-     * Returns the current read line (without line breaks).
+     * Returns the number of read lines.
      *
-     * @return string
+     * @return int
      */
-    public function current(): string
+    public function count(): int
     {
-        return $this->lastLine;
+        return $this->lineCount;
     }
 }

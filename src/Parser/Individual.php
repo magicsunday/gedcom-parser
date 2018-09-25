@@ -29,19 +29,17 @@ class Individual extends AbstractParser
         $individual->setXref($this->reader->identifier());
 
         while ($this->reader->read() && $this->valid()) {
-            if ($this->reader->type() === 'NAME') {
-                //
-            }
+            switch ($this->reader->type()) {
+                case 'NAME':
+                    break;
 
-            if ($this->reader->type() === 'SEX') {
-                //
-            }
+                case 'SEX':
+                    break;
 
-            if ($this->reader->type() === 'CHAN') {
-                $changeDateParser = new ChangeDate($this->reader, $this->logger);
-                $changeDate       = $changeDateParser->parse();
-
-                $individual->setChangeDate($changeDate);
+                case 'CHAN':
+                    $changeDateParser = new ChangeDate($this->reader, $this->logger);
+                    $individual->setChangeDate($changeDateParser->parse());
+                    break;
             }
         }
 
