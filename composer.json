@@ -1,6 +1,6 @@
 {
   "name": "magicsunday/gedcom-parser",
-  "description": "A GEDCOM 5.5 file parser",
+  "description": "A GEDCOM 5.5.1 file parser",
   "license": "GPL-3.0-or-later",
   "type": "library",
   "homepage": "http://github.com/magicsunday/gedcom-parser",

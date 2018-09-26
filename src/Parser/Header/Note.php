@@ -28,23 +28,7 @@ class Note extends AbstractParser
         $note = new NoteModel();
         $note->setNote($this->reader->value());
 
-        $content = '';
-
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
-                case 'CONT':
-                    if ($content !== '') {
-                        $content .= "\n";
-                    }
-
-                    $content .= $this->reader->value();
-                    break;
-
-                case 'CONC':
-                    $content .= $this->reader->value();
-                    break;
-            }
-        }
+        $content = $this->readContent();
 
         if ($content !== '') {
             $note->setContent($content);

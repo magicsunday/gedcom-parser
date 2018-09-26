@@ -5,7 +5,7 @@
 [![Issue Count](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/issue_count.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser)
 
 # GEDCOM parser
-This module provides a [GEDCOM](https://de.wikipedia.org/wiki/GEDCOM) 5.5 compatible file parser.
+This module provides a [GEDCOM](https://de.wikipedia.org/wiki/GEDCOM) 5.5.1 compatible file parser.
 
 
 ## Installation

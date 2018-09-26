@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom\Parser\Header;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\Source as SourceModel;
 use MagicSunday\Gedcom\Parser\Header\Source\Corporation;
+use MagicSunday\Gedcom\Parser\Header\Source\Data;
 
 /**
  * A SOUR parser.
@@ -45,6 +46,8 @@ class Source extends AbstractParser
                     break;
 
                 case 'DATA':
+                    $dataParser = new Data($this->reader, $this->logger);
+                    $source->setData($dataParser->parse());
                     break;
             }
         }

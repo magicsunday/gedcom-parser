@@ -62,4 +62,32 @@ abstract class AbstractParser
 
         return true;
     }
+
+    /**
+     * Returns the complete content of CONT and CONC.
+     *
+     * @return string
+     */
+    protected function readContent(): string
+    {
+        $content = '';
+
+        while ($this->reader->read() && $this->valid()) {
+            switch ($this->reader->tag()) {
+                case 'CONT':
+                    if ($content !== '') {
+                        $content .= "\n";
+                    }
+
+                    $content .= $this->reader->value();
+                    break;
+
+                case 'CONC':
+                    $content .= $this->reader->value();
+                    break;
+            }
+        }
+
+        return $content;
+    }
 }
