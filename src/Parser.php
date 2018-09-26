@@ -46,15 +46,13 @@ class Parser
         $gedcom = new Gedcom();
 
         while ($reader->read()) {
-            switch ($reader->type()) {
+            switch ($reader->tag()) {
                 // Header
                 case 'HEAD':
                     $headerParser = new Header($reader, $this->logger);
                     $gedcom->setHeader($headerParser->parse());
                     break;
-            }
 
-            switch ($reader->value()) {
                 // Submission record
                 case 'SUBN':
                     $submissionParser = new Submission($reader, $this->logger);

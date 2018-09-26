@@ -34,7 +34,7 @@ class Header extends AbstractParser
         $header = new HeaderModel();
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'SOUR':
                     $sourceParser = new Source($this->reader, $this->logger);
                     $header->setSource($sourceParser->parse());

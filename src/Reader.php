@@ -20,14 +20,18 @@ use SplFileObject;
 class Reader
 {
     /**
-     * Delimiter to separate level, type and value in a GEDCOM file.
+     * Regular expression to match a different parts in a line.
      */
-    const DELIMITER = ' ';
+    const PATTERN = '^\s*(\d)\s+(@([^@ ]+)@\s+)?([a-zA-Z_0-9.]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
 
     /**
-     * Pointer delimiter.
+     * The matches groups of interest.
      */
-    const POINTER_DELIMITER = '@';
+    const MATCH_GROUP_LEVEL = 1;
+    const MATCH_GROUP_ID    = 3;
+    const MATCH_GROUP_TAG   = 4;
+    const MATCH_GROUP_XREF  = 6;
+    const MATCH_GROUP_VALUE = 8;
 
     /**
      * The file object.
@@ -65,6 +69,31 @@ class Reader
     private $lineCount = 0;
 
     /**
+     * @var int
+     */
+    private $level = 0;
+
+    /**
+     * @var string
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     */
+    private $tag;
+
+    /**
+     * @var string
+     */
+    private $xref;
+
+    /**
+     * @var string
+     */
+    private $value;
+
+    /**
      * Reader constructor.
      *
      * @param string $filename The file to open
@@ -98,23 +127,42 @@ class Reader
         ++$this->lineCount;
 
         if ($this->lastLine !== false) {
-            $this->lastLine = trim($this->lastLine);
-
             // Ignore empty lines
             if (!$this->valid()) {
                 return $this->read();
             }
 
-            // Split the line along the delimiter and trim each value
-            $this->data = explode(self::DELIMITER, $this->lastLine, 3);
-            $this->data = array_map('trim', $this->data);
+            $matches = [];
+
+            if (preg_match('/' . self::PATTERN . '/s', $this->lastLine, $matches) !== 1) {
+                throw new InvalidArgumentException('Unable to match line: <' . $this->lastLine . '>');
+            }
+
+            $this->level      = (int) $matches[self::MATCH_GROUP_LEVEL];
+            $this->identifier = $matches[self::MATCH_GROUP_ID];
+            $this->tag        = $matches[self::MATCH_GROUP_TAG];
+            $this->xref       = $matches[self::MATCH_GROUP_XREF];
+            $this->value      = $matches[self::MATCH_GROUP_VALUE];
+
+            // Remove line breaks (keep white spaces at end of lines)
+            $this->value = str_replace(["\r", "\n"], '', $this->value);
         }
 
         return $this->lastLine !== false;
     }
 
     /**
-     * Returns the current read line (without line breaks).
+     * Returns the number of read lines.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->lineCount;
+    }
+
+    /**
+     * Returns the current read line.
      *
      * @return string
      */
@@ -130,7 +178,7 @@ class Reader
      */
     public function valid(): bool
     {
-        return $this->current() !== '';
+        return trim($this->current()) !== '';
     }
 
     /**
@@ -144,52 +192,52 @@ class Reader
     }
 
     /**
-     * Returns the normalized identifier pointer (removes the @) if there is one.
-     *
-     * @return string
-     */
-    public function identifier(): string
-    {
-        return trim($this->data[1], self::POINTER_DELIMITER);
-    }
-
-    /**
      * Returns the level of the current line.
      *
      * @return int
      */
     public function level(): int
     {
-        return (int) $this->data[0];
+        return $this->level;
     }
 
     /**
-     * Returns the type of the current line.
+     * Returns the identifier pointer if there is one.
      *
      * @return string
      */
-    public function type(): string
+    public function identifier(): string
     {
-        return strtoupper($this->data[1]);
+        return $this->identifier;
     }
 
     /**
-     * Returns the value of the current line.
+     * Returns the tag of the current line.
      *
-     * @return null|string
+     * @return string
+     */
+    public function tag(): string
+    {
+        return $this->tag;
+    }
+
+    /**
+     * Returns the xref of the current line if there is one.
+     *
+     * @return string
+     */
+    public function xref(): string
+    {
+        return $this->xref;
+    }
+
+    /**
+     * Returns the value of the current line if there is one.
+     *
+     * @return string
      */
     public function value()
     {
-        return $this->data[2] ?? null;
-    }
-
-    /**
-     * Returns the number of read lines.
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        return $this->lineCount;
+        return $this->value;
     }
 }

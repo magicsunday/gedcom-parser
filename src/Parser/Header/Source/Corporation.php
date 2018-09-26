@@ -30,7 +30,7 @@ class Corporation extends AbstractParser
         $corporation->setName($this->reader->value());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'ADDR':
                     $addressParser = new Address($this->reader, $this->logger);
                     $corporation->setAddress($addressParser->parse());

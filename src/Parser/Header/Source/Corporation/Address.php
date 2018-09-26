@@ -30,7 +30,7 @@ class Address extends AbstractParser
         $line = $this->reader->value();
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'CONT':
                     $line .= "\n" . $this->reader->value();
                     break;

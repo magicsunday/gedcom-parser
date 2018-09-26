@@ -30,7 +30,7 @@ class Submission extends AbstractParser
         $submission->setSubmitter($this->reader->identifier());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'SUBM':
                     $submission->setSubmitter($this->reader->value());
                     break;

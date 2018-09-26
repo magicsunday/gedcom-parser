@@ -28,7 +28,7 @@ class Place extends AbstractParser
         $place = new PlaceModel();
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'FORM':
                     $place->setForm($this->reader->value());
                     break;

@@ -31,7 +31,7 @@ class Source extends AbstractParser
         $source->setSystemId($this->reader->value());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'VERS':
                     $source->setVersion($this->reader->value());
                     break;

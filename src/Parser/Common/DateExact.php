@@ -28,7 +28,7 @@ class DateExact extends AbstractParser
         $date = new DateExactModel($this->reader->value());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'TIME':
                     $date->setTime($this->reader->value());
                     break;

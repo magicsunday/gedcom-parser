@@ -104,19 +104,19 @@ class ReaderTest extends TestCase
                 self::assertSame(0, $reader->level());
             }
 
-            if ($reader->type() === 'HEAD') {
+            if ($reader->tag() === 'HEAD') {
                 self::assertSame(0, $reader->level());
             }
 
-            if ($reader->type() === 'GEDC') {
+            if ($reader->tag() === 'GEDC') {
                 self::assertSame(1, $reader->level());
             }
 
-            if ($reader->type() === 'VERS') {
+            if ($reader->tag() === 'VERS') {
                 self::assertSame(2, $reader->level());
             }
 
-            if ($reader->type() === 'TRLR') {
+            if ($reader->tag() === 'TRLR') {
                 self::assertSame(0, $reader->level());
             }
         }
@@ -125,25 +125,25 @@ class ReaderTest extends TestCase
     /**
      * @test
      */
-    public function type()
+    public function tag()
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read to the first INDI record
         while ($reader->read()) {
-            if ($reader->type() === 'HEAD') {
+            if ($reader->tag() === 'HEAD') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($reader->type() === 'GEDC') {
+            if ($reader->tag() === 'GEDC') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($reader->type() === 'VERS') {
+            if ($reader->tag() === 'VERS') {
                 $this->addToAssertionCount(1);
             }
 
-            if ($reader->type() === 'TRLR') {
+            if ($reader->tag() === 'TRLR') {
                 $this->addToAssertionCount(1);
             }
         }

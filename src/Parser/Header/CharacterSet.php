@@ -29,7 +29,7 @@ class CharacterSet extends AbstractParser
         $characterSet->setCharacterSet($this->reader->value());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'VERS':
                     $characterSet->setVersion($this->reader->value());
                     break;

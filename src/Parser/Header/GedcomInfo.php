@@ -28,7 +28,7 @@ class GedcomInfo extends AbstractParser
         $gedcomInfo = new GedcomInfoModel();
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'VERS':
                     $gedcomInfo->setVersion($this->reader->value());
                     break;

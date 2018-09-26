@@ -30,7 +30,7 @@ class Individual extends AbstractParser
         $individual->setXref($this->reader->identifier());
 
         while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->type()) {
+            switch ($this->reader->tag()) {
                 case 'NAME':
                     break;
 
