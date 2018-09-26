@@ -31,9 +31,9 @@ class DateExact
     /**
      * Date constructor.
      *
-     * @param DateTime|string $date The date
+     * @param string $date The date
      */
-    public function __construct($date)
+    public function __construct(string $date)
     {
         $this->setDate($date);
     }
@@ -51,17 +51,13 @@ class DateExact
     /**
      * Sets the date.
      *
-     * @param DateTime|string $date The date
+     * @param string $date The date
      *
      * @return self
      */
-    public function setDate($date): self
+    public function setDate(string $date): self
     {
-        if (is_string($date)) {
-            $this->dateTime = DateTime::createFromFormat(self::DATE_FORMAT, $date);
-        } elseif ($date instanceof DateTime) {
-            $this->dateTime = $date;
-        }
+        $this->dateTime = DateTime::createFromFormat(self::DATE_FORMAT, $date);
 
         if (!$this->dateTime) {
             throw new InvalidArgumentException('Failed to parse date. Required format: d M Y');
@@ -92,13 +88,24 @@ class DateExact
      */
     public function setTime(string $time): self
     {
-        $tmp = DateTime::createFromFormat(self::TIME_FORMAT, $time);
+        // Fraction part
+        if (($fracionPos = strpos($time, '.')) !== false) {
+            $fraction = (int) substr($time, $fracionPos + 1);
+            $time     = substr($time, 0, $fracionPos);
+        }
+
+        $timeParts = array_map('intval', explode(':', $time));
+
+        // Add seconds part if missing
+        if (count($timeParts) === 2) {
+            $timeParts[2] = 0;
+        }
 
         // TODO Add milliseconds part (available only in PHP7.1+)
         $this->dateTime->setTime(
-            (int) $tmp->format('H'),
-            (int) $tmp->format('i'),
-            (int) $tmp->format('s')
+            $timeParts[0],
+            $timeParts[1],
+            $timeParts[2]
         );
 
         return $this;
