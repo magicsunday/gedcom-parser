@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Model\Header as HeaderModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 use MagicSunday\Gedcom\Parser\Header\CharacterSet;
 use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
+use MagicSunday\Gedcom\Parser\Header\Note;
 use MagicSunday\Gedcom\Parser\Header\Place;
 
 /**
@@ -81,6 +82,8 @@ class Header extends AbstractParser
                     break;
 
                 case 'NOTE':
+                    $noteParser = new Note($this->reader, $this->logger);
+                    $header->setNote($noteParser->parse());
                     break;
             }
         }

@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\Model\Common\DateExact;
 use MagicSunday\Gedcom\Model\Header\CharacterSet;
 use MagicSunday\Gedcom\Model\Header\GedcomInfo;
+use MagicSunday\Gedcom\Model\Header\Note;
 use MagicSunday\Gedcom\Model\Header\Place;
 
 /**
