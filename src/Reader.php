@@ -44,7 +44,7 @@ class Reader
     /**
      * The last line read from input.
      *
-     * @var false|string
+     * @var bool|string
      */
     private $lastLine;
 
@@ -154,7 +154,7 @@ class Reader
     /**
      * Returns the current read line.
      *
-     * @return false|string
+     * @return bool|string
      */
     public function current()
     {
@@ -168,7 +168,7 @@ class Reader
      */
     public function valid(): bool
     {
-        return ($this->lastLine !== false) && (trim($this->lastLine) !== '');
+        return \is_string($this->lastLine) && (trim($this->lastLine) !== '');
     }
 
     /**

@@ -53,7 +53,7 @@ class Note
     /**
      * @return null|string
      */
-    public function getContent(): string
+    public function getContent()
     {
         return $this->content;
     }

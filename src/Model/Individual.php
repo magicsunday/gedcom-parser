@@ -73,17 +73,6 @@ class Individual
     }
 
     /**
-     * @param array $names
-     *
-     * @return self
-     */
-    public function setNames(array $names): self
-    {
-        $this->names = $names;
-        return $this;
-    }
-
-    /**
      * @param Name $name
      *
      * @return self

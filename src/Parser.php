@@ -69,9 +69,6 @@ class Parser
             }
         }
 
-var_dump($gedcom);
-exit;
-
         return $gedcom;
     }
 }

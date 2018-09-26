@@ -54,16 +54,18 @@ class DateExact
      * @param string $date The date
      *
      * @return self
+     * @throws InvalidArgumentException
      */
     public function setDate(string $date): self
     {
-        $this->dateTime = DateTime::createFromFormat(self::DATE_FORMAT, $date);
+        $dateTime = DateTime::createFromFormat(self::DATE_FORMAT, $date);
 
-        if (!$this->dateTime) {
+        if ($dateTime === false) {
             throw new InvalidArgumentException('Failed to parse date. Required format: d M Y');
         }
 
         // Unset time
+        $this->dateTime = $dateTime;
         $this->dateTime->setTime(0, 0);
 
         return $this;
@@ -90,7 +92,8 @@ class DateExact
     {
         // Fraction part
         if (($fracionPos = strpos($time, '.')) !== false) {
-            $fraction = (int) substr($time, $fracionPos + 1);
+            // TODO Add milliseconds part (available only in PHP7.1+)
+            //$fraction = (int) substr($time, $fracionPos + 1);
             $time     = substr($time, 0, $fracionPos);
         }
 
