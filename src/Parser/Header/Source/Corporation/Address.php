@@ -27,14 +27,13 @@ class Address extends AbstractParser
     {
         $address = new AddressModel();
 
-        $line = $this->reader->value();
+        $line = $this->reader->value()
+            . "\n" . $this->readContent();
+
+        $address->setLine($line);
 
         while ($this->reader->read() && $this->valid()) {
             switch ($this->reader->tag()) {
-                case 'CONT':
-                    $line .= "\n" . $this->reader->value();
-                    break;
-
                 case 'ADR1':
                     $address->setLine1($this->reader->value());
                     break;
@@ -64,8 +63,6 @@ class Address extends AbstractParser
                     break;
             }
         }
-
-        $address->setLine($line);
 
         return $address;
     }

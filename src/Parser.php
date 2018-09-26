@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Parser\Header;
 use MagicSunday\Gedcom\Parser\Individual;
 use MagicSunday\Gedcom\Parser\Submission;
+use MagicSunday\Gedcom\Parser\Submitter;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -57,6 +58,12 @@ class Parser
                 case 'SUBN':
                     $submissionParser = new Submission($reader, $this->logger);
                     $gedcom->setSubmission($submissionParser->parse());
+                    break;
+
+                // Submitter record
+                case 'SUBM':
+                    $submitterParser = new Submitter($reader, $this->logger);
+                    $gedcom->setSubmitter($submitterParser->parse());
                     break;
 
                 // Records
