@@ -18,7 +18,7 @@ class Address
     /**
      * The address lines usually contain the addressee’s name and other street and city information so that it
      * forms an address that meets mailing requirements.
-
+     *
      * @var string
      */
     private $line;
