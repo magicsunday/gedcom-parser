@@ -7,6 +7,7 @@ declare(strict_types = 1);
 namespace MagicSunday\Gedcom;
 
 use InvalidArgumentException;
+use LogicException;
 use RuntimeException;
 use SplFileObject;
 
@@ -43,7 +44,7 @@ class Reader
     /**
      * The last line read from input.
      *
-     * @var string
+     * @var false|string
      */
     private $lastLine;
 
@@ -53,13 +54,6 @@ class Reader
      * @var int
      */
     private $lastPosition;
-
-    /**
-     * The last line splitted into an array along the delimiter value.
-     *
-     * @var array
-     */
-    private $data;
 
     /**
      * Number of read lines of the file.
@@ -98,8 +92,9 @@ class Reader
      *
      * @param string $filename The file to open
      *
-     * @throws RuntimeException
      * @throws InvalidArgumentException
+     * @throws LogicException
+     * @throws RuntimeException
      */
     public function __construct(string $filename)
     {
@@ -121,7 +116,7 @@ class Reader
             return false;
         }
 
-        $this->lastPosition = $this->file->ftell();
+        $this->lastPosition = (int) $this->file->ftell();
         $this->lastLine     = $this->file->fgets();
 
         ++$this->lineCount;
@@ -236,7 +231,7 @@ class Reader
      *
      * @return string
      */
-    public function value()
+    public function value(): string
     {
         return $this->value;
     }

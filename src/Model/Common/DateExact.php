@@ -94,10 +94,10 @@ class DateExact
             $time     = substr($time, 0, $fracionPos);
         }
 
-        $timeParts = array_map('intval', explode(':', $time));
+        $timeParts = array_map('\intval', explode(':', $time));
 
         // Add seconds part if missing
-        if (count($timeParts) === 2) {
+        if (\count($timeParts) === 2) {
             $timeParts[2] = 0;
         }
 

@@ -62,17 +62,6 @@ class ChangeDate implements NoteInterface
     }
 
     /**
-     * @param array $notes
-     *
-     * @return self
-     */
-    public function setNotes(array $notes): self
-    {
-        $this->notes = $notes;
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function addNote(Note $note): NoteInterface
