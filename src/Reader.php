@@ -121,12 +121,7 @@ class Reader
 
         ++$this->lineCount;
 
-        if ($this->lastLine !== false) {
-            // Ignore empty lines
-            if (!$this->valid()) {
-                return $this->read();
-            }
-
+        if ($this->valid()) {
             $matches = [];
 
             if (preg_match('/' . self::PATTERN . '/s', $this->lastLine, $matches) !== 1) {
@@ -159,9 +154,9 @@ class Reader
     /**
      * Returns the current read line.
      *
-     * @return string
+     * @return false|string
      */
-    public function current(): string
+    public function current()
     {
         return $this->lastLine;
     }
@@ -173,7 +168,7 @@ class Reader
      */
     public function valid(): bool
     {
-        return trim($this->current()) !== '';
+        return ($this->lastLine !== false) && (trim($this->lastLine) !== '');
     }
 
     /**
