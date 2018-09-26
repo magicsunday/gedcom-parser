@@ -1,0 +1,41 @@
+# .scrutinizer.yml
+checks:
+  php: true
+coding_style:
+  php:
+    spaces:
+      before_parentheses:
+        closure_definition: true
+      around_operators:
+        concatenation: true
+    braces:
+      classes_functions:
+        class: new-line
+        function: new-line
+      if:
+        opening: end-of-line
+      for:
+        opening: end-of-line
+      while:
+        opening: end-of-line
+      do_while:
+        opening: end-of-line
+      switch:
+        opening: end-of-line
+      try:
+        opening: end-of-line
+    upper_lower_casing:
+      keywords:
+        general: lower
+      constants:
+        true_false_null: lower
+build:
+  nodes:
+    tests: true
+    analysis:
+      tests:
+        override:
+        -
+          command: phpcs-run
+          use_website_config: true
+        - php-scrutinizer-run

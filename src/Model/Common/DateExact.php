@@ -91,10 +91,10 @@ class DateExact
     public function setTime(string $time): self
     {
         // Fraction part
-        if (($fracionPos = strpos($time, '.')) !== false) {
+        if (($fractionPos = strpos($time, '.')) !== false) {
             // TODO Add milliseconds part (available only in PHP7.1+)
-            //$fraction = (int) substr($time, $fracionPos + 1);
-            $time     = substr($time, 0, $fracionPos);
+            //$fraction = (int) substr($time, $fractionPos + 1);
+            $time = substr($time, 0, $fractionPos);
         }
 
         $timeParts = array_map('\intval', explode(':', $time));
