@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Model\Header\CharacterSet;
 use MagicSunday\Gedcom\Model\Header\GedcomInfo;
 use MagicSunday\Gedcom\Model\Header\Note;
 use MagicSunday\Gedcom\Model\Header\Place;
+use MagicSunday\Gedcom\Model\Header\Source;
 
 /**
  * The header structure provides information about the entire transmission.

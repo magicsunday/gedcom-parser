@@ -13,6 +13,7 @@ use MagicSunday\Gedcom\Parser\Header\CharacterSet;
 use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
 use MagicSunday\Gedcom\Parser\Header\Note;
 use MagicSunday\Gedcom\Parser\Header\Place;
+use MagicSunday\Gedcom\Parser\Header\Source;
 
 /**
  * A HEAD parser.
@@ -35,6 +36,8 @@ class Header extends AbstractParser
         while ($this->reader->read() && $this->valid()) {
             switch ($this->reader->type()) {
                 case 'SOUR':
+                    $sourceParser = new Source($this->reader, $this->logger);
+                    $header->setSource($sourceParser->parse());
                     break;
 
                 case 'DEST':
