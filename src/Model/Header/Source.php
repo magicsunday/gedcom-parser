@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Header;
 
+use MagicSunday\Gedcom\Model\DataObject;
 use \MagicSunday\Gedcom\Model\Header\Source\Corporation;
 use \MagicSunday\Gedcom\Model\Header\Source\Data;
 
@@ -16,138 +17,73 @@ use \MagicSunday\Gedcom\Model\Header\Source\Data;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Source
+class Source extends DataObject
 {
     /**
      * A system identification name which was obtained through the GEDCOM registration process. This
      * name must be unique from any other product. Spaces within the name must be substituted with a 0x5F
      * (underscore _) so as to create one word.
-     *
-     * @var string
      */
-    private $systemId;
+    const TAG_APPROVED_SYSTEM_ID = 'APPROVED_SYSTEM_ID';
 
     /**
      * An identifier that represents the version level assigned to the associated product. It is defined and
      * changed by the creators of the product.
-     *
-     * @var string
      */
-    private $version;
+    const TAG_VERS = 'VERS';
 
     /**
      * The name of the software product that produced this transmission.
-     *
-     * @var string
      */
-    private $name;
+    const TAG_NAME = 'NAME';
 
     /**
      * The corporation structure.
-     *
-     * @var Corporation
      */
-    private $corporation;
+    const TAG_CORP = 'CORP';
 
     /**
      * The data structure.
-     *
-     * @var Data
      */
-    private $data;
+    const TAG_DATA = 'DATA';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getSystemId(): string
+    public function getApprovedSystemId()
     {
-        return $this->systemId;
+        return $this->getValue(self::TAG_APPROVED_SYSTEM_ID);
     }
 
     /**
-     * @param string $systemId
-     *
-     * @return self
+     * @return null|string
      */
-    public function setSystemId(string $systemId): self
+    public function getVersion()
     {
-        $this->systemId = $systemId;
-        return $this;
+        return $this->getValue(self::TAG_VERS);
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getVersion(): string
+    public function getName()
     {
-        return $this->version;
+        return $this->getValue(self::TAG_NAME);
     }
 
     /**
-     * @param string $version
-     *
-     * @return self
-     */
-    public function setVersion(string $version): self
-    {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return self
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return Corporation
+     * @return null|Corporation
      */
     public function getCorporation(): Corporation
     {
-        return $this->corporation;
+        return $this->getValue(self::TAG_CORP);
     }
 
     /**
-     * @param Corporation $corporation
-     *
-     * @return self
-     */
-    public function setCorporation(Corporation $corporation): self
-    {
-        $this->corporation = $corporation;
-        return $this;
-    }
-
-    /**
-     * @return Data
+     * @return null|Data
      */
     public function getData(): Data
     {
-        return $this->data;
-    }
-
-    /**
-     * @param Data $data
-     *
-     * @return self
-     */
-    public function setData(Data $data): self
-    {
-        $this->data = $data;
-        return $this;
+        return $this->getValue(self::TAG_DATA);
     }
 }

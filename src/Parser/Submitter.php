@@ -8,8 +8,9 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Submitter as SubmitterModel;
+use MagicSunday\Gedcom\Parser\Common\Address;
+use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate;
-use MagicSunday\Gedcom\Parser\Header\Source\Corporation\Address;
 
 /**
  * A SUBM parser.
@@ -21,6 +22,15 @@ use MagicSunday\Gedcom\Parser\Header\Source\Corporation\Address;
 class Submitter extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+        ];
+    }
+
+    /**
      * Parses a SUBM block.
      *
      * @return SubmitterModel
@@ -28,7 +38,7 @@ class Submitter extends AbstractParser
     public function parse(): SubmitterModel
     {
         $submitter = new SubmitterModel();
-//        $submitter->setName($this->reader->identifier());
+        $submitter->setXref($this->reader->identifier());
 
         while ($this->reader->read() && $this->valid()) {
             switch ($this->reader->tag()) {

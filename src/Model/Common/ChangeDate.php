@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common;
 
-use MagicSunday\Gedcom\Model\NoteInterface;
+use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Model\Note;
 
 /**
@@ -18,55 +18,31 @@ use MagicSunday\Gedcom\Model\Note;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class ChangeDate implements NoteInterface
+class ChangeDate extends DataObject
 {
     /**
      * The date that this data was changed.
-     *
-     * @var DateExact
      */
-    private $date;
+    const TAG_DATE = 'DATE';
 
     /**
      * A list of assigned notes.
-     *
-     * @var array
      */
-    private $notes = [];
+    const TAG_NOTE = 'NOTE';
 
     /**
      * @return DateExact
      */
     public function getDate(): DateExact
     {
-        return $this->date;
+        return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @param DateExact $date
-     *
-     * @return self
-     */
-    public function setDate(DateExact $date): self
-    {
-        $this->date = $date;
-        return $this;
-    }
-
-    /**
-     * @return array
+     * @return Note[]
      */
     public function getNotes(): array
     {
-        return $this->notes;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addNote(Note $note): NoteInterface
-    {
-        $this->notes[] = $note;
-        return $this;
+        return $this->getValue(self::TAG_NOTE);
     }
 }

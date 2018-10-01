@@ -11,9 +11,9 @@ use MagicSunday\Gedcom\Model\Header as HeaderModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 use MagicSunday\Gedcom\Parser\Header\CharacterSet;
 use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
-use MagicSunday\Gedcom\Parser\Header\Note;
+use MagicSunday\Gedcom\Parser\Header\Note as NoteParser;
 use MagicSunday\Gedcom\Parser\Header\Place;
-use MagicSunday\Gedcom\Parser\Header\Source;
+use MagicSunday\Gedcom\Parser\Header\Source as SourceParser;
 
 /**
  * A HEAD parser.
@@ -25,6 +25,27 @@ use MagicSunday\Gedcom\Parser\Header\Source;
 class Header extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            HeaderModel::TAG_SOUR => SourceParser::class,
+            HeaderModel::TAG_DEST => Common::class,
+            HeaderModel::TAG_DATE => DateExact::class,
+            HeaderModel::TAG_SUBM => Common::class,
+            HeaderModel::TAG_SUBN => Common::class,
+            HeaderModel::TAG_FILE => Common::class,
+            HeaderModel::TAG_COPR => Common::class,
+            HeaderModel::TAG_GEDC => GedcomInfo::class,
+            HeaderModel::TAG_CHAR => CharacterSet::class,
+            HeaderModel::TAG_LANG => Common::class,
+            HeaderModel::TAG_PLAC => Place::class,
+            HeaderModel::TAG_NOTE => NoteParser::class,
+        ];
+    }
+
+    /**
      * Parses a HEAD block.
      *
      * @return HeaderModel
@@ -33,63 +54,7 @@ class Header extends AbstractParser
     {
         $header = new HeaderModel();
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'SOUR':
-                    $sourceParser = new Source($this->reader, $this->logger);
-                    $header->setSource($sourceParser->parse());
-                    break;
-
-                case 'DEST':
-                    $header->setDestination($this->reader->value());
-                    break;
-
-                case 'DATE':
-                    $dateParser = new DateExact($this->reader, $this->logger);
-                    $header->setDate($dateParser->parse());
-                    break;
-
-                case 'SUBM':
-                    $header->setSubmitter($this->reader->value());
-                    break;
-
-                case 'SUBN':
-                    $header->setSubmission($this->reader->value());
-                    break;
-
-                case 'FILE':
-                    $header->setFile($this->reader->value());
-                    break;
-
-                case 'COPR':
-                    $header->setCopyright($this->reader->value());
-                    break;
-
-                case 'GEDC':
-                    $gedcomInfoParser = new GedcomInfo($this->reader, $this->logger);
-                    $header->setGedcomInfo($gedcomInfoParser->parse());
-                    break;
-
-                case 'CHAR':
-                    $charSetParser = new CharacterSet($this->reader, $this->logger);
-                    $header->setCharacterSet($charSetParser->parse());
-                    break;
-
-                case 'LANG':
-                    $header->setLanguage($this->reader->value());
-                    break;
-
-                case 'PLAC':
-                    $placeParser = new Place($this->reader, $this->logger);
-                    $header->setPlace($placeParser->parse());
-                    break;
-
-                case 'NOTE':
-                    $noteParser = new Note($this->reader, $this->logger);
-                    $header->setNote($noteParser->parse());
-                    break;
-            }
-        }
+        $this->process($header);
 
         return $header;
     }

@@ -19,6 +19,17 @@ use MagicSunday\Gedcom\Model\Common\ChangeDate as ChangeDateModel;
 class ChangeDate extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            ChangeDateModel::TAG_DATE => DateExact::class,
+            ChangeDateModel::TAG_NOTE => NoteStructure::class,
+        ];
+    }
+
+    /**
      * Parses a CHAN block.
      *
      * @return ChangeDateModel
@@ -27,17 +38,7 @@ class ChangeDate extends AbstractParser
     {
         $changeDate = new ChangeDateModel();
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'DATE':
-                    $dateParser = new DateExact($this->reader, $this->logger);
-                    $changeDate->setDate($dateParser->parse());
-                    break;
-
-                case 'NOTE':
-                    break;
-            }
-        }
+        $this->process($changeDate);
 
         return $changeDate;
     }

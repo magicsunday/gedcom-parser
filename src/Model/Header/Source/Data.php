@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model\Header\Source;
 
 use MagicSunday\Gedcom\Model\Common\DateExact;
+use MagicSunday\Gedcom\Model\DataObject;
 
 /**
  * The data structure.
@@ -15,83 +16,44 @@ use MagicSunday\Gedcom\Model\Common\DateExact;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Data
+class Data extends DataObject
 {
     /**
      * The name of the electronic data source that was used to obtain the data in this transmission.
-     *
-     * @var string
      */
-    private $name;
+    const TAG_NAME_OF_SOURCE_DATA = 'NAME_OF_SOURCE_DATA';
 
     /**
      * The date this source was published or created.
-     *
-     * @var DateExact
      */
-    private $date;
+    const TAG_DATE = 'DATE';
 
     /**
      * A copyright statement required by the owner of data from which this information was downloaded.
-     *
-     * @var string
      */
-    private $copyright;
+    const TAG_COPR = 'COPR';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getName(): string
+    public function getName()
     {
-        return $this->name;
+        return $this->getValue(self::TAG_NAME_OF_SOURCE_DATA);
     }
 
     /**
-     * @param string $name
-     *
-     * @return self
+     * @return null|DateExact
      */
-    public function setName(string $name): self
+    public function getDate()
     {
-        $this->name = $name;
-        return $this;
+        return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @return DateExact
+     * @return null|string
      */
-    public function getDate(): DateExact
+    public function getCopyright()
     {
-        return $this->date;
-    }
-
-    /**
-     * @param DateExact $date
-     *
-     * @return self
-     */
-    public function setDate(DateExact $date): self
-    {
-        $this->date = $date;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCopyright(): string
-    {
-        return $this->copyright;
-    }
-
-    /**
-     * @param string $copyright
-     *
-     * @return self
-     */
-    public function setCopyright(string $copyright): self
-    {
-        $this->copyright = $copyright;
-        return $this;
+        return $this->getValue(self::TAG_COPR);
     }
 }

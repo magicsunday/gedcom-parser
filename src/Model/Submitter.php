@@ -6,8 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Common\Address;
 use MagicSunday\Gedcom\Model\Common\ChangeDate;
-use MagicSunday\Gedcom\Model\Header\Source\Corporation\Address;
 
 /**
  * The submitter structure.
@@ -18,6 +18,13 @@ use MagicSunday\Gedcom\Model\Header\Source\Corporation\Address;
  */
 class Submitter
 {
+    /**
+     * The identifier.
+     *
+     * @var string
+     */
+    private $xref;
+
     /**
      *
      *
@@ -68,6 +75,25 @@ class Submitter
      * @var string[]
      */
     private $www = [];
+
+    /**
+     * @return string
+     */
+    public function getXref(): string
+    {
+        return $this->xref;
+    }
+
+    /**
+     * @param string $xref
+     *
+     * @return self
+     */
+    public function setXref(string $xref): self
+    {
+        $this->xref = $xref;
+        return $this;
+    }
 
     /**
      * @return string
@@ -199,6 +225,50 @@ class Submitter
     public function setChangeDate(ChangeDate $changeDate): self
     {
         $this->changeDate = $changeDate;
+        return $this;
+    }
+
+    /**
+     * @param string[] $phone
+     *
+     * @return self
+     */
+    public function setPhoneNumbers(array $phone): self
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    /**
+     * @param string[] $email
+     *
+     * @return self
+     */
+    public function setEmailAddresses(array $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * @param string[] $fax
+     *
+     * @return self
+     */
+    public function setFaxNumbers(array $fax): self
+    {
+        $this->fax = $fax;
+        return $this;
+    }
+
+    /**
+     * @param string[] $www
+     *
+     * @return self
+     */
+    public function setWwwAddresses(array $www): self
+    {
+        $this->www = $www;
         return $this;
     }
 }

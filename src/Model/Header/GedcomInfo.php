@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Header;
 
+use MagicSunday\Gedcom\Model\DataObject;
+
 /**
  * The gedcom information structure.
  *
@@ -13,60 +15,34 @@ namespace MagicSunday\Gedcom\Model\Header;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class GedcomInfo
+class GedcomInfo extends DataObject
 {
     /**
      * An identifier that represents the version level assigned to the associated product. It is defined and
      * changed by the creators of the product.
-     *
-     * @var string
      */
-    private $version;
+    const TAG_VERS = 'VERS';
 
     /**
      * The GEDCOM form used to construct this transmission. There maybe other forms used such as
      * CommSoft's "EVENT_LINEAGE_LINKED" but these specifications define only the LINEAGELINKED
      * Form. Systems will use this value to specify GEDCOM compatible with these specifications.
-     *
-     * @var string
      */
-    private $form;
+    const TAG_FORM = 'FORM';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getVersion(): string
+    public function getVersion()
     {
-        return $this->version;
+        return $this->getValue(self::TAG_VERS);
     }
 
     /**
-     * @param string $version
-     *
-     * @return self
+     * @return null|string
      */
-    public function setVersion(string $version): self
+    public function getForm()
     {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getForm(): string
-    {
-        return $this->form;
-    }
-
-    /**
-     * @param string $form
-     *
-     * @return self
-     */
-    public function setForm(string $form): self
-    {
-        $this->form = $form;
-        return $this;
+        return $this->getValue(self::TAG_FORM);
     }
 }

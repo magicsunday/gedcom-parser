@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Header;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\CharacterSet as CharacterSetModel;
+use MagicSunday\Gedcom\Parser\Common;
 
 /**
  * A CHAR parser.
@@ -19,6 +20,16 @@ use MagicSunday\Gedcom\Model\Header\CharacterSet as CharacterSetModel;
 class CharacterSet extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            CharacterSetModel::TAG_VERS => Common::class,
+        ];
+    }
+
+    /**
      * Parses a CHAR block.
      *
      * @return CharacterSetModel
@@ -26,15 +37,9 @@ class CharacterSet extends AbstractParser
     public function parse(): CharacterSetModel
     {
         $characterSet = new CharacterSetModel();
-        $characterSet->setCharacterSet($this->reader->value());
+        $characterSet->setValue(CharacterSetModel::TAG_CHARACTER_SET, $this->reader->value());
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'VERS':
-                    $characterSet->setVersion($this->reader->value());
-                    break;
-            }
-        }
+        $this->process($characterSet);
 
         return $characterSet;
     }

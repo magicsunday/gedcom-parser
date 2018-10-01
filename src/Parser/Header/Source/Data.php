@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Header\Source;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\Source\Data as DataModel;
+use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 
 /**
@@ -20,6 +21,17 @@ use MagicSunday\Gedcom\Parser\Common\DateExact;
 class Data extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            DataModel::TAG_DATE => DateExact::class,
+            DataModel::TAG_COPR => Common::class,
+        ];
+    }
+
+    /**
      * Parses a DATA block.
      *
      * @return DataModel
@@ -27,20 +39,9 @@ class Data extends AbstractParser
     public function parse(): DataModel
     {
         $data = new DataModel();
-        $data->setName($this->reader->value());
+        $data->setValue(DataModel::TAG_NAME_OF_SOURCE_DATA, $this->reader->value());
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'DATE':
-                    $dateParser = new DateExact($this->reader, $this->logger);
-                    $data->setDate($dateParser->parse());
-                    break;
-
-                case 'COPR':
-                    $data->setCopyright($this->readContent());
-                    break;
-            }
-        }
+        $this->process($data);
 
         return $data;
     }

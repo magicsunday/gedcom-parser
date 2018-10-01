@@ -19,6 +19,14 @@ use MagicSunday\Gedcom\Model\Common\DateExact as DateExactModel;
 class DateExact extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [];
+    }
+
+    /**
      * Parses a DATE_EXACT block.
      *
      * @return DateExactModel
@@ -27,9 +35,10 @@ class DateExact extends AbstractParser
     {
         $date = new DateExactModel($this->reader->value());
 
+        // TODO Put also in data array
         while ($this->reader->read() && $this->valid()) {
             switch ($this->reader->tag()) {
-                case 'TIME':
+                case DateExactModel::TAG_TIME:
                     $date->setTime($this->reader->value());
                     break;
             }

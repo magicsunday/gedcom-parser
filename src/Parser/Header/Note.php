@@ -19,6 +19,14 @@ use MagicSunday\Gedcom\Model\Header\Note as NoteModel;
 class Note extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [];
+    }
+
+    /**
      * Parses a NOTE block.
      *
      * @return NoteModel
@@ -26,7 +34,7 @@ class Note extends AbstractParser
     public function parse(): NoteModel
     {
         $note = new NoteModel();
-        $note->setNote($this->reader->value());
+        $note->setValue(NoteModel::TAG_GEDCOM_CONTENT_DESCRIPTION, $this->reader->value());
 
         $content = $this->readContent();
 

@@ -8,7 +8,8 @@ namespace MagicSunday\Gedcom\Parser\Header\Source;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\Source\Corporation as CorporationModel;
-use MagicSunday\Gedcom\Parser\Header\Source\Corporation\Address;
+use MagicSunday\Gedcom\Parser\Common;
+use MagicSunday\Gedcom\Parser\Common\Address;
 
 /**
  * A CORP parser.
@@ -20,6 +21,20 @@ use MagicSunday\Gedcom\Parser\Header\Source\Corporation\Address;
 class Corporation extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            CorporationModel::TAG_ADDR  => Address::class,
+            CorporationModel::TAG_PHON  => Common::class,
+            CorporationModel::TAG_EMAIL => Common::class,
+            CorporationModel::TAG_FAX   => Common::class,
+            CorporationModel::TAG_WWW   => Common::class,
+        ];
+    }
+
+    /**
      * Parses a CORP block.
      *
      * @return CorporationModel
@@ -27,32 +42,9 @@ class Corporation extends AbstractParser
     public function parse(): CorporationModel
     {
         $corporation = new CorporationModel();
-        $corporation->setName($this->reader->value());
+        $corporation->setValue(CorporationModel::TAG_NAME_OF_BUSINESS, $this->reader->value());
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'ADDR':
-                    $addressParser = new Address($this->reader, $this->logger);
-                    $corporation->setAddress($addressParser->parse());
-                    break;
-
-                case 'PHON':
-                    $corporation->addPhoneNumber($this->reader->value());
-                    break;
-
-                case 'EMAIL':
-                    $corporation->addEmailAddress($this->reader->value());
-                    break;
-
-                case 'FAX':
-                    $corporation->addFaxNumber($this->reader->value());
-                    break;
-
-                case 'WWW':
-                    $corporation->addWwwAddress($this->reader->value());
-                    break;
-            }
-        }
+        $this->process($corporation);
 
         return $corporation;
     }

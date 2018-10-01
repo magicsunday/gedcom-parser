@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Header;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\Source as SourceModel;
+use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Header\Source\Corporation;
 use MagicSunday\Gedcom\Parser\Header\Source\Data;
 
@@ -21,6 +22,19 @@ use MagicSunday\Gedcom\Parser\Header\Source\Data;
 class Source extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            SourceModel::TAG_VERS => Common::class,
+            SourceModel::TAG_NAME => Common::class,
+            SourceModel::TAG_CORP => Corporation::class,
+            SourceModel::TAG_DATA => Data::class,
+        ];
+    }
+
+    /**
      * Parses a SOUR block.
      *
      * @return SourceModel
@@ -28,29 +42,9 @@ class Source extends AbstractParser
     public function parse(): SourceModel
     {
         $source = new SourceModel();
-        $source->setSystemId($this->reader->value());
+        $source->setValue(SourceModel::TAG_APPROVED_SYSTEM_ID, $this->reader->value());
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'VERS':
-                    $source->setVersion($this->reader->value());
-                    break;
-
-                case 'NAME':
-                    $source->setName($this->reader->value());
-                    break;
-
-                case 'CORP':
-                    $corporationParser = new Corporation($this->reader, $this->logger);
-                    $source->setCorporation($corporationParser->parse());
-                    break;
-
-                case 'DATA':
-                    $dataParser = new Data($this->reader, $this->logger);
-                    $source->setData($dataParser->parse());
-                    break;
-            }
-        }
+        $this->process($source);
 
         return $source;
     }

@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Header;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\Place as PlaceModel;
+use MagicSunday\Gedcom\Parser\Common;
 
 /**
  * A PLAC parser.
@@ -19,6 +20,16 @@ use MagicSunday\Gedcom\Model\Header\Place as PlaceModel;
 class Place extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            PlaceModel::TAG_FORM => Common::class,
+        ];
+    }
+
+    /**
      * Parses a PLAC block.
      *
      * @return PlaceModel
@@ -27,13 +38,7 @@ class Place extends AbstractParser
     {
         $place = new PlaceModel();
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'FORM':
-                    $place->setForm($this->reader->value());
-                    break;
-            }
-        }
+        $this->process($place);
 
         return $place;
     }

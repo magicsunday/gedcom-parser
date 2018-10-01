@@ -135,13 +135,15 @@ class Gedcom
     }
 
     /**
-     * @param Family[] $families
+     * Adds an family to the list.
+     *
+     * @param Family $family
      *
      * @return self
      */
-    public function setFamilies(array $families): self
+    public function addFamily(Family $family): self
     {
-        $this->families = $families;
+        $this->families[] = $family;
         return $this;
     }
 
@@ -151,17 +153,6 @@ class Gedcom
     public function getIndividuals(): array
     {
         return $this->individuals;
-    }
-
-    /**
-     * @param Individual[] $individuals
-     *
-     * @return self
-     */
-    public function setIndividuals(array $individuals): self
-    {
-        $this->individuals = $individuals;
-        return $this;
     }
 
     /**

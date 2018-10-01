@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Header;
 
+use MagicSunday\Gedcom\Model\DataObject;
+
 /**
  * A note structure.
  *
@@ -13,16 +15,14 @@ namespace MagicSunday\Gedcom\Model\Header;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Note
+class Note extends DataObject
 {
     /**
      * A note that a user enters to describe the contents of the lineage-linked file in terms of
      * "ancestors or descendants of" so that the person receiving the data knows what genealogical information the
      * transmission contains.
-     *
-     * @var string
      */
-    private $note;
+    const TAG_GEDCOM_CONTENT_DESCRIPTION = 'GEDCOM_CONTENT_DESCRIPTION';
 
     /**
      * Gedcom content description.
@@ -32,22 +32,11 @@ class Note
     private $content;
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getNote(): string
+    public function getNote()
     {
-        return $this->note;
-    }
-
-    /**
-     * @param string $note
-     *
-     * @return self
-     */
-    public function setNote(string $note): self
-    {
-        $this->note = $note;
-        return $this;
+        return $this->getValue(self::TAG_GEDCOM_CONTENT_DESCRIPTION);
     }
 
     /**

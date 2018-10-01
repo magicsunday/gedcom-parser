@@ -19,252 +19,141 @@ use MagicSunday\Gedcom\Model\Common\ChangeDate;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Submission implements NoteInterface
+class Submission extends DataObject //implements NoteInterface
 {
     /**
-     * @var string
+     * A pointer to, or a cross-reference identifier of, a SUBmissioN record.
      */
-    private $submitter;
+    const TAG_XREF_SUBN = 'XREF:SUBN';
+
+    /**
+     * A pointer to, or a cross-reference identifier of, a SUBMitter record.
+     */
+    const TAG_SUBM = 'SUBM';
 
     /**
      * Name under which family names for ordinances are stored in the temple's family file.
-     *
-     * @var string
      */
-    private $familyFile;
+    const TAG_FAMF = 'FAMF';
 
     /**
      * An abbreviation of the temple in which LDS temple ordinances were performed.
-     *
-     * @var string
      */
-    private $templeCode;
+    const TAG_TEMP = 'TEMP';
 
     /**
      * The number of generations of ancestors included in this transmission. This value is usually provided
      * when FamilySearch programs build a GEDCOM file for a patron requesting a download of ancestors.
-     *
-     * @var string
      */
-    private $ancestorGenerations;
+    const TAG_ANCE = 'ANCE';
 
     /**
      * The number of generations of descendants included in this transmission. This value is usually provided
      * when FamilySearch programs build a GEDCOM file for a patron requesting a download of descendants.
-     *
-     * @var string
      */
-    private $descendantGenerations;
+    const TAG_DESC = 'DESC';
 
     /**
      * A flag that indicates whether submission should be processed for clearing temple ordinances.
-     *
-     * @var bool
      */
-    private $ordinanceFlag;
+    const TAG_ORDI = 'ORDI';
 
     /**
      * A unique record identification number assigned to the record by the source system. This number is
      * intended to serve as a more sure means of identification of a record for reconciling differences in data
      * between two interfacing systems.
-     *
-     * @var string
      */
-    private $recordIdentificationNumber;
+    const TAG_RIN  = 'RIN';
 
     /**
      * A list of assigned notes.
-     *
-     * @var array
      */
-    private $notes = [];
+    const TAG_NOTE = 'NOTE';
 
     /**
      * The change date is intended to only record the last change to a record. Some systems may want to
      * manage the change process with more detail, but it is sufficient for GEDCOM purposes to indicate
      * the last time that a record was modified.
-     *
-     * @var ChangeDate
      */
-    private $changeDate;
+    const TAG_CHAN = 'CHAN';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getSubmitter(): string
+    public function getSubmissionXref()
     {
-        return $this->submitter;
+        return $this->getValue(self::TAG_XREF_SUBN);
     }
 
     /**
-     * @param string $submitter
-     *
-     * @return self
+     * @return null|string
      */
-    public function setSubmitter(string $submitter): self
+    public function getSubmitterXref()
     {
-        $this->submitter = $submitter;
-        return $this;
+        return $this->getValue(self::TAG_SUBM);
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getFamilyFile(): string
+    public function getFamilyFile()
     {
-        return $this->familyFile;
+        return $this->getValue(self::TAG_FAMF);
     }
 
     /**
-     * @param string $familyFile
-     *
-     * @return self
+     * @return null|string
      */
-    public function setFamilyFile(string $familyFile): self
+    public function getTempleCode()
     {
-        $this->familyFile = $familyFile;
-        return $this;
+        return $this->getValue(self::TAG_TEMP);
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getTempleCode(): string
+    public function getAncestorGenerations()
     {
-        return $this->templeCode;
+        return $this->getValue(self::TAG_ANCE);
     }
 
     /**
-     * @param string $templeCode
-     *
-     * @return self
+     * @return null|string
      */
-    public function setTempleCode(string $templeCode): self
+    public function getDescendantGenerations()
     {
-        $this->templeCode = $templeCode;
-        return $this;
+        return $this->getValue(self::TAG_DESC);
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getAncestorGenerations(): string
+    public function getOrdinanceFlag()
     {
-        return $this->ancestorGenerations;
+        return $this->getValue(self::TAG_ORDI);
     }
 
     /**
-     * @param string $ancestorGenerations
-     *
-     * @return self
+     * @return null|string
      */
-    public function setAncestorGenerations(string $ancestorGenerations): self
+    public function getRecordIdentificationNumber()
     {
-        $this->ancestorGenerations = $ancestorGenerations;
-        return $this;
+        return $this->getValue(self::TAG_RIN);
     }
 
     /**
-     * @return string
+     * @return null|array
      */
-    public function getDescendantGenerations(): string
+    public function getNotes()
     {
-        return $this->descendantGenerations;
+        return $this->getValue(self::TAG_NOTE);
     }
 
     /**
-     * @param string $descendantGenerations
-     *
-     * @return self
+     * @return null|ChangeDate
      */
-    public function setDescendantGenerations(string $descendantGenerations): self
+    public function getChangeDate()
     {
-        $this->descendantGenerations = $descendantGenerations;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOrdinanceFlag(): bool
-    {
-        return $this->ordinanceFlag;
-    }
-
-    /**
-     * @param bool $ordinanceFlag
-     *
-     * @return self
-     */
-    public function setOrdinanceFlag(bool $ordinanceFlag): self
-    {
-        $this->ordinanceFlag = $ordinanceFlag;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRecordIdentificationNumber(): string
-    {
-        return $this->recordIdentificationNumber;
-    }
-
-    /**
-     * @param string $recordIdentificationNumber
-     *
-     * @return self
-     */
-    public function setRecordIdentificationNumber(string $recordIdentificationNumber): self
-    {
-        $this->recordIdentificationNumber = $recordIdentificationNumber;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getNotes(): array
-    {
-        return $this->notes;
-    }
-
-    /**
-     * @param array $notes
-     *
-     * @return self
-     */
-    public function setNotes(array $notes): self
-    {
-        $this->notes = $notes;
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addNote(Note $note): NoteInterface
-    {
-        $this->notes[] = $note;
-        return $this;
-    }
-
-    /**
-     * @return ChangeDate
-     */
-    public function getChangeDate(): ChangeDate
-    {
-        return $this->changeDate;
-    }
-
-    /**
-     * @param ChangeDate $changeDate
-     *
-     * @return self
-     */
-    public function setChangeDate(ChangeDate $changeDate): self
-    {
-        $this->changeDate = $changeDate;
-        return $this;
+        return $this->getValue(self::TAG_CHAN);
     }
 }

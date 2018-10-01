@@ -194,11 +194,11 @@ class Reader
     /**
      * Returns the identifier pointer if there is one.
      *
-     * @return string
+     * @return null|string
      */
-    public function identifier(): string
+    public function identifier()
     {
-        return $this->identifier;
+        return $this->identifier; // ?: null;
     }
 
     /**
@@ -214,20 +214,20 @@ class Reader
     /**
      * Returns the xref of the current line if there is one.
      *
-     * @return string
+     * @return null|string
      */
-    public function xref(): string
+    public function xref()
     {
-        return $this->xref;
+        return $this->xref ?: null;
     }
 
     /**
      * Returns the value of the current line if there is one.
      *
-     * @return string
+     * @return null|string
      */
-    public function value(): string
+    public function value()
     {
-        return $this->value;
+        return $this->value ?: null;
     }
 }

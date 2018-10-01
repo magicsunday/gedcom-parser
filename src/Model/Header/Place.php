@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Header;
 
+use MagicSunday\Gedcom\Model\DataObject;
+
 /**
  * A place structure.
  *
@@ -13,7 +15,7 @@ namespace MagicSunday\Gedcom\Model\Header;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Place
+class Place extends DataObject
 {
     /**
      * This shows the jurisdictional entities that are named in a sequence from the lowest to the highest
@@ -24,27 +26,14 @@ class Place
      * is subordinate to an event, it temporarily overrides the implications made by the PLAC.FORM
      * structure stated in the HEADER. This usage is not common and, therefore, not encouraged. It should
      * only be used when a system has over-structured its place-names.
-     *
-     * @var string
      */
-    private $form;
+    const TAG_FORM = 'FORM';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getForm(): string
+    public function getForm()
     {
-        return $this->form;
-    }
-
-    /**
-     * @param string $form
-     *
-     * @return self
-     */
-    public function setForm(string $form): self
-    {
-        $this->form = $form;
-        return $this;
+        return $this->getValue(self::TAG_FORM);
     }
 }

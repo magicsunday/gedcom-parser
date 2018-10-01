@@ -20,324 +20,159 @@ use MagicSunday\Gedcom\Model\Header\Source;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Header
+class Header extends DataObject
 {
     /**
      * The source.
-     *
-     * @var Source
      */
-    private $source;
+    const TAG_SOUR = 'SOUR';
 
     /**
      * The destination system name identifies the intended receiving system.
-     *
-     * @var string
      */
-    private $destination;
+    const TAG_DEST = 'DEST';
 
     /**
      * The date that this transmission was created.
-     *
-     * @var DateExact
      */
-    private $date;
+    const TAG_DATE = 'DATE';
 
     /**
      * The submitter identifier. The submitter record identifies an individual or organization that contributed
      * information contained in the GEDCOM transmission.
-     *
-     * @var string
      */
-    private $submitter;
+    const TAG_SUBM = 'SUBM';
 
     /**
      * The submission identifier. The sending system uses a submission record to send instructions and
      * information to the receiving system.
-     *
-     * @var string
      */
-    private $submission;
+    const TAG_SUBN = 'SUBN';
 
     /**
      * The name of the GEDCOM transmission file. If the file name includes a file extension it must be
      * shown in the form (filename.ext).
-     *
-     * @var string
      */
-    private $file;
+    const TAG_FILE = 'FILE';
 
     /**
      * A copyright statement needed to protect the copyrights of the submitter of this GEDCOM file.
-     *
-     * @var string
      */
-    private $copyright;
+    const TAG_COPR = 'COPR';
 
     /**
      * Information about the use of GEDCOM in a transmission.
-     *
-     * @var GedcomInfo
      */
-    private $gedcomInfo;
+    const TAG_GEDC = 'GEDC';
 
     /**
      * A code value that represents the character set to be used to interpret this data.
-     *
-     * @var CharacterSet
      */
-    private $characterSet;
+    const TAG_CHAR = 'CHAR';
 
     /**
      * The human language in which the data in the transmission is normally read or written.
-     *
-     * @var string
      */
-    private $language;
+    const TAG_LANG = 'LANG';
 
     /**
      * A place. This shows the jurisdictional entities that are named in a sequence from the lowest to the
      * highest jurisdiction.
-     *
-     * @var Place
      */
-    private $place;
+    const TAG_PLAC = 'PLAC';
 
     /**
      * A note that a user enters to describe the contents of the lineage-linked file in terms of
      * "ancestors or descendants of" so that the person receiving the data knows what genealogical
      * information the transmission contains.
-     *
-     * @var Note
      */
-    private $note;
+    const TAG_NOTE = 'NOTE';
 
     /**
-     * @return Source
+     * @return null|Source
      */
     public function getSource(): Source
     {
-        return $this->source;
+        return $this->getValue(self::TAG_SOUR);
     }
 
     /**
-     * @param Source $source
-     *
-     * @return self
+     * @return null|string
      */
-    public function setSource(Source $source): self
+    public function getDestination()
     {
-        $this->source = $source;
-
-        return $this;
+        return $this->getValue(self::TAG_DEST);
     }
 
     /**
-     * @return string
-     */
-    public function getDestination(): string
-    {
-        return $this->destination;
-    }
-
-    /**
-     * @param string $destination
-     *
-     * @return self
-     */
-    public function setDestination(string $destination): self
-    {
-        $this->destination = $destination;
-        return $this;
-    }
-
-    /**
-     * @return DateExact
+     * @return null|DateExact
      */
     public function getDate(): DateExact
     {
-        return $this->date;
+        return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @param DateExact $date
-     *
-     * @return self
+     * @return null|string
      */
-    public function setDate(DateExact $date): self
+    public function getSubmitter()
     {
-        $this->date = $date;
-        return $this;
+        return $this->getValue(self::TAG_SUBM);
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getSubmitter(): string
+    public function getSubmission()
     {
-        return $this->submitter;
+        return $this->getValue(self::TAG_SUBN);
     }
 
     /**
-     * @param string $submitter
-     *
-     * @return self
+     * @return null|string
      */
-    public function setSubmitter(string $submitter): self
+    public function getFile()
     {
-        $this->submitter = $submitter;
-        return $this;
+        return $this->getValue(self::TAG_FILE);
     }
 
     /**
-     * @return string
-     */
-    public function getSubmission(): string
-    {
-        return $this->submission;
-    }
-
-    /**
-     * @param string $submission
-     *
-     * @return self
-     */
-    public function setSubmission(string $submission): self
-    {
-        $this->submission = $submission;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFile(): string
-    {
-        return $this->file;
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return self
-     */
-    public function setFile(string $file): self
-    {
-        $this->file = $file;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCopyright(): string
-    {
-        return $this->copyright;
-    }
-
-    /**
-     * @param string $copyright
-     *
-     * @return self
-     */
-    public function setCopyright(string $copyright): self
-    {
-        $this->copyright = $copyright;
-        return $this;
-    }
-
-    /**
-     * @return GedcomInfo
+     * @return null|GedcomInfo
      */
     public function getGedcomInfo(): GedcomInfo
     {
-        return $this->gedcomInfo;
+        return $this->getValue(self::TAG_GEDC);
     }
 
     /**
-     * @param GedcomInfo $gedcomInfo
-     *
-     * @return self
-     */
-    public function setGedcomInfo(GedcomInfo $gedcomInfo): self
-    {
-        $this->gedcomInfo = $gedcomInfo;
-        return $this;
-    }
-
-    /**
-     * @return CharacterSet
+     * @return null|CharacterSet
      */
     public function getCharacterSet(): CharacterSet
     {
-        return $this->characterSet;
+        return $this->getValue(self::TAG_CHAR);
     }
 
     /**
-     * @param CharacterSet $characterSet
-     *
-     * @return self
+     * @return null|string
      */
-    public function setCharacterSet(CharacterSet $characterSet): self
+    public function getLanguage()
     {
-        $this->characterSet = $characterSet;
-        return $this;
+        return $this->getValue(self::TAG_LANG);
     }
 
     /**
-     * @return string
-     */
-    public function getLanguage(): string
-    {
-        return $this->language;
-    }
-
-    /**
-     * @param string $language
-     *
-     * @return self
-     */
-    public function setLanguage(string $language): self
-    {
-        $this->language = $language;
-        return $this;
-    }
-
-    /**
-     * @return Place
+     * @return null|Place
      */
     public function getPlace(): Place
     {
-        return $this->place;
+        return $this->getValue(self::TAG_PLAC);
     }
 
     /**
-     * @param Place $place
-     *
-     * @return self
-     */
-    public function setPlace(Place $place): self
-    {
-        $this->place = $place;
-        return $this;
-    }
-
-    /**
-     * @return Note
+     * @return null|Note
      */
     public function getNote(): Note
     {
-        return $this->note;
-    }
-
-    /**
-     * @param Note $note
-     *
-     * @return self
-     */
-    public function setNote(Note $note): self
-    {
-        $this->note = $note;
-        return $this;
+        return $this->getValue(self::TAG_NOTE);
     }
 }

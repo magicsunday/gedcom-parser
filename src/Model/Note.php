@@ -15,4 +15,33 @@ namespace MagicSunday\Gedcom\Model;
  */
 class Note
 {
+    /**
+     * The identifier.
+     *
+     * @var string
+     */
+    private $xref;
+
+    /**
+     * Returns the XREF.
+     *
+     * @return string
+     */
+    public function getXref(): string
+    {
+        return $this->xref;
+    }
+
+    /**
+     * Sets the XREF.
+     *
+     * @param string $xref The XREF
+     *
+     * @return self
+     */
+    public function setXref(string $xref): self
+    {
+        $this->xref = $xref;
+        return $this;
+    }
 }

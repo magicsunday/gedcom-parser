@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Header;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Header\GedcomInfo as GedcomInfoModel;
+use MagicSunday\Gedcom\Parser\Common;
 
 /**
  * A GEDC parser.
@@ -19,6 +20,17 @@ use MagicSunday\Gedcom\Model\Header\GedcomInfo as GedcomInfoModel;
 class GedcomInfo extends AbstractParser
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            GedcomInfoModel::TAG_VERS => Common::class,
+            GedcomInfoModel::TAG_FORM => Common::class,
+        ];
+    }
+
+    /**
      * Parses a GEDC block.
      *
      * @return GedcomInfoModel
@@ -27,17 +39,7 @@ class GedcomInfo extends AbstractParser
     {
         $gedcomInfo = new GedcomInfoModel();
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case 'VERS':
-                    $gedcomInfo->setVersion($this->reader->value());
-                    break;
-
-                case 'FORM':
-                    $gedcomInfo->setForm($this->reader->value());
-                    break;
-            }
-        }
+        $this->process($gedcomInfo);
 
         return $gedcomInfo;
     }

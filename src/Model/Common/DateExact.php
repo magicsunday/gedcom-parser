@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use DateTime;
 use InvalidArgumentException;
+use MagicSunday\Gedcom\Model\DataObject;
 
 /**
  * A date.
@@ -16,10 +17,15 @@ use InvalidArgumentException;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class DateExact
+class DateExact extends DataObject
 {
     const DATE_FORMAT = 'd M Y';
     const TIME_FORMAT = 'H:i:s.u';
+
+    /**
+     * The time of a specific event, usually a computer-timed event.
+     */
+    const TAG_TIME = 'TIME';
 
     /**
      * The date/time.
