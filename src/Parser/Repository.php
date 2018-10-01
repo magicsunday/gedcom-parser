@@ -10,7 +10,7 @@ use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Repository as RepositoryModel;
 
 /**
- * A REPO parser.
+ * A REPO record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Model\Repository as RepositoryModel;
 class Repository extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
@@ -35,12 +35,9 @@ class Repository extends AbstractParser
     public function parse(): RepositoryModel
     {
         $repository = new RepositoryModel();
-        $repository->setXref($this->reader->identifier());
+//        $repository->setXref($this->reader->identifier());
 
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-            }
-        }
+        $this->process($repository);
 
         return $repository;
     }

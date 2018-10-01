@@ -8,11 +8,11 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Submission as SubmissionModel;
-use MagicSunday\Gedcom\Parser\Common\ChangeDate;
-use MagicSunday\Gedcom\Parser\Common\NoteStructure;
+use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
+use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 
 /**
- * A SUBN parser.
+ * A SUBN record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -21,7 +21,7 @@ use MagicSunday\Gedcom\Parser\Common\NoteStructure;
 class Submission extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
@@ -34,7 +34,7 @@ class Submission extends AbstractParser
             SubmissionModel::TAG_ORDI => Common::class,
             SubmissionModel::TAG_RIN  => Common::class,
             SubmissionModel::TAG_NOTE => NoteStructure::class,
-            SubmissionModel::TAG_CHAN => ChangeDate::class,
+            SubmissionModel::TAG_CHAN => ChangeDateStructure::class,
         ];
     }
 

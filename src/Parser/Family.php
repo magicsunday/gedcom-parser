@@ -11,7 +11,7 @@ use MagicSunday\Gedcom\Model\Family as FamilyModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 
 /**
- * A FAM parser.
+ * A FAM record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -20,7 +20,7 @@ use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 class Family extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {

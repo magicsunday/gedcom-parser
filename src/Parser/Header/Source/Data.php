@@ -21,12 +21,14 @@ use MagicSunday\Gedcom\Parser\Common\DateExact;
 class Data extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
         return [
             DataModel::TAG_DATE => DateExact::class,
+
+            // TODO Handle CONT|CONC
             DataModel::TAG_COPR => Common::class,
         ];
     }

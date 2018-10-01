@@ -22,16 +22,6 @@ class DataObject implements ArrayAccess
      */
     private $data;
 
-//    /**
-//     * DataObject constructor.
-//     *
-//     * @param array $data
-//     */
-//    public function __construct(array $data = [])
-//    {
-//        $this->data = $data;
-//    }
-
     /**
      * @param string $key
      *
@@ -64,7 +54,7 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function offsetSet($offset, $value)
     {
@@ -72,7 +62,7 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function offsetExists($offset): bool
     {
@@ -80,7 +70,7 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function offsetUnset($offset)
     {
@@ -88,7 +78,7 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function offsetGet($offset)
     {

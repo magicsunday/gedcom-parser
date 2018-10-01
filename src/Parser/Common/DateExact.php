@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Common\DateExact as DateExactModel;
+use MagicSunday\Gedcom\Parser\Common;
 
 /**
  * A DATE_EXACT parser.
@@ -19,11 +20,13 @@ use MagicSunday\Gedcom\Model\Common\DateExact as DateExactModel;
 class DateExact extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
-        return [];
+        return [
+            DateExactModel::TAG_TIME => Common::class,
+        ];
     }
 
     /**
@@ -33,17 +36,11 @@ class DateExact extends AbstractParser
      */
     public function parse(): DateExactModel
     {
-        $date = new DateExactModel($this->reader->value());
+        $dateExact = new DateExactModel();
+        $dateExact->setValue(DateExactModel::TAG_DATE_EXACT, $this->reader->value());
 
-        // TODO Put also in data array
-        while ($this->reader->read() && $this->valid()) {
-            switch ($this->reader->tag()) {
-                case DateExactModel::TAG_TIME:
-                    $date->setTime($this->reader->value());
-                    break;
-            }
-        }
+        $this->process($dateExact);
 
-        return $date;
+        return $dateExact;
     }
 }

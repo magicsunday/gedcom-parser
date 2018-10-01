@@ -6,10 +6,12 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Model\Common\ChangeDate;
-use MagicSunday\Gedcom\Model\Common\NoteStructure;
-use MagicSunday\Gedcom\Model\Individual\Event;
-use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure;
+use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualInterface;
+use MagicSunday\Gedcom\Traits\ChangeDate;
+use MagicSunday\Gedcom\Traits\MultimediaLink;
+use MagicSunday\Gedcom\Traits\NoteStructure;
+use MagicSunday\Gedcom\Traits\SourceCitation;
 
 /**
  * The individual model.
@@ -19,47 +21,23 @@ use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 class Individual extends DataObject
+    implements IndividualInterface
+//        ChangeDateInterface,
+//        NoteStructureInterface
+//        PersonalNameStructureInterface
+//        IndividualEventStructureInterface,
+//        IndividualAttributeStructureInterface,
+//        LdsIndividualOrdinanceInterface,
+//        NoteStructureInterface,
+//        SourceCitationInterface,
+//        MultimediaLinkInterface
 {
-    const TAG_XREF_INDI = 'XREF:INDI';
+//    use \MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure;
 
-    const TAG_NAME = 'NAME';
-
-//    /**
-//     * The identifier.
-//     *
-//     * @var string
-//     */
-//    private $xref;
-//
-//    /**
-//     * A list of names.
-//     *
-//     * @var Name[]
-//     */
-//    private $names = [];
-//
-//    /**
-//     * A list of event.
-//     *
-//     * @var Event[]
-//     */
-//    private $events = [];
-//
-//    /**
-//     * The change date is intended to only record the last change to a record. Some systems may want to
-//     * manage the change process with more detail, but it is sufficient for GEDCOM purposes to indicate
-//     * the last time that a record was modified.
-//     *
-//     * @var ChangeDate
-//     */
-//    private $changeDate;
-//
-//    /**
-//     * A list of notes.
-//     *
-//     * @var NoteStructure[]
-//     */
-//    private $notes = [];
+    use ChangeDate;
+    use MultimediaLink;
+    use NoteStructure;
+    use SourceCitation;
 
     /**
      * Returns the XREF.
@@ -71,93 +49,83 @@ class Individual extends DataObject
         return $this->getValue(self::TAG_XREF_INDI);
     }
 
-//    /**
-//     * Sets the XREF.
-//     *
-//     * @param string $xref The XREF
-//     *
-//     * @return self
-//     */
-//    public function setXref(string $xref): self
-//    {
-//        $this->xref = $xref;
-//        return $this;
-//    }
+    /**
+     * @inheritDoc
+     */
+    public function getRestrictionNotice()
+    {
+        // TODO: Implement getRestrictionNotice() method.
+    }
 
     /**
-     * @return PersonalNameStructure[]
+     * @inheritDoc
+     */
+    public function getSex()
+    {
+        // TODO: Implement getSex() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSubmitterXref()
+    {
+        // TODO: Implement getSubmitterXref() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAliasXref()
+    {
+        // TODO: Implement getAliasXref() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAncestorInterest()
+    {
+        // TODO: Implement getAncestorInterest() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDescendantInterest()
+    {
+        // TODO: Implement getDescendantInterest() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRecordFileNumber()
+    {
+        // TODO: Implement getRecordFileNumber() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAncestralFileNumber()
+    {
+        // TODO: Implement getAncestralFileNumber() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRecordIdNumber()
+    {
+        // TODO: Implement getRecordIdNumber() method.
+    }
+
+    /**
+     * @return null|PersonalNameStructureInterface[]
      */
     public function getNames()
     {
         return $this->getValue(self::TAG_NAME);
     }
-
-//    /**
-//     * @param Name $name
-//     *
-//     * @return self
-//     */
-//    public function addName(Name $name): self
-//    {
-//        $this->names[] = $name;
-//        return $this;
-//    }
-//
-//    /**
-//     * @return Event[]
-//     */
-//    public function getEvents(): array
-//    {
-//        return $this->events;
-//    }
-//
-//    /**
-//     * @param Event $event
-//     *
-//     * @return self
-//     */
-//    public function addEvent(Event $event): self
-//    {
-//        $this->events[] = $event;
-//        return $this;
-//    }
-//
-    /**
-     * @return ChangeDate
-     */
-    public function getChangeDate(): ChangeDate
-    {
-        return $this->getData('CHAN');
-//        return $this->changeDate;
-    }
-
-//    /**
-//     * @param ChangeDate $changeDate
-//     *
-//     * @return self
-//     */
-//    public function setChangeDate(ChangeDate $changeDate): self
-//    {
-//        $this->changeDate = $changeDate;
-//        return $this;
-//    }
-//
-//    /**
-//     * @return NoteStructure[]
-//     */
-//    public function getNotes(): array
-//    {
-//        return $this->notes;
-//    }
-//
-//    /**
-//     * @param NoteStructure $note
-//     *
-//     * @return self
-//     */
-//    public function addNote(NoteStructure $note): self
-//    {
-//        $this->notes[] = $note;
-//        return $this;
-//    }
 }

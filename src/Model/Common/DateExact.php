@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model\Common;
 
 use DateTime;
-use InvalidArgumentException;
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
 /**
@@ -17,84 +17,67 @@ use MagicSunday\Gedcom\Model\DataObject;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class DateExact extends DataObject
+class DateExact extends DataObject implements DateExactInterface
 {
     const DATE_FORMAT = 'd M Y';
     const TIME_FORMAT = 'H:i:s.u';
 
     /**
-     * The time of a specific event, usually a computer-timed event.
+     * @inheritDoc
      */
-    const TAG_TIME = 'TIME';
-
-    /**
-     * The date/time.
-     *
-     * @var DateTime
-     */
-    private $dateTime;
-
-    /**
-     * Date constructor.
-     *
-     * @param string $date The date
-     */
-    public function __construct(string $date)
+    public function getDate()
     {
-        $this->setDate($date);
+        return $this->getValue(self::TAG_DATE_EXACT);
     }
 
     /**
-     * Returns the formatted date.
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getDate(): string
+    public function getTime()
     {
-        return $this->dateTime->format(self::DATE_FORMAT);
+        return $this->getValue(self::TAG_TIME);
     }
 
     /**
-     * Sets the date.
-     *
-     * @param string $date The date
-     *
-     * @return self
-     * @throws InvalidArgumentException
+     * @inheritDoc
      */
-    public function setDate(string $date): self
+    public function getDateTime()
+    {
+        $dateTime = $this->createDateFromFormat($this->getDate());
+
+        if ($dateTime !== false) {
+            $dateTime = $this->createTimeFromFormat($dateTime, $this->getTime());
+        }
+
+        return $dateTime;
+    }
+
+    /**
+     * @param string $date
+     *
+     * @return bool|DateTime
+     */
+    private function createDateFromFormat(string $date)
     {
         $dateTime = DateTime::createFromFormat(self::DATE_FORMAT, $date);
 
-        if ($dateTime === false) {
-            throw new InvalidArgumentException('Failed to parse date. Required format: d M Y');
+        if ($dateTime !== false) {
+            // Unset time
+            $dateTime->setTime(0, 0);
         }
 
-        // Unset time
-        $this->dateTime = $dateTime;
-        $this->dateTime->setTime(0, 0);
-
-        return $this;
+        return $dateTime;
     }
 
     /**
-     * Returns the formatted time.
+     * Add the time component.
      *
-     * @return string
+     * @param DateTime $dateTime
+     * @param string   $time
+     *
+     * @return DateTime
      */
-    public function getTime(): string
-    {
-        return $this->dateTime->format(self::TIME_FORMAT);
-    }
-
-    /**
-     * Sets the time.
-     *
-     * @param string $time The time
-     *
-     * @return self
-     */
-    public function setTime(string $time): self
+    private function createTimeFromFormat(DateTime $dateTime, string $time): DateTime
     {
         // Fraction part
         if (($fractionPos = strpos($time, '.')) !== false) {
@@ -111,12 +94,12 @@ class DateExact extends DataObject
         }
 
         // TODO Add milliseconds part (available only in PHP7.1+)
-        $this->dateTime->setTime(
+        $dateTime->setTime(
             $timeParts[0],
             $timeParts[1],
             $timeParts[2]
         );
 
-        return $this;
+        return $dateTime;
     }
 }

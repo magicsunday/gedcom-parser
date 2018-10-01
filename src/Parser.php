@@ -9,10 +9,12 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Parser\Family;
 use MagicSunday\Gedcom\Parser\Header;
 use MagicSunday\Gedcom\Parser\Individual;
+use MagicSunday\Gedcom\Parser\NoteRecord;
 use MagicSunday\Gedcom\Parser\Submission;
 use MagicSunday\Gedcom\Parser\Submitter;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 
 /**
  * A gedcom 5.5.1 parser.
@@ -48,11 +50,25 @@ class Parser
         $gedcom = new Gedcom();
 
         while ($reader->read()) {
+            if ($reader->level() !== 0) {
+                continue;
+            }
+
             switch ($reader->tag()) {
                 // Header
                 case 'HEAD':
                     $headerParser = new Header($reader, $this->logger);
                     $gedcom->setHeader($headerParser->parse());
+
+                    if ($gedcom->getHeader()->getGedcomInfo()
+                        && ($gedcom->getHeader()->getGedcomInfo()->getVersion() !== '5.5.1')
+                    ) {
+                        // TODO Implement GEDCOM version check
+//                        throw new RuntimeException('Wrong gedcom version. Must be 5.5.1');
+                    }
+
+                    // TODO Use correct GEDCOM char encoding for reading the file
+
                     break;
 
                 // Submission record
@@ -61,26 +77,28 @@ class Parser
                     $gedcom->setSubmission($submissionParser->parse());
                     break;
 
-//                // Family record
-//                case 'FAM':
-//                    $familyParser = new Family($reader, $this->logger);
-//                    $gedcom->addFamily($familyParser->parse());
+////                // Family record
+////                case 'FAM':
+////                    $familyParser = new Family($reader, $this->logger);
+////                    $gedcom->addFamily($familyParser->parse());
+////                    break;
+//
+//                // Individual record
+//                case 'INDI':
+//                    $individualParser = new Individual($reader, $this->logger);
+//                    $gedcom->addIndividual($individualParser->parse());
 //                    break;
-
-                // Individual record
-                case 'INDI':
-                    $individualParser = new Individual($reader, $this->logger);
-                    $gedcom->addIndividual($individualParser->parse());
-                    break;
 
 //                // Multimedia record
 //                case 'OBJE':
 //                    break;
-//
-//                // Note record
-//                case 'NOTE':
-//                    break;
-//
+
+                // Note record
+                case 'NOTE':
+                    $noteParser = new NoteRecord($reader, $this->logger);
+                    $gedcom->addNote($noteParser->parse());
+                    break;
+
 //                // Repository record
 //                case 'REPO':
 //                    break;

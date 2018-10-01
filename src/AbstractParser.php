@@ -56,6 +56,7 @@ abstract class AbstractParser
     abstract public function parse();
 
     /**
+     * This map the GEDCOM tags to the proper parser classes.
      *
      * @return array
      */
@@ -122,11 +123,11 @@ abstract class AbstractParser
     /**
      * Returns the complete content of CONT and CONC.
      *
-     * @return string
+     * @return null|string
      */
-    protected function readContent(): string
+    protected function readContent()
     {
-        $content = '';
+        $content = $this->reader->value();
 
         while ($this->reader->read() && $this->valid()) {
             switch ($this->reader->tag()) {
@@ -143,6 +144,12 @@ abstract class AbstractParser
                 case 'CONC':
                     $content .= $this->reader->value();
                     break;
+
+                // Otherwise stop reading this block
+                default:
+                    // Go back one line
+                    $this->reader->back();
+                    break 2;
             }
         }
 

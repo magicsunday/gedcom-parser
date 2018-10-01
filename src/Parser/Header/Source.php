@@ -13,7 +13,7 @@ use MagicSunday\Gedcom\Parser\Header\Source\Corporation;
 use MagicSunday\Gedcom\Parser\Header\Source\Data;
 
 /**
- * A SOUR parser.
+ * A header SOUR parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -22,7 +22,7 @@ use MagicSunday\Gedcom\Parser\Header\Source\Data;
 class Source extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
@@ -35,7 +35,7 @@ class Source extends AbstractParser
     }
 
     /**
-     * Parses a SOUR block.
+     * Parses a header SOUR block.
      *
      * @return SourceModel
      */

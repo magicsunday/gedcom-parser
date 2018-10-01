@@ -11,12 +11,12 @@ use MagicSunday\Gedcom\Model\Header as HeaderModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 use MagicSunday\Gedcom\Parser\Header\CharacterSet;
 use MagicSunday\Gedcom\Parser\Header\GedcomInfo;
-use MagicSunday\Gedcom\Parser\Header\Note as NoteParser;
+use MagicSunday\Gedcom\Parser\Header\Note;
 use MagicSunday\Gedcom\Parser\Header\Place;
-use MagicSunday\Gedcom\Parser\Header\Source as SourceParser;
+use MagicSunday\Gedcom\Parser\Header\Source;
 
 /**
- * A HEAD parser.
+ * A HEAD record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -25,12 +25,12 @@ use MagicSunday\Gedcom\Parser\Header\Source as SourceParser;
 class Header extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
         return [
-            HeaderModel::TAG_SOUR => SourceParser::class,
+            HeaderModel::TAG_SOUR => Source::class,
             HeaderModel::TAG_DEST => Common::class,
             HeaderModel::TAG_DATE => DateExact::class,
             HeaderModel::TAG_SUBM => Common::class,
@@ -41,7 +41,7 @@ class Header extends AbstractParser
             HeaderModel::TAG_CHAR => CharacterSet::class,
             HeaderModel::TAG_LANG => Common::class,
             HeaderModel::TAG_PLAC => Place::class,
-            HeaderModel::TAG_NOTE => NoteParser::class,
+            HeaderModel::TAG_NOTE => Note::class,
         ];
     }
 

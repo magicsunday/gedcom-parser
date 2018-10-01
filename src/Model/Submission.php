@@ -6,7 +6,9 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Model\Common\ChangeDate;
+use MagicSunday\Gedcom\Interfaces\SubmissionInterface;
+use MagicSunday\Gedcom\Traits\Common\ChangeDate;
+use MagicSunday\Gedcom\Traits\Common\Note;
 
 /**
  * The sending system uses a submission record to send instructions and information to the receiving
@@ -19,66 +21,13 @@ use MagicSunday\Gedcom\Model\Common\ChangeDate;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Submission extends DataObject //implements NoteInterface
+class Submission extends DataObject implements SubmissionInterface
 {
-    /**
-     * A pointer to, or a cross-reference identifier of, a SUBmissioN record.
-     */
-    const TAG_XREF_SUBN = 'XREF:SUBN';
+    use Note;
+    use ChangeDate;
 
     /**
-     * A pointer to, or a cross-reference identifier of, a SUBMitter record.
-     */
-    const TAG_SUBM = 'SUBM';
-
-    /**
-     * Name under which family names for ordinances are stored in the temple's family file.
-     */
-    const TAG_FAMF = 'FAMF';
-
-    /**
-     * An abbreviation of the temple in which LDS temple ordinances were performed.
-     */
-    const TAG_TEMP = 'TEMP';
-
-    /**
-     * The number of generations of ancestors included in this transmission. This value is usually provided
-     * when FamilySearch programs build a GEDCOM file for a patron requesting a download of ancestors.
-     */
-    const TAG_ANCE = 'ANCE';
-
-    /**
-     * The number of generations of descendants included in this transmission. This value is usually provided
-     * when FamilySearch programs build a GEDCOM file for a patron requesting a download of descendants.
-     */
-    const TAG_DESC = 'DESC';
-
-    /**
-     * A flag that indicates whether submission should be processed for clearing temple ordinances.
-     */
-    const TAG_ORDI = 'ORDI';
-
-    /**
-     * A unique record identification number assigned to the record by the source system. This number is
-     * intended to serve as a more sure means of identification of a record for reconciling differences in data
-     * between two interfacing systems.
-     */
-    const TAG_RIN  = 'RIN';
-
-    /**
-     * A list of assigned notes.
-     */
-    const TAG_NOTE = 'NOTE';
-
-    /**
-     * The change date is intended to only record the last change to a record. Some systems may want to
-     * manage the change process with more detail, but it is sufficient for GEDCOM purposes to indicate
-     * the last time that a record was modified.
-     */
-    const TAG_CHAN = 'CHAN';
-
-    /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getSubmissionXref()
     {
@@ -86,7 +35,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getSubmitterXref()
     {
@@ -94,7 +43,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getFamilyFile()
     {
@@ -102,7 +51,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getTempleCode()
     {
@@ -110,7 +59,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getAncestorGenerations()
     {
@@ -118,7 +67,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getDescendantGenerations()
     {
@@ -126,7 +75,7 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getOrdinanceFlag()
     {
@@ -134,26 +83,10 @@ class Submission extends DataObject //implements NoteInterface
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
-    public function getRecordIdentificationNumber()
+    public function getRecordIdNumber()
     {
         return $this->getValue(self::TAG_RIN);
-    }
-
-    /**
-     * @return null|array
-     */
-    public function getNotes()
-    {
-        return $this->getValue(self::TAG_NOTE);
-    }
-
-    /**
-     * @return null|ChangeDate
-     */
-    public function getChangeDate()
-    {
-        return $this->getValue(self::TAG_CHAN);
     }
 }

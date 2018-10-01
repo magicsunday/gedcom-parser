@@ -198,7 +198,7 @@ class Reader
      */
     public function identifier()
     {
-        return $this->identifier; // ?: null;
+        return $this->identifier;
     }
 
     /**
@@ -218,7 +218,7 @@ class Reader
      */
     public function xref()
     {
-        return $this->xref ?: null;
+        return ($this->xref !== '') ? $this->xref : null;
     }
 
     /**
@@ -228,6 +228,6 @@ class Reader
      */
     public function value()
     {
-        return $this->value ?: null;
+        return ($this->value !== '') ? $this->value : null;
     }
 }

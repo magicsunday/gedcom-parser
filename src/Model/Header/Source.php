@@ -6,9 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Header;
 
+use MagicSunday\Gedcom\Interfaces\Header\SourceInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use \MagicSunday\Gedcom\Model\Header\Source\Corporation;
-use \MagicSunday\Gedcom\Model\Header\Source\Data;
 
 /**
  * The source structure.
@@ -17,38 +16,10 @@ use \MagicSunday\Gedcom\Model\Header\Source\Data;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Source extends DataObject
+class Source extends DataObject implements SourceInterface
 {
     /**
-     * A system identification name which was obtained through the GEDCOM registration process. This
-     * name must be unique from any other product. Spaces within the name must be substituted with a 0x5F
-     * (underscore _) so as to create one word.
-     */
-    const TAG_APPROVED_SYSTEM_ID = 'APPROVED_SYSTEM_ID';
-
-    /**
-     * An identifier that represents the version level assigned to the associated product. It is defined and
-     * changed by the creators of the product.
-     */
-    const TAG_VERS = 'VERS';
-
-    /**
-     * The name of the software product that produced this transmission.
-     */
-    const TAG_NAME = 'NAME';
-
-    /**
-     * The corporation structure.
-     */
-    const TAG_CORP = 'CORP';
-
-    /**
-     * The data structure.
-     */
-    const TAG_DATA = 'DATA';
-
-    /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getApprovedSystemId()
     {
@@ -56,7 +27,7 @@ class Source extends DataObject
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getVersion()
     {
@@ -64,7 +35,7 @@ class Source extends DataObject
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getName()
     {
@@ -72,17 +43,17 @@ class Source extends DataObject
     }
 
     /**
-     * @return null|Corporation
+     * @inheritDoc
      */
-    public function getCorporation(): Corporation
+    public function getCorporation()
     {
         return $this->getValue(self::TAG_CORP);
     }
 
     /**
-     * @return null|Data
+     * @inheritDoc
      */
-    public function getData(): Data
+    public function getData()
     {
         return $this->getValue(self::TAG_DATA);
     }

@@ -18,7 +18,7 @@ use MagicSunday\Gedcom\AbstractParser;
 class Common extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {

@@ -7,11 +7,12 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser\Individual;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure as PersonalNameStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure\PersonalNamePieces;
-use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure\Phonetic;
-use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure\Romanized;
+use MagicSunday\Gedcom\Parser\Individual\Name\NamePhoneticVariation;
+use MagicSunday\Gedcom\Parser\Individual\Name\NameRomanizedVariation;
+use MagicSunday\Gedcom\Parser\Individual\Name\PersonalNamePieces;
 
 /**
  * The personal name structure (PERSONAL_NAME_STRUCTURE) parser.
@@ -23,15 +24,15 @@ use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure\Romanized;
 class PersonalNameStructure extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
         return PersonalNamePieces::getClassMap()
-           + [
+            + [
                 PersonalNameStructureModel::TAG_TYPE => Common::class,
-                PersonalNameStructureModel::TAG_FONE => Phonetic::class,
-                PersonalNameStructureModel::TAG_ROMN => Romanized::class,
+                PersonalNameStructureModel::TAG_FONE => NamePhoneticVariation::class,
+                PersonalNameStructureModel::TAG_ROMN => NameRomanizedVariation::class,
             ];
     }
 
@@ -42,7 +43,7 @@ class PersonalNameStructure extends AbstractParser
     public function parse(): PersonalNameStructureModel
     {
         $personalNameStructure = new PersonalNameStructureModel();
-        $personalNameStructure->setValue(PersonalNameStructureModel::TAG_NAME_PERSONAL, $this->reader->value());
+        $personalNameStructure->setValue(PersonalNameStructureInterface::TAG_NAME_PERSONAL, $this->reader->value());
 
         $this->process($personalNameStructure);
 

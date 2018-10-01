@@ -9,11 +9,10 @@ namespace MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Submitter as SubmitterModel;
 use MagicSunday\Gedcom\Parser\Common\Address;
-use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 
 /**
- * A SUBM parser.
+ * A SUBM record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -22,7 +21,7 @@ use MagicSunday\Gedcom\Parser\Common\ChangeDate;
 class Submitter extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {

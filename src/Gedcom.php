@@ -10,6 +10,8 @@ use MagicSunday\Gedcom\Model\Family;
 use MagicSunday\Gedcom\Model\Media;
 use MagicSunday\Gedcom\Model\Header;
 use MagicSunday\Gedcom\Model\Individual;
+use MagicSunday\Gedcom\Model\MultimediaLink;
+use MagicSunday\Gedcom\Model\NoteRecord;
 use MagicSunday\Gedcom\Model\Submission;
 use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\Repository;
@@ -56,14 +58,14 @@ class Gedcom
     /**
      * A list of medias.
      *
-     * @var Media[]
+     * @var MultimediaLink[]
      */
     private $medias = [];
 
     /**
      * A list of notes.
      *
-     * @var Note[]
+     * @var NoteRecord[]
      */
     private $notes = [];
 
@@ -108,9 +110,9 @@ class Gedcom
     }
 
     /**
-     * @return Submission
+     * @return null|Submission
      */
-    public function getSubmission(): Submission
+    public function getSubmission()
     {
         return $this->submission;
     }
@@ -188,7 +190,7 @@ class Gedcom
     }
 
     /**
-     * @return Note[]
+     * @return NoteRecord[]
      */
     public function getNotes(): array
     {
@@ -196,13 +198,26 @@ class Gedcom
     }
 
     /**
-     * @param Note[] $notes
+     * @param NoteRecord[] $notes
      *
      * @return self
      */
     public function setNotes(array $notes): self
     {
         $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * Adds an note to the list.
+     *
+     * @param NoteRecord $note
+     *
+     * @return self
+     */
+    public function addNote(NoteRecord $note): self
+    {
+        $this->notes[] = $note;
         return $this;
     }
 

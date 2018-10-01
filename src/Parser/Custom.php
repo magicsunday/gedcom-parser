@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Model\Custom as CustomModel;
 class Custom extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
@@ -34,7 +34,10 @@ class Custom extends AbstractParser
     public function parse(): CustomModel
     {
         $data = new CustomModel();
-        $data->setValue('VALUE', $this->reader->value());
+        $data->setValue(
+            'VALUE',
+            $this->reader->xref() ?? $this->reader->value()
+        );
 
         while ($this->reader->read() && $this->valid()) {
             $data->setValue($this->reader->tag(), $this->reader->value());

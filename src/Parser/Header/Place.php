@@ -20,7 +20,7 @@ use MagicSunday\Gedcom\Parser\Common;
 class Place extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {

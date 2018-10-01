@@ -7,9 +7,10 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser\Header\Source;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
 use MagicSunday\Gedcom\Model\Header\Source\Corporation as CorporationModel;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\Common\Address;
+use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 
 /**
  * A CORP parser.
@@ -21,16 +22,16 @@ use MagicSunday\Gedcom\Parser\Common\Address;
 class Corporation extends AbstractParser
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getClassMap(): array
     {
         return [
-            CorporationModel::TAG_ADDR  => Address::class,
-            CorporationModel::TAG_PHON  => Common::class,
-            CorporationModel::TAG_EMAIL => Common::class,
-            CorporationModel::TAG_FAX   => Common::class,
-            CorporationModel::TAG_WWW   => Common::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
         ];
     }
 

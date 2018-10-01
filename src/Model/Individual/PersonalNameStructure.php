@@ -5,50 +5,27 @@ declare(strict_types=1);
  */
 namespace MagicSunday\Gedcom\Model\Individual;
 
-use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure\PersonalNamePieces;
+use MagicSunday\Gedcom\Interfaces\Individual\Name\NamePhoneticVariationInterface;
+use MagicSunday\Gedcom\Interfaces\Individual\Name\NameRomanizedVariationInterface;
+use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Model\Individual\Name\PersonalNamePieces;
 
 /**
- * The personal name structure.
+ * The personal name structure model.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class PersonalNameStructure extends PersonalNamePieces
+class PersonalNameStructure extends PersonalNamePieces implements PersonalNameStructureInterface
 {
     /**
-     * The name.
+     * @return null|string
      */
-    const TAG_NAME_PERSONAL = 'NAME_PERSONAL';
-
-    /**
-     * Indicates the name type, for example the name issued or assumed as an immigrant.
-     *
-     * aka          = also known as, alias, etc.
-     * birth        = name given on birth certificate
-     * immigrant    = name assumed at the time of immigration
-     * maiden       = maiden name, name before first marriage
-     * married      = name was persons previous married name
-     * user_defined = other text name that defines the name type
-     */
-    const TAG_TYPE = 'TYPE';
-
-    /**
-     * The phonetic variation of the name is written in the same form as the was the name used in the
-     * superior <NAME_PERSONAL> primitive, but phonetically written using the method indicated by the
-     * subordinate <PHONETIC_TYPE> value, for example if hiragana was used to provide a reading of a
-     * name written in kanji, then the <PHONETIC_TYPE> value would indicate ‘kana’.
-     */
-    const TAG_FONE = 'FONE';
-
-    /**
-     * The romanized variation of the name is written in the same form prescribed for the name used in the
-     * superior <NAME_PERSONAL> context. The method used to romanize the name is indicated by the
-     * line_value of the subordinate <ROMANIZED_TYPE>, for example if romaji was used to provide a
-     * reading of a name written in kanji, then the ROMANIZED_TYPE subordinate to the ROMN tag
-     * would indicate romaji.
-     */
-    const TAG_ROMN = 'ROMN';
+    public function getName()
+    {
+        return $this->getValue(self::TAG_NAME_PERSONAL);
+    }
 
     /**
      * @return null|string
@@ -59,7 +36,7 @@ class PersonalNameStructure extends PersonalNamePieces
     }
 
     /**
-     * @return null|string
+     * @return null|NamePhoneticVariationInterface
      */
     public function getPhoneticVariation()
     {
@@ -67,7 +44,7 @@ class PersonalNameStructure extends PersonalNamePieces
     }
 
     /**
-     * @return null|string
+     * @return null|NameRomanizedVariationInterface
      */
     public function getRomanizedVariation()
     {
