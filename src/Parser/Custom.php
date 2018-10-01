@@ -7,15 +7,16 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Model\Custom as CustomModel;
 
 /**
- * A common parser.
+ * A custom GEDCOM tag parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Common extends AbstractParser
+class Custom extends AbstractParser
 {
     /**
      * {@inheritdoc}
@@ -26,12 +27,19 @@ class Common extends AbstractParser
     }
 
     /**
-     * Parses a common block.
+     * Parses a custom block.
      *
-     * @return string
+     * @return CustomModel
      */
-    public function parse(): string
+    public function parse(): CustomModel
     {
-        return $this->reader->xref() ?? $this->reader->value();
+        $data = new CustomModel();
+        $data->setValue('VALUE', $this->reader->value());
+
+        while ($this->reader->read() && $this->valid()) {
+            $data->setValue($this->reader->tag(), $this->reader->value());
+        }
+
+        return $data;
     }
 }

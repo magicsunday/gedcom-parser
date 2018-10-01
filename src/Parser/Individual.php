@@ -8,9 +8,7 @@ namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Individual as IndividualModel;
-use MagicSunday\Gedcom\Parser\Common\ChangeDate;
-use MagicSunday\Gedcom\Parser\Common\NoteStructure;
-use MagicSunday\Gedcom\Parser\Individual\Event;
+use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure;
 
 /**
  * A INDI parser.
@@ -27,6 +25,14 @@ class Individual extends AbstractParser
     protected function getClassMap(): array
     {
         return [
+//            'RESN' => Common::class,
+
+            // Personal name structure
+            IndividualModel::TAG_NAME => PersonalNameStructure::class,
+
+//            'SEX'  => Common::class,
+
+            // Events
 //            'BIRT' => Birth::class,
 //            'ADOP' => Adoption::class,
 //            'CHR'  => Christening::class,
@@ -52,6 +58,31 @@ class Individual extends AbstractParser
 //            'WILL' => Event::class,
 //            'NOTE' => NoteStructure::class,
 //            'CHAN' => ChangeDate::class,
+
+            // Attributes
+
+            // LDS
+
+            // Child to family link
+
+            // Spouse to family link
+
+//            'SUBM' => Common::class,
+
+            // Association structure
+
+//            'ALIA' => Common::class,
+//            'ANCI' => Common::class,
+//            'DESI' => Common::class,
+//            'RFN'  => Common::class,
+//            'AFN'  => Common::class,
+//            'REFN' => UserReferenceNumber::class,
+
+//            'RIN'  => Common::class,
+//            'CHAN' => ChangeDate::class,
+//            'NOTE' => NoteStructure::class,
+//            'SOUR' => SourceCitation::class,
+//            'OBJE' => Media::class,
         ];
     }
 
@@ -63,7 +94,7 @@ class Individual extends AbstractParser
     public function parse(): IndividualModel
     {
         $individual = new IndividualModel();
-//        $individual->setXref($this->reader->identifier());
+        $individual->setValue(IndividualModel::TAG_XREF_INDI, $this->reader->identifier());
 
         $this->process($individual);
 

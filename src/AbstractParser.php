@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Model\DataObject;
+use MagicSunday\Gedcom\Parser\Custom;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -85,7 +86,12 @@ abstract class AbstractParser
     {
         while ($this->reader->read() && $this->valid()) {
             $gedcomTag = $this->reader->tag();
-            $subParser = $this->create($gedcomTag);
+
+            if (strpos($gedcomTag, '_') === 0) {
+                $subParser = new Custom($this->reader, $this->logger);
+            } else {
+                $subParser = $this->create($gedcomTag);
+            }
 
             if ($subParser) {
                 $object->setValue($gedcomTag, $subParser->parse());

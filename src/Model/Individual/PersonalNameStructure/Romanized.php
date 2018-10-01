@@ -1,11 +1,9 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * See LICENSE.md file for further details.
  */
-namespace MagicSunday\Gedcom\Model\Individual\Name;
-
-use MagicSunday\Gedcom\Model\Individual\NamePieces;
+namespace MagicSunday\Gedcom\Model\Individual\PersonalNameStructure;
 
 /**
  * The romanized variation of the name is written in the same form prescribed for the name used in the
@@ -18,8 +16,13 @@ use MagicSunday\Gedcom\Model\Individual\NamePieces;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Romanized extends NamePieces
+class Romanized extends PersonalNamePieces
 {
+    /**
+     * The romanized variation of the name.
+     */
+    const TAG_NAME_ROMANIZED_VARIATION = 'NAME_ROMANIZED_VARIATION';
+
     /**
      * Indicates the method used in transforming the text to a romanized variation.
      *
@@ -27,41 +30,22 @@ class Romanized extends NamePieces
      * - pinyin
      * - romaji
      * - wadegiles
-     *
-     * @var string
      */
-    private $type;
+    const TAG_TYPE = 'TYPE';
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getType(): string
+    public function getNameVariation()
     {
-        return $this->type;
+        return $this->getValue(self::TAG_NAME_ROMANIZED_VARIATION);
     }
 
     /**
-     * @param string $type
-     *
-     * @return self
+     * @return null|string
      */
-    public function setType(string $type): self
+    public function getType()
     {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * Returns the object as array representation.
-     *
-     * @return array
-     */
-    public function toArray(): array
-    {
-        $parent = parent::toArray();
-
-        return [
-            'type'       => $this->type,
-        ];
+        return $this->getValue(self::TAG_TYPE);
     }
 }

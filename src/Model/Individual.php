@@ -9,7 +9,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\Model\Common\ChangeDate;
 use MagicSunday\Gedcom\Model\Common\NoteStructure;
 use MagicSunday\Gedcom\Model\Individual\Event;
-use MagicSunday\Gedcom\Model\Individual\Name;
+use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure;
 
 /**
  * The individual model.
@@ -20,6 +20,10 @@ use MagicSunday\Gedcom\Model\Individual\Name;
  */
 class Individual extends DataObject
 {
+    const TAG_XREF_INDI = 'XREF:INDI';
+
+    const TAG_NAME = 'NAME';
+
 //    /**
 //     * The identifier.
 //     *
@@ -56,17 +60,17 @@ class Individual extends DataObject
 //     * @var NoteStructure[]
 //     */
 //    private $notes = [];
-//
-//    /**
-//     * Returns the XREF.
-//     *
-//     * @return string
-//     */
-//    public function getXref(): string
-//    {
-//        return $this->xref;
-//    }
-//
+
+    /**
+     * Returns the XREF.
+     *
+     * @return null|string
+     */
+    public function getXref()
+    {
+        return $this->getValue(self::TAG_XREF_INDI);
+    }
+
 //    /**
 //     * Sets the XREF.
 //     *
@@ -79,15 +83,15 @@ class Individual extends DataObject
 //        $this->xref = $xref;
 //        return $this;
 //    }
-//
-//    /**
-//     * @return Name[]
-//     */
-//    public function getNames(): array
-//    {
-//        return $this->names;
-//    }
-//
+
+    /**
+     * @return PersonalNameStructure[]
+     */
+    public function getNames()
+    {
+        return $this->getValue(self::TAG_NAME);
+    }
+
 //    /**
 //     * @param Name $name
 //     *
