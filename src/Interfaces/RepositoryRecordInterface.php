@@ -6,28 +6,29 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces;
 
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
-use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
 
 /**
- * The NOTE record.
+ * The REPO record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface NoteRecordInterface extends ChangeDateInterface, SourceCitationInterface
+interface RepositoryRecordInterface extends AddressStructureInterface, ChangeDateInterface, NoteInterface
 {
     /**
-     * A pointer to, or a cross-reference identifier of, a note record.
+     * A pointer to, or a cross-reference identifier of, a repository record.
      */
-    const TAG_XREF_NOTE = 'XREF:NOTE';
+    const TAG_XREF_REPO = 'XREF:REPO';
 
     /**
-     * Comments or opinions from the submitter.
+     * The official name of the archive in which the stated source material is stored.
      */
-    const TAG_SUBMITTER_TEXT = 'SUBMITTER_TEXT';
+    const TAG_NAME = 'NAME';
 
     /**
      * A description or number used to identify an item for filing, storage, or other reference purposes.
@@ -48,7 +49,7 @@ interface NoteRecordInterface extends ChangeDateInterface, SourceCitationInterfa
     /**
      * @return null|string
      */
-    public function getText();
+    public function getName();
 
     /**
      * @return null|ReferenceNumberInterface

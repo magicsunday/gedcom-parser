@@ -9,8 +9,8 @@ namespace MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\NoteRecord as NoteRecordModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
+use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
-use MagicSunday\Gedcom\Parser\NoteRecord\ReferenceNumber;
 
 /**
  * A NOTE record parser.

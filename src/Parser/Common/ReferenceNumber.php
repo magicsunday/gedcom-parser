@@ -4,10 +4,10 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Parser\NoteRecord;
+namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\NoteRecord\ReferenceNumber as ReferenceNumberModel;
+use MagicSunday\Gedcom\Model\Common\ReferenceNumber as ReferenceNumberModel;
 use MagicSunday\Gedcom\Parser\Common;
 
 /**

@@ -4,9 +4,9 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\NoteRecord;
+namespace MagicSunday\Gedcom\Model\Common;
 
-use MagicSunday\Gedcom\Interfaces\NoteRecord\ReferenceNumberInterface;
+use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
 /**

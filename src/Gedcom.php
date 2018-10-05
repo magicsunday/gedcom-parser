@@ -7,15 +7,11 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Model\Family;
-use MagicSunday\Gedcom\Model\Media;
 use MagicSunday\Gedcom\Model\Header;
 use MagicSunday\Gedcom\Model\Individual;
-use MagicSunday\Gedcom\Model\MultimediaLink;
 use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\RepositoryRecord;
 use MagicSunday\Gedcom\Model\Submission;
-use MagicSunday\Gedcom\Model\Note;
-use MagicSunday\Gedcom\Model\Repository;
-use MagicSunday\Gedcom\Model\Source;
 use MagicSunday\Gedcom\Model\Submitter;
 
 /**
@@ -72,7 +68,7 @@ class Gedcom
     /**
      * A list of repositories.
      *
-     * @var Repository[]
+     * @var RepositoryRecord[]
      */
     private $repositories = [];
 
@@ -222,7 +218,7 @@ class Gedcom
     }
 
     /**
-     * @return Repository[]
+     * @return RepositoryRecord[]
      */
     public function getRepositories(): array
     {
@@ -230,13 +226,26 @@ class Gedcom
     }
 
     /**
-     * @param Repository[] $repositories
+     * @param RepositoryRecord[] $repositories
      *
      * @return self
      */
     public function setRepositories(array $repositories): self
     {
         $this->repositories = $repositories;
+        return $this;
+    }
+
+    /**
+     * Adds an repository to the list.
+     *
+     * @param RepositoryRecord $repository
+     *
+     * @return self
+     */
+    public function addRepository(RepositoryRecord $repository): self
+    {
+        $this->repositories[] = $repository;
         return $this;
     }
 

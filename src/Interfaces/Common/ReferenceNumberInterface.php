@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\NoteRecord;
+namespace MagicSunday\Gedcom\Interfaces\Common;
 
 /**
  * The REFN structure.
