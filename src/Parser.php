@@ -10,6 +10,7 @@ use MagicSunday\Gedcom\Parser\HeaderRecord;
 use MagicSunday\Gedcom\Parser\MultimediaRecord;
 use MagicSunday\Gedcom\Parser\NoteRecord;
 use MagicSunday\Gedcom\Parser\RepositoryRecord;
+use MagicSunday\Gedcom\Parser\SourceRecord;
 use MagicSunday\Gedcom\Parser\SubmissionRecord;
 use MagicSunday\Gedcom\Parser\SubmitterRecord;
 use Psr\Log\LoggerInterface;
@@ -106,9 +107,11 @@ class Parser
                     $gedcom->addRepository($repoParser->parse());
                     break;
 
-//                // Source record
-//                case 'SOUR':
-//                    break;
+                // Source record
+                case 'SOUR':
+                    $sourceParser = new SourceRecord($reader, $this->logger);
+                    $gedcom->addSource($sourceParser->parse());
+                    break;
 
                 // Submitter record
                 case 'SUBM':

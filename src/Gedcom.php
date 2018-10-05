@@ -12,6 +12,7 @@ use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\MultimediaRecord;
 use MagicSunday\Gedcom\Model\NoteRecord;
 use MagicSunday\Gedcom\Model\RepositoryRecord;
+use MagicSunday\Gedcom\Model\SourceRecord;
 use MagicSunday\Gedcom\Model\SubmissionRecord;
 use MagicSunday\Gedcom\Model\SubmitterRecord;
 
@@ -279,6 +280,19 @@ class Gedcom
     public function setSources(array $sources): self
     {
         $this->sources = $sources;
+        return $this;
+    }
+
+    /**
+     * Adds an source to the list.
+     *
+     * @param SourceRecord $source
+     *
+     * @return self
+     */
+    public function addSource(SourceRecord $source): self
+    {
+        $this->sources[] = $source;
         return $this;
     }
 
