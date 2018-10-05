@@ -15,6 +15,11 @@ use MagicSunday\Gedcom\Traits\Common\Note;
 /**
  * The SUBM (submitter) record.
  *
+ * The submitter record identifies an individual or organization that contributed information contained
+ * in the GEDCOM transmission. All records in the transmission are assumed to be submitted by the
+ * SUBMITTER referenced in the HEADer, unless a SUBMitter reference inside a specific record
+ * points at a different SUBMITTER record.
+ *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/

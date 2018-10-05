@@ -4,12 +4,12 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\Common\MultimediaLink;
+namespace MagicSunday\Gedcom\Interfaces\MultimediaRecord;
 
 use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\File\FormatInterface;
 
 /**
- * The OBJE (object) structure tags.
+ * The OBJE (object), FILE structure tags.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -24,9 +24,14 @@ interface FileInterface
     const TAG_FILE_REFN = 'FILE_REFN';
 
     /**
-     * The format structure
+     * The format structure.
      */
     const TAG_FORM = 'FORM';
+
+    /**
+     * The title of a work, record, item, or object.
+     */
+    const TAG_TITL = 'TITL';
 
     /**
      * @return null|string
@@ -36,5 +41,10 @@ interface FileInterface
     /**
      * @return null|FormatInterface
      */
-    public function getFormat();
+    public function getMediaFormat();
+
+    /**
+     * @return null|string
+     */
+    public function getTitle();
 }

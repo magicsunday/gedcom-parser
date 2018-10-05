@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Parser\Family;
 use MagicSunday\Gedcom\Parser\Header;
 use MagicSunday\Gedcom\Parser\Individual;
+use MagicSunday\Gedcom\Parser\MultimediaRecord;
 use MagicSunday\Gedcom\Parser\NoteRecord;
 use MagicSunday\Gedcom\Parser\RepositoryRecord;
 use MagicSunday\Gedcom\Parser\Submission;
@@ -90,9 +91,11 @@ class Parser
 //                    $gedcom->addIndividual($individualParser->parse());
 //                    break;
 
-//                // Multimedia record
-//                case 'OBJE':
-//                    break;
+                // Multimedia record
+                case 'OBJE':
+                    $mediaParser = new MultimediaRecord($reader, $this->logger);
+                    $gedcom->addMedia($mediaParser->parse());
+                    break;
 
                 // Note record
                 case 'NOTE':

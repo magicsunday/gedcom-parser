@@ -9,6 +9,7 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Model\Family;
 use MagicSunday\Gedcom\Model\Header;
 use MagicSunday\Gedcom\Model\Individual;
+use MagicSunday\Gedcom\Model\MultimediaRecord;
 use MagicSunday\Gedcom\Model\NoteRecord;
 use MagicSunday\Gedcom\Model\RepositoryRecord;
 use MagicSunday\Gedcom\Model\Submission;
@@ -54,7 +55,7 @@ class Gedcom
     /**
      * A list of medias.
      *
-     * @var MultimediaLink[]
+     * @var MultimediaRecord[]
      */
     private $medias = [];
 
@@ -167,7 +168,7 @@ class Gedcom
     }
 
     /**
-     * @return Media[]
+     * @return MultimediaRecord[]
      */
     public function getMedias(): array
     {
@@ -175,13 +176,26 @@ class Gedcom
     }
 
     /**
-     * @param Media[] $medias
+     * @param MultimediaRecord[] $medias
      *
      * @return self
      */
     public function setMedias(array $medias): self
     {
         $this->medias = $medias;
+        return $this;
+    }
+
+    /**
+     * Adds an multimedia record to the list.
+     *
+     * @param MultimediaRecord $media
+     *
+     * @return self
+     */
+    public function addMedia(MultimediaRecord $media): self
+    {
+        $this->medias[] = $media;
         return $this;
     }
 
