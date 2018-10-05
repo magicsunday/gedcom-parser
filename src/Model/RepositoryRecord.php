@@ -6,17 +6,13 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
-use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
-use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
-use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\RepositoryRecordInterface;
 use MagicSunday\Gedcom\Traits\Common\AddressStructure;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\Note;
 
 /**
- * The REPO record.
+ * The REPO (repository) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0

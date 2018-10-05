@@ -14,7 +14,7 @@ use MagicSunday\Gedcom\Interfaces\Header\PlaceInterface;
 use MagicSunday\Gedcom\Interfaces\Header\SourceInterface;
 
 /**
- * The header structure.
+ * The HEAD (header) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0

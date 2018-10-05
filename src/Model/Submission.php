@@ -11,11 +11,7 @@ use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\Note;
 
 /**
- * The sending system uses a submission record to send instructions and information to the receiving
- * system. TempleReady processes submission records to determine which temple the cleared records
- * should be directed to. The submission record is also used for communication between Ancestral File
- * download requests and TempleReady. Each GEDCOM transmission file should have only one
- * submission record. Multiple submissions are handled by creating separate GEDCOM transmission files.
+ * The SUBN (submission) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0

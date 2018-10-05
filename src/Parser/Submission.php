@@ -12,7 +12,7 @@ use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 
 /**
- * A SUBN record parser.
+ * A SUBN (submission) record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0

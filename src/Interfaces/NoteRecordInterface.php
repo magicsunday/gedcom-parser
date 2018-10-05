@@ -35,8 +35,9 @@ interface NoteRecordInterface extends ChangeDateInterface, SourceCitationInterfa
     const TAG_REFN = 'REFN';
 
     /**
-     * A number assigned to a record by an originating automated system that can be used by a receiving
-     * system to report results pertaining to that record.
+     * A unique record identification number assigned to the record by the source system. This number is
+     * intended to serve as a more sure means of identification of a record for reconciling differences in data
+     * between two interfacing systems.
      */
     const TAG_RIN = 'RIN';
 

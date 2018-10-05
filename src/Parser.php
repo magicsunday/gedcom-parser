@@ -109,12 +109,12 @@ class Parser
 //                // Source record
 //                case 'SOUR':
 //                    break;
-//
-//                // Submitter record
-//                case 'SUBM':
-//                    $submitterParser = new Submitter($reader, $this->logger);
-//                    $gedcom->setSubmitter($submitterParser->parse());
-//                    break;
+
+                // Submitter record
+                case 'SUBM':
+                    $submitterParser = new Submitter($reader, $this->logger);
+                    $gedcom->setSubmitter($submitterParser->parse());
+                    break;
             }
         }
 

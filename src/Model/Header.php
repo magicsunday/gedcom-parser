@@ -9,7 +9,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\Interfaces\HeaderInterface;
 
 /**
- * The header structure provides information about the entire transmission.
+ * The HEAD (header) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0

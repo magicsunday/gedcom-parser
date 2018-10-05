@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Interfaces;
 
 /**
- * The common event detail structure.
+ * The PLAC (place) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
