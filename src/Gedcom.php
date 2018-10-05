@@ -6,14 +6,14 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
-use MagicSunday\Gedcom\Model\Family;
-use MagicSunday\Gedcom\Model\Header;
-use MagicSunday\Gedcom\Model\Individual;
+use MagicSunday\Gedcom\Model\FamilyRecord;
+use MagicSunday\Gedcom\Model\HeaderRecord;
+use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\MultimediaRecord;
 use MagicSunday\Gedcom\Model\NoteRecord;
 use MagicSunday\Gedcom\Model\RepositoryRecord;
-use MagicSunday\Gedcom\Model\Submission;
-use MagicSunday\Gedcom\Model\Submitter;
+use MagicSunday\Gedcom\Model\SubmissionRecord;
+use MagicSunday\Gedcom\Model\SubmitterRecord;
 
 /**
  * A parsed GEDCOM file.
@@ -27,28 +27,28 @@ class Gedcom
     /**
      * The header.
      *
-     * @var Header
+     * @var HeaderRecord
      */
     private $header;
 
     /**
      * The submission record.
      *
-     * @var Submission
+     * @var SubmissionRecord
      */
     private $submission;
 
     /**
      * A list of families.
      *
-     * @var Family[]
+     * @var FamilyRecord[]
      */
     private $families = [];
 
     /**
      * A list of individuals.
      *
-     * @var Individual[]
+     * @var IndividualRecord[]
      */
     private $individuals = [];
 
@@ -76,38 +76,38 @@ class Gedcom
     /**
      * A list of sources.
      *
-     * @var Source[]
+     * @var SourceRecord[]
      */
     private $sources = [];
 
     /**
      * The submitter record.
      *
-     * @var Submitter
+     * @var SubmitterRecord
      */
     private $submitter;
 
     /**
-     * @return Header
+     * @return HeaderRecord
      */
-    public function getHeader(): Header
+    public function getHeader(): HeaderRecord
     {
         return $this->header;
     }
 
     /**
-     * @param Header $header
+     * @param HeaderRecord $header
      *
      * @return self
      */
-    public function setHeader(Header $header): self
+    public function setHeader(HeaderRecord $header): self
     {
         $this->header = $header;
         return $this;
     }
 
     /**
-     * @return null|Submission
+     * @return null|SubmissionRecord
      */
     public function getSubmission()
     {
@@ -115,18 +115,18 @@ class Gedcom
     }
 
     /**
-     * @param Submission $submission
+     * @param SubmissionRecord $submission
      *
      * @return self
      */
-    public function setSubmission(Submission $submission): self
+    public function setSubmission(SubmissionRecord $submission): self
     {
         $this->submission = $submission;
         return $this;
     }
 
     /**
-     * @return Family[]
+     * @return FamilyRecord[]
      */
     public function getFamilies(): array
     {
@@ -136,18 +136,18 @@ class Gedcom
     /**
      * Adds an family to the list.
      *
-     * @param Family $family
+     * @param FamilyRecord $family
      *
      * @return self
      */
-    public function addFamily(Family $family): self
+    public function addFamily(FamilyRecord $family): self
     {
         $this->families[] = $family;
         return $this;
     }
 
     /**
-     * @return Individual[]
+     * @return IndividualRecord[]
      */
     public function getIndividuals(): array
     {
@@ -157,11 +157,11 @@ class Gedcom
     /**
      * Adds an individual to the list.
      *
-     * @param Individual $individual
+     * @param IndividualRecord $individual
      *
      * @return self
      */
-    public function addIndividual(Individual $individual): self
+    public function addIndividual(IndividualRecord $individual): self
     {
         $this->individuals[] = $individual;
         return $this;
@@ -264,7 +264,7 @@ class Gedcom
     }
 
     /**
-     * @return Source[]
+     * @return SourceRecord[]
      */
     public function getSources(): array
     {
@@ -272,7 +272,7 @@ class Gedcom
     }
 
     /**
-     * @param Source[] $sources
+     * @param SourceRecord[] $sources
      *
      * @return self
      */
@@ -283,19 +283,19 @@ class Gedcom
     }
 
     /**
-     * @return Submitter
+     * @return SubmitterRecord
      */
-    public function getSubmitter(): Submitter
+    public function getSubmitter(): SubmitterRecord
     {
         return $this->submitter;
     }
 
     /**
-     * @param Submitter $submitter
+     * @param SubmitterRecord $submitter
      *
      * @return self
      */
-    public function setSubmitter(Submitter $submitter): self
+    public function setSubmitter(SubmitterRecord $submitter): self
     {
         $this->submitter = $submitter;
         return $this;

@@ -6,17 +6,14 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
-use MagicSunday\Gedcom\Parser\Family;
-use MagicSunday\Gedcom\Parser\Header;
-use MagicSunday\Gedcom\Parser\Individual;
+use MagicSunday\Gedcom\Parser\HeaderRecord;
 use MagicSunday\Gedcom\Parser\MultimediaRecord;
 use MagicSunday\Gedcom\Parser\NoteRecord;
 use MagicSunday\Gedcom\Parser\RepositoryRecord;
-use MagicSunday\Gedcom\Parser\Submission;
-use MagicSunday\Gedcom\Parser\Submitter;
+use MagicSunday\Gedcom\Parser\SubmissionRecord;
+use MagicSunday\Gedcom\Parser\SubmitterRecord;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RuntimeException;
 
 /**
  * A gedcom 5.5.1 parser.
@@ -59,7 +56,7 @@ class Parser
             switch ($reader->tag()) {
                 // Header
                 case 'HEAD':
-                    $headerParser = new Header($reader, $this->logger);
+                    $headerParser = new HeaderRecord($reader, $this->logger);
                     $gedcom->setHeader($headerParser->parse());
 
                     if ($gedcom->getHeader()->getGedcomInfo()
@@ -75,7 +72,7 @@ class Parser
 
                 // Submission record
                 case 'SUBN':
-                    $submissionParser = new Submission($reader, $this->logger);
+                    $submissionParser = new SubmissionRecord($reader, $this->logger);
                     $gedcom->setSubmission($submissionParser->parse());
                     break;
 
@@ -115,7 +112,7 @@ class Parser
 
                 // Submitter record
                 case 'SUBM':
-                    $submitterParser = new Submitter($reader, $this->logger);
+                    $submitterParser = new SubmitterRecord($reader, $this->logger);
                     $gedcom->setSubmitter($submitterParser->parse());
                     break;
             }
