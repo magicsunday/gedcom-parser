@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Parser\FamilyRecord;
 use MagicSunday\Gedcom\Parser\HeaderRecord;
 use MagicSunday\Gedcom\Parser\MultimediaRecord;
 use MagicSunday\Gedcom\Parser\NoteRecord;
@@ -71,18 +72,12 @@ class Parser
 
                     break;
 
-                // Submission record
-                case 'SUBN':
-                    $submissionParser = new SubmissionRecord($reader, $this->logger);
-                    $gedcom->setSubmission($submissionParser->parse());
+                // Family record
+                case 'FAM':
+                    $familyParser = new FamilyRecord($reader, $this->logger);
+                    $gedcom->addFamily($familyParser->parse());
                     break;
 
-////                // Family record
-////                case 'FAM':
-////                    $familyParser = new Family($reader, $this->logger);
-////                    $gedcom->addFamily($familyParser->parse());
-////                    break;
-//
 //                // Individual record
 //                case 'INDI':
 //                    $individualParser = new Individual($reader, $this->logger);
@@ -117,6 +112,12 @@ class Parser
                 case 'SUBM':
                     $submitterParser = new SubmitterRecord($reader, $this->logger);
                     $gedcom->setSubmitter($submitterParser->parse());
+                    break;
+
+                // Submission record
+                case 'SUBN':
+                    $submissionParser = new SubmissionRecord($reader, $this->logger);
+                    $gedcom->setSubmission($submissionParser->parse());
                     break;
             }
         }

@@ -4,9 +4,9 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\Individual\Name;
+namespace MagicSunday\Gedcom\Model\IndividualRecord\Name;
 
-use MagicSunday\Gedcom\Interfaces\Individual\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Individual\Name\PersonalNamePieces as PersonalNamePiecesTrait;
 use MagicSunday\Gedcom\Traits\NoteStructure;

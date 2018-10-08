@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\Individual as IndividualModel;
+use MagicSunday\Gedcom\Model\IndividualRecord as IndividualModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure;
 
@@ -18,7 +18,7 @@ use MagicSunday\Gedcom\Parser\Individual\PersonalNameStructure;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Individual extends AbstractParser
+class IndividualRecord extends AbstractParser
 {
     /**
      * @inheritDoc

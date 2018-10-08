@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualInterface;
 use MagicSunday\Gedcom\Traits\ChangeDate;
 use MagicSunday\Gedcom\Traits\MultimediaLink;
@@ -20,7 +20,7 @@ use MagicSunday\Gedcom\Traits\SourceCitation;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Individual extends DataObject
+class IndividualRecord extends DataObject
     implements IndividualInterface
 //        ChangeDateInterface,
 //        NoteStructureInterface

@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Interfaces;
 
 use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
-use MagicSunday\Gedcom\Interfaces\Individual\NameInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\NameInterface;
 
 /**
  * The INDI (individual) record.

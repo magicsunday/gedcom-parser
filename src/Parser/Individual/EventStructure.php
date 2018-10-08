@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Individual;
 
-use MagicSunday\Gedcom\Interfaces\Individual\IndividualEventStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
 use MagicSunday\Gedcom\Parser\Individual\EventDetail\Adoption;
 use MagicSunday\Gedcom\Parser\Individual\EventDetail\Birth;
 use MagicSunday\Gedcom\Parser\Individual\EventDetail\Christening;

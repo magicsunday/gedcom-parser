@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\Individual;
+namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
 /**
  * The individual event structure tags.

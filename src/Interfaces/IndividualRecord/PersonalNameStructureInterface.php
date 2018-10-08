@@ -4,11 +4,11 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\Individual;
+namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\Individual\Name\NamePhoneticVariationInterface;
-use MagicSunday\Gedcom\Interfaces\Individual\Name\NameRomanizedVariationInterface;
-use MagicSunday\Gedcom\Interfaces\Individual\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NamePhoneticVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NameRomanizedVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
 
 /**
  * The personal name structure tags.

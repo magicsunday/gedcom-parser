@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\Individual;
+namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Model\Common\EventDetail as CommonEventDetail;
 

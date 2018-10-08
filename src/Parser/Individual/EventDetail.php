@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Parser\Individual;
 
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\EventDetail as CommonEventDetail;
-use MagicSunday\Gedcom\Model\Individual\EventDetail as EventDetailModel;
+use MagicSunday\Gedcom\Model\IndividualRecord\EventDetail as EventDetailModel;
 
 /**
  * The individual event detail structure.

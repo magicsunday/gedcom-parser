@@ -28,9 +28,9 @@ class Common extends AbstractParser
     /**
      * Parses a common block.
      *
-     * @return string
+     * @return null|string
      */
-    public function parse(): string
+    public function parse()
     {
         return $this->reader->xref() ?? $this->reader->value();
     }

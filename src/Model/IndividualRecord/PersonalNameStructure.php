@@ -3,12 +3,12 @@ declare(strict_types=1);
 /**
  * See LICENSE.md file for further details.
  */
-namespace MagicSunday\Gedcom\Model\Individual;
+namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\Individual\Name\NamePhoneticVariationInterface;
-use MagicSunday\Gedcom\Interfaces\Individual\Name\NameRomanizedVariationInterface;
-use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
-use MagicSunday\Gedcom\Model\Individual\Name\PersonalNamePieces;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NamePhoneticVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NameRomanizedVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Model\IndividualRecord\Name\PersonalNamePieces;
 
 /**
  * The personal name structure model.

@@ -97,7 +97,16 @@ abstract class AbstractParser
             if ($subParser) {
                 $object->setValue($gedcomTag, $subParser->parse());
             } else {
-                $this->logger->error('Missing parser for tag <' . $gedcomTag . '>');
+                $this->logger->error('Skipping tag <' . $gedcomTag . '> due missing parser.');
+
+                $currentLevel = $this->reader->level();
+
+                // Skip all child tags
+                while ($this->reader->read() && ($this->reader->level() > $currentLevel)) {
+//                    $this->logger->error('Tag <' . $this->reader->current() . '> not parsed.');
+                }
+
+                $this->reader->back();
             }
         }
 

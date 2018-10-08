@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser\Individual;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Interfaces\Individual\PersonalNameStructureInterface;
-use MagicSunday\Gedcom\Model\Individual\PersonalNameStructure as PersonalNameStructureModel;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure as PersonalNameStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Individual\Name\NamePhoneticVariation;
 use MagicSunday\Gedcom\Parser\Individual\Name\NameRomanizedVariation;

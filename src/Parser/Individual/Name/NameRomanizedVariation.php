@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser\Individual\Name;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Model\Individual\Name\NameRomanizedVariation as RomanizedName;
+use MagicSunday\Gedcom\Model\IndividualRecord\Name\NameRomanizedVariation as RomanizedName;
 use MagicSunday\Gedcom\Parser\Common;
 
 /**

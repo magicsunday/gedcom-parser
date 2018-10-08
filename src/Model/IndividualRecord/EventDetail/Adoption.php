@@ -4,9 +4,9 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\Individual\EventDetail;
+namespace MagicSunday\Gedcom\Model\IndividualRecord\EventDetail;
 
-use MagicSunday\Gedcom\Model\Individual\EventDetail;
+use MagicSunday\Gedcom\Model\IndividualRecord\EventDetail;
 
 /**
  * Pertaining to creation of a legally approved child-parent relationship that does not exist biologically.

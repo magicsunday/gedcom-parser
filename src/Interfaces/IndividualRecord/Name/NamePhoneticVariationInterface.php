@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\Individual\Name;
+namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\Name;
 
 /**
  * The name phonetic variation tags.

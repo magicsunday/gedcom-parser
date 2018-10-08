@@ -4,9 +4,9 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\Individual\EventDetail;
+namespace MagicSunday\Gedcom\Model\IndividualRecord\EventDetail;
 
-use MagicSunday\Gedcom\Model\Individual\EventDetail;
+use MagicSunday\Gedcom\Model\IndividualRecord\EventDetail;
 
 /**
  * The religious event (not LDS) of baptizing and/or naming a child.

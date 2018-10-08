@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Individual\Name;
 
-use MagicSunday\Gedcom\Interfaces\Individual\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\NoteStructure;
 use MagicSunday\Gedcom\Parser\SourceCitation;

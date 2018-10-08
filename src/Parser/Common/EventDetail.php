@@ -10,7 +10,7 @@ use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Media;
-use MagicSunday\Gedcom\Model\Individual\EventDetail as EventDetailModel;
+use MagicSunday\Gedcom\Model\IndividualRecord\EventDetail as EventDetailModel;
 
 /**
  * The event detail structure.
