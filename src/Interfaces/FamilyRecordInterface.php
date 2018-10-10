@@ -26,7 +26,7 @@ interface FamilyRecordInterface
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**
-     * A pointer to, or a cross-reference identifier of, a fam_record.
+     * A pointer to, or a cross-reference identifier of, a family record.
      */
     const TAG_XREF_FAM = 'XREF:FAM';
 

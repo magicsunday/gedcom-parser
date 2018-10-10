@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure;
+namespace MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 

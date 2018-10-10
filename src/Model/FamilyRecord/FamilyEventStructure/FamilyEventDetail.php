@@ -24,14 +24,6 @@ class FamilyEventDetail extends EventDetail implements FamilyEventDetailInterfac
     /**
      * @inheritDoc
      */
-    public function getDescriptor()
-    {
-        return $this->getValue(self::TAG_DESCRIPTOR);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getHusband()
     {
         return $this->getValue(self::TAG_HUSB);

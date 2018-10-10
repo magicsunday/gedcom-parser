@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetailInterface;
+
 /**
  * The individual attribute structure tags.
  *
@@ -90,72 +92,72 @@ interface IndividualAttributeStructureInterface
     const TAG_FACT = 'FACT';
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getCasteName();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getPhysicalDescription();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getEducation();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getIdentityNumber();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getNationality();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getChildrenCount();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getMarriageCount();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getOccupation();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getProperty();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getReligion();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getResidence();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getSocialSecurityNumber();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getTitle();
 
     /**
-     * @return null|string
+     * @return null|IndividualAttributeDetailInterface
      */
     public function getFact();
 }

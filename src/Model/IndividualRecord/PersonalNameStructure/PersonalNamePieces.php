@@ -10,7 +10,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\Persona
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\Note;
 use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-use MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
 
 /**
  * The personal name pieces model.

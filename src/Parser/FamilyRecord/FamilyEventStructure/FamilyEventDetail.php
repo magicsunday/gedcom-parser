@@ -61,7 +61,6 @@ class FamilyEventDetail extends AbstractParser
     public function parse(): FamilyEventDetailModel
     {
         $eventDetail = new FamilyEventDetailModel();
-        $eventDetail->setValue(FamilyEventDetailModel::TAG_DESCRIPTOR, $this->reader->value());
 
         $this->process($eventDetail);
 

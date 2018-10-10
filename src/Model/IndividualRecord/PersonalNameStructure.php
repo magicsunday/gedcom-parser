@@ -1,8 +1,9 @@
 <?php
-declare(strict_types=1);
 /**
  * See LICENSE.md file for further details.
  */
+declare(strict_types=1);
+
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NamePhoneticVariationInterface;

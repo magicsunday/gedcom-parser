@@ -6,14 +6,13 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
-use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
 use MagicSunday\Gedcom\Traits\Common\Note;
 use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructure;
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructure;
 
 /**
  * The INDI (individual) record.
@@ -22,8 +21,10 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class IndividualRecord extends IndividualEventStructure implements IndividualRecordInterface
+class IndividualRecord extends DataObject implements IndividualRecordInterface
 {
+    use IndividualEventStructure;
+    use IndividualAttributeStructure;
     use ChangeDate;
     use MultimediaLink;
     use Note;

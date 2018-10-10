@@ -18,11 +18,6 @@ use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
 interface FamilyEventDetailInterface extends EventDetailInterface
 {
     /**
-     * Text describing a particular event pertaining to the individual or family.
-     */
-    const TAG_DESCRIPTOR = 'EVENT_DESCRIPTOR';
-
-    /**
      * An individual in the family role of a married man or father.
      */
     const TAG_HUSB = 'HUSB';
@@ -31,11 +26,6 @@ interface FamilyEventDetailInterface extends EventDetailInterface
      * An individual in the role as a mother and/or married woman.
      */
     const TAG_WIFE = 'WIFE';
-
-    /**
-     * @return null|string
-     */
-    public function getDescriptor();
 
     /**
      * @return null|FamilyPersonAgeInterface

@@ -53,7 +53,7 @@ class FamilyRecord extends AbstractParser
             FamilyRecordModel::TAG_ENGA => FamilyEventDetail::class,
             FamilyRecordModel::TAG_MARB => FamilyEventDetail::class,
             FamilyRecordModel::TAG_MARC => FamilyEventDetail::class,
-            FamilyRecordModel::TAG_MARR => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARR => FamilyEventDetail\Marriage::class,
             FamilyRecordModel::TAG_MARL => FamilyEventDetail::class,
             FamilyRecordModel::TAG_MARS => FamilyEventDetail::class,
             FamilyRecordModel::TAG_RESI => FamilyEventDetail::class,

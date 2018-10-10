@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model\Common\SourceCitation;
 
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitation\SourceCitationStructureInterface;
-use MagicSunday\Gedcom\Interfaces\Common\SourceCitation\SourceDataStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
 use MagicSunday\Gedcom\Traits\Common\Note;

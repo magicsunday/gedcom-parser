@@ -11,7 +11,9 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 
 /**
@@ -23,6 +25,8 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterfac
  */
 interface IndividualRecordInterface
     extends ChangeDateInterface, IndividualEventStructureInterface,
+            IndividualAttributeStructureInterface,
+    //LdsIndividualOrdinanceInterface
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**

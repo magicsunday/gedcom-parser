@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
 
-use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\FileInterface;
 use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\MultimediaLinkStructureInterface;
 
 /**

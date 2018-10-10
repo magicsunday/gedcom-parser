@@ -13,6 +13,7 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetail;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
 use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
 
@@ -64,6 +65,21 @@ class IndividualRecord extends AbstractParser
             IndividualModel::TAG_EVEN => IndividualEventDetail::class,
 
             // Individual attribute structure
+            IndividualModel::TAG_CAST => IndividualAttributeDetail::class,
+            IndividualModel::TAG_DSCR => IndividualAttributeDetail::class,
+            IndividualModel::TAG_EDUC => IndividualAttributeDetail::class,
+            IndividualModel::TAG_IDNO => IndividualAttributeDetail::class,
+            IndividualModel::TAG_NATI => IndividualAttributeDetail::class,
+            IndividualModel::TAG_NCHI => IndividualAttributeDetail::class,
+            IndividualModel::TAG_NMR  => IndividualAttributeDetail::class,
+            IndividualModel::TAG_OCCU => IndividualAttributeDetail::class,
+            IndividualModel::TAG_PROP => IndividualAttributeDetail::class,
+            IndividualModel::TAG_RELI => IndividualAttributeDetail::class,
+            IndividualModel::TAG_RESI => IndividualAttributeDetail::class,
+            IndividualModel::TAG_SSN  => IndividualAttributeDetail::class,
+            IndividualModel::TAG_TITL => IndividualAttributeDetail::class,
+            IndividualModel::TAG_FACT => IndividualAttributeDetail::class,
+
             // LDS individual ordinance
             // Child to family link
             // Spouse to family link

@@ -9,7 +9,6 @@ namespace MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\Common\PlaceStructure\Map as MapModel;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 
 /**
  * A MAP structure parser.

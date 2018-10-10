@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord;
 
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetail\MarriageInterface;
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
 
 /**
@@ -124,7 +125,7 @@ interface FamilyEventStructureInterface
     public function getMarriageLicense();
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return null|MarriageInterface
      */
     public function getMarriage();
 

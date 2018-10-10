@@ -88,7 +88,7 @@ abstract class AbstractParser
         while ($this->reader->read() && $this->valid()) {
             $gedcomTag = $this->reader->tag();
 
-            if (strpos($gedcomTag, '_') === 0) {
+            if (strncmp($gedcomTag, '_', 1) === 0) {
                 $subParser = new Custom($this->reader, $this->logger);
             } else {
                 $subParser = $this->create($gedcomTag);
