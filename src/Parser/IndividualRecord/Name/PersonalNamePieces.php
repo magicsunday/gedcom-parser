@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Parser\Individual\Name;
+namespace MagicSunday\Gedcom\Parser\IndividualRecord\Name;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Parser\Common;

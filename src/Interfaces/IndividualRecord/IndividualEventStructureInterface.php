@@ -6,6 +6,12 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetail\AdoptionInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetail\BirthInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetail\ChristeningInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetail\DeathInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
+
 /**
  * The individual event structure tags.
  *
@@ -137,117 +143,117 @@ interface IndividualEventStructureInterface
     const TAG_WILL = 'WILL';
 
     /**
-     * @return null|string
+     * @return null|AdoptionInterface
      */
     public function getAdoption();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getBaptism();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getBarMitzvah();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getBasMitzvah();
 
     /**
-     * @return null|string
+     * @return null|BirthInterface
      */
     public function getBirth();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getBlessing();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getBurial();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getCensus();
 
     /**
-     * @return null|string
+     * @return null|ChristeningInterface
      */
     public function getChristening();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getAdultChristening();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getConfirmation();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getCremation();
 
     /**
-     * @return null|string
+     * @return null|DeathInterface
      */
     public function getDeath();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getEmigration();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getEvent();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getFirstCommunion();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getGraduation();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getImmigration();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getNaturalization();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getOrdination();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getProbate();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getRetirement();
 
     /**
-     * @return null|string
+     * @return null|IndividualEventDetailInterface
      */
     public function getWill();
 }

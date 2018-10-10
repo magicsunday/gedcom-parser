@@ -3,7 +3,7 @@ declare(strict_types=1);
 /**
  * See LICENSE.md file for further details.
  */
-namespace MagicSunday\Gedcom\Parser\Individual\Name;
+namespace MagicSunday\Gedcom\Parser\IndividualRecord\Name;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Model\IndividualRecord\Name\NamePhoneticVariation as PhoneticName;

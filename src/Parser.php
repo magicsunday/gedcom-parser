@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Parser\IndividualRecord;
 use MagicSunday\Gedcom\Parser\FamilyRecord;
 use MagicSunday\Gedcom\Parser\HeaderRecord;
 use MagicSunday\Gedcom\Parser\MultimediaRecord;
@@ -78,11 +79,11 @@ class Parser
                     $gedcom->addFamily($familyParser->parse());
                     break;
 
-//                // Individual record
-//                case 'INDI':
-//                    $individualParser = new Individual($reader, $this->logger);
-//                    $gedcom->addIndividual($individualParser->parse());
-//                    break;
+                // Individual record
+                case 'INDI':
+                    $individualParser = new IndividualRecord($reader, $this->logger);
+                    $gedcom->addIndividual($individualParser->parse());
+                    break;
 
                 // Multimedia record
                 case 'OBJE':

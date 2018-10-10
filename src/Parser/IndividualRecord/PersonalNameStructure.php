@@ -4,15 +4,15 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Parser\Individual;
+namespace MagicSunday\Gedcom\Parser\IndividualRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure as PersonalNameStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\Individual\Name\NamePhoneticVariation;
-use MagicSunday\Gedcom\Parser\Individual\Name\NameRomanizedVariation;
-use MagicSunday\Gedcom\Parser\Individual\Name\PersonalNamePieces;
+use MagicSunday\Gedcom\Parser\IndividualRecord\Name\NamePhoneticVariation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\Name\NameRomanizedVariation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\Name\PersonalNamePieces;
 
 /**
  * The personal name structure (PERSONAL_NAME_STRUCTURE) parser.

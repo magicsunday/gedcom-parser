@@ -25,7 +25,7 @@ class FamilyChild extends AbstractParser
     protected function getClassMap(): array
     {
         return [
-            'ADOP' => Common::class,
+            FamilyChildModel::TAG_ADOP => Common::class,
         ];
     }
 
@@ -37,7 +37,7 @@ class FamilyChild extends AbstractParser
     public function parse(): FamilyChildModel
     {
         $familyChild = new FamilyChildModel();
-        $familyChild->setValue('XREF_FAM', $this->reader->xref());
+        $familyChild->setValue(FamilyChildModel::TAG_XREF_FAM, $this->reader->xref());
 
         $this->process($familyChild);
 

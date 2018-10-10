@@ -30,6 +30,7 @@ class FamilyEventDetail extends AbstractParser
     protected function getClassMap(): array
     {
         return [
+            // Family event details
             FamilyEventDetailModel::TAG_HUSB => FamilyPersonAge::class,
             FamilyEventDetailModel::TAG_WIFE => FamilyPersonAge::class,
 

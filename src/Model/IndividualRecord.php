@@ -6,37 +6,26 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualInterface;
-use MagicSunday\Gedcom\Traits\ChangeDate;
-use MagicSunday\Gedcom\Traits\MultimediaLink;
-use MagicSunday\Gedcom\Traits\NoteStructure;
-use MagicSunday\Gedcom\Traits\SourceCitation;
+use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
+use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure;
+use MagicSunday\Gedcom\Traits\Common\ChangeDate;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
+use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+
 
 /**
- * The individual model.
+ * The INDI (individual) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class IndividualRecord extends DataObject
-    implements IndividualInterface
-//        ChangeDateInterface,
-//        NoteStructureInterface
-//        PersonalNameStructureInterface
-//        IndividualEventStructureInterface,
-//        IndividualAttributeStructureInterface,
-//        LdsIndividualOrdinanceInterface,
-//        NoteStructureInterface,
-//        SourceCitationInterface,
-//        MultimediaLinkInterface
+class IndividualRecord extends IndividualEventStructure implements IndividualRecordInterface
 {
-//    use \MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure;
-
     use ChangeDate;
     use MultimediaLink;
-    use NoteStructure;
+    use Note;
     use SourceCitation;
 
     /**
@@ -54,7 +43,7 @@ class IndividualRecord extends DataObject
      */
     public function getRestrictionNotice()
     {
-        // TODO: Implement getRestrictionNotice() method.
+        return $this->getValue(self::TAG_RESN);
     }
 
     /**
@@ -62,7 +51,7 @@ class IndividualRecord extends DataObject
      */
     public function getSex()
     {
-        // TODO: Implement getSex() method.
+        return $this->getValue(self::TAG_SEX);
     }
 
     /**
@@ -70,7 +59,7 @@ class IndividualRecord extends DataObject
      */
     public function getSubmitterXref()
     {
-        // TODO: Implement getSubmitterXref() method.
+        return $this->getValue(self::TAG_SUBM);
     }
 
     /**
@@ -78,7 +67,7 @@ class IndividualRecord extends DataObject
      */
     public function getAliasXref()
     {
-        // TODO: Implement getAliasXref() method.
+        return $this->getValue(self::TAG_ALIA);
     }
 
     /**
@@ -86,7 +75,7 @@ class IndividualRecord extends DataObject
      */
     public function getAncestorInterest()
     {
-        // TODO: Implement getAncestorInterest() method.
+        return $this->getValue(self::TAG_ANCI);
     }
 
     /**
@@ -94,7 +83,7 @@ class IndividualRecord extends DataObject
      */
     public function getDescendantInterest()
     {
-        // TODO: Implement getDescendantInterest() method.
+        return $this->getValue(self::TAG_DESI);
     }
 
     /**
@@ -102,7 +91,7 @@ class IndividualRecord extends DataObject
      */
     public function getRecordFileNumber()
     {
-        // TODO: Implement getRecordFileNumber() method.
+        return $this->getValue(self::TAG_RFN);
     }
 
     /**
@@ -110,7 +99,15 @@ class IndividualRecord extends DataObject
      */
     public function getAncestralFileNumber()
     {
-        // TODO: Implement getAncestralFileNumber() method.
+        return $this->getValue(self::TAG_AFN);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getReferenceNumber()
+    {
+        return $this->getValue(self::TAG_REFN);
     }
 
     /**
@@ -118,14 +115,6 @@ class IndividualRecord extends DataObject
      */
     public function getRecordIdNumber()
     {
-        // TODO: Implement getRecordIdNumber() method.
-    }
-
-    /**
-     * @return null|PersonalNameStructureInterface[]
-     */
-    public function getNames()
-    {
-        return $this->getValue(self::TAG_NAME);
+        return $this->getValue(self::TAG_RIN);
     }
 }
