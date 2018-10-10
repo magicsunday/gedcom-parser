@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
 
 /**
  * The FAM (family) record.
@@ -20,7 +21,7 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface FamilyRecordInterface
-    extends ChangeDateInterface, //FamilyEventStructureInterface, LdsSpouseSealingInterface,
+    extends ChangeDateInterface, //FamilyEventStructureInterface,
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**
@@ -58,6 +59,11 @@ interface FamilyRecordInterface
      * A pointer to, or a cross-reference identifier of, a SUBMitter record.
      */
     const TAG_SUBM = 'SUBM';
+
+    /**
+     * A religious event pertaining to the sealing of a husband and wife in an LDS temple ceremony.
+     */
+    const TAG_SLGS = 'SLGS';
 
     /**
      * A description or number used to identify an item for filing, storage, or other reference purposes.
@@ -105,6 +111,11 @@ interface FamilyRecordInterface
      * @return null|string
      */
     public function getSubmitterXref();
+
+    /**
+     * @return null|LdsSpouseSealingInterface
+     */
+    public function getSealingSpouse();
 
     /**
      * @return null|ReferenceNumberInterface

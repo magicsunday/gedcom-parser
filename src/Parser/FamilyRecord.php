@@ -13,6 +13,7 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
+use MagicSunday\Gedcom\Parser\FamilyRecord\LdsSpouseSealing;
 
 /**
  * A FAM (family) record parser.
@@ -35,6 +36,7 @@ class FamilyRecord extends AbstractParser
             FamilyRecordModel::TAG_CHIL => Common::class,
             FamilyRecordModel::TAG_NCHI => Common::class,
             FamilyRecordModel::TAG_SUBM => Common::class,
+            FamilyRecordModel::TAG_SLGS => LdsSpouseSealing::class,
             FamilyRecordModel::TAG_REFN => ReferenceNumber::class,
             FamilyRecordModel::TAG_RIN  => Common::class,
             FamilyRecordModel::TAG_CHAN => ChangeDateStructure::class,
@@ -43,7 +45,6 @@ class FamilyRecord extends AbstractParser
             FamilyRecordModel::TAG_SOUR => SourceCitation::class,
 
             // TODO FamilyEvents
-            // TODO SpouseSealing
         ];
     }
 

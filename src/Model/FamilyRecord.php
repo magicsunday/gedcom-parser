@@ -85,6 +85,14 @@ class FamilyRecord extends DataObject implements FamilyRecordInterface
     /**
      * @inheritDoc
      */
+    public function getSealingSpouse()
+    {
+        return $this->getValue(self::TAG_SLGS);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getReferenceNumber()
     {
         return $this->getValue(self::TAG_REFN);
