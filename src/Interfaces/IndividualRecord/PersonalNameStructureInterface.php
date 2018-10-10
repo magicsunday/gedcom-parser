@@ -6,9 +6,9 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NamePhoneticVariationInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NameRomanizedVariationInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NamePhoneticVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NameRomanizedVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 
 /**
  * The personal name structure tags.

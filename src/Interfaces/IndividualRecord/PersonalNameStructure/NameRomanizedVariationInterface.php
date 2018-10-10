@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\Name;
+namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure;
 
 /**
  * The name romanized variation tags.

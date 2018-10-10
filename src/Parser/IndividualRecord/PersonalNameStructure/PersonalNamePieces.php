@@ -4,12 +4,12 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Parser\IndividualRecord\Name;
+namespace MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\NoteStructure;
-use MagicSunday\Gedcom\Parser\SourceCitation;
+use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
+use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 
 /**
  * The mapping for a the individual name pieces.

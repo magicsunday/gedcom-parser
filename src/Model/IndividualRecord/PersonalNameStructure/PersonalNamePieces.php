@@ -4,13 +4,13 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Model\IndividualRecord\Name;
+namespace MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\PersonalNamePiecesInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Individual\Name\PersonalNamePieces as PersonalNamePiecesTrait;
-use MagicSunday\Gedcom\Traits\NoteStructure;
-use MagicSunday\Gedcom\Traits\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
 
 /**
  * The personal name pieces model.
@@ -23,5 +23,5 @@ class PersonalNamePieces extends DataObject implements PersonalNamePiecesInterfa
 {
     use PersonalNamePiecesTrait;
     use SourceCitation;
-    use NoteStructure;
+    use Note;
 }

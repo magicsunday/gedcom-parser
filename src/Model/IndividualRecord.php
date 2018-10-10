@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
@@ -44,6 +45,14 @@ class IndividualRecord extends IndividualEventStructure implements IndividualRec
     public function getRestrictionNotice()
     {
         return $this->getValue(self::TAG_RESN);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNames()
+    {
+        return $this->getValue(self::TAG_NAME);
     }
 
     /**

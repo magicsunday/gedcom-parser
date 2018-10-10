@@ -10,9 +10,9 @@ use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure as PersonalNameStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\IndividualRecord\Name\NamePhoneticVariation;
-use MagicSunday\Gedcom\Parser\IndividualRecord\Name\NameRomanizedVariation;
-use MagicSunday\Gedcom\Parser\IndividualRecord\Name\PersonalNamePieces;
+use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure\NamePhoneticVariation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure\NameRomanizedVariation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure\PersonalNamePieces;
 
 /**
  * The personal name structure (PERSONAL_NAME_STRUCTURE) parser.

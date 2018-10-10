@@ -5,10 +5,10 @@ declare(strict_types=1);
  */
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NamePhoneticVariationInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\Name\NameRomanizedVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NamePhoneticVariationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NameRomanizedVariationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
-use MagicSunday\Gedcom\Model\IndividualRecord\Name\PersonalNamePieces;
+use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure\PersonalNamePieces;
 
 /**
  * The personal name structure model.

@@ -14,6 +14,7 @@ use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
+use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
 
 /**
  * A INDI record parser.
@@ -33,7 +34,7 @@ class IndividualRecord extends AbstractParser
             IndividualModel::TAG_RESN => Common::class,
 
             // Personal name structure
-            //IndividualModel::TAG_NAME => PersonalNameStructure::class,
+            IndividualModel::TAG_NAME => PersonalNameStructure::class,
 
             IndividualModel::TAG_SEX  => Common::class,
 

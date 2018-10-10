@@ -4,10 +4,10 @@
  */
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\Name;
+namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure;
 
-use MagicSunday\Gedcom\Interfaces\NoteStructureInterface;
-use MagicSunday\Gedcom\Interfaces\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
 
 /**
  * The personal name pieces tags.
@@ -16,7 +16,7 @@ use MagicSunday\Gedcom\Interfaces\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface PersonalNamePiecesInterface extends NoteStructureInterface, SourceCitationInterface
+interface PersonalNamePiecesInterface extends NoteInterface, SourceCitationInterface
 {
     /**
      * Text which appears on a name line before the given and surname parts of a name.

@@ -12,6 +12,7 @@ use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 
 /**
  * The INDI (individual) record.
@@ -23,11 +24,6 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInter
 interface IndividualRecordInterface
     extends ChangeDateInterface, IndividualEventStructureInterface,
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
-
-//    extends
-//        PersonalNameStructureInterface,
-//        IndividualAttributeStructureInterface,
-//        LdsIndividualOrdinanceInterface,
 {
     /**
      * The identifier.
@@ -41,6 +37,11 @@ interface IndividualRecordInterface
      * Either "confidential", "locked" or "privacy"
      */
     const TAG_RESN = 'RESN';
+
+    /**
+     * A list of names of the individual.
+     */
+    const TAG_NAME = 'NAME';
 
     /**
      * A code that indicates the sex of the individual:
@@ -104,6 +105,11 @@ interface IndividualRecordInterface
      * @return null|string
      */
     public function getRestrictionNotice();
+
+    /**
+     * @return null|PersonalNameStructureInterface
+     */
+    public function getNames();
 
     /**
      * @return null|string
