@@ -13,6 +13,7 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
+use MagicSunday\Gedcom\Parser\FamilyRecord\FamilyEventStructure\FamilyEventDetail;
 use MagicSunday\Gedcom\Parser\FamilyRecord\LdsSpouseSealing;
 
 /**
@@ -44,7 +45,19 @@ class FamilyRecord extends AbstractParser
             FamilyRecordModel::TAG_NOTE => NoteStructure::class,
             FamilyRecordModel::TAG_SOUR => SourceCitation::class,
 
-            // TODO FamilyEvents
+            // Family events
+            FamilyRecordModel::TAG_ANUL => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_CENS => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_DIV  => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_DIVF => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_ENGA => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARB => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARC => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARR => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARL => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_MARS => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_RESI => FamilyEventDetail::class,
+            FamilyRecordModel::TAG_EVEN => FamilyEventDetail::class,
         ];
     }
 

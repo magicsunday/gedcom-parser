@@ -8,9 +8,9 @@ namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
-use MagicSunday\Gedcom\Parser\Common;
-use MagicSunday\Gedcom\Parser\Media;
 use MagicSunday\Gedcom\Model\IndividualRecord\EventDetail as EventDetailModel;
+use MagicSunday\Gedcom\Parser\Common;
+use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 
 /**
  * The event detail structure.
@@ -29,8 +29,8 @@ class EventDetail extends AbstractParser
         return [
             EventDetailInterface::TAG_TYPE  => Common::class,
             EventDetailInterface::TAG_DATE  => Common::class,
-            EventDetailInterface::TAG_PLAC  => Common::class,
-            EventDetailInterface::TAG_ADDR  => Common::class,
+            EventDetailInterface::TAG_PLAC  => PlaceStructure::class,
+            EventDetailInterface::TAG_ADDR  => AddressStructure::class,
             EventDetailInterface::TAG_PHON  => Common::class,
             EventDetailInterface::TAG_EMAIL => Common::class,
             EventDetailInterface::TAG_FAX   => Common::class,
@@ -41,7 +41,7 @@ class EventDetail extends AbstractParser
             EventDetailInterface::TAG_RESN  => Common::class,
             EventDetailInterface::TAG_NOTE  => NoteStructure::class,
             EventDetailInterface::TAG_SOUR  => SourceCitation::class,
-            EventDetailInterface::TAG_OBJE  => Media::class,
+            EventDetailInterface::TAG_OBJE  => MultimediaLink::class,
         ];
     }
 
@@ -52,8 +52,6 @@ class EventDetail extends AbstractParser
     public function parse(): EventDetailModel
     {
         $eventDetail = new EventDetailModel();
-        $eventDetail->setValue('type', $this->reader->tag())
-            ->setValue('value', $this->reader->value());
 
         $this->process($eventDetail);
 

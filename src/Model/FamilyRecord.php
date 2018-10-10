@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\FamilyRecordInterface;
+use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
 use MagicSunday\Gedcom\Traits\Common\Note;
@@ -19,7 +20,7 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class FamilyRecord extends DataObject implements FamilyRecordInterface
+class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
 {
     use ChangeDate;
     use MultimediaLink;

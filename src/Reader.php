@@ -125,7 +125,7 @@ class Reader
             $matches = [];
 
             if (preg_match('/' . self::PATTERN . '/s', $this->lastLine, $matches) !== 1) {
-                throw new InvalidArgumentException('Unable to match line: <' . $this->lastLine . '>');
+                throw new InvalidArgumentException('Unable to match line: <' . trim($this->lastLine) . '>');
             }
 
             $this->level      = (int) $matches[self::MATCH_GROUP_LEVEL];

@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructureInterface;
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
 
 /**
@@ -21,7 +22,7 @@ use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface FamilyRecordInterface
-    extends ChangeDateInterface, //FamilyEventStructureInterface,
+    extends ChangeDateInterface, FamilyEventStructureInterface,
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**
