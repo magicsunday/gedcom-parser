@@ -28,7 +28,7 @@ class ChildToFamilyLink extends AbstractParser
         return [
             ChildToFamilyLinkModel::TAG_PEDI => Common::class,
             ChildToFamilyLinkModel::TAG_STAT => Common::class,
-            ChildToFamilyLinkModel::TAG_NOTE => NoteStructure::class
+            ChildToFamilyLinkModel::TAG_NOTE => NoteStructure::class,
         ];
     }
 

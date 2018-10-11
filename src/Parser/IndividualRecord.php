@@ -14,6 +14,7 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
+use MagicSunday\Gedcom\Parser\IndividualRecord\AssociationStructure;
 use MagicSunday\Gedcom\Parser\IndividualRecord\ChildToFamilyLink;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetail;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
@@ -110,7 +111,7 @@ class IndividualRecord extends AbstractParser
             IndividualModel::TAG_FAMS => SpouseToFamilyLink::class,
 
             // Association structure
-
+            IndividualModel::TAG_ASSO => AssociationStructure::class,
         ];
     }
 

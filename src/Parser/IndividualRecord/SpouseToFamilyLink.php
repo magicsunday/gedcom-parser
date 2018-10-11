@@ -25,7 +25,7 @@ class SpouseToFamilyLink extends AbstractParser
     protected function getClassMap(): array
     {
         return [
-            SpouseToFamilyLinkModel::TAG_NOTE => NoteStructure::class
+            SpouseToFamilyLinkModel::TAG_NOTE => NoteStructure::class,
         ];
     }
 

@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\AssociationStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\ChildToFamilyLinkInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
@@ -45,14 +46,19 @@ interface IndividualRecordInterface
     const TAG_NAME = 'NAME';
 
     /**
-     * A child to family link.
+     * Identifies the family in which an individual appears as a child.
      */
     const TAG_FAMC = 'FAMC';
 
     /**
-     * A spouse to family link.
+     * Identifies the family in which an individual appears as a spouse.
      */
     const TAG_FAMS = 'FAMS';
+
+    /**
+     * An indicator to link friends, neighbors, relatives, or associates of an individual.
+     */
+    const TAG_ASSO = 'ASSO';
 
     /**
      * The restriction notice is defined for Ancestral File usage. Ancestral File download GEDCOM files
@@ -128,12 +134,17 @@ interface IndividualRecordInterface
     /**
      * @return null|ChildToFamilyLinkInterface
      */
-    public function getChildToFamilyLink();
+    public function getFamilyChild();
 
     /**
      * @return null|SpouseToFamilyLinkInterface
      */
-    public function getSpouseToFamilyLink();
+    public function getFamilySpouse();
+
+    /**
+     * @return null|AssociationStructureInterface
+     */
+    public function getAssociation();
 
     /**
      * @return null|string

@@ -22,7 +22,7 @@ class SpouseToFamilyLink extends DataObject implements SpouseToFamilyLinkInterfa
     use Note;
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getXref()
     {

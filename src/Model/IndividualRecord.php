@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\AssociationStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
@@ -53,7 +54,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getChildToFamilyLink()
+    public function getFamilyChild()
     {
         return $this->getValue(self::TAG_FAMC);
     }
@@ -61,9 +62,17 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSpouseToFamilyLink()
+    public function getFamilySpouse()
     {
         return $this->getValue(self::TAG_FAMS);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAssociation()
+    {
+        return $this->getValue(self::TAG_ASSO);
     }
 
     /**
