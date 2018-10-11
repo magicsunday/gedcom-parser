@@ -87,28 +87,15 @@ abstract class AbstractParser
     {
         while ($this->reader->read() && $this->valid()) {
             $gedcomTag = $this->reader->tag();
+            $subParser = $this->create($gedcomTag);
 
-            if (strncmp($gedcomTag, '_', 1) === 0) {
+            if (!$subParser) {
+                $this->logger->info('Invalid GEDCOM 5.5.1 tag <' . $gedcomTag . '> found.');
+
                 $subParser = new Custom($this->reader, $this->logger);
-            } else {
-                $subParser = $this->create($gedcomTag);
             }
 
-            if ($subParser) {
-                $object->setValue($gedcomTag, $subParser->parse());
-            } else {
-                $this->logger->error('Skipping tag <' . $gedcomTag . '> due missing parser.');
-                $this->logger->error('Tag <' . $this->reader->current() . '> not parsed.');
-
-                $currentLevel = $this->reader->level();
-
-                // Skip all child tags
-                while ($this->reader->read() && ($this->reader->level() > $currentLevel)) {
-                    $this->logger->error('Tag <' . $this->reader->current() . '> not parsed.');
-                }
-
-                $this->reader->back();
-            }
+            $object->setValue($gedcomTag, $subParser->parse());
         }
 
         return $object;
