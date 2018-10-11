@@ -36,6 +36,11 @@ interface CommonIndividualOrdinanceInterface extends NoteInterface, SourceCitati
     const TAG_PLAC = 'PLAC';
 
     /**
+     * The date status.
+     */
+    const TAG_STAT = 'STAT';
+
+    /**
      * @return null|string
      */
     public function getDate();
@@ -49,4 +54,9 @@ interface CommonIndividualOrdinanceInterface extends NoteInterface, SourceCitati
      * @return null|string
      */
     public function getPlace();
+
+    /**
+     * @return null|CommonDateStatusInterface
+     */
+    public function getDateStatus();
 }

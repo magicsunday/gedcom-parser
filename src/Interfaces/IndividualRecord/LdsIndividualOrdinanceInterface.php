@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\BaptismInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\ConfirmationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\EndowmentInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\SealingChildInterface;
@@ -42,22 +43,22 @@ interface LdsIndividualOrdinanceInterface
     const TAG_SLGC = 'SLGC';
 
     /**
-     * @return null|BaptismInterface
+     * @return null|CommonIndividualOrdinanceInterface
      */
-    public function getBaptism();
+    public function getLdsBaptism();
 
     /**
-     * @return null|ConfirmationInterface
+     * @return null|CommonIndividualOrdinanceInterface
      */
-    public function getConfirmation();
+    public function getLdsConfirmation();
 
     /**
-     * @return null|EndowmentInterface
+     * @return null|CommonIndividualOrdinanceInterface
      */
-    public function getEndowment();
+    public function getLdsEndowment();
 
     /**
      * @return null|SealingChildInterface
      */
-    public function getSealingChild();
+    public function getLdsSealingChild();
 }

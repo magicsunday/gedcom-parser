@@ -13,6 +13,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
 use MagicSunday\Gedcom\Traits\Common\SourceCitation;
 use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructure;
 use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructure;
+use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinance;
 
 /**
  * The INDI (individual) record.
@@ -25,6 +26,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
 {
     use IndividualEventStructure;
     use IndividualAttributeStructure;
+    use LdsIndividualOrdinance;
     use ChangeDate;
     use MultimediaLink;
     use Note;

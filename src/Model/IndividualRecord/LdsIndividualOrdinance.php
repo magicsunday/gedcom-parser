@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\DataObject;
+use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinance as LdsIndividualOrdinanceTrait;
 
 /**
  * The LDS individual ordinance.
@@ -18,35 +19,5 @@ use MagicSunday\Gedcom\Model\DataObject;
  */
 class LdsIndividualOrdinance extends DataObject implements LdsIndividualOrdinanceInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function getBaptism()
-    {
-        return $this->getValue(self::TAG_BAPL);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getConfirmation()
-    {
-        return $this->getValue(self::TAG_CONL);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getEndowment()
-    {
-        return $this->getValue(self::TAG_ENDL);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSealingChild()
-    {
-        return $this->getValue(self::TAG_SLGC);
-    }
+    use LdsIndividualOrdinanceTrait;
 }

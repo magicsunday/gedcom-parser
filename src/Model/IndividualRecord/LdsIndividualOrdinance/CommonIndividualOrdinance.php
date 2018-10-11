@@ -6,8 +6,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord\LdsIndividualOrdinance;
 
-use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
-use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\Note;
@@ -47,5 +45,13 @@ class CommonIndividualOrdinance extends DataObject implements CommonIndividualOr
     public function getPlace()
     {
         return $this->getValue(self::TAG_PLAC);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDateStatus()
+    {
+        return $this->getValue(self::TAG_STAT);
     }
 }

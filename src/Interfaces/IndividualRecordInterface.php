@@ -24,9 +24,10 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterfac
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface IndividualRecordInterface
-    extends ChangeDateInterface, IndividualEventStructureInterface,
+    extends ChangeDateInterface,
+            IndividualEventStructureInterface,
             IndividualAttributeStructureInterface,
-    //LdsIndividualOrdinanceInterface
+            LdsIndividualOrdinanceInterface,
             MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**

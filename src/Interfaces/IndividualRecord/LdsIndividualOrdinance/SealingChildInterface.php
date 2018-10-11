@@ -21,11 +21,6 @@ interface SealingChildInterface extends CommonIndividualOrdinanceInterface
     const TAG_FAMC = 'FAMC';
 
     /**
-     * The date status.
-     */
-    const TAG_STAT = 'STAT';
-
-    /**
      * @return null|string
      */
     public function getFamilyXref();

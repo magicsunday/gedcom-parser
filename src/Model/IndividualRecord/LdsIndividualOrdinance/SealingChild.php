@@ -20,14 +20,6 @@ class SealingChild extends CommonIndividualOrdinance implements SealingChildInte
     /**
      * @inheritDoc
      */
-    public function getDateStatus()
-    {
-        return $this->getValue(self::TAG_STAT);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getFamilyXref()
     {
         return $this->getValue(self::TAG_FAMC);

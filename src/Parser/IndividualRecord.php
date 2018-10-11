@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord as IndividualModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
@@ -15,6 +16,8 @@ use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetail;
 use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
+use MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinance;
+use MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance\SealingChild;
 use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
 
 /**
@@ -81,6 +84,11 @@ class IndividualRecord extends AbstractParser
             IndividualModel::TAG_FACT => IndividualAttributeDetail::class,
 
             // LDS individual ordinance
+            IndividualModel::TAG_BAPL => CommonIndividualOrdinance::class,
+            IndividualModel::TAG_CONL => CommonIndividualOrdinance::class,
+            IndividualModel::TAG_ENDL => CommonIndividualOrdinance::class,
+            IndividualModel::TAG_SLGC => SealingChild::class,
+
             // Child to family link
             // Spouse to family link
 
