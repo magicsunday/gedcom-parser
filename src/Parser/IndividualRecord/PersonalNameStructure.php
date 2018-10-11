@@ -43,7 +43,7 @@ class PersonalNameStructure extends AbstractParser
     public function parse(): PersonalNameStructureModel
     {
         $personalNameStructure = new PersonalNameStructureModel();
-        $personalNameStructure->setValue(PersonalNameStructureInterface::TAG_NAME_PERSONAL, $this->reader->value());
+        $personalNameStructure->setValue(PersonalNameStructureModel::TAG_NAME_PERSONAL, $this->reader->value());
 
         $this->process($personalNameStructure);
 

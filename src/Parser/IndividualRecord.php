@@ -20,6 +20,7 @@ use MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\Individu
 use MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinance;
 use MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance\SealingChild;
 use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
+use MagicSunday\Gedcom\Parser\IndividualRecord\SpouseToFamilyLink;
 
 /**
  * A INDI record parser.
@@ -36,12 +37,24 @@ class IndividualRecord extends AbstractParser
     protected function getClassMap(): array
     {
         return [
+            // Common individual tags
             IndividualModel::TAG_RESN => Common::class,
+            IndividualModel::TAG_SEX  => Common::class,
+            IndividualModel::TAG_SUBM => Common::class,
+            IndividualModel::TAG_ALIA => Common::class,
+            IndividualModel::TAG_ANCI => Common::class,
+            IndividualModel::TAG_DESI => Common::class,
+            IndividualModel::TAG_RFN  => Common::class,
+            IndividualModel::TAG_AFN  => Common::class,
+            IndividualModel::TAG_REFN => ReferenceNumber::class,
+            IndividualModel::TAG_RIN  => Common::class,
+            IndividualModel::TAG_CHAN => ChangeDateStructure::class,
+            IndividualModel::TAG_NOTE => NoteStructure::class,
+            IndividualModel::TAG_SOUR => SourceCitation::class,
+            IndividualModel::TAG_OBJE => MultimediaLink::class,
 
             // Personal name structure
             IndividualModel::TAG_NAME => PersonalNameStructure::class,
-
-            IndividualModel::TAG_SEX  => Common::class,
 
             // Individual events
             IndividualModel::TAG_BIRT => IndividualEventDetail\Birth::class,
@@ -94,22 +107,10 @@ class IndividualRecord extends AbstractParser
             IndividualModel::TAG_FAMC => ChildToFamilyLink::class,
 
             // Spouse to family link
-
-            IndividualModel::TAG_SUBM => Common::class,
+            IndividualModel::TAG_FAMS => SpouseToFamilyLink::class,
 
             // Association structure
 
-            IndividualModel::TAG_ALIA => Common::class,
-            IndividualModel::TAG_ANCI => Common::class,
-            IndividualModel::TAG_DESI => Common::class,
-            IndividualModel::TAG_RFN  => Common::class,
-            IndividualModel::TAG_AFN  => Common::class,
-            IndividualModel::TAG_REFN => ReferenceNumber::class,
-            IndividualModel::TAG_RIN  => Common::class,
-            IndividualModel::TAG_CHAN => ChangeDateStructure::class,
-            IndividualModel::TAG_NOTE => NoteStructure::class,
-            IndividualModel::TAG_SOUR => SourceCitation::class,
-            IndividualModel::TAG_OBJE => MultimediaLink::class,
         ];
     }
 

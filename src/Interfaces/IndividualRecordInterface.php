@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructureI
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\SpouseToFamilyLinkInterface;
 
 /**
  * The INDI (individual) record.
@@ -47,6 +48,11 @@ interface IndividualRecordInterface
      * A child to family link.
      */
     const TAG_FAMC = 'FAMC';
+
+    /**
+     * A spouse to family link.
+     */
+    const TAG_FAMS = 'FAMS';
 
     /**
      * The restriction notice is defined for Ancestral File usage. Ancestral File download GEDCOM files
@@ -123,6 +129,11 @@ interface IndividualRecordInterface
      * @return null|ChildToFamilyLinkInterface
      */
     public function getChildToFamilyLink();
+
+    /**
+     * @return null|SpouseToFamilyLinkInterface
+     */
+    public function getSpouseToFamilyLink();
 
     /**
      * @return null|string

@@ -6,42 +6,26 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\ChildToFamilyLinkInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\SpouseToFamilyLinkInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\Note;
 
 /**
- * The child to family link structure.
+ * The spouse to family link tags.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class ChildToFamilyLink extends DataObject implements ChildToFamilyLinkInterface
+class SpouseToFamilyLink extends DataObject implements SpouseToFamilyLinkInterface
 {
     use Note;
 
     /**
-     * @inheritDoc
+     * @return null|string
      */
     public function getXref()
     {
         return $this->getValue(self::TAG_XREF_FAM);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPedigreeLinkageType()
-    {
-        return $this->getValue(self::TAG_PEDI);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getChildLinkageStatus()
-    {
-        return $this->getValue(self::TAG_STAT);
     }
 }
