@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\Note as NoteTrait;
 
 /**
  * The PLAC (place) structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class PlaceStructure extends DataObject implements PlaceStructureInterface
 {
-    use Note;
+    use NoteTrait;
 
     /**
      * @inheritDoc

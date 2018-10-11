@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\AssociationStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
 use MagicSunday\Gedcom\Traits\Common\ChangeDate;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
@@ -34,9 +33,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     use SourceCitation;
 
     /**
-     * Returns the XREF.
-     *
-     * @return null|string
+     * @inheritDoc
      */
     public function getXref()
     {

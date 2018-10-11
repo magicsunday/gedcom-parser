@@ -62,15 +62,13 @@ class Parser
                     $headerParser = new HeaderRecord($reader, $this->logger);
                     $gedcom->setHeader($headerParser->parse());
 
-                    if ($gedcom->getHeader()->getGedcomInfo()
+                    if (($gedcom->getHeader()->getGedcomInfo() !== null)
                         && ($gedcom->getHeader()->getGedcomInfo()->getVersion() !== '5.5.1')
                     ) {
-                        // TODO Implement GEDCOM version check
-//                        throw new RuntimeException('Wrong gedcom version. Must be 5.5.1');
+                        $this->logger->warning('Wrong gedcom version. Must be 5.5.1');
                     }
 
                     // TODO Use correct GEDCOM char encoding for reading the file
-
                     break;
 
                 // Family record

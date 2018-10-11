@@ -10,7 +10,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NameRom
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\Note;
 use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-use MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure\PersonalNamePieces;
+use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
 
 /**
  * The name romanized variation model.
@@ -22,7 +22,7 @@ use MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure\PersonalNamePiece
 class NameRomanizedVariation extends DataObject implements NameRomanizedVariationInterface
 {
     use Note;
-    use PersonalNamePieces;
+    use PersonalNamePiecesTrait;
     use SourceCitation;
 
     /**

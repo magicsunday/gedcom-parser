@@ -8,9 +8,9 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NamePhoneticVariationInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Individual\PersonalNameStructure\PersonalNamePieces;
 use MagicSunday\Gedcom\Traits\Common\Note;
 use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
 
 /**
  * The name phonetic variation model.
@@ -22,7 +22,7 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
 class NamePhoneticVariation extends DataObject implements NamePhoneticVariationInterface
 {
     use Note;
-    use PersonalNamePieces;
+    use PersonalNamePiecesTrait;
     use SourceCitation;
 
     /**

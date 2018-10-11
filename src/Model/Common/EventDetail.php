@@ -8,10 +8,10 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\AddressStructure as AddressStructureTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLink as MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\Note as NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitation as SourceCitationTrait;
 
 /**
  * The event detail structure.
@@ -22,10 +22,10 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class EventDetail extends DataObject implements EventDetailInterface
 {
-    use AddressStructure;
-    use MultimediaLink;
-    use Note;
-    use SourceCitation;
+    use AddressStructureTrait;
+    use MultimediaLinkTrait;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

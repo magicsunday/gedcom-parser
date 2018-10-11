@@ -28,9 +28,9 @@ class Text extends AbstractParser
     /**
      * Parses a SOUR-DATA-TEXT block.
      *
-     * @return string
+     * @return null|string
      */
-    public function parse(): string
+    public function parse()
     {
         return $this->readContent();
     }

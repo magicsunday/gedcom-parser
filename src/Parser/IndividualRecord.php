@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord as IndividualModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
