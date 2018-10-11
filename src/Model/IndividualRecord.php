@@ -45,17 +45,25 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getRestrictionNotice()
+    public function getNames()
     {
-        return $this->getValue(self::TAG_RESN);
+        return $this->getValue(self::TAG_NAME);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNames()
+    public function getChildToFamilyLink()
     {
-        return $this->getValue(self::TAG_NAME);
+        return $this->getValue(self::TAG_FAMC);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRestrictionNotice()
+    {
+        return $this->getValue(self::TAG_RESN);
     }
 
     /**

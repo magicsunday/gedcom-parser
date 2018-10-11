@@ -11,6 +11,7 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\ChildToFamilyLinkInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
@@ -28,12 +29,24 @@ interface IndividualRecordInterface
             IndividualEventStructureInterface,
             IndividualAttributeStructureInterface,
             LdsIndividualOrdinanceInterface,
-            MultimediaLinkInterface, NoteInterface, SourceCitationInterface
+            MultimediaLinkInterface,
+            NoteInterface,
+            SourceCitationInterface
 {
     /**
      * The identifier.
      */
     const TAG_XREF_INDI = 'XREF:INDI';
+
+    /**
+     * A list of names of the individual.
+     */
+    const TAG_NAME = 'NAME';
+
+    /**
+     * A child to family link.
+     */
+    const TAG_FAMC = 'FAMC';
 
     /**
      * The restriction notice is defined for Ancestral File usage. Ancestral File download GEDCOM files
@@ -42,11 +55,6 @@ interface IndividualRecordInterface
      * Either "confidential", "locked" or "privacy"
      */
     const TAG_RESN = 'RESN';
-
-    /**
-     * A list of names of the individual.
-     */
-    const TAG_NAME = 'NAME';
 
     /**
      * A code that indicates the sex of the individual:
@@ -107,14 +115,19 @@ interface IndividualRecordInterface
     public function getXref();
 
     /**
-     * @return null|string
-     */
-    public function getRestrictionNotice();
-
-    /**
      * @return null|PersonalNameStructureInterface
      */
     public function getNames();
+
+    /**
+     * @return null|ChildToFamilyLinkInterface
+     */
+    public function getChildToFamilyLink();
+
+    /**
+     * @return null|string
+     */
+    public function getRestrictionNotice();
 
     /**
      * @return null|string
