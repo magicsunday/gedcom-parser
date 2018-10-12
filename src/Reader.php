@@ -121,12 +121,12 @@ class Reader
         $this->lastPosition = (int) $this->file->ftell();
         $this->lastLine     = $this->file->fgets();
 
-        // Remove possible BOM from UTF-8 files
-        $this->lastLine = trim($this->lastLine, "\xEF\xBB\xBF");
-
         ++$this->lineCount;
 
         if ($this->valid()) {
+            // Remove possible BOM from UTF-8 files
+            $this->lastLine = trim($this->lastLine, "\xEF\xBB\xBF");
+
             $matches = [];
 
             if (preg_match('/' . self::PATTERN . '/s', $this->lastLine, $matches) !== 1) {
