@@ -69,7 +69,7 @@ abstract class AbstractParser
      *
      * @return null|AbstractParser
      */
-    public function create(string $gedcomTag)
+    private function create(string $gedcomTag)
     {
         $className = $this->getClassMap()[$gedcomTag] ?? null;
 

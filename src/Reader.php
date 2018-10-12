@@ -171,7 +171,7 @@ class Reader
      *
      * @return bool
      */
-    public function valid(): bool
+    private function valid(): bool
     {
         return \is_string($this->lastLine) && (trim($this->lastLine) !== '');
     }
