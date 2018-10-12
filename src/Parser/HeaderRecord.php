@@ -56,6 +56,12 @@ class HeaderRecord extends AbstractParser
 
         $this->process($header);
 
+//        if (($header->getGedcomInfo() !== null)
+//            && ($header->getGedcomInfo()->getVersion() !== '5.5.1')
+//        ) {
+//            $this->logger->warning('Wrong gedcom version. Must be 5.5.1');
+//        }
+
         return $header;
     }
 }

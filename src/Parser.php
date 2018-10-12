@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Model\Gedcom;
+use MagicSunday\Gedcom\Parser\Custom;
 use MagicSunday\Gedcom\Parser\IndividualRecord;
 use MagicSunday\Gedcom\Parser\FamilyRecord;
 use MagicSunday\Gedcom\Parser\HeaderRecord;
@@ -25,101 +27,50 @@ use Psr\Log\NullLogger;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Parser
+class Parser extends AbstractParser
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
+     * @param string               $fileName
      * @param null|LoggerInterface $logger
      */
     public function __construct(
+        string $fileName,
         LoggerInterface $logger = null
     ) {
         $this->logger = $logger ?: new NullLogger();
+
+        parent::__construct(new Reader($fileName), $this->logger);
     }
 
     /**
-     * @param string $fileName The name of the file to parse
+     * @inheritDoc
+     */
+    protected function getClassMap(): array
+    {
+        return [
+            Gedcom::TAG_HEAD => HeaderRecord::class,
+            Gedcom::TAG_FAM  => FamilyRecord::class,
+            Gedcom::TAG_INDI => IndividualRecord::class,
+            Gedcom::TAG_OBJE => MultimediaRecord::class,
+            Gedcom::TAG_NOTE => NoteRecord::class,
+            Gedcom::TAG_REPO => RepositoryRecord::class,
+            Gedcom::TAG_SOUR => SourceRecord::class,
+            Gedcom::TAG_SUBM => SubmitterRecord::class,
+            Gedcom::TAG_SUBN => SubmissionRecord::class,
+            Gedcom::TAG_TRLR => Custom::class,
+        ];
+    }
+
+    /**
+     * Parses a GEDCOM file.
      *
      * @return Gedcom
      */
-    public function parse(string $fileName): Gedcom
+    public function parse(): Gedcom
     {
-        $reader = new Reader($fileName);
         $gedcom = new Gedcom();
 
-        while ($reader->read()) {
-            if ($reader->level() !== 0) {
-                continue;
-            }
-
-            switch ($reader->tag()) {
-                // Header
-                case 'HEAD':
-                    $headerParser = new HeaderRecord($reader, $this->logger);
-                    $gedcom->setHeader($headerParser->parse());
-
-                    if (($gedcom->getHeader()->getGedcomInfo() !== null)
-                        && ($gedcom->getHeader()->getGedcomInfo()->getVersion() !== '5.5.1')
-                    ) {
-                        $this->logger->warning('Wrong gedcom version. Must be 5.5.1');
-                    }
-
-                    // TODO Use correct GEDCOM char encoding for reading the file
-                    break;
-
-                // Family record
-                case 'FAM':
-                    $familyParser = new FamilyRecord($reader, $this->logger);
-                    $gedcom->addFamily($familyParser->parse());
-                    break;
-
-                // Individual record
-                case 'INDI':
-                    $individualParser = new IndividualRecord($reader, $this->logger);
-                    $gedcom->addIndividual($individualParser->parse());
-                    break;
-
-                // Multimedia record
-                case 'OBJE':
-                    $mediaParser = new MultimediaRecord($reader, $this->logger);
-                    $gedcom->addMedia($mediaParser->parse());
-                    break;
-
-                // Note record
-                case 'NOTE':
-                    $noteParser = new NoteRecord($reader, $this->logger);
-                    $gedcom->addNote($noteParser->parse());
-                    break;
-
-                // Repository record
-                case 'REPO':
-                    $repoParser = new RepositoryRecord($reader, $this->logger);
-                    $gedcom->addRepository($repoParser->parse());
-                    break;
-
-                // Source record
-                case 'SOUR':
-                    $sourceParser = new SourceRecord($reader, $this->logger);
-                    $gedcom->addSource($sourceParser->parse());
-                    break;
-
-                // Submitter record
-                case 'SUBM':
-                    $submitterParser = new SubmitterRecord($reader, $this->logger);
-                    $gedcom->setSubmitter($submitterParser->parse());
-                    break;
-
-                // Submission record
-                case 'SUBN':
-                    $submissionParser = new SubmissionRecord($reader, $this->logger);
-                    $gedcom->setSubmission($submissionParser->parse());
-                    break;
-            }
-        }
+        $this->process($gedcom);
 
         return $gedcom;
     }

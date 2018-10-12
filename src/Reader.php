@@ -65,7 +65,7 @@ class Reader
     /**
      * @var int
      */
-    private $level = 0;
+    private $level = -1;
 
     /**
      * @var string
@@ -115,6 +115,8 @@ class Reader
         if (!$this->file->valid()) {
             return false;
         }
+
+        // TODO Use correct GEDCOM char encoding for reading the file
 
         $this->lastPosition = (int) $this->file->ftell();
         $this->lastLine     = $this->file->fgets();

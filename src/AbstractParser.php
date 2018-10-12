@@ -87,6 +87,12 @@ abstract class AbstractParser
     {
         while ($this->reader->read() && $this->valid()) {
             $gedcomTag = $this->reader->tag();
+
+            // Trailer found, stop further processing
+            if ($gedcomTag === 'TRLR') {
+                break;
+            }
+
             $subParser = $this->create($gedcomTag);
 
             if (!$subParser) {
