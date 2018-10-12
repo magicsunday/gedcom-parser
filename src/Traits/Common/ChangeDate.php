@@ -30,6 +30,6 @@ trait ChangeDate
      */
     public function getChangeDate()
     {
-         return $this->getValue(ChangeDateInterface::TAG_CHAN);
+        return $this->getValue(ChangeDateInterface::TAG_CHAN);
     }
 }

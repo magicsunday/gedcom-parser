@@ -66,7 +66,7 @@ interface IndividualEventStructureInterface
     /**
      * The religious event (not LDS) of baptizing and/or naming a child.
      */
-    const TAG_CHR  = 'CHR';
+    const TAG_CHR = 'CHR';
 
     /**
      * The religious event (not LDS) of baptizing and/or naming an adult person.

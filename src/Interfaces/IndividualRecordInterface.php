@@ -75,7 +75,7 @@ interface IndividualRecordInterface
      * F = Female
      * U = Undetermined from available records and quite sure that it can’t be
      */
-    const TAG_SEX  = 'SEX';
+    const TAG_SEX = 'SEX';
 
     /**
      * A submitter XREF pointer.

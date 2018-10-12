@@ -52,7 +52,7 @@ interface IndividualAttributeStructureInterface
     /**
      * The number of times this person has participated in a family as a spouse or parent.
      */
-    const TAG_NMR  = 'NMR';
+    const TAG_NMR = 'NMR';
 
     /**
      * The type of work or profession of an individual.
@@ -78,7 +78,7 @@ interface IndividualAttributeStructureInterface
      * A number assigned by the United States Social Security Administration.
      * Used for tax identification purposes.
      */
-    const TAG_SSN  = 'SSN';
+    const TAG_SSN = 'SSN';
 
     /**
      * The title given to or used by a person, especially of royalty or other noble class within a locality.

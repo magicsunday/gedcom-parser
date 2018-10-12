@@ -22,29 +22,29 @@ interface PlaceStructureInterface extends NoteInterface
     /**
      * The jurisdictional name of the place where the event took place. Jurisdictions are separated by commas.
      */
-    const TAG_PLACE_NAME  = 'PLACE_NAME';
+    const TAG_PLACE_NAME = 'PLACE_NAME';
 
     /**
      * This shows the jurisdictional entities that are named in a sequence from the lowest to the highest
      * jurisdiction. The jurisdictions are separated by commas, and any jurisdiction's name that is missing is
      * still accounted for by a comma.
      */
-    const TAG_FORM  = 'FORM';
+    const TAG_FORM = 'FORM';
 
     /**
      * The phonetic variation of the place name.
      */
-    const TAG_FONE  = 'FONE';
+    const TAG_FONE = 'FONE';
 
     /**
      * The romanized variation of the place name.
      */
-    const TAG_ROMN  = 'ROMN';
+    const TAG_ROMN = 'ROMN';
 
     /**
      * Pertains to a representation of measurements usually presented in a graphical form.
      */
-    const TAG_MAP  = 'MAP';
+    const TAG_MAP = 'MAP';
 
     /**
      * @return null|string
