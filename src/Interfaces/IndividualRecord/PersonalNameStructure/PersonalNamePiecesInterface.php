@@ -16,7 +16,9 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface PersonalNamePiecesInterface extends NoteInterface, SourceCitationInterface
+interface PersonalNamePiecesInterface extends
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * Text which appears on a name line before the given and surname parts of a name.

@@ -16,7 +16,9 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface AssociationStructureInterface extends NoteInterface, SourceCitationInterface
+interface AssociationStructureInterface extends
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * A pointer to, or a cross-reference identifier of, a individual record.

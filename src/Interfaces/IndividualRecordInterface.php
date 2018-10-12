@@ -26,14 +26,14 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\SpouseToFamilyLinkInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface IndividualRecordInterface
-    extends ChangeDateInterface,
-            IndividualEventStructureInterface,
-            IndividualAttributeStructureInterface,
-            LdsIndividualOrdinanceInterface,
-            MultimediaLinkInterface,
-            NoteInterface,
-            SourceCitationInterface
+interface IndividualRecordInterface extends
+    ChangeDateInterface,
+    IndividualEventStructureInterface,
+    IndividualAttributeStructureInterface,
+    LdsIndividualOrdinanceInterface,
+    MultimediaLinkInterface,
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * The identifier.

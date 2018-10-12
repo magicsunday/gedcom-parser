@@ -18,8 +18,10 @@ use MagicSunday\Gedcom\Interfaces\Common\ReferenceNumberInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface RepositoryRecordInterface
-    extends AddressStructureInterface, ChangeDateInterface, NoteInterface
+interface RepositoryRecordInterface extends
+    AddressStructureInterface,
+    ChangeDateInterface,
+    NoteInterface
 {
     /**
      * A pointer to, or a cross-reference identifier of, a repository record.

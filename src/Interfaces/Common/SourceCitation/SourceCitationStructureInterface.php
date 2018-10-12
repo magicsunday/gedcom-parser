@@ -16,7 +16,9 @@ use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface SourceCitationStructureInterface extends MultimediaLinkInterface, NoteInterface
+interface SourceCitationStructureInterface extends
+    MultimediaLinkInterface,
+    NoteInterface
 {
     /**
      * A pointer to, or a cross-reference identifier of, a SOURce record.

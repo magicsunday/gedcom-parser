@@ -21,9 +21,12 @@ use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface FamilyRecordInterface
-    extends ChangeDateInterface, FamilyEventStructureInterface,
-            MultimediaLinkInterface, NoteInterface, SourceCitationInterface
+interface FamilyRecordInterface extends
+    ChangeDateInterface,
+    FamilyEventStructureInterface,
+    MultimediaLinkInterface,
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * A pointer to, or a cross-reference identifier of, a family record.

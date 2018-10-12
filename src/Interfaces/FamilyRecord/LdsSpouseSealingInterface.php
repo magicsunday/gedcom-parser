@@ -17,7 +17,9 @@ use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealing\SpouseSealingDat
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface LdsSpouseSealingInterface extends NoteInterface, SourceCitationInterface
+interface LdsSpouseSealingInterface extends
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * LDS ordinance dates use only the Gregorian date and most often use the form of day, month, and

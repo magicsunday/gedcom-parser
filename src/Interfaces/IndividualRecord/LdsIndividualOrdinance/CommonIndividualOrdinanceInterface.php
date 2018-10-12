@@ -16,7 +16,9 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface CommonIndividualOrdinanceInterface extends NoteInterface, SourceCitationInterface
+interface CommonIndividualOrdinanceInterface extends
+    NoteInterface,
+    SourceCitationInterface
 {
     /**
      * LDS ordinance dates use only the Gregorian date and most often use the form of day, month, and
