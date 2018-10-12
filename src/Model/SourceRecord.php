@@ -7,9 +7,9 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\SourceRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The SOUR (source) record.
@@ -20,9 +20,9 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class SourceRecord extends DataObject implements SourceRecordInterface
 {
-    use ChangeDate;
-    use MultimediaLink;
-    use Note;
+    use ChangeDateTrait;
+    use MultimediaLinkTrait;
+    use NoteTrait;
 
     /**
      * @inheritDoc

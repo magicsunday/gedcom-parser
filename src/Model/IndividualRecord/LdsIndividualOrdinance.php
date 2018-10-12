@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinance as LdsIndividualOrdinanceTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinanceTrait;
 
 /**
  * The LDS individual ordinance.

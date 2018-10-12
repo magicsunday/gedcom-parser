@@ -8,10 +8,10 @@ namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\FamilyRecordInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The FAM (family) record.
@@ -22,10 +22,10 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
 {
-    use ChangeDate;
-    use MultimediaLink;
-    use Note;
-    use SourceCitation;
+    use ChangeDateTrait;
+    use MultimediaLinkTrait;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

@@ -7,9 +7,9 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\RepositoryRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The REPO (repository) record.
@@ -20,9 +20,9 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class RepositoryRecord extends DataObject implements RepositoryRecordInterface
 {
-    use AddressStructure;
-    use ChangeDate;
-    use Note;
+    use AddressStructureTrait;
+    use ChangeDateTrait;
+    use NoteTrait;
 
     /**
      * @inheritDoc

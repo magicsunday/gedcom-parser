@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink as MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
 
 /**
  * The media structure.

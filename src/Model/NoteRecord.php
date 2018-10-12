@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\NoteRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The NOTE record.
@@ -19,8 +19,8 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class NoteRecord extends DataObject implements NoteRecordInterface
 {
-    use ChangeDate;
-    use SourceCitation;
+    use ChangeDateTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

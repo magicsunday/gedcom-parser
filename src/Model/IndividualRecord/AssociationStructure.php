@@ -8,8 +8,8 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\AssociationStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The association structure.
@@ -20,8 +20,8 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class AssociationStructure extends DataObject implements AssociationStructureInterface
 {
-    use Note;
-    use SourceCitation;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

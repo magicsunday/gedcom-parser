@@ -7,13 +7,13 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructure;
-use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructure;
-use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinance;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructureTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructureTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinanceTrait;
 
 /**
  * The INDI (individual) record.
@@ -24,13 +24,13 @@ use MagicSunday\Gedcom\Traits\IndividualRecord\LdsIndividualOrdinance;
  */
 class IndividualRecord extends DataObject implements IndividualRecordInterface
 {
-    use IndividualEventStructure;
-    use IndividualAttributeStructure;
-    use LdsIndividualOrdinance;
-    use ChangeDate;
-    use MultimediaLink;
-    use Note;
-    use SourceCitation;
+    use IndividualEventStructureTrait;
+    use IndividualAttributeStructureTrait;
+    use LdsIndividualOrdinanceTrait;
+    use ChangeDateTrait;
+    use MultimediaLinkTrait;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

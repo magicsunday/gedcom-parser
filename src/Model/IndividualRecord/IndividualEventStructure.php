@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructure as IndividualEventStructureTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualEventStructureTrait;
 
 /**
  * The individual event structure.

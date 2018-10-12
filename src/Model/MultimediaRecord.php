@@ -7,9 +7,9 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\MultimediaRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The OBJE (multimedia object) record.
@@ -20,9 +20,9 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class MultimediaRecord extends DataObject implements MultimediaRecordInterface
 {
-    use ChangeDate;
-    use Note;
-    use SourceCitation;
+    use ChangeDateTrait;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

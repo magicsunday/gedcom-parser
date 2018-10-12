@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate as ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
 
 /**
  * The change date.

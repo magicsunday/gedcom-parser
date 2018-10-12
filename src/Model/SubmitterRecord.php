@@ -7,10 +7,10 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\SubmitterRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The SUBM (submitter) record.
@@ -26,10 +26,10 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class SubmitterRecord extends DataObject implements SubmitterRecordInterface
 {
-    use AddressStructure;
-    use ChangeDate;
-    use MultimediaLink;
-    use Note;
+    use AddressStructureTrait;
+    use ChangeDateTrait;
+    use MultimediaLinkTrait;
+    use NoteTrait;
 
     /**
      * @inheritDoc

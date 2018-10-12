@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\ChildToFamilyLinkInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The child to family link structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class ChildToFamilyLink extends DataObject implements ChildToFamilyLinkInterface
 {
-    use Note;
+    use NoteTrait;
 
     /**
      * @inheritDoc

@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure as AddressStructureTrait;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 
 /**
  * The address structure.

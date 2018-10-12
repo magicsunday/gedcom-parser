@@ -8,9 +8,9 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NameRomanizedVariationInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePiecesTrait;
 
 /**
  * The name romanized variation model.
@@ -21,9 +21,9 @@ use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNam
  */
 class NameRomanizedVariation extends DataObject implements NameRomanizedVariationInterface
 {
-    use Note;
+    use NoteTrait;
     use PersonalNamePiecesTrait;
-    use SourceCitation;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

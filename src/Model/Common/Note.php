@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note as NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The note.

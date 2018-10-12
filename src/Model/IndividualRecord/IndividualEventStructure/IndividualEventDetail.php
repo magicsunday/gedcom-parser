@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
 use MagicSunday\Gedcom\Model\Common\EventDetail;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 
 /**
  * The individual event detail structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\AddressStructure;
  */
 class IndividualEventDetail extends EventDetail implements IndividualEventDetailInterface
 {
-    use AddressStructure;
+    use AddressStructureTrait;
 
     /**
      * @inheritDoc

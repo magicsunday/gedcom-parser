@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\SubmissionRecordInterface;
-use MagicSunday\Gedcom\Traits\Common\ChangeDate;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The SUBN (submission) record.
@@ -26,8 +26,8 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class SubmissionRecord extends DataObject implements SubmissionRecordInterface
 {
-    use Note;
-    use ChangeDate;
+    use NoteTrait;
+    use ChangeDateTrait;
 
     /**
      * @inheritDoc

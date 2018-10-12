@@ -8,8 +8,8 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\LdsIndividualOrdinance;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinanceInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The common LDS individual ordinance.
@@ -20,8 +20,8 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class CommonIndividualOrdinance extends DataObject implements CommonIndividualOrdinanceInterface
 {
-    use Note;
-    use SourceCitation;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

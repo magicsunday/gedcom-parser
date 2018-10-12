@@ -8,9 +8,9 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
-use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePieces as PersonalNamePiecesTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNamePiecesTrait;
 
 /**
  * The personal name pieces model.
@@ -22,6 +22,6 @@ use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNam
 class PersonalNamePieces extends DataObject implements PersonalNamePiecesInterface
 {
     use PersonalNamePiecesTrait;
-    use SourceCitation;
-    use Note;
+    use SourceCitationTrait;
+    use NoteTrait;
 }

@@ -8,8 +8,8 @@ namespace MagicSunday\Gedcom\Model\FamilyRecord;
 
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
-use MagicSunday\Gedcom\Traits\Common\SourceCitation;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 
 /**
  * The LDS spouse sealing.
@@ -20,8 +20,8 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitation;
  */
 class LdsSpouseSealing extends DataObject implements LdsSpouseSealingInterface
 {
-    use Note;
-    use SourceCitation;
+    use NoteTrait;
+    use SourceCitationTrait;
 
     /**
      * @inheritDoc

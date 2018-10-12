@@ -6,17 +6,17 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Traits\Common;
 
-use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\MultimediaLinkStructureInterface;
-use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\Note\NoteStructureInterface;
 
 /**
- * The multimedia link methods.
+ * The note methods.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-trait MultimediaLink
+trait NoteTrait
 {
     /**
      * @param string $key
@@ -26,10 +26,10 @@ trait MultimediaLink
     abstract public function getValue(string $key);
 
     /**
-     * @return null|MultimediaLinkStructureInterface
+     * @return null|NoteStructureInterface
      */
-    public function getObject()
+    public function getNote()
     {
-        return $this->getValue(MultimediaLinkInterface::TAG_OBJE);
+        return $this->getValue(NoteInterface::TAG_NOTE);
     }
 }

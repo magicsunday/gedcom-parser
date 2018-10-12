@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\SourceRecord;
 
 use MagicSunday\Gedcom\Interfaces\SourceRecord\SourceRepositoryCitationInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The SOUR (source), REPO (repository) structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class SourceRepositoryCitation extends DataObject implements SourceRepositoryCitationInterface
 {
-    use Note;
+    use NoteTrait;
 
     /**
      * @inheritDoc

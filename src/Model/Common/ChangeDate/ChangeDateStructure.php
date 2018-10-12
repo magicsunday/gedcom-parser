@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\Common\ChangeDate;
 
 use MagicSunday\Gedcom\Interfaces\Common\ChangeDate\ChangeDateStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The change date structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class ChangeDateStructure extends DataObject implements ChangeDateStructureInterface
 {
-    use Note;
+    use NoteTrait;
 
     /**
      * @inheritDoc

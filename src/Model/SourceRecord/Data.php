@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\SourceRecord;
 
 use MagicSunday\Gedcom\Interfaces\SourceRecord\DataInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The SOUR (source) DATA (data) structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class Data extends DataObject implements DataInterface
 {
-    use Note;
+    use NoteTrait;
 
     /**
      * @inheritDoc

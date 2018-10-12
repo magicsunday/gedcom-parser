@@ -16,7 +16,7 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-trait SourceCitation
+trait SourceCitationTrait
 {
     /**
      * @param string $key

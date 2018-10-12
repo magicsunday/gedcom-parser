@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructure as IndividualAttributeStructureTrait;
+use MagicSunday\Gedcom\Traits\IndividualRecord\IndividualAttributeStructureTrait;
 
 /**
  * The individual attribute structure.

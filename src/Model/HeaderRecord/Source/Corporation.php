@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\HeaderRecord\Source;
 
 use MagicSunday\Gedcom\Interfaces\HeaderRecord\Source\CorporationInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 
 /**
  * The corporation structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\AddressStructure;
  */
 class Corporation extends DataObject implements CorporationInterface
 {
-    use AddressStructure;
+    use AddressStructureTrait;
 
     /**
      * @return null|string

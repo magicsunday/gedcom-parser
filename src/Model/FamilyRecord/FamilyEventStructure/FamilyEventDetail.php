@@ -8,7 +8,7 @@ namespace MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure;
 
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
 use MagicSunday\Gedcom\Model\Common\EventDetail;
-use MagicSunday\Gedcom\Traits\Common\AddressStructure;
+use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 
 /**
  * The family event detail structure.
@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\Traits\Common\AddressStructure;
  */
 class FamilyEventDetail extends EventDetail implements FamilyEventDetailInterface
 {
-    use AddressStructure;
+    use AddressStructureTrait;
 
     /**
      * @inheritDoc

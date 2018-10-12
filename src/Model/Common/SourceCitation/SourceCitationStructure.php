@@ -8,8 +8,8 @@ namespace MagicSunday\Gedcom\Model\Common\SourceCitation;
 
 use MagicSunday\Gedcom\Interfaces\Common\SourceCitation\SourceCitationStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
-use MagicSunday\Gedcom\Traits\Common\MultimediaLink;
-use MagicSunday\Gedcom\Traits\Common\Note;
+use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
+use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
 /**
  * The source citation structure.
@@ -20,8 +20,8 @@ use MagicSunday\Gedcom\Traits\Common\Note;
  */
 class SourceCitationStructure extends DataObject implements SourceCitationStructureInterface
 {
-    use MultimediaLink;
-    use Note;
+    use MultimediaLinkTrait;
+    use NoteTrait;
 
     /**
      * @inheritDoc
