@@ -1,7 +1,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser)
+[![Code Coverage](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser)
+[![Build Status](https://travis-ci.org/magicsunday/gedcom-parser.svg?branch=master)](https://travis-ci.org/magicsunday/gedcom-parser)
 [![Code Climate](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/gpa.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser)
-[![Test Coverage](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/coverage.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser/coverage)
 [![Issue Count](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/issue_count.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser)
 
 # GEDCOM parser

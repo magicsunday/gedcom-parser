@@ -1,6 +1,7 @@
 # .scrutinizer.yml
 checks:
   php: true
+
 coding_style:
   php:
     spaces:
@@ -29,13 +30,27 @@ coding_style:
         general: lower
       constants:
         true_false_null: lower
+
 build:
   nodes:
-    tests: true
     analysis:
+      project_setup:
+        override:
+        - 'true'
       tests:
         override:
+        - php-scrutinizer-run
         -
           command: phpcs-run
           use_website_config: true
-        - php-scrutinizer-run
+    tests: true
+
+tools:
+  php_sim: false
+  php_mess_detector: true
+  php_pdepend: true
+  php_analyzer: true
+  php_cpd: true
+  php_code_coverage: true
+  external_code_coverage:
+    timeout: 600
