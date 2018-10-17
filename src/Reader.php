@@ -21,12 +21,12 @@ use SplFileObject;
 class Reader
 {
     /**
-     * Regular expression to match a different parts in a line.
+     * Regular expression to match the different parts of a line.
      */
     const PATTERN = '^\s*(\d)\s+(@([^@ ]+)@\s+)?([a-zA-Z_0-9.]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
 
     /**
-     * The matches groups of interest.
+     * The matched groups of interest.
      */
     const MATCH_GROUP_LEVEL = 1;
     const MATCH_GROUP_ID    = 3;
