@@ -23,7 +23,7 @@ interface SourceCitationInterface
     const TAG_SOUR = 'SOUR';
 
     /**
-     * @return null|SourceCitationStructureInterface
+     * @return SourceCitationStructureInterface[]
      */
-    public function getSource();
+    public function getSource(): array;
 }

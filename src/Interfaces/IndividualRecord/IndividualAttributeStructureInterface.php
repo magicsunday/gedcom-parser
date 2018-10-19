@@ -92,72 +92,72 @@ interface IndividualAttributeStructureInterface
     const TAG_FACT = 'FACT';
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getCasteName();
+    public function getCasteName(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getPhysicalDescription();
+    public function getPhysicalDescription(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getEducation();
+    public function getEducation(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getIdentityNumber();
+    public function getIdentityNumber(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getNationality();
+    public function getNationality(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getChildrenCount();
+    public function getChildrenCount(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getMarriageCount();
+    public function getMarriageCount(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getOccupation();
+    public function getOccupation(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getProperty();
+    public function getProperty(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getReligion();
+    public function getReligion(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getResidence();
+    public function getResidence(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getSocialSecurityNumber();
+    public function getSocialSecurityNumber(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getTitle();
+    public function getTitle(): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getFact();
+    public function getFact(): array;
 }

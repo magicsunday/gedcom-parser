@@ -48,22 +48,22 @@ interface AddressStructureInterface
     public function getAddress(): AddressBlockInterface;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getPhoneNumber();
+    public function getPhoneNumber(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getEmailAddress();
+    public function getEmailAddress(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getFaxNumber();
+    public function getFaxNumber(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getWwwAddress();
+    public function getWwwAddress(): array;
 }

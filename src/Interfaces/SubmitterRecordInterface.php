@@ -64,9 +64,9 @@ interface SubmitterRecordInterface extends
     public function getName(): string;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getLanguage();
+    public function getLanguage(): array;
 
     /**
      * @return null|string

@@ -62,9 +62,9 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     /**
      * @inheritDoc
      */
-    public function getChildrenXref()
+    public function getChildrenXref(): array
     {
-        return $this->getValue(self::TAG_CHIL);
+        return $this->getArrayValue(self::TAG_CHIL);
     }
 
     /**
@@ -78,25 +78,25 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSubmitterXref()
+    public function getSubmitterXref(): array
     {
-        return $this->getValue(self::TAG_SUBM);
+        return $this->getArrayValue(self::TAG_SUBM);
     }
 
     /**
      * @inheritDoc
      */
-    public function getSealingSpouse()
+    public function getSpouseSealing(): array
     {
-        return $this->getValue(self::TAG_SLGS);
+        return $this->getArrayValue(self::TAG_SLGS);
     }
 
     /**
      * @inheritDoc
      */
-    public function getReferenceNumber()
+    public function getReferenceNumber(): array
     {
-        return $this->getValue(self::TAG_REFN);
+        return $this->getArrayValue(self::TAG_REFN);
     }
 
     /**

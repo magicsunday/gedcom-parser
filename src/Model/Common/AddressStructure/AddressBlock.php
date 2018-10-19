@@ -29,9 +29,9 @@ class AddressBlock extends DataObject implements AddressBlockInterface
     /**
      * @inheritDoc
      */
-    public function getAdditionalLines()
+    public function getAdditionalLines(): array
     {
-        return $this->getValue(self::TAG_CONT);
+        return $this->getArrayValue(self::TAG_CONT);
     }
 
     /**

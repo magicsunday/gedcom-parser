@@ -24,9 +24,9 @@ class Data extends DataObject implements DataInterface
     /**
      * @inheritDoc
      */
-    public function getEvents()
+    public function getEvents(): array
     {
-        return $this->getValue(self::TAG_EVEN);
+        return $this->getArrayValue(self::TAG_EVEN);
     }
 
     /**

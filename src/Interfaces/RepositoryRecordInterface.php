@@ -56,9 +56,9 @@ interface RepositoryRecordInterface extends
     public function getName(): string;
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

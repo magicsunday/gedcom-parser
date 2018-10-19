@@ -72,9 +72,9 @@ interface AddressBlockInterface
     public function getAddressLine();
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getAdditionalLines();
+    public function getAdditionalLines(): array;
 
     /**
      * @return null|string

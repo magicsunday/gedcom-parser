@@ -23,7 +23,7 @@ interface NoteInterface
     const TAG_NOTE = 'NOTE';
 
     /**
-     * @return null|NoteStructureInterface
+     * @return NoteStructureInterface[]
      */
-    public function getNote();
+    public function getNote(): array;
 }

@@ -21,15 +21,15 @@ trait MultimediaLinkTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function getValue(string $key);
+    abstract public function getArrayValue(string $key): array;
 
     /**
-     * @return null|MultimediaLinkStructureInterface
+     * @return MultimediaLinkStructureInterface[]
      */
-    public function getObject()
+    public function getObject(): array
     {
-        return $this->getValue(MultimediaLinkInterface::TAG_OBJE);
+        return $this->getArrayValue(MultimediaLinkInterface::TAG_OBJE);
     }
 }

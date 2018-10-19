@@ -26,6 +26,13 @@ trait AddressStructureTrait
     abstract public function getValue(string $key);
 
     /**
+     * @param string $key
+     *
+     * @return array
+     */
+    abstract public function getArrayValue(string $key): array;
+
+    /**
      * @return AddressBlockInterface
      */
     public function getAddress(): AddressBlockInterface
@@ -34,34 +41,34 @@ trait AddressStructureTrait
     }
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getPhoneNumber()
+    public function getPhoneNumber(): array
     {
-        return $this->getValue(AddressStructureInterface::TAG_PHON);
+        return $this->getArrayValue(AddressStructureInterface::TAG_PHON);
     }
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getEmailAddress()
+    public function getEmailAddress(): array
     {
-        return $this->getValue(AddressStructureInterface::TAG_EMAIL);
+        return $this->getArrayValue(AddressStructureInterface::TAG_EMAIL);
     }
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getFaxNumber()
+    public function getFaxNumber(): array
     {
-        return $this->getValue(AddressStructureInterface::TAG_FAX);
+        return $this->getArrayValue(AddressStructureInterface::TAG_FAX);
     }
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getWwwAddress()
+    public function getWwwAddress(): array
     {
-        return $this->getValue(AddressStructureInterface::TAG_WWW);
+        return $this->getArrayValue(AddressStructureInterface::TAG_WWW);
     }
 }

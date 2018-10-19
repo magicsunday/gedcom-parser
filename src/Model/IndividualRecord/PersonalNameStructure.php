@@ -6,8 +6,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NamePhoneticVariationInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\NameRomanizedVariationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure\PersonalNamePieces;
 
@@ -21,7 +19,7 @@ use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure\PersonalName
 class PersonalNameStructure extends PersonalNamePieces implements PersonalNameStructureInterface
 {
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getName()
     {
@@ -29,7 +27,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
     }
 
     /**
-     * @return null|string
+     * @inheritDoc
      */
     public function getType()
     {
@@ -37,18 +35,18 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
     }
 
     /**
-     * @return null|NamePhoneticVariationInterface
+     * @inheritDoc
      */
-    public function getPhoneticVariation()
+    public function getPhoneticVariation(): array
     {
-        return $this->getValue(self::TAG_FONE);
+        return $this->getArrayValue(self::TAG_FONE);
     }
 
     /**
-     * @return null|NameRomanizedVariationInterface
+     * @inheritDoc
      */
-    public function getRomanizedVariation()
+    public function getRomanizedVariation(): array
     {
-        return $this->getValue(self::TAG_ROMN);
+        return $this->getArrayValue(self::TAG_ROMN);
     }
 }

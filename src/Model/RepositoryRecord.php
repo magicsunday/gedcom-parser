@@ -43,9 +43,9 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     /**
      * @inheritDoc
      */
-    public function getReferenceNumber()
+    public function getReferenceNumber(): array
     {
-        return $this->getValue(self::TAG_REFN);
+        return $this->getArrayValue(self::TAG_REFN);
     }
 
     /**

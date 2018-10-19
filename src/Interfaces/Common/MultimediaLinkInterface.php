@@ -25,7 +25,7 @@ interface MultimediaLinkInterface
     const TAG_OBJE = 'OBJE';
 
     /**
-     * @return null|MultimediaLinkStructureInterface
+     * @return MultimediaLinkStructureInterface[]
      */
-    public function getObject();
+    public function getObject(): array;
 }

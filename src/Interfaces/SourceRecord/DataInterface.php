@@ -31,9 +31,9 @@ interface DataInterface extends NoteInterface
     const TAG_AGNC = 'AGNC';
 
     /**
-     * @return null|EventInterface[]
+     * @return EventInterface[]
      */
-    public function getEvents();
+    public function getEvents(): array;
 
     /**
      * @return null|string

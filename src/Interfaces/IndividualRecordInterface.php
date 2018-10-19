@@ -127,24 +127,24 @@ interface IndividualRecordInterface extends
     public function getXref(): string;
 
     /**
-     * @return null|PersonalNameStructureInterface
+     * @return PersonalNameStructureInterface[]
      */
-    public function getNames();
+    public function getNames(): array;
 
     /**
-     * @return null|ChildToFamilyLinkInterface
+     * @return ChildToFamilyLinkInterface[]
      */
-    public function getFamilyChild();
+    public function getFamilyChild(): array;
 
     /**
-     * @return null|SpouseToFamilyLinkInterface
+     * @return SpouseToFamilyLinkInterface[]
      */
-    public function getFamilySpouse();
+    public function getFamilySpouse(): array;
 
     /**
-     * @return null|AssociationStructureInterface
+     * @return AssociationStructureInterface[]
      */
-    public function getAssociation();
+    public function getAssociation(): array;
 
     /**
      * @return null|string
@@ -157,24 +157,24 @@ interface IndividualRecordInterface extends
     public function getSex();
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getSubmitterXref();
+    public function getSubmitterXref(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getAliasXref();
+    public function getAliasXref(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getAncestorInterest();
+    public function getAncestorInterest(): array;
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getDescendantInterest();
+    public function getDescendantInterest(): array;
 
     /**
      * @return null|string
@@ -187,9 +187,9 @@ interface IndividualRecordInterface extends
     public function getAncestralFileNumber();
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

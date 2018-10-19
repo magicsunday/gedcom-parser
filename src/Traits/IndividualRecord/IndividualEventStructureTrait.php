@@ -25,191 +25,191 @@ trait IndividualEventStructureTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function getValue(string $key);
+    abstract public function getArrayValue(string $key): array;
 
     /**
-     * @return null|AdoptionInterface
+     * @return AdoptionInterface[]
      */
-    public function getAdoption()
+    public function getAdoption(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_ADOP);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_ADOP);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBaptism()
+    public function getBaptism(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BAPM);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BAPM);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBarMitzvah()
+    public function getBarMitzvah(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BARM);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BARM);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBasMitzvah()
+    public function getBasMitzvah(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BASM);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BASM);
     }
 
     /**
-     * @return null|BirthInterface
+     * @return BirthInterface[]
      */
-    public function getBirth()
+    public function getBirth(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BIRT);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BIRT);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBlessing()
+    public function getBlessing(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BLES);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BLES);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBurial()
+    public function getBurial(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_BURI);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_BURI);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getCensus()
+    public function getCensus(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_CENS);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_CENS);
     }
 
     /**
-     * @return null|ChristeningInterface
+     * @return ChristeningInterface[]
      */
-    public function getChristening()
+    public function getChristening(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_CHR);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_CHR);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getAdultChristening()
+    public function getAdultChristening(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_CHRA);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_CHRA);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getConfirmation()
+    public function getConfirmation(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_CONF);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_CONF);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getCremation()
+    public function getCremation(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_CREM);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_CREM);
     }
 
     /**
-     * @return null|DeathInterface
+     * @return DeathInterface[]
      */
-    public function getDeath()
+    public function getDeath(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_DEAT);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_DEAT);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getEmigration()
+    public function getEmigration(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_EMIG);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_EMIG);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getEvent()
+    public function getEvent(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_EVEN);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_EVEN);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getFirstCommunion()
+    public function getFirstCommunion(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_FCOM);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_FCOM);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getGraduation()
+    public function getGraduation(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_GRAD);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_GRAD);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getImmigration()
+    public function getImmigration(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_IMMI);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_IMMI);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getNaturalization()
+    public function getNaturalization(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_NATU);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_NATU);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getOrdination()
+    public function getOrdination(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_ORDN);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_ORDN);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getProbate()
+    public function getProbate(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_PROB);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_PROB);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getRetirement()
+    public function getRetirement(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_RETI);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_RETI);
     }
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getWill()
+    public function getWill(): array
     {
-        return $this->getValue(IndividualEventStructureInterface::TAG_WILL);
+        return $this->getArrayValue(IndividualEventStructureInterface::TAG_WILL);
     }
 }

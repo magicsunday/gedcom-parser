@@ -43,33 +43,33 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getNames()
+    public function getNames(): array
     {
-        return $this->getValue(self::TAG_NAME);
+        return $this->getArrayValue(self::TAG_NAME);
     }
 
     /**
      * @inheritDoc
      */
-    public function getFamilyChild()
+    public function getFamilyChild(): array
     {
-        return $this->getValue(self::TAG_FAMC);
+        return $this->getArrayValue(self::TAG_FAMC);
     }
 
     /**
      * @inheritDoc
      */
-    public function getFamilySpouse()
+    public function getFamilySpouse(): array
     {
-        return $this->getValue(self::TAG_FAMS);
+        return $this->getArrayValue(self::TAG_FAMS);
     }
 
     /**
      * @inheritDoc
      */
-    public function getAssociation()
+    public function getAssociation(): array
     {
-        return $this->getValue(self::TAG_ASSO);
+        return $this->getArrayValue(self::TAG_ASSO);
     }
 
     /**
@@ -91,33 +91,33 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSubmitterXref()
+    public function getSubmitterXref(): array
     {
-        return $this->getValue(self::TAG_SUBM);
+        return $this->getArrayValue(self::TAG_SUBM);
     }
 
     /**
      * @inheritDoc
      */
-    public function getAliasXref()
+    public function getAliasXref(): array
     {
-        return $this->getValue(self::TAG_ALIA);
+        return $this->getArrayValue(self::TAG_ALIA);
     }
 
     /**
      * @inheritDoc
      */
-    public function getAncestorInterest()
+    public function getAncestorInterest(): array
     {
-        return $this->getValue(self::TAG_ANCI);
+        return $this->getArrayValue(self::TAG_ANCI);
     }
 
     /**
      * @inheritDoc
      */
-    public function getDescendantInterest()
+    public function getDescendantInterest(): array
     {
-        return $this->getValue(self::TAG_DESI);
+        return $this->getArrayValue(self::TAG_DESI);
     }
 
     /**
@@ -139,9 +139,9 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getReferenceNumber()
+    public function getReferenceNumber(): array
     {
-        return $this->getValue(self::TAG_REFN);
+        return $this->getArrayValue(self::TAG_REFN);
     }
 
     /**

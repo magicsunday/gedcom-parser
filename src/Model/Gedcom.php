@@ -8,6 +8,7 @@ namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\GedcomInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
 
 /**
  * The gedcom record.
@@ -29,57 +30,57 @@ class Gedcom extends DataObject implements GedcomInterface
     /**
      * @inheritDoc
      */
-    public function getFamily()
+    public function getFamily(): array
     {
-        return $this->getValue(self::TAG_FAM);
+        return $this->getArrayValue(self::TAG_FAM);
+    }
+
+    /**
+     * @return IndividualRecordInterface[]
+     */
+    public function getIndividual(): array
+    {
+        return $this->getArrayValue(self::TAG_INDI);
     }
 
     /**
      * @inheritDoc
      */
-    public function getIndividual()
+    public function getMultimedia(): array
     {
-        return $this->getValue(self::TAG_INDI);
+        return $this->getArrayValue(self::TAG_OBJE);
     }
 
     /**
      * @inheritDoc
      */
-    public function getMultimedia()
+    public function getNote(): array
     {
-        return $this->getValue(self::TAG_OBJE);
+        return $this->getArrayValue(self::TAG_NOTE);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNote()
+    public function getRepository(): array
     {
-        return $this->getValue(self::TAG_NOTE);
+        return $this->getArrayValue(self::TAG_REPO);
     }
 
     /**
      * @inheritDoc
      */
-    public function getRepository()
+    public function getSource(): array
     {
-        return $this->getValue(self::TAG_REPO);
+        return $this->getArrayValue(self::TAG_SOUR);
     }
 
     /**
      * @inheritDoc
      */
-    public function getSource()
+    public function getSubmitter(): array
     {
-        return $this->getValue(self::TAG_SOUR);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSubmitter()
-    {
-        return $this->getValue(self::TAG_SUBM);
+        return $this->getArrayValue(self::TAG_SUBM);
     }
 
     /**

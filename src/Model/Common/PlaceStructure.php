@@ -40,17 +40,17 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     /**
      * @inheritDoc
      */
-    public function getPhoneticVariation()
+    public function getPhoneticVariation(): array
     {
-        return $this->getValue(self::TAG_FONE);
+        return $this->getArrayValue(self::TAG_FONE);
     }
 
     /**
      * @inheritDoc
      */
-    public function getRomanizedVariation()
+    public function getRomanizedVariation(): array
     {
-        return $this->getValue(self::TAG_ROMN);
+        return $this->getArrayValue(self::TAG_ROMN);
     }
 
     /**

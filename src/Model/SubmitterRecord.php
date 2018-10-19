@@ -50,9 +50,9 @@ class SubmitterRecord extends DataObject implements SubmitterRecordInterface
     /**
      * @inheritDoc
      */
-    public function getLanguage()
+    public function getLanguage(): array
     {
-        return $this->getValue(self::TAG_LANG);
+        return $this->getArrayValue(self::TAG_LANG);
     }
 
     /**

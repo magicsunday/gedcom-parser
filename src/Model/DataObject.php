@@ -18,12 +18,16 @@ use ArrayAccess;
 class DataObject implements ArrayAccess
 {
     /**
+     * The internal data array.
+     *
      * @var array
      */
     private $data;
 
     /**
-     * @param string $key
+     * Returns the stored value to the given key.
+     *
+     * @param string $key The key to the internal record
      *
      * @return mixed
      */
@@ -33,8 +37,32 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * Returns a single value or multiple values always as an array.
+     *
+     * @param string $key The key to the internal record
+     *
+     * @return array
+     */
+    public function getArrayValue(string $key): array
+    {
+        $value = $this->getValue($key);
+
+        if ($value === null) {
+            $value = [];
+        }
+
+        if (!\is_array($value)) {
+            $value = [ $value ];
+        }
+
+        return $value;
+    }
+
+    /**
+     * Sets a value to the provided key. Multiple values will be stored as an array.
+     *
+     * @param string $key   The key used to store the value
+     * @param mixed  $value The value to store
      *
      * @return self
      */

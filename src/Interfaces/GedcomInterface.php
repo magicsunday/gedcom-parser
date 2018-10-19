@@ -74,39 +74,39 @@ interface GedcomInterface
     public function getHeader(): HeaderRecordInterface;
 
     /**
-     * @return null|FamilyRecordInterface
+     * @return FamilyRecordInterface[]
      */
-    public function getFamily();
+    public function getFamily(): array;
 
     /**
-     * @return null|IndividualRecordInterface
+     * @return IndividualRecordInterface[]
      */
-    public function getIndividual();
+    public function getIndividual(): array;
 
     /**
-     * @return null|MultimediaRecordInterface
+     * @return MultimediaRecordInterface[]
      */
-    public function getMultimedia();
+    public function getMultimedia(): array;
 
     /**
-     * @return null|NoteRecordInterface
+     * @return NoteRecordInterface[]
      */
-    public function getNote();
+    public function getNote(): array;
 
     /**
-     * @return null|RepositoryRecordInterface
+     * @return RepositoryRecordInterface[]
      */
-    public function getRepository();
+    public function getRepository(): array;
 
     /**
-     * @return null|SourceRecordInterface
+     * @return SourceRecordInterface[]
      */
-    public function getSource();
+    public function getSource(): array;
 
     /**
-     * @return null|SubmitterRecordInterface
+     * @return SubmitterRecordInterface[]
      */
-    public function getSubmitter();
+    public function getSubmitter(): array;
 
     /**
      * @return null|SubmissionRecordInterface

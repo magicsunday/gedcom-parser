@@ -34,7 +34,7 @@ interface SourceRepositoryCitationInterface extends NoteInterface
     public function getXref();
 
     /**
-     * @return null|SourceCallNumberInterface
+     * @return SourceCallNumberInterface[]
      */
-    public function getCallNumber();
+    public function getCallNumber(): array;
 }

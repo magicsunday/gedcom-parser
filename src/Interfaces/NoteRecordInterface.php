@@ -54,9 +54,9 @@ interface NoteRecordInterface extends
     public function getText();
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

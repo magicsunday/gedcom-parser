@@ -57,14 +57,14 @@ interface PlaceStructureInterface extends NoteInterface
     public function getFormat();
 
     /**
-     * @return null|PlacePhoneticVariationInterface
+     * @return PlacePhoneticVariationInterface[]
      */
-    public function getPhoneticVariation();
+    public function getPhoneticVariation(): array;
 
     /**
-     * @return null|PlaceRomanizedVariationInterface
+     * @return PlaceRomanizedVariationInterface[]
      */
-    public function getRomanizedVariation();
+    public function getRomanizedVariation(): array;
 
     /**
      * @return null|MapInterface

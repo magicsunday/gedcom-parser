@@ -64,12 +64,12 @@ interface PersonalNameStructureInterface extends PersonalNamePiecesInterface
     public function getType();
 
     /**
-     * @return null|NamePhoneticVariationInterface
+     * @return NamePhoneticVariationInterface[]
      */
-    public function getPhoneticVariation();
+    public function getPhoneticVariation(): array;
 
     /**
-     * @return null|NameRomanizedVariationInterface
+     * @return NameRomanizedVariationInterface[]
      */
-    public function getRomanizedVariation();
+    public function getRomanizedVariation(): array;
 }

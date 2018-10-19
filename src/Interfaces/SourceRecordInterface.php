@@ -118,14 +118,14 @@ interface SourceRecordInterface extends
     public function getText();
 
     /**
-     * @return null|SourceRepositoryCitationInterface
+     * @return SourceRepositoryCitationInterface[]
      */
-    public function getRepository();
+    public function getRepository(): array;
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

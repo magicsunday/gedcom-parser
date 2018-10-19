@@ -32,8 +32,8 @@ class SourceRepositoryCitation extends DataObject implements SourceRepositoryCit
     /**
      * @inheritDoc
      */
-    public function getCallNumber()
+    public function getCallNumber(): array
     {
-        return $this->getValue(self::TAG_CALN);
+        return $this->getArrayValue(self::TAG_CALN);
     }
 }

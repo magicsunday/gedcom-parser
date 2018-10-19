@@ -21,15 +21,15 @@ trait SourceCitationTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function getValue(string $key);
+    abstract public function getArrayValue(string $key): array;
 
     /**
-     * @return null|SourceCitationStructureInterface
+     * @return SourceCitationStructureInterface[]
      */
-    public function getSource()
+    public function getSource(): array
     {
-        return $this->getValue(SourceCitationInterface::TAG_SOUR);
+        return $this->getArrayValue(SourceCitationInterface::TAG_SOUR);
     }
 }

@@ -21,119 +21,119 @@ trait IndividualAttributeStructureTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function getValue(string $key);
+    abstract public function getArrayValue(string $key): array;
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getCasteName()
+    public function getCasteName(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_CAST);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_CAST);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getPhysicalDescription()
+    public function getPhysicalDescription(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_DSCR);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_DSCR);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getEducation()
+    public function getEducation(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_EDUC);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_EDUC);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getIdentityNumber()
+    public function getIdentityNumber(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_IDNO);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_IDNO);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getNationality()
+    public function getNationality(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_NATI);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_NATI);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getChildrenCount()
+    public function getChildrenCount(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_NCHI);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_NCHI);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getMarriageCount()
+    public function getMarriageCount(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_NMR);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_NMR);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getOccupation()
+    public function getOccupation(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_OCCU);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_OCCU);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getProperty()
+    public function getProperty(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_PROP);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_PROP);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getReligion()
+    public function getReligion(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_RELI);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_RELI);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getResidence()
+    public function getResidence(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_RESI);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_RESI);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getSocialSecurityNumber()
+    public function getSocialSecurityNumber(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_SSN);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_SSN);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getTitle()
+    public function getTitle(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_TITL);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_TITL);
     }
 
     /**
-     * @return null|IndividualAttributeDetailInterface
+     * @return IndividualAttributeDetailInterface[]
      */
-    public function getFact()
+    public function getFact(): array
     {
-        return $this->getValue(IndividualAttributeStructureInterface::TAG_FACT);
+        return $this->getArrayValue(IndividualAttributeStructureInterface::TAG_FACT);
     }
 }

@@ -31,7 +31,7 @@ interface DataInterface
     public function getDate();
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getText();
+    public function getText(): array;
 }

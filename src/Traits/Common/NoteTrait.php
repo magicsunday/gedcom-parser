@@ -21,15 +21,15 @@ trait NoteTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function getValue(string $key);
+    abstract public function getArrayValue(string $key): array;
 
     /**
-     * @return null|NoteStructureInterface
+     * @return NoteStructureInterface[]
      */
-    public function getNote()
+    public function getNote(): array
     {
-        return $this->getValue(NoteInterface::TAG_NOTE);
+        return $this->getArrayValue(NoteInterface::TAG_NOTE);
     }
 }

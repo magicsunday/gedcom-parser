@@ -102,9 +102,9 @@ interface FamilyRecordInterface extends
     public function getWifeXref();
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getChildrenXref();
+    public function getChildrenXref(): array;
 
     /**
      * @return null|string
@@ -112,19 +112,19 @@ interface FamilyRecordInterface extends
     public function getChildrenCount();
 
     /**
-     * @return null|string
+     * @return string[]
      */
-    public function getSubmitterXref();
+    public function getSubmitterXref(): array;
 
     /**
-     * @return null|LdsSpouseSealingInterface
+     * @return LdsSpouseSealingInterface[]
      */
-    public function getSealingSpouse();
+    public function getSpouseSealing(): array;
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

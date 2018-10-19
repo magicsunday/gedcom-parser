@@ -143,117 +143,117 @@ interface IndividualEventStructureInterface
     const TAG_WILL = 'WILL';
 
     /**
-     * @return null|AdoptionInterface
+     * @return AdoptionInterface[]
      */
-    public function getAdoption();
+    public function getAdoption(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBaptism();
+    public function getBaptism(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBarMitzvah();
+    public function getBarMitzvah(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBasMitzvah();
+    public function getBasMitzvah(): array;
 
     /**
-     * @return null|BirthInterface
+     * @return BirthInterface[]
      */
-    public function getBirth();
+    public function getBirth(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBlessing();
+    public function getBlessing(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getBurial();
+    public function getBurial(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getCensus();
+    public function getCensus(): array;
 
     /**
-     * @return null|ChristeningInterface
+     * @return ChristeningInterface[]
      */
-    public function getChristening();
+    public function getChristening(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getAdultChristening();
+    public function getAdultChristening(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getConfirmation();
+    public function getConfirmation(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getCremation();
+    public function getCremation(): array;
 
     /**
-     * @return null|DeathInterface
+     * @return DeathInterface[]
      */
-    public function getDeath();
+    public function getDeath(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getEmigration();
+    public function getEmigration(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getEvent();
+    public function getEvent(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getFirstCommunion();
+    public function getFirstCommunion(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getGraduation();
+    public function getGraduation(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getImmigration();
+    public function getImmigration(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getNaturalization();
+    public function getNaturalization(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getOrdination();
+    public function getOrdination(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getProbate();
+    public function getProbate(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getRetirement();
+    public function getRetirement(): array;
 
     /**
-     * @return null|IndividualEventDetailInterface
+     * @return IndividualEventDetailInterface[]
      */
-    public function getWill();
+    public function getWill(): array;
 }

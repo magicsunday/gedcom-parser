@@ -53,14 +53,14 @@ interface MultimediaRecordInterface extends
     public function getXref(): string;
 
     /**
-     * @return FileInterface
+     * @return FileInterface[]
      */
-    public function getFile(): FileInterface;
+    public function getFile(): array;
 
     /**
-     * @return null|ReferenceNumberInterface
+     * @return ReferenceNumberInterface[]
      */
-    public function getReferenceNumber();
+    public function getReferenceNumber(): array;
 
     /**
      * @return null|string

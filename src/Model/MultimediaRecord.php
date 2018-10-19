@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
-use MagicSunday\Gedcom\Interfaces\MultimediaRecord\FileInterface;
 use MagicSunday\Gedcom\Interfaces\MultimediaRecordInterface;
 use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
@@ -36,17 +35,17 @@ class MultimediaRecord extends DataObject implements MultimediaRecordInterface
     /**
      * @inheritDoc
      */
-    public function getFile(): FileInterface
+    public function getFile(): array
     {
-        return $this->getValue(self::TAG_FILE);
+        return $this->getArrayValue(self::TAG_FILE);
     }
 
     /**
      * @inheritDoc
      */
-    public function getReferenceNumber()
+    public function getReferenceNumber(): array
     {
-        return $this->getValue(self::TAG_REFN);
+        return $this->getArrayValue(self::TAG_REFN);
     }
 
     /**

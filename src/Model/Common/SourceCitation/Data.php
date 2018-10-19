@@ -29,8 +29,8 @@ class Data extends DataObject implements DataInterface
     /**
      * @inheritDoc
      */
-    public function getText()
+    public function getText(): array
     {
-        return $this->getValue(self::TAG_TEXT);
+        return $this->getArrayValue(self::TAG_TEXT);
     }
 }

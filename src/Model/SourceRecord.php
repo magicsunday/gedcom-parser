@@ -84,17 +84,17 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     /**
      * @inheritDoc
      */
-    public function getRepository()
+    public function getRepository(): array
     {
-        return $this->getValue(self::TAG_REPO);
+        return $this->getArrayValue(self::TAG_REPO);
     }
 
     /**
      * @inheritDoc
      */
-    public function getReferenceNumber()
+    public function getReferenceNumber(): array
     {
-        return $this->getValue(self::TAG_REFN);
+        return $this->getArrayValue(self::TAG_REFN);
     }
 
     /**
