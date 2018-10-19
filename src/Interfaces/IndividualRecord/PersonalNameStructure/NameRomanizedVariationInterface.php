@@ -36,7 +36,7 @@ interface NameRomanizedVariationInterface extends PersonalNamePiecesInterface
     public function getName();
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getType();
+    public function getType(): string;
 }

@@ -24,7 +24,7 @@ class SpouseToFamilyLink extends DataObject implements SpouseToFamilyLinkInterfa
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_FAM);
     }

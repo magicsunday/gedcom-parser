@@ -69,9 +69,9 @@ interface GedcomInterface
     const TAG_TRLR = 'TRLR';
 
     /**
-     * @return null|HeaderRecordInterface
+     * @return HeaderRecordInterface
      */
-    public function getHeader();
+    public function getHeader(): HeaderRecordInterface;
 
     /**
      * @return null|FamilyRecordInterface

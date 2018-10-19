@@ -21,7 +21,7 @@ class MediaFormat extends DataObject implements MediaFormatInterface
     /**
      * @inheritDoc
      */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->getValue(self::TAG_MULTIMEDIA_FORMAT);
     }

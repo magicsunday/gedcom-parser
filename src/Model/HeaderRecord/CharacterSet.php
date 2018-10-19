@@ -21,7 +21,7 @@ class CharacterSet extends DataObject implements CharacterSetInterface
     /**
      * @inheritDoc
      */
-    public function getCharacterSet()
+    public function getCharacterSet(): string
     {
         return $this->getValue(self::TAG_CHARACTER_SET);
     }

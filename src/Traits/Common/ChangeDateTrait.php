@@ -26,9 +26,9 @@ trait ChangeDateTrait
     abstract public function getValue(string $key);
 
     /**
-     * @return null|ChangeDateStructureInterface
+     * @return ChangeDateStructureInterface
      */
-    public function getChangeDate()
+    public function getChangeDate(): ChangeDateStructureInterface
     {
         return $this->getValue(ChangeDateInterface::TAG_CHAN);
     }

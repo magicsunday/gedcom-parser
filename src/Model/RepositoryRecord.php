@@ -27,7 +27,7 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_REPO);
     }
@@ -35,7 +35,7 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->getValue(self::TAG_NAME);
     }

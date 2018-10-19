@@ -25,7 +25,7 @@ class NoteRecord extends DataObject implements NoteRecordInterface
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_NOTE);
     }

@@ -42,9 +42,9 @@ interface ChildToFamilyLinkInterface extends NoteInterface
     const TAG_STAT = 'STAT';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
      * @return null|string

@@ -31,12 +31,12 @@ interface AssociationStructureInterface extends
     const TAG_RELA = 'RELA';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getRelationShip();
+    public function getRelationShip(): string;
 }

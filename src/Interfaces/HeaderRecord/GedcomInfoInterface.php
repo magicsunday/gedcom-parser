@@ -29,12 +29,12 @@ interface GedcomInfoInterface
     const TAG_FORM = 'FORM';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getVersion();
+    public function getVersion(): string;
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getForm();
+    public function getForm(): string;
 }

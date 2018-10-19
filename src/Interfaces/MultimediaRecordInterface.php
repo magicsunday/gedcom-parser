@@ -48,14 +48,14 @@ interface MultimediaRecordInterface extends
     const TAG_RIN = 'RIN';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
-     * @return null|FileInterface
+     * @return FileInterface
      */
-    public function getFile();
+    public function getFile(): FileInterface;
 
     /**
      * @return null|ReferenceNumberInterface

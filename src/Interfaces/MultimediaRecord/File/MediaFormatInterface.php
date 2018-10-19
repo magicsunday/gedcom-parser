@@ -51,9 +51,9 @@ interface MediaFormatInterface
     const TAG_TYPE = 'TYPE';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getFormat();
+    public function getFormat(): string;
 
     /**
      * @return null|string

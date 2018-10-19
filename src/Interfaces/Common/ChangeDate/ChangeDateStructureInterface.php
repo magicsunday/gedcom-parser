@@ -24,7 +24,7 @@ interface ChangeDateStructureInterface extends NoteInterface
     const TAG_DATE = 'DATE';
 
     /**
-     * @return null|DateExactInterface
+     * @return DateExactInterface
      */
-    public function getDateExact();
+    public function getDateExact(): DateExactInterface;
 }

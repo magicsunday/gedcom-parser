@@ -25,7 +25,7 @@ interface ChangeDateInterface
     const TAG_CHAN = 'CHAN';
 
     /**
-     * @return null|ChangeDateStructureInterface
+     * @return ChangeDateStructureInterface
      */
-    public function getChangeDate();
+    public function getChangeDate(): ChangeDateStructureInterface;
 }

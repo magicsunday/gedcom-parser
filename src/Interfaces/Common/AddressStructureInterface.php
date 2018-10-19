@@ -43,9 +43,9 @@ interface AddressStructureInterface
     const TAG_WWW = 'WWW';
 
     /**
-     * @return null|AddressBlockInterface
+     * @return AddressBlockInterface
      */
-    public function getAddress();
+    public function getAddress(): AddressBlockInterface;
 
     /**
      * @return null|string

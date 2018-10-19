@@ -23,7 +23,7 @@ interface CommonChangeDateInterface
     const TAG_DATE = 'DATE';
 
     /**
-     * @return null|DateExactInterface
+     * @return DateExactInterface
      */
-    public function getChangeDate();
+    public function getChangeDate(): DateExactInterface;
 }

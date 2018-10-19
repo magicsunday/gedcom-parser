@@ -26,9 +26,9 @@ trait AddressStructureTrait
     abstract public function getValue(string $key);
 
     /**
-     * @return null|AddressBlockInterface
+     * @return AddressBlockInterface
      */
-    public function getAddress()
+    public function getAddress(): AddressBlockInterface
     {
         return $this->getValue(AddressStructureInterface::TAG_ADDR);
     }

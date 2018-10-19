@@ -21,7 +21,7 @@ class Map extends DataObject implements MapInterface
     /**
      * @inheritDoc
      */
-    public function getLatitude()
+    public function getLatitude(): string
     {
         return $this->getValue(self::TAG_LATI);
     }
@@ -29,7 +29,7 @@ class Map extends DataObject implements MapInterface
     /**
      * @inheritDoc
      */
-    public function getLongitude()
+    public function getLongitude(): string
     {
         return $this->getValue(self::TAG_LONG);
     }

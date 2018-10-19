@@ -26,7 +26,7 @@ class AssociationStructure extends DataObject implements AssociationStructureInt
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_INDI);
     }
@@ -34,7 +34,7 @@ class AssociationStructure extends DataObject implements AssociationStructureInt
     /**
      * @inheritDoc
      */
-    public function getRelationShip()
+    public function getRelationShip(): string
     {
         return $this->getValue(self::TAG_RELA);
     }

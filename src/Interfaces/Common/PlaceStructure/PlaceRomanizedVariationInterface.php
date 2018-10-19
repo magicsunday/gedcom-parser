@@ -36,7 +36,7 @@ interface PlaceRomanizedVariationInterface
     public function getPlace();
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getType();
+    public function getType(): string;
 }

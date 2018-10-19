@@ -21,7 +21,7 @@ class Place extends DataObject implements PlaceInterface
     /**
      * @inheritDoc
      */
-    public function getForm()
+    public function getForm(): string
     {
         return $this->getValue(self::TAG_FORM);
     }

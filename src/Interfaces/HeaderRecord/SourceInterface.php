@@ -47,9 +47,9 @@ interface SourceInterface
     const TAG_DATA = 'DATA';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getApprovedSystemId();
+    public function getApprovedSystemId(): string;
 
     /**
      * @return null|string

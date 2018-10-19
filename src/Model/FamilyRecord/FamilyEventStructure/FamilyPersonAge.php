@@ -21,7 +21,7 @@ class FamilyPersonAge extends DataObject implements FamilyPersonAgeInterface
     /**
      * @inheritDoc
      */
-    public function getAge()
+    public function getAge(): string
     {
         return $this->getValue(self::TAG_AGE);
     }

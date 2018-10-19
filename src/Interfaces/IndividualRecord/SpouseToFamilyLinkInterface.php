@@ -23,7 +23,7 @@ interface SpouseToFamilyLinkInterface extends NoteInterface
     const TAG_XREF_FAM = 'XREF:FAM';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 }

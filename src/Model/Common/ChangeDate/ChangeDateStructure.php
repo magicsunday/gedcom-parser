@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model\Common\ChangeDate;
 
 use MagicSunday\Gedcom\Interfaces\Common\ChangeDate\ChangeDateStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 
@@ -24,7 +25,7 @@ class ChangeDateStructure extends DataObject implements ChangeDateStructureInter
     /**
      * @inheritDoc
      */
-    public function getDateExact()
+    public function getDateExact(): DateExactInterface
     {
         return $this->getValue(self::TAG_DATE);
     }

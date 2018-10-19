@@ -122,9 +122,9 @@ interface IndividualRecordInterface extends
     /**
      * Returns the XREF.
      *
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
      * @return null|PersonalNameStructureInterface

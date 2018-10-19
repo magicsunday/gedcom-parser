@@ -21,7 +21,7 @@ class GedcomInfo extends DataObject implements GedcomInfoInterface
     /**
      * @inheritDoc
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->getValue(self::TAG_VERS);
     }
@@ -29,7 +29,7 @@ class GedcomInfo extends DataObject implements GedcomInfoInterface
     /**
      * @inheritDoc
      */
-    public function getForm()
+    public function getForm(): string
     {
         return $this->getValue(self::TAG_FORM);
     }

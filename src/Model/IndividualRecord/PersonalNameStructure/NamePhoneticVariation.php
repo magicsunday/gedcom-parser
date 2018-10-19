@@ -36,7 +36,7 @@ class NamePhoneticVariation extends DataObject implements NamePhoneticVariationI
     /**
      * @inheritDoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->getValue(self::TAG_TYPE);
     }

@@ -83,9 +83,9 @@ interface SourceRecordInterface extends
     const TAG_RIN = 'RIN';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
      * @return null|DataInterface

@@ -46,14 +46,14 @@ interface RepositoryRecordInterface extends
     const TAG_RIN = 'RIN';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getXref();
+    public function getXref(): string;
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * @return null|ReferenceNumberInterface

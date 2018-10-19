@@ -21,7 +21,7 @@ interface FamilyPersonAgeInterface
     const TAG_AGE = 'AGE';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getAge();
+    public function getAge(): string;
 }

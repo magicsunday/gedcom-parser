@@ -21,7 +21,7 @@ class Source extends DataObject implements SourceInterface
     /**
      * @inheritDoc
      */
-    public function getApprovedSystemId()
+    public function getApprovedSystemId(): string
     {
         return $this->getValue(self::TAG_APPROVED_SYSTEM_ID);
     }

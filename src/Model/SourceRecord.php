@@ -27,7 +27,7 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_SOUR);
     }

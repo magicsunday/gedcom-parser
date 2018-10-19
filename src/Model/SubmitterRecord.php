@@ -34,7 +34,7 @@ class SubmitterRecord extends DataObject implements SubmitterRecordInterface
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_SUBM);
     }
@@ -42,7 +42,7 @@ class SubmitterRecord extends DataObject implements SubmitterRecordInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->getValue(self::TAG_NAME);
     }

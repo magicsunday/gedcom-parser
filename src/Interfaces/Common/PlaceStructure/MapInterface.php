@@ -26,12 +26,12 @@ interface MapInterface
     const TAG_LONG = 'LONG';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getLatitude();
+    public function getLatitude(): string;
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getLongitude();
+    public function getLongitude(): string;
 }

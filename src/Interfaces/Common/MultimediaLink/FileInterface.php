@@ -34,7 +34,7 @@ interface FileInterface
     public function getReference();
 
     /**
-     * @return null|FormatInterface
+     * @return FormatInterface
      */
-    public function getFormat();
+    public function getFormat(): FormatInterface;
 }

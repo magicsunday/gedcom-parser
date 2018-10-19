@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord\LdsIndividualOrdinance;
 
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonChangeDateInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
@@ -21,7 +22,7 @@ class CommonChangeDate extends DataObject implements CommonChangeDateInterface
     /**
      * @inheritDoc
      */
-    public function getChangeDate()
+    public function getChangeDate(): DateExactInterface
     {
         return $this->getValue(self::TAG_DATE);
     }

@@ -24,7 +24,7 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->getValue(self::TAG_PLACE_NAME);
     }

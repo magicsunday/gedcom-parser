@@ -65,9 +65,9 @@ interface SubmissionRecordInterface extends
     const TAG_RIN = 'RIN';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getSubmissionXref();
+    public function getXref(): string;
 
     /**
      * @return null|string

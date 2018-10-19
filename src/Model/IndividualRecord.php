@@ -35,7 +35,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     /**
      * @inheritDoc
      */
-    public function getXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_INDI);
     }

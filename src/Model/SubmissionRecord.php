@@ -32,7 +32,7 @@ class SubmissionRecord extends DataObject implements SubmissionRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSubmissionXref()
+    public function getXref(): string
     {
         return $this->getValue(self::TAG_XREF_SUBN);
     }

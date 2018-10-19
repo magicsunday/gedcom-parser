@@ -25,7 +25,7 @@ class DataObject implements ArrayAccess
     /**
      * @param string $key
      *
-     * @return null|mixed
+     * @return mixed
      */
     public function getValue(string $key)
     {
@@ -42,7 +42,7 @@ class DataObject implements ArrayAccess
     {
         if (isset($this->data[$key])) {
             if (!\is_array($this->data[$key])) {
-                $this->data[$key] = [$this->data[$key]];
+                $this->data[$key] = [ $this->data[$key] ];
             }
 
             $this->data[$key][] = $value;

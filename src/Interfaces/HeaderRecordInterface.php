@@ -89,9 +89,9 @@ interface HeaderRecordInterface
     const TAG_NOTE = 'NOTE';
 
     /**
-     * @return null|SourceInterface
+     * @return SourceInterface
      */
-    public function getSource();
+    public function getSource(): SourceInterface;
 
     /**
      * @return null|string
@@ -104,9 +104,9 @@ interface HeaderRecordInterface
     public function getTransmissionDate();
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getSubmitter();
+    public function getSubmitter(): string;
 
     /**
      * @return null|string
@@ -119,14 +119,14 @@ interface HeaderRecordInterface
     public function getFile();
 
     /**
-     * @return null|GedcomInfoInterface
+     * @return GedcomInfoInterface
      */
-    public function getGedcomInfo();
+    public function getGedcomInfo(): GedcomInfoInterface;
 
     /**
-     * @return null|CharacterSetInterface
+     * @return CharacterSetInterface
      */
-    public function getCharacterSet();
+    public function getCharacterSet(): CharacterSetInterface;
 
     /**
      * @return null|string

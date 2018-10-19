@@ -6,6 +6,9 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\CharacterSetInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\GedcomInfoInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\SourceInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
 
 /**
@@ -20,7 +23,7 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSource()
+    public function getSource(): SourceInterface
     {
         return $this->getValue(self::TAG_SOUR);
     }
@@ -44,7 +47,7 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     /**
      * @inheritDoc
      */
-    public function getSubmitter()
+    public function getSubmitter(): string
     {
         return $this->getValue(self::TAG_SUBM);
     }
@@ -68,7 +71,7 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     /**
      * @inheritDoc
      */
-    public function getGedcomInfo()
+    public function getGedcomInfo(): GedcomInfoInterface
     {
         return $this->getValue(self::TAG_GEDC);
     }
@@ -76,7 +79,7 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     /**
      * @inheritDoc
      */
-    public function getCharacterSet()
+    public function getCharacterSet(): CharacterSetInterface
     {
         return $this->getValue(self::TAG_CHAR);
     }

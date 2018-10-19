@@ -31,9 +31,9 @@ interface CharacterSetInterface
     const TAG_VERS = 'VERS';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getCharacterSet();
+    public function getCharacterSet(): string;
 
     /**
      * @return null|string

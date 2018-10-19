@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Interfaces\GedcomInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
 
 /**
  * The gedcom record.
@@ -20,7 +21,7 @@ class Gedcom extends DataObject implements GedcomInterface
     /**
      * @inheritDoc
      */
-    public function getHeader()
+    public function getHeader(): HeaderRecordInterface
     {
         return $this->getValue(self::TAG_HEAD);
     }

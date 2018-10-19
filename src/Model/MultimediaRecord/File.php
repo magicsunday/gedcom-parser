@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\MultimediaRecord;
 
+use MagicSunday\Gedcom\Interfaces\MultimediaRecord\File\MediaFormatInterface;
 use MagicSunday\Gedcom\Interfaces\MultimediaRecord\FileInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
@@ -21,7 +22,7 @@ class File extends DataObject implements FileInterface
     /**
      * @inheritDoc
      */
-    public function getReference()
+    public function getReference(): string
     {
         return $this->getValue(self::TAG_FILE_REFN);
     }
@@ -29,7 +30,7 @@ class File extends DataObject implements FileInterface
     /**
      * @inheritDoc
      */
-    public function getMediaFormat()
+    public function getMediaFormat(): MediaFormatInterface
     {
         return $this->getValue(self::TAG_FORM);
     }

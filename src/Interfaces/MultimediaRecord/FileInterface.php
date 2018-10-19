@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\MultimediaRecord;
 
-use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\File\FormatInterface;
+use MagicSunday\Gedcom\Interfaces\MultimediaRecord\File\MediaFormatInterface;
 
 /**
  * The OBJE (object), FILE structure tags.
@@ -34,14 +34,14 @@ interface FileInterface
     const TAG_TITL = 'TITL';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getReference();
+    public function getReference(): string;
 
     /**
-     * @return null|FormatInterface
+     * @return MediaFormatInterface
      */
-    public function getMediaFormat();
+    public function getMediaFormat(): MediaFormatInterface;
 
     /**
      * @return null|string

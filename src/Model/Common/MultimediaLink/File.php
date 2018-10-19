@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common\MultimediaLink;
 
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\File\FormatInterface;
 use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\FileInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
@@ -29,7 +30,7 @@ class File extends DataObject implements FileInterface
     /**
      * @inheritDoc
      */
-    public function getFormat()
+    public function getFormat(): FormatInterface
     {
         return $this->getValue(self::TAG_FORM);
     }

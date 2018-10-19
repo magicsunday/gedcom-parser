@@ -28,7 +28,7 @@ interface PlaceInterface
     const TAG_FORM = 'FORM';
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getForm();
+    public function getForm(): string;
 }
