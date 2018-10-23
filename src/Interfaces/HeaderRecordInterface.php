@@ -119,6 +119,11 @@ interface HeaderRecordInterface
     public function getFile();
 
     /**
+     * @return null|string
+     */
+    public function getCopyright();
+
+    /**
      * @return GedcomInfoInterface
      */
     public function getGedcomInfo(): GedcomInfoInterface;

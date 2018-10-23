@@ -71,6 +71,14 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     /**
      * @inheritDoc
      */
+    public function getCopyright()
+    {
+        return $this->getValue(self::TAG_COPR);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getGedcomInfo(): GedcomInfoInterface
     {
         return $this->getValue(self::TAG_GEDC);
