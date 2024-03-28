@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -25,7 +30,7 @@ class MultimediaRecord extends DataObject implements MultimediaRecordInterface
     use SourceCitationTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -33,7 +38,7 @@ class MultimediaRecord extends DataObject implements MultimediaRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFile(): array
     {
@@ -41,7 +46,7 @@ class MultimediaRecord extends DataObject implements MultimediaRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReferenceNumber(): array
     {
@@ -49,9 +54,9 @@ class MultimediaRecord extends DataObject implements MultimediaRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

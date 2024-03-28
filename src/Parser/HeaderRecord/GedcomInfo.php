@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\GedcomInfoInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\GedcomInfo as GedcomInfoModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,13 +26,13 @@ use MagicSunday\Gedcom\Parser\Common;
 class GedcomInfo extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            GedcomInfoModel::TAG_VERS => Common::class,
-            GedcomInfoModel::TAG_FORM => Common::class,
+            GedcomInfoInterface::TAG_VERS => Common::class,
+            GedcomInfoInterface::TAG_FORM => Common::class,
         ];
     }
 

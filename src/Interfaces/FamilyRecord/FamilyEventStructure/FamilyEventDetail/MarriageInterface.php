@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetail;
@@ -20,10 +25,10 @@ interface MarriageInterface extends FamilyEventDetailInterface
     /**
      * The event detail flag.
      */
-    const TAG_FLAG = 'EVENT_FLAG';
+    public const TAG_FLAG = 'EVENT_FLAG';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getFlag();
+    public function getFlag(): ?string;
 }

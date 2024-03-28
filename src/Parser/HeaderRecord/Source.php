@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\SourceInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\Source as SourceModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\HeaderRecord\Source\Corporation;
@@ -22,15 +28,15 @@ use MagicSunday\Gedcom\Parser\HeaderRecord\Source\Data;
 class Source extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SourceModel::TAG_VERS => Common::class,
-            SourceModel::TAG_NAME => Common::class,
-            SourceModel::TAG_CORP => Corporation::class,
-            SourceModel::TAG_DATA => Data::class,
+            SourceInterface::TAG_VERS => Common::class,
+            SourceInterface::TAG_NAME => Common::class,
+            SourceInterface::TAG_CORP => Corporation::class,
+            SourceInterface::TAG_DATA => Data::class,
         ];
     }
 
@@ -42,7 +48,7 @@ class Source extends AbstractParser
     public function parse(): SourceModel
     {
         $source = new SourceModel();
-        $source->setValue(SourceModel::TAG_APPROVED_SYSTEM_ID, $this->reader->value());
+        $source->setValue(SourceInterface::TAG_APPROVED_SYSTEM_ID, $this->reader->value());
 
         $this->process($source);
 

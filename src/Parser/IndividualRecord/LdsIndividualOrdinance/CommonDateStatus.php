@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonDateStatusInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\LdsIndividualOrdinance\CommonDateStatus as CommonDateStatusModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 
@@ -20,12 +27,12 @@ use MagicSunday\Gedcom\Parser\Common\DateExact;
 class CommonDateStatus extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            CommonDateStatusModel::TAG_DATE => DateExact::class,
+            CommonChangeDateInterface::TAG_DATE => DateExact::class,
         ];
     }
 
@@ -37,7 +44,7 @@ class CommonDateStatus extends AbstractParser
     public function parse(): CommonDateStatusModel
     {
         $status = new CommonDateStatusModel();
-        $status->setValue(CommonDateStatusModel::TAG_DATE_STATUS, $this->reader->value());
+        $status->setValue(CommonDateStatusInterface::TAG_DATE_STATUS, $this->reader->value());
 
         $this->process($status);
 

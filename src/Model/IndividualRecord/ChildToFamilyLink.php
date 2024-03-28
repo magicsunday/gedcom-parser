@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
@@ -22,7 +27,7 @@ class ChildToFamilyLink extends DataObject implements ChildToFamilyLinkInterface
     use NoteTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -30,17 +35,17 @@ class ChildToFamilyLink extends DataObject implements ChildToFamilyLinkInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPedigreeLinkageType()
+    public function getPedigreeLinkageType(): ?string
     {
         return $this->getValue(self::TAG_PEDI);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getChildLinkageStatus()
+    public function getChildLinkageStatus(): ?string
     {
         return $this->getValue(self::TAG_STAT);
     }

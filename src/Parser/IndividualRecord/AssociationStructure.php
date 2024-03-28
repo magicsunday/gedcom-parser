@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\AssociationStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\AssociationStructure as AssociationStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -22,25 +30,24 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class AssociationStructure extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            AssociationStructureModel::TAG_RELA => Common::class,
-            AssociationStructureModel::TAG_NOTE => NoteStructure::class,
-            AssociationStructureModel::TAG_SOUR => SourceCitation::class,
+            AssociationStructureInterface::TAG_RELA => Common::class,
+            NoteInterface::TAG_NOTE                 => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR       => SourceCitation::class,
         ];
     }
 
     /**
-     *
      * @return AssociationStructureModel
      */
     public function parse(): AssociationStructureModel
     {
         $childToFamilyLink = new AssociationStructureModel();
-        $childToFamilyLink->setValue(AssociationStructureModel::TAG_XREF_INDI, $this->reader->xref());
+        $childToFamilyLink->setValue(AssociationStructureInterface::TAG_XREF_INDI, $this->reader->xref());
 
         $this->process($childToFamilyLink);
 

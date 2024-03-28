@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -9,6 +14,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\Interfaces\GedcomInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
+use MagicSunday\Gedcom\Interfaces\SubmissionRecordInterface;
 
 /**
  * The gedcom record.
@@ -20,7 +26,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecordInterface;
 class Gedcom extends DataObject implements GedcomInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getHeader(): HeaderRecordInterface
     {
@@ -28,7 +34,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFamily(): array
     {
@@ -44,7 +50,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getMultimedia(): array
     {
@@ -52,7 +58,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getNote(): array
     {
@@ -60,7 +66,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getRepository(): array
     {
@@ -68,7 +74,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSource(): array
     {
@@ -76,7 +82,7 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSubmitter(): array
     {
@@ -84,9 +90,9 @@ class Gedcom extends DataObject implements GedcomInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getSubmission()
+    public function getSubmission(): ?SubmissionRecordInterface
     {
         return $this->getValue(self::TAG_SUBN);
     }

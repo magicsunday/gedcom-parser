@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord\Source;
@@ -20,10 +25,10 @@ interface CorporationInterface extends AddressStructureInterface
     /**
      * Name of the business, corporation, or person that produced or commissioned the product.
      */
-    const TAG_NAME_OF_BUSINESS = 'NAME_OF_BUSINESS';
+    public const TAG_NAME_OF_BUSINESS = 'NAME_OF_BUSINESS';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getNameOfBusiness();
+    public function getNameOfBusiness(): ?string;
 }

@@ -1,19 +1,31 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\IndividualAttributeStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetailInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
+use MagicSunday\Gedcom\Model\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetail as IndividualAttributeDetailModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
-use MagicSunday\Gedcom\Model\IndividualRecord\IndividualAttributeStructure\IndividualAttributeDetail as IndividualAttributeDetailModel;
 
 /**
  * The individual attribute detail structure.
@@ -25,30 +37,30 @@ use MagicSunday\Gedcom\Model\IndividualRecord\IndividualAttributeStructure\Indiv
 class IndividualAttributeDetail extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
             // Individual event details
-            IndividualAttributeDetailModel::TAG_AGE   => Common::class,
+            IndividualEventDetailInterface::TAG_AGE => Common::class,
 
             // Common event details
-            IndividualAttributeDetailModel::TAG_TYPE  => Common::class,
-            IndividualAttributeDetailModel::TAG_DATE  => Common::class,
-            IndividualAttributeDetailModel::TAG_PLAC  => PlaceStructure::class,
-            IndividualAttributeDetailModel::TAG_ADDR  => AddressStructure::class,
-            IndividualAttributeDetailModel::TAG_PHON  => Common::class,
-            IndividualAttributeDetailModel::TAG_EMAIL => Common::class,
-            IndividualAttributeDetailModel::TAG_FAX   => Common::class,
-            IndividualAttributeDetailModel::TAG_WWW   => Common::class,
-            IndividualAttributeDetailModel::TAG_AGNC  => Common::class,
-            IndividualAttributeDetailModel::TAG_RELI  => Common::class,
-            IndividualAttributeDetailModel::TAG_CAUS  => Common::class,
-            IndividualAttributeDetailModel::TAG_RESN  => Common::class,
-            IndividualAttributeDetailModel::TAG_NOTE  => NoteStructure::class,
-            IndividualAttributeDetailModel::TAG_SOUR  => SourceCitation::class,
-            IndividualAttributeDetailModel::TAG_OBJE  => MultimediaLink::class,
+            EventDetailInterface::TAG_TYPE       => Common::class,
+            EventDetailInterface::TAG_DATE       => Common::class,
+            EventDetailInterface::TAG_PLAC       => PlaceStructure::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            EventDetailInterface::TAG_AGNC       => Common::class,
+            EventDetailInterface::TAG_RELI       => Common::class,
+            EventDetailInterface::TAG_CAUS       => Common::class,
+            EventDetailInterface::TAG_RESN       => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR    => SourceCitation::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
         ];
     }
 
@@ -63,7 +75,7 @@ class IndividualAttributeDetail extends AbstractParser
         $content     = $this->readContent();
 
         if ($content) {
-            $eventDetail->setValue(IndividualAttributeDetailModel::TAG_DETAIL, $content);
+            $eventDetail->setValue(IndividualAttributeDetailInterface::TAG_DETAIL, $content);
         }
 
         $this->process($eventDetail);

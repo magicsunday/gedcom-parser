@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common;
@@ -19,17 +24,17 @@ use MagicSunday\Gedcom\Model\DataObject;
 class FamilyChild extends DataObject implements FamilyChildInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getXref()
+    public function getXref(): ?string
     {
         return $this->getValue(self::TAG_XREF_FAM);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAdoptedBy()
+    public function getAdoptedBy(): ?string
     {
         return $this->getValue(self::TAG_ADOP);
     }

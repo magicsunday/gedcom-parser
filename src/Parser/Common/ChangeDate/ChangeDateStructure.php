@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\ChangeDate;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDate\ChangeDateStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
 use MagicSunday\Gedcom\Model\Common\ChangeDate\ChangeDateStructure as ChangeDateStructureModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -21,13 +28,13 @@ use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 class ChangeDateStructure extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            ChangeDateStructureModel::TAG_DATE => DateExact::class,
-            ChangeDateStructureModel::TAG_NOTE => NoteStructure::class,
+            ChangeDateStructureInterface::TAG_DATE => DateExact::class,
+            NoteInterface::TAG_NOTE                => NoteStructure::class,
         ];
     }
 

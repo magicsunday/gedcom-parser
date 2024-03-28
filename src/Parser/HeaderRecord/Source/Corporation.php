@@ -1,13 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord\Source;
 
 use MagicSunday\Gedcom\AbstractParser;
 use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\Source\CorporationInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\Source\Corporation as CorporationModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
@@ -22,7 +28,7 @@ use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 class Corporation extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
@@ -43,7 +49,7 @@ class Corporation extends AbstractParser
     public function parse(): CorporationModel
     {
         $corporation = new CorporationModel();
-        $corporation->setValue(CorporationModel::TAG_NAME_OF_BUSINESS, $this->reader->value());
+        $corporation->setValue(CorporationInterface::TAG_NAME_OF_BUSINESS, $this->reader->value());
 
         $this->process($corporation);
 

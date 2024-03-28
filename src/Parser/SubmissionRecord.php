@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\SubmissionRecordInterface;
 use MagicSunday\Gedcom\Model\SubmissionRecord as SubmissionRecordModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -21,20 +29,20 @@ use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 class SubmissionRecord extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SubmissionRecordModel::TAG_SUBM => Common::class,
-            SubmissionRecordModel::TAG_FAMF => Common::class,
-            SubmissionRecordModel::TAG_TEMP => Common::class,
-            SubmissionRecordModel::TAG_ANCE => Common::class,
-            SubmissionRecordModel::TAG_DESC => Common::class,
-            SubmissionRecordModel::TAG_ORDI => Common::class,
-            SubmissionRecordModel::TAG_RIN  => Common::class,
-            SubmissionRecordModel::TAG_NOTE => NoteStructure::class,
-            SubmissionRecordModel::TAG_CHAN => ChangeDateStructure::class,
+            SubmissionRecordInterface::TAG_SUBM => Common::class,
+            SubmissionRecordInterface::TAG_FAMF => Common::class,
+            SubmissionRecordInterface::TAG_TEMP => Common::class,
+            SubmissionRecordInterface::TAG_ANCE => Common::class,
+            SubmissionRecordInterface::TAG_DESC => Common::class,
+            SubmissionRecordInterface::TAG_ORDI => Common::class,
+            SubmissionRecordInterface::TAG_RIN  => Common::class,
+            NoteInterface::TAG_NOTE             => NoteStructure::class,
+            ChangeDateInterface::TAG_CHAN       => ChangeDateStructure::class,
         ];
     }
 
@@ -46,7 +54,7 @@ class SubmissionRecord extends AbstractParser
     public function parse(): SubmissionRecordModel
     {
         $submission = new SubmissionRecordModel();
-        $submission->setValue(SubmissionRecordModel::TAG_XREF_SUBN, $this->reader->identifier());
+        $submission->setValue(SubmissionRecordInterface::TAG_XREF_SUBN, $this->reader->identifier());
 
         $this->process($submission);
 

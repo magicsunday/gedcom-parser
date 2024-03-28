@@ -1,12 +1,23 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\FamilyRecord\FamilyEventStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure\FamilyEventDetail as FamilyEventDetailModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
@@ -25,36 +36,36 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class FamilyEventDetail extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
             // Family event details
-            FamilyEventDetailModel::TAG_HUSB => FamilyPersonAge::class,
-            FamilyEventDetailModel::TAG_WIFE => FamilyPersonAge::class,
+            FamilyEventDetailInterface::TAG_HUSB => FamilyPersonAge::class,
+            FamilyEventDetailInterface::TAG_WIFE => FamilyPersonAge::class,
 
             // Common event details
-            FamilyEventDetailModel::TAG_TYPE  => Common::class,
-            FamilyEventDetailModel::TAG_DATE  => Common::class,
-            FamilyEventDetailModel::TAG_PLAC  => PlaceStructure::class,
-            FamilyEventDetailModel::TAG_ADDR  => AddressStructure::class,
-            FamilyEventDetailModel::TAG_PHON  => Common::class,
-            FamilyEventDetailModel::TAG_EMAIL => Common::class,
-            FamilyEventDetailModel::TAG_FAX   => Common::class,
-            FamilyEventDetailModel::TAG_WWW   => Common::class,
-            FamilyEventDetailModel::TAG_AGNC  => Common::class,
-            FamilyEventDetailModel::TAG_RELI  => Common::class,
-            FamilyEventDetailModel::TAG_CAUS  => Common::class,
-            FamilyEventDetailModel::TAG_RESN  => Common::class,
-            FamilyEventDetailModel::TAG_NOTE  => NoteStructure::class,
-            FamilyEventDetailModel::TAG_SOUR  => SourceCitation::class,
-            FamilyEventDetailModel::TAG_OBJE  => MultimediaLink::class,
+            EventDetailInterface::TAG_TYPE       => Common::class,
+            EventDetailInterface::TAG_DATE       => Common::class,
+            EventDetailInterface::TAG_PLAC       => PlaceStructure::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            EventDetailInterface::TAG_AGNC       => Common::class,
+            EventDetailInterface::TAG_RELI       => Common::class,
+            EventDetailInterface::TAG_CAUS       => Common::class,
+            EventDetailInterface::TAG_RESN       => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR    => SourceCitation::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
         ];
     }
 
     /**
-     * Parse a event detail block.
+     * Parse an event detail block.
      *
      * @return FamilyEventDetailModel
      */

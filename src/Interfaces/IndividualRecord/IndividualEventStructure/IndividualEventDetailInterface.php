@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure;
@@ -21,10 +26,10 @@ interface IndividualEventDetailInterface extends EventDetailInterface
      * A number that indicates the age in years, months, and days that the principal was at the time of the
      * associated event. Any labels must come after their corresponding number, for example; 4y 8m 10d.
      */
-    const TAG_AGE = 'AGE';
+    public const TAG_AGE = 'AGE';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getAge();
+    public function getAge(): ?string;
 }

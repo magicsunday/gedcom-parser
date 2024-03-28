@@ -1,14 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\SourceCitation;
 
 use MagicSunday\Gedcom\AbstractParser;
-use MagicSunday\Gedcom\Parser\Common;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitation\EventInterface;
 use MagicSunday\Gedcom\Model\Common\SourceCitation\Event as EventModel;
+use MagicSunday\Gedcom\Parser\Common;
 
 /**
  * The SOUR-EVEN parser.
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Model\Common\SourceCitation\Event as EventModel;
 class Event extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
-            EventModel::TAG_ROLE => Common::class,
+            EventInterface::TAG_ROLE => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class Event extends AbstractParser
     public function parse(): EventModel
     {
         $event = new EventModel();
-        $event->setValue(EventModel::TAG_TYPE, $this->reader->value());
+        $event->setValue(EventInterface::TAG_TYPE, $this->reader->value());
 
         $this->process($event);
 

@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Traits\IndividualRecord;
@@ -27,33 +32,33 @@ trait LdsIndividualOrdinanceTrait
     abstract public function getValue(string $key);
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsBaptism()
+    public function getLdsBaptism(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_BAPL);
     }
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsConfirmation()
+    public function getLdsConfirmation(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_CONL);
     }
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsEndowment()
+    public function getLdsEndowment(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_ENDL);
     }
 
     /**
-     * @return null|SealingChildInterface
+     * @return SealingChildInterface|null
      */
-    public function getLdsSealingChild()
+    public function getLdsSealingChild(): ?SealingChildInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_SLGC);
     }

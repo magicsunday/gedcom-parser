@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\FamilyRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\LdsSpouseSealing as LdsSpouseSealingModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -23,17 +31,17 @@ use MagicSunday\Gedcom\Parser\FamilyRecord\LdsSpouseSealing\SpouseSealingDateSta
 class LdsSpouseSealing extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            LdsSpouseSealingModel::TAG_DATE => Common::class,
-            LdsSpouseSealingModel::TAG_TEMP => Common::class,
-            LdsSpouseSealingModel::TAG_PLAC => Common::class,
-            LdsSpouseSealingModel::TAG_STAT => SpouseSealingDateStatus::class,
-            LdsSpouseSealingModel::TAG_NOTE => NoteStructure::class,
-            LdsSpouseSealingModel::TAG_SOUR => SourceCitation::class,
+            LdsSpouseSealingInterface::TAG_DATE => Common::class,
+            LdsSpouseSealingInterface::TAG_TEMP => Common::class,
+            LdsSpouseSealingInterface::TAG_PLAC => Common::class,
+            LdsSpouseSealingInterface::TAG_STAT => SpouseSealingDateStatus::class,
+            NoteInterface::TAG_NOTE             => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR   => SourceCitation::class,
         ];
     }
 

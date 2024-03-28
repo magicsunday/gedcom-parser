@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\IndividualRecord;
@@ -19,23 +24,23 @@ use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure\PersonalName
 class PersonalNameStructure extends PersonalNamePieces implements PersonalNameStructureInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->getValue(self::TAG_NAME_PERSONAL);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->getValue(self::TAG_TYPE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getPhoneticVariation(): array
     {
@@ -43,7 +48,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getRomanizedVariation(): array
     {

@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\NoteRecordInterface;
 use MagicSunday\Gedcom\Model\NoteRecord as NoteRecordModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
@@ -22,15 +30,15 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class NoteRecord extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            NoteRecordModel::TAG_REFN => ReferenceNumber::class,
-            NoteRecordModel::TAG_RIN  => Common::class,
-            NoteRecordModel::TAG_SOUR => SourceCitation::class,
-            NoteRecordModel::TAG_CHAN => ChangeDateStructure::class,
+            NoteRecordInterface::TAG_REFN     => ReferenceNumber::class,
+            NoteRecordInterface::TAG_RIN      => Common::class,
+            SourceCitationInterface::TAG_SOUR => SourceCitation::class,
+            ChangeDateInterface::TAG_CHAN     => ChangeDateStructure::class,
         ];
     }
 
@@ -42,12 +50,12 @@ class NoteRecord extends AbstractParser
     public function parse(): NoteRecordModel
     {
         $noteRecord = new NoteRecordModel();
-        $noteRecord->setValue(NoteRecordModel::TAG_XREF_NOTE, $this->reader->identifier());
+        $noteRecord->setValue(NoteRecordInterface::TAG_XREF_NOTE, $this->reader->identifier());
 
         $noteContent = $this->readContent();
 
         if ($noteContent) {
-            $noteRecord->setValue(NoteRecordModel::TAG_SUBMITTER_TEXT, $noteContent);
+            $noteRecord->setValue(NoteRecordInterface::TAG_SUBMITTER_TEXT, $noteContent);
         }
 
         $this->process($noteRecord);

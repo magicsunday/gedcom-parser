@@ -1,19 +1,30 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
+use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\IndividualEventDetail as IndividualEventDetailModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
-use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\IndividualEventDetail as IndividualEventDetailModel;
 
 /**
  * The individual event detail structure.
@@ -25,35 +36,35 @@ use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\Individua
 class IndividualEventDetail extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
             // Individual event details
-            IndividualEventDetailModel::TAG_AGE   => Common::class,
+            IndividualEventDetailInterface::TAG_AGE => Common::class,
 
             // Common event details
-            IndividualEventDetailModel::TAG_TYPE  => Common::class,
-            IndividualEventDetailModel::TAG_DATE  => Common::class,
-            IndividualEventDetailModel::TAG_PLAC  => PlaceStructure::class,
-            IndividualEventDetailModel::TAG_ADDR  => AddressStructure::class,
-            IndividualEventDetailModel::TAG_PHON  => Common::class,
-            IndividualEventDetailModel::TAG_EMAIL => Common::class,
-            IndividualEventDetailModel::TAG_FAX   => Common::class,
-            IndividualEventDetailModel::TAG_WWW   => Common::class,
-            IndividualEventDetailModel::TAG_AGNC  => Common::class,
-            IndividualEventDetailModel::TAG_RELI  => Common::class,
-            IndividualEventDetailModel::TAG_CAUS  => Common::class,
-            IndividualEventDetailModel::TAG_RESN  => Common::class,
-            IndividualEventDetailModel::TAG_NOTE  => NoteStructure::class,
-            IndividualEventDetailModel::TAG_SOUR  => SourceCitation::class,
-            IndividualEventDetailModel::TAG_OBJE  => MultimediaLink::class,
+            EventDetailInterface::TAG_TYPE       => Common::class,
+            EventDetailInterface::TAG_DATE       => Common::class,
+            EventDetailInterface::TAG_PLAC       => PlaceStructure::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            EventDetailInterface::TAG_AGNC       => Common::class,
+            EventDetailInterface::TAG_RELI       => Common::class,
+            EventDetailInterface::TAG_CAUS       => Common::class,
+            EventDetailInterface::TAG_RESN       => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR    => SourceCitation::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
         ];
     }
 
     /**
-     * Parse a event detail block.
+     * Parse an event detail block.
      *
      * @return IndividualEventDetailModel
      */

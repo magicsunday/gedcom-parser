@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord;
@@ -23,28 +28,28 @@ interface SourceInterface
      * name must be unique from any other product. Spaces within the name must be substituted with a 0x5F
      * (underscore _) so as to create one word.
      */
-    const TAG_APPROVED_SYSTEM_ID = 'APPROVED_SYSTEM_ID';
+    public const TAG_APPROVED_SYSTEM_ID = 'APPROVED_SYSTEM_ID';
 
     /**
      * An identifier that represents the version level assigned to the associated product. It is defined and
      * changed by the creators of the product.
      */
-    const TAG_VERS = 'VERS';
+    public const TAG_VERS = 'VERS';
 
     /**
      * The name of the software product that produced this transmission.
      */
-    const TAG_NAME = 'NAME';
+    public const TAG_NAME = 'NAME';
 
     /**
      * The corporation structure.
      */
-    const TAG_CORP = 'CORP';
+    public const TAG_CORP = 'CORP';
 
     /**
      * The data structure.
      */
-    const TAG_DATA = 'DATA';
+    public const TAG_DATA = 'DATA';
 
     /**
      * @return string
@@ -52,22 +57,22 @@ interface SourceInterface
     public function getApprovedSystemId(): string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getVersion();
+    public function getVersion(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
-     * @return null|CorporationInterface
+     * @return CorporationInterface|null
      */
-    public function getCorporation();
+    public function getCorporation(): ?CorporationInterface;
 
     /**
-     * @return null|DataInterface
+     * @return DataInterface|null
      */
-    public function getData();
+    public function getData(): ?DataInterface;
 }

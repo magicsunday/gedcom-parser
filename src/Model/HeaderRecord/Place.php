@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\HeaderRecord;
@@ -19,7 +24,7 @@ use MagicSunday\Gedcom\Model\DataObject;
 class Place extends DataObject implements PlaceInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getForm(): string
     {

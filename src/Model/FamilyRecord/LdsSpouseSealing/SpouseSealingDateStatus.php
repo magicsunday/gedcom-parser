@@ -1,11 +1,17 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\FamilyRecord\LdsSpouseSealing;
 
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealing\SpouseSealingDateStatusInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
@@ -19,17 +25,17 @@ use MagicSunday\Gedcom\Model\DataObject;
 class SpouseSealingDateStatus extends DataObject implements SpouseSealingDateStatusInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->getValue(self::TAG_DATE_STATUS);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getChangeDate()
+    public function getChangeDate(): ?DateExactInterface
     {
         return $this->getValue(self::TAG_DATE);
     }

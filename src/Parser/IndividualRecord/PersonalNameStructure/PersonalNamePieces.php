@@ -1,18 +1,25 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure;
 
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructure\PersonalNamePiecesInterface;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 
 /**
- * The mapping for a the individual name pieces.
+ * The mapping for the individual name pieces.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
@@ -21,7 +28,7 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class PersonalNamePieces
 {
     /**
-     * @inheritDoc
+     * @return array<string, string>
      */
     public static function getClassMap(): array
     {
@@ -32,8 +39,8 @@ class PersonalNamePieces
             PersonalNamePiecesInterface::TAG_SPFX => Common::class,
             PersonalNamePiecesInterface::TAG_SURN => Common::class,
             PersonalNamePiecesInterface::TAG_NSFX => Common::class,
-            PersonalNamePiecesInterface::TAG_NOTE => NoteStructure::class,
-            PersonalNamePiecesInterface::TAG_SOUR => SourceCitation::class,
+            NoteInterface::TAG_NOTE               => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR     => SourceCitation::class,
         ];
     }
 }

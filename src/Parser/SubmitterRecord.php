@@ -1,12 +1,22 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\SubmitterRecordInterface;
 use MagicSunday\Gedcom\Model\SubmitterRecord as SubmitterRecordModel;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
@@ -23,23 +33,23 @@ use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 class SubmitterRecord extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SubmitterRecordModel::TAG_NAME  => Common::class,
-            SubmitterRecordModel::TAG_ADDR  => AddressStructure::class,
-            SubmitterRecordModel::TAG_PHON  => Common::class,
-            SubmitterRecordModel::TAG_EMAIL => Common::class,
-            SubmitterRecordModel::TAG_FAX   => Common::class,
-            SubmitterRecordModel::TAG_WWW   => Common::class,
-            SubmitterRecordModel::TAG_OBJE  => MultimediaLink::class,
-            SubmitterRecordModel::TAG_LANG  => Common::class,
-            SubmitterRecordModel::TAG_RFN   => Common::class,
-            SubmitterRecordModel::TAG_RIN   => Common::class,
-            SubmitterRecordModel::TAG_NOTE  => NoteStructure::class,
-            SubmitterRecordModel::TAG_CHAN  => ChangeDateStructure::class,
+            SubmitterRecordInterface::TAG_NAME   => Common::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
+            SubmitterRecordInterface::TAG_LANG   => Common::class,
+            SubmitterRecordInterface::TAG_RFN    => Common::class,
+            SubmitterRecordInterface::TAG_RIN    => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            ChangeDateInterface::TAG_CHAN        => ChangeDateStructure::class,
         ];
     }
 
@@ -51,7 +61,7 @@ class SubmitterRecord extends AbstractParser
     public function parse(): SubmitterRecordModel
     {
         $submitter = new SubmitterRecordModel();
-        $submitter->setValue(SubmitterRecordModel::TAG_XREF_SUBM, $this->reader->identifier());
+        $submitter->setValue(SubmitterRecordInterface::TAG_XREF_SUBM, $this->reader->identifier());
 
         $this->process($submitter);
 

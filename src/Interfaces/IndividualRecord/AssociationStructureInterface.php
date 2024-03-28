@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
@@ -16,19 +21,17 @@ use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface AssociationStructureInterface extends
-    NoteInterface,
-    SourceCitationInterface
+interface AssociationStructureInterface extends NoteInterface, SourceCitationInterface
 {
     /**
-     * A pointer to, or a cross-reference identifier of, a individual record.
+     * A pointer to, or a cross-reference identifier of, an individual record.
      */
-    const TAG_XREF_INDI = 'XREF:INDI';
+    public const TAG_XREF_INDI = 'XREF:INDI';
 
     /**
      * A relationship value between the indicated contexts.
      */
-    const TAG_RELA = 'RELA';
+    public const TAG_RELA = 'RELA';
 
     /**
      * @return string

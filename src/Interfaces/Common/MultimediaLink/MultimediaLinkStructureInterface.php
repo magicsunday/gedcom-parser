@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common\MultimediaLink;
@@ -16,32 +21,32 @@ namespace MagicSunday\Gedcom\Interfaces\Common\MultimediaLink;
 interface MultimediaLinkStructureInterface
 {
     /**
-     * A pointer to, or a cross-reference identifier of, a OBJEct record.
+     * A pointer to, or a cross-reference identifier of, an OBJEct record.
      */
-    const TAG_XREF_OBJE = 'XREF:OBJE';
+    public const TAG_XREF_OBJE = 'XREF:OBJE';
 
     /**
      * An information storage place that is ordered and arranged for preservation and reference.
      */
-    const TAG_FILE = 'FILE';
+    public const TAG_FILE = 'FILE';
 
     /**
      * A description of a specific writing or other work.
      */
-    const TAG_TITL = 'TITL';
+    public const TAG_TITL = 'TITL';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getXref();
+    public function getXref(): ?string;
 
     /**
-     * @return null|FileInterface
+     * @return FileInterface|null
      */
-    public function getFile();
+    public function getFile(): ?FileInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getTitle();
+    public function getTitle(): ?string;
 }

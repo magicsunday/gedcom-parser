@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces;
@@ -25,68 +30,68 @@ interface HeaderRecordInterface
     /**
      * The source.
      */
-    const TAG_SOUR = 'SOUR';
+    public const TAG_SOUR = 'SOUR';
 
     /**
      * The destination system name identifies the intended receiving system.
      */
-    const TAG_DEST = 'DEST';
+    public const TAG_DEST = 'DEST';
 
     /**
      * The date that this transmission was created.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * The submitter identifier. The submitter record identifies an individual or organization that contributed
      * information contained in the GEDCOM transmission.
      */
-    const TAG_SUBM = 'SUBM';
+    public const TAG_SUBM = 'SUBM';
 
     /**
      * The submission identifier. The sending system uses a submission record to send instructions and
      * information to the receiving system.
      */
-    const TAG_SUBN = 'SUBN';
+    public const TAG_SUBN = 'SUBN';
 
     /**
-     * The name of the GEDCOM transmission file. If the file name includes a file extension it must be
+     * The name of the GEDCOM transmission file. If the file name includes a file extension, it must be
      * shown in the form (filename.ext).
      */
-    const TAG_FILE = 'FILE';
+    public const TAG_FILE = 'FILE';
 
     /**
      * A copyright statement needed to protect the copyrights of the submitter of this GEDCOM file.
      */
-    const TAG_COPR = 'COPR';
+    public const TAG_COPR = 'COPR';
 
     /**
      * Information about the use of GEDCOM in a transmission.
      */
-    const TAG_GEDC = 'GEDC';
+    public const TAG_GEDC = 'GEDC';
 
     /**
      * A code value that represents the character set to be used to interpret this data.
      */
-    const TAG_CHAR = 'CHAR';
+    public const TAG_CHAR = 'CHAR';
 
     /**
      * The human language in which the data in the transmission is normally read or written.
      */
-    const TAG_LANG = 'LANG';
+    public const TAG_LANG = 'LANG';
 
     /**
      * A place. This shows the jurisdictional entities that are named in a sequence from the lowest to the
      * highest jurisdiction.
      */
-    const TAG_PLAC = 'PLAC';
+    public const TAG_PLAC = 'PLAC';
 
     /**
      * A note that a user enters to describe the contents of the lineage-linked file in terms of
      * "ancestors or descendants of" so that the person receiving the data knows what genealogical
      * information the transmission contains.
      */
-    const TAG_NOTE = 'NOTE';
+    public const TAG_NOTE = 'NOTE';
 
     /**
      * @return SourceInterface
@@ -94,14 +99,14 @@ interface HeaderRecordInterface
     public function getSource(): SourceInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getDestination();
+    public function getDestination(): ?string;
 
     /**
-     * @return null|DateExactInterface
+     * @return DateExactInterface|null
      */
-    public function getTransmissionDate();
+    public function getTransmissionDate(): ?DateExactInterface;
 
     /**
      * @return string
@@ -109,19 +114,19 @@ interface HeaderRecordInterface
     public function getSubmitter(): string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getSubmission();
+    public function getSubmission(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getFile();
+    public function getFile(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getCopyright();
+    public function getCopyright(): ?string;
 
     /**
      * @return GedcomInfoInterface
@@ -134,17 +139,17 @@ interface HeaderRecordInterface
     public function getCharacterSet(): CharacterSetInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getLanguage();
+    public function getLanguage(): ?string;
 
     /**
-     * @return null|PlaceInterface
+     * @return PlaceInterface|null
      */
-    public function getPlace();
+    public function getPlace(): ?PlaceInterface;
 
     /**
-     * @return null|NoteInterface
+     * @return NoteInterface|null
      */
-    public function getNote();
+    public function getNote(): ?NoteInterface;
 }

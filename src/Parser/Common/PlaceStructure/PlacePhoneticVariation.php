@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\PlacePhoneticVariationInterface;
 use MagicSunday\Gedcom\Model\Common\PlaceStructure\PlacePhoneticVariation as PlacePhoneticVariationModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class PlacePhoneticVariation extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            PlacePhoneticVariationModel::TAG_TYPE => Common::class,
+            PlacePhoneticVariationInterface::TAG_TYPE => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class PlacePhoneticVariation extends AbstractParser
     public function parse(): PlacePhoneticVariationModel
     {
         $variation = new PlacePhoneticVariationModel();
-        $variation->setValue(PlacePhoneticVariationModel::TAG_PLACE_PHONETIC_VARIATION, $this->reader->value());
+        $variation->setValue(PlacePhoneticVariationInterface::TAG_PLACE_PHONETIC_VARIATION, $this->reader->value());
 
         $this->process($variation);
 

@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
@@ -20,27 +25,27 @@ interface AddressStructureInterface
     /**
      * The address block.
      */
-    const TAG_ADDR = 'ADDR';
+    public const TAG_ADDR = 'ADDR';
 
     /**
      * A phone number.
      */
-    const TAG_PHON = 'PHON';
+    public const TAG_PHON = 'PHON';
 
     /**
-     * A email address.
+     * An email address.
      */
-    const TAG_EMAIL = 'EMAIL';
+    public const TAG_EMAIL = 'EMAIL';
 
     /**
      * A fax number.
      */
-    const TAG_FAX = 'FAX';
+    public const TAG_FAX = 'FAX';
 
     /**
      * A website address.
      */
-    const TAG_WWW = 'WWW';
+    public const TAG_WWW = 'WWW';
 
     /**
      * @return AddressBlockInterface

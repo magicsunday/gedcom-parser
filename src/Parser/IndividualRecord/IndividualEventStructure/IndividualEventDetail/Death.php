@@ -1,12 +1,24 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetail\DeathInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\IndividualEventDetail\Death as DeathModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
@@ -25,30 +37,30 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class Death extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
             // Individual event details
-            DeathModel::TAG_AGE   => Common::class,
+            IndividualEventDetailInterface::TAG_AGE => Common::class,
 
             // Common event details
-            DeathModel::TAG_TYPE  => Common::class,
-            DeathModel::TAG_DATE  => Common::class,
-            DeathModel::TAG_PLAC  => PlaceStructure::class,
-            DeathModel::TAG_ADDR  => AddressStructure::class,
-            DeathModel::TAG_PHON  => Common::class,
-            DeathModel::TAG_EMAIL => Common::class,
-            DeathModel::TAG_FAX   => Common::class,
-            DeathModel::TAG_WWW   => Common::class,
-            DeathModel::TAG_AGNC  => Common::class,
-            DeathModel::TAG_RELI  => Common::class,
-            DeathModel::TAG_CAUS  => Common::class,
-            DeathModel::TAG_RESN  => Common::class,
-            DeathModel::TAG_NOTE  => NoteStructure::class,
-            DeathModel::TAG_SOUR  => SourceCitation::class,
-            DeathModel::TAG_OBJE  => MultimediaLink::class,
+            EventDetailInterface::TAG_TYPE       => Common::class,
+            EventDetailInterface::TAG_DATE       => Common::class,
+            EventDetailInterface::TAG_PLAC       => PlaceStructure::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            EventDetailInterface::TAG_AGNC       => Common::class,
+            EventDetailInterface::TAG_RELI       => Common::class,
+            EventDetailInterface::TAG_CAUS       => Common::class,
+            EventDetailInterface::TAG_RESN       => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR    => SourceCitation::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
         ];
     }
 
@@ -60,7 +72,7 @@ class Death extends AbstractParser
     public function parse(): DeathModel
     {
         $eventDetail = new DeathModel();
-        $eventDetail->setValue(DeathModel::TAG_FLAG, $this->reader->value());
+        $eventDetail->setValue(DeathInterface::TAG_FLAG, $this->reader->value());
 
         $this->process($eventDetail);
 

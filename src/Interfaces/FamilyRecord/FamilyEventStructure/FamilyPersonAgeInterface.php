@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure;
@@ -18,7 +23,7 @@ interface FamilyPersonAgeInterface
     /**
      * The age at the event.
      */
-    const TAG_AGE = 'AGE';
+    public const TAG_AGE = 'AGE';
 
     /**
      * @return string

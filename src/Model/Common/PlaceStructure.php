@@ -1,11 +1,17 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common;
 
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\MapInterface;
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
@@ -22,7 +28,7 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     use NoteTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getName(): string
     {
@@ -30,15 +36,15 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getFormat()
+    public function getFormat(): ?string
     {
         return $this->getValue(self::TAG_FORM);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getPhoneticVariation(): array
     {
@@ -46,7 +52,7 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getRomanizedVariation(): array
     {
@@ -54,9 +60,9 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMap()
+    public function getMap(): ?MapInterface
     {
         return $this->getValue(self::TAG_MAP);
     }

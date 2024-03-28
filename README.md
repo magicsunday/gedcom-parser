@@ -1,9 +1,7 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser)
-[![Code Coverage](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/magicsunday/gedcom-parser)
-[![Build Status](https://travis-ci.org/magicsunday/gedcom-parser.svg?branch=master)](https://travis-ci.org/magicsunday/gedcom-parser)
-[![Code Climate](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/gpa.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser)
-[![Issue Count](https://codeclimate.com/github/magicsunday/gedcom-parser/badges/issue_count.svg)](https://codeclimate.com/github/magicsunday/gedcom-parser)
+[![Latest version](https://img.shields.io/github/v/release/magicsunday/gedcom-parser?sort=semver)](https://github.com/magicsunday/gedcom-parser/releases/latest)
+[![License](https://img.shields.io/github/license/magicsunday/gedcom-parser)](https://github.com/magicsunday/gedcom-parser/blob/main/LICENSE)
+[![CI](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml)
+
 
 # GEDCOM parser
 This module provides a [GEDCOM](https://de.wikipedia.org/wiki/GEDCOM) 5.5.1 compatible file parser.
@@ -35,3 +33,17 @@ ini_set('auto_detect_line_endings', '1');
 
 ?>
 ````
+
+
+## Development
+
+### Run tests
+```shell
+composer update
+
+composer ci:test
+composer ci:test:php:phpstan
+composer ci:test:php:lint
+composer ci:test:php:unit
+composer ci:test:php:rector
+```

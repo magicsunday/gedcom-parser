@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\PlaceRomanizedVariationInterface;
 use MagicSunday\Gedcom\Model\Common\PlaceStructure\PlaceRomanizedVariation as PlaceRomanizedVariationModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class PlaceRomanizedVariation extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            PlaceRomanizedVariationModel::TAG_TYPE => Common::class,
+            PlaceRomanizedVariationInterface::TAG_TYPE => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class PlaceRomanizedVariation extends AbstractParser
     public function parse(): PlaceRomanizedVariationModel
     {
         $variation = new PlaceRomanizedVariationModel();
-        $variation->setValue(PlaceRomanizedVariationModel::TAG_PLACE_ROMANIZED_VARIATION, $this->reader->value());
+        $variation->setValue(PlaceRomanizedVariationInterface::TAG_PLACE_ROMANIZED_VARIATION, $this->reader->value());
 
         $this->process($variation);
 

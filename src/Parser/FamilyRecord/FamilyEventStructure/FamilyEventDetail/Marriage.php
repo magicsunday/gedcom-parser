@@ -1,12 +1,24 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\FamilyRecord\FamilyEventStructure\FamilyEventDetail;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetail\MarriageInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure\FamilyEventDetail\Marriage as MarriageModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
@@ -26,31 +38,31 @@ use MagicSunday\Gedcom\Parser\FamilyRecord\FamilyEventStructure\FamilyPersonAge;
 class Marriage extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
             // Family event details
-            MarriageModel::TAG_HUSB => FamilyPersonAge::class,
-            MarriageModel::TAG_WIFE => FamilyPersonAge::class,
+            FamilyEventDetailInterface::TAG_HUSB => FamilyPersonAge::class,
+            FamilyEventDetailInterface::TAG_WIFE => FamilyPersonAge::class,
 
             // Common event details
-            MarriageModel::TAG_TYPE  => Common::class,
-            MarriageModel::TAG_DATE  => Common::class,
-            MarriageModel::TAG_PLAC  => PlaceStructure::class,
-            MarriageModel::TAG_ADDR  => AddressStructure::class,
-            MarriageModel::TAG_PHON  => Common::class,
-            MarriageModel::TAG_EMAIL => Common::class,
-            MarriageModel::TAG_FAX   => Common::class,
-            MarriageModel::TAG_WWW   => Common::class,
-            MarriageModel::TAG_AGNC  => Common::class,
-            MarriageModel::TAG_RELI  => Common::class,
-            MarriageModel::TAG_CAUS  => Common::class,
-            MarriageModel::TAG_RESN  => Common::class,
-            MarriageModel::TAG_NOTE  => NoteStructure::class,
-            MarriageModel::TAG_SOUR  => SourceCitation::class,
-            MarriageModel::TAG_OBJE  => MultimediaLink::class,
+            EventDetailInterface::TAG_TYPE       => Common::class,
+            EventDetailInterface::TAG_DATE       => Common::class,
+            EventDetailInterface::TAG_PLAC       => PlaceStructure::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            EventDetailInterface::TAG_AGNC       => Common::class,
+            EventDetailInterface::TAG_RELI       => Common::class,
+            EventDetailInterface::TAG_CAUS       => Common::class,
+            EventDetailInterface::TAG_RESN       => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR    => SourceCitation::class,
+            MultimediaLinkInterface::TAG_OBJE    => MultimediaLink::class,
         ];
     }
 
@@ -62,7 +74,7 @@ class Marriage extends AbstractParser
     public function parse(): MarriageModel
     {
         $eventDetail = new MarriageModel();
-        $eventDetail->setValue(MarriageModel::TAG_FLAG, $this->reader->value());
+        $eventDetail->setValue(MarriageInterface::TAG_FLAG, $this->reader->value());
 
         $this->process($eventDetail);
 

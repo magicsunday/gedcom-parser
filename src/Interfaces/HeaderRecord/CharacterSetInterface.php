@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord;
@@ -22,13 +27,13 @@ interface CharacterSetInterface
      * set will be limited in its interchangeability for a while but should eventually provide the international
      * flexibility that is desired.
      */
-    const TAG_CHARACTER_SET = 'CHARACTER_SET';
+    public const TAG_CHARACTER_SET = 'CHARACTER_SET';
 
     /**
      * An identifier that represents the version level assigned to the associated product. It is defined and
      * changed by the creators of the product.
      */
-    const TAG_VERS = 'VERS';
+    public const TAG_VERS = 'VERS';
 
     /**
      * @return string
@@ -36,7 +41,7 @@ interface CharacterSetInterface
     public function getCharacterSet(): string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getVersion();
+    public function getVersion(): ?string;
 }

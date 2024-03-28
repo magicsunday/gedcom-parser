@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\MultimediaRecord;
@@ -20,7 +25,7 @@ use MagicSunday\Gedcom\Model\DataObject;
 class File extends DataObject implements FileInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReference(): string
     {
@@ -28,7 +33,7 @@ class File extends DataObject implements FileInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getMediaFormat(): MediaFormatInterface
     {
@@ -36,9 +41,9 @@ class File extends DataObject implements FileInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->getValue(self::TAG_TITL);
     }

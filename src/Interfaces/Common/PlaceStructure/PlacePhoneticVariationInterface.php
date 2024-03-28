@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common\PlaceStructure;
@@ -18,7 +23,7 @@ interface PlacePhoneticVariationInterface
     /**
      * The phonetic variation of the place.
      */
-    const TAG_PLACE_PHONETIC_VARIATION = 'PLACE_PHONETIC_VARIATION';
+    public const TAG_PLACE_PHONETIC_VARIATION = 'PLACE_PHONETIC_VARIATION';
 
     /**
      * Indicates the method used in transforming the text to the phonetic variation.
@@ -27,12 +32,12 @@ interface PlacePhoneticVariationInterface
      * - hangul (Phonetic method for sounding Korean glifs)
      * - kana (Hiragana and/or Katakana characters were used in sounding the Kanji character used by japanese)
      */
-    const TAG_TYPE = 'TYPE';
+    public const TAG_TYPE = 'TYPE';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPlace();
+    public function getPlace(): ?string;
 
     /**
      * @return string

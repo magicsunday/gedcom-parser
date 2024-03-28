@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common\SourceCitation;
@@ -18,20 +23,20 @@ interface EventInterface
     /**
      * A code that indicates the type of event which was responsible for the source entry being recorded.
      */
-    const TAG_TYPE = 'EVENT_TYPE_CITED_FROM';
+    public const TAG_TYPE = 'EVENT_TYPE_CITED_FROM';
 
     /**
      * Indicates what role this person played in the event that is being cited in this context.
      */
-    const TAG_ROLE = 'ROLE';
+    public const TAG_ROLE = 'ROLE';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getType();
+    public function getType(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getRole();
+    public function getRole(): ?string;
 }

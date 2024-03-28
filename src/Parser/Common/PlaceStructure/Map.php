@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\PlaceStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\MapInterface;
 use MagicSunday\Gedcom\Model\Common\PlaceStructure\Map as MapModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,13 +26,13 @@ use MagicSunday\Gedcom\Parser\Common;
 class Map extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            MapModel::TAG_LATI => Common::class,
-            MapModel::TAG_LONG => Common::class,
+            MapInterface::TAG_LATI => Common::class,
+            MapInterface::TAG_LONG => Common::class,
         ];
     }
 

@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\SourceRecord\Data;
@@ -20,12 +25,12 @@ interface EventInterface
      * enumeration is separated by a comma. Such as a parish register of births, deaths, and marriages would
      * be BIRT, DEAT, MARR.
      */
-    const TAG_EVENTS_RECORDED = 'EVENTS_RECORDED';
+    public const TAG_EVENTS_RECORDED = 'EVENTS_RECORDED';
 
     /**
      * A date period.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * The name of the lowest jurisdiction that encompasses all lower-level places named in this source. For
@@ -33,20 +38,20 @@ interface EventInterface
      * various towns within Oneida County. "Idaho" would be the source jurisdiction place if the events
      * recorded took place in other counties as well as Oneida County.
      */
-    const TAG_PLAC = 'PLAC';
+    public const TAG_PLAC = 'PLAC';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getEventsRecorded();
+    public function getEventsRecorded(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getDatePeriod();
+    public function getDatePeriod(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPlaceName();
+    public function getPlaceName(): ?string;
 }

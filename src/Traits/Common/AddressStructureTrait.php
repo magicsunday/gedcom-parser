@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Traits\Common;
@@ -21,9 +26,9 @@ trait AddressStructureTrait
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return string|null
      */
-    abstract public function getValue(string $key);
+    abstract public function getValue(string $key): ?string;
 
     /**
      * @param string $key

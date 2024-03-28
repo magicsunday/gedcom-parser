@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure;
@@ -20,20 +25,20 @@ interface FamilyEventDetailInterface extends EventDetailInterface
     /**
      * An individual in the family role of a married man or father.
      */
-    const TAG_HUSB = 'HUSB';
+    public const TAG_HUSB = 'HUSB';
 
     /**
      * An individual in the role as a mother and/or married woman.
      */
-    const TAG_WIFE = 'WIFE';
+    public const TAG_WIFE = 'WIFE';
 
     /**
-     * @return null|FamilyPersonAgeInterface
+     * @return FamilyPersonAgeInterface|null
      */
-    public function getHusband();
+    public function getHusband(): ?FamilyPersonAgeInterface;
 
     /**
-     * @return null|FamilyPersonAgeInterface
+     * @return FamilyPersonAgeInterface|null
      */
-    public function getWife();
+    public function getWife(): ?FamilyPersonAgeInterface;
 }

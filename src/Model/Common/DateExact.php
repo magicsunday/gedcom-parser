@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common;
@@ -9,6 +14,8 @@ namespace MagicSunday\Gedcom\Model\Common;
 use DateTime;
 use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Model\DataObject;
+
+use function count;
 
 /**
  * A date.
@@ -19,34 +26,35 @@ use MagicSunday\Gedcom\Model\DataObject;
  */
 class DateExact extends DataObject implements DateExactInterface
 {
-    const DATE_FORMAT = 'd M Y';
-    const TIME_FORMAT = 'H:i:s.u';
+    public const DATE_FORMAT = 'd M Y';
+
+    public const TIME_FORMAT = 'H:i:s.u';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDate()
+    public function getDate(): ?string
     {
         return $this->getValue(self::TAG_DATE_EXACT);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTime()
+    public function getTime(): ?string
     {
         return $this->getValue(self::TAG_TIME);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getDateTime()
     {
         $dateTime = $this->createDateFromFormat($this->getDate());
 
         if ($dateTime !== false) {
-            $dateTime = $this->createTimeFromFormat($dateTime, $this->getTime());
+            return $this->createTimeFromFormat($dateTime, $this->getTime());
         }
 
         return $dateTime;
@@ -82,14 +90,14 @@ class DateExact extends DataObject implements DateExactInterface
         // Fraction part
         if (($fractionPos = strpos($time, '.')) !== false) {
             // TODO Add milliseconds part (available only in PHP7.1+)
-            //$fraction = (int) substr($time, $fractionPos + 1);
+            // $fraction = (int) substr($time, $fractionPos + 1);
             $time = substr($time, 0, $fractionPos);
         }
 
         $timeParts = array_map('\intval', explode(':', $time));
 
         // Add seconds part if missing
-        if (\count($timeParts) === 2) {
+        if (count($timeParts) === 2) {
             $timeParts[2] = 0;
         }
 

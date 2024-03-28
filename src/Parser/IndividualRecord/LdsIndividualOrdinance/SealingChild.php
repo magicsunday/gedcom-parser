@@ -1,12 +1,21 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord\LdsIndividualOrdinance;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitationInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\CommonIndividualOrdinanceInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance\SealingChildInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\LdsIndividualOrdinance\SealingChild as SealingChildModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -22,18 +31,18 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation;
 class SealingChild extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SealingChildModel::TAG_DATE => Common::class,
-            SealingChildModel::TAG_TEMP => Common::class,
-            SealingChildModel::TAG_PLAC => Common::class,
-            SealingChildModel::TAG_FAMC => Common::class,
-            SealingChildModel::TAG_STAT => CommonDateStatus::class,
-            SealingChildModel::TAG_NOTE => NoteStructure::class,
-            SealingChildModel::TAG_SOUR => SourceCitation::class,
+            CommonIndividualOrdinanceInterface::TAG_DATE => Common::class,
+            CommonIndividualOrdinanceInterface::TAG_TEMP => Common::class,
+            CommonIndividualOrdinanceInterface::TAG_PLAC => Common::class,
+            SealingChildInterface::TAG_FAMC              => Common::class,
+            CommonIndividualOrdinanceInterface::TAG_STAT => CommonDateStatus::class,
+            NoteInterface::TAG_NOTE                      => NoteStructure::class,
+            SourceCitationInterface::TAG_SOUR            => SourceCitation::class,
         ];
     }
 

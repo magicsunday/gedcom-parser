@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common\AddressStructure;
@@ -17,59 +22,59 @@ interface AddressBlockInterface
 {
     /**
      * Typically used to define a mailing address of an individual when used subordinate to a RESIdent tag.
-     * When it is used subordinate to an event tag it is the address of the place where the event took place.
+     * When it is used subordinate to an event tag, it is the address of the place where the event took place.
      * The address lines usually contain the addressee’s name and other street and city information so that it
      * forms an address that meets mailing requirements.
      */
-    const TAG_ADDRESS_LINE = 'ADDRESS_LINE';
+    public const TAG_ADDRESS_LINE = 'ADDRESS_LINE';
 
     /**
      * Additional address lines. Used together with TAG_ADDRESS_LINE.
      */
-    const TAG_CONT = 'CONT';
+    public const TAG_CONT = 'CONT';
 
     /**
      * The first line of the address used for indexing. This is the value of the line corresponding to the
      * ADDR tag line in the address structure.
      */
-    const TAG_ADR1 = 'ADR1';
+    public const TAG_ADR1 = 'ADR1';
 
     /**
      * The second line of the address used for indexing. This is the value of the first CONT line subordinate
      * to the ADDR tag in the address structure.
      */
-    const TAG_ADR2 = 'ADR2';
+    public const TAG_ADR2 = 'ADR2';
 
     /**
      * The third line of the address used for indexing. This is the value of the second CONT line subordinate
      * to the ADDR tag in the address structure.
      */
-    const TAG_ADR3 = 'ADR3';
+    public const TAG_ADR3 = 'ADR3';
 
     /**
      * The name of the city used in the address.
      */
-    const TAG_CITY = 'CITY';
+    public const TAG_CITY = 'CITY';
 
     /**
      * The name of the state used in the address.
      */
-    const TAG_STAE = 'STAE';
+    public const TAG_STAE = 'STAE';
 
     /**
      * The ZIP or postal code used by the various localities in handling of mail.
      */
-    const TAG_POST = 'POST';
+    public const TAG_POST = 'POST';
 
     /**
      * The name of the country that pertains to the associated address.
      */
-    const TAG_CTRY = 'CTRY';
+    public const TAG_CTRY = 'CTRY';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getAddressLine();
+    public function getAddressLine(): ?string;
 
     /**
      * @return string[]
@@ -77,37 +82,37 @@ interface AddressBlockInterface
     public function getAdditionalLines(): array;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getLine1();
+    public function getLine1(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getLine2();
+    public function getLine2(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getLine3();
+    public function getLine3(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getCity();
+    public function getCity(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getState();
+    public function getState(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPostalCode();
+    public function getPostalCode(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getCountry();
+    public function getCountry(): ?string;
 }

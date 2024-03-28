@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
@@ -22,19 +27,19 @@ abstract class AbstractParser
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var Reader
      */
-    protected $reader;
+    protected Reader $reader;
 
     /**
      * The previous read level.
      *
      * @var int
      */
-    private $previousLevel;
+    private int $previousLevel;
 
     /**
      * Individual constructor.
@@ -50,15 +55,14 @@ abstract class AbstractParser
     }
 
     /**
-     *
      * @return string|DataObject
      */
     abstract public function parse();
 
     /**
-     * This map the GEDCOM tags to the proper parser classes.
+     * This maps the GEDCOM tags to the proper parser classes.
      *
-     * @return array
+     * @return array<string, string>
      */
     abstract protected function getClassMap(): array;
 
@@ -67,9 +71,9 @@ abstract class AbstractParser
      *
      * @param string $gedcomTag A GEDCOM tag
      *
-     * @return null|AbstractParser
+     * @return AbstractParser|null
      */
-    private function create(string $gedcomTag)
+    private function create(string $gedcomTag): ?AbstractParser
     {
         $className = $this->getClassMap()[$gedcomTag] ?? null;
 
@@ -81,9 +85,9 @@ abstract class AbstractParser
     /**
      * @param DataObject $object
      *
-     * @return object|DataObject
+     * @return DataObject
      */
-    protected function process(DataObject $object)
+    protected function process(DataObject $object): DataObject
     {
         while ($this->reader->read() && $this->valid()) {
             $gedcomTag = $this->reader->tag();
@@ -95,7 +99,7 @@ abstract class AbstractParser
 
             $subParser = $this->create($gedcomTag);
 
-            if (!$subParser) {
+            if (!$subParser instanceof AbstractParser) {
                 $this->logger->info('Invalid GEDCOM 5.5.1 tag <' . $gedcomTag . '> found.');
 
                 $subParser = new Custom($this->reader, $this->logger);
@@ -117,6 +121,7 @@ abstract class AbstractParser
     {
         if ($this->reader->level() <= $this->previousLevel) {
             $this->reader->back();
+
             return false;
         }
 
@@ -126,9 +131,9 @@ abstract class AbstractParser
     /**
      * Returns the complete content of CONT and CONC.
      *
-     * @return null|string
+     * @return string|null
      */
-    protected function readContent()
+    protected function readContent(): ?string
     {
         $content = $this->reader->value();
 
@@ -143,12 +148,12 @@ abstract class AbstractParser
                     $content .= $this->reader->value();
                     break;
 
-                // Concatenation
+                    // Concatenation
                 case 'CONC':
                     $content .= $this->reader->value();
                     break;
 
-                // Otherwise stop reading this block
+                    // Otherwise stop reading this block
                 default:
                     // Go back one line
                     $this->reader->back();

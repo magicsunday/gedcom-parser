@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance;
@@ -20,7 +25,7 @@ interface CommonChangeDateInterface
     /**
      * The date that this data was changed.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * @return DateExactInterface

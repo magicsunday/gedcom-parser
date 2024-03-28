@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common\Note;
@@ -18,24 +23,24 @@ interface NoteStructureInterface
     /**
      * A pointer to, or a cross-reference identifier of, a note record.
      */
-    const TAG_XREF_NOTE = 'XREF:NOTE';
+    public const TAG_XREF_NOTE = 'XREF:NOTE';
 
     /**
      * The note content.
      */
-    const TAG_CONTENT = 'CONTENT';
+    public const TAG_CONTENT = 'CONTENT';
 
     /**
      * Returns the pointer to a separate note record.
      *
-     * @return null|string
+     * @return string|null
      */
-    public function getXref();
+    public function getXref(): ?string;
 
     /**
      * Returns the note content. Maybe empty if a note pointer is set.
      *
-     * @return null|string
+     * @return string|null
      */
-    public function getContent();
+    public function getContent(): ?string;
 }

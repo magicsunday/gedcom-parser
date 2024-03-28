@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\Note;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\Note\NoteStructureInterface;
 use MagicSunday\Gedcom\Model\Common\Note\NoteStructure as NoteStructureModel;
 
 /**
@@ -19,7 +25,7 @@ use MagicSunday\Gedcom\Model\Common\Note\NoteStructure as NoteStructureModel;
 class NoteStructure extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
@@ -37,12 +43,12 @@ class NoteStructure extends AbstractParser
         $note = new NoteStructureModel();
 
         if ($xref) {
-            $note->setValue(NoteStructureModel::TAG_XREF_NOTE, $xref);
+            $note->setValue(NoteStructureInterface::TAG_XREF_NOTE, $xref);
         } else {
             $noteContent = $this->readContent();
 
             if ($noteContent) {
-                $note->setValue(NoteStructureModel::TAG_CONTENT, $noteContent);
+                $note->setValue(NoteStructureInterface::TAG_CONTENT, $noteContent);
             }
         }
 

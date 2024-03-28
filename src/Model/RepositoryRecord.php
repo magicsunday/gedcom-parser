@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -25,7 +30,7 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     use NoteTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -33,7 +38,7 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getName(): string
     {
@@ -41,7 +46,7 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReferenceNumber(): array
     {
@@ -49,9 +54,9 @@ class RepositoryRecord extends DataObject implements RepositoryRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

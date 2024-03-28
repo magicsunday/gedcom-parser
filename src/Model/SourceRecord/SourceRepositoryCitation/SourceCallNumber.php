@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\SourceRecord\SourceRepositoryCitation;
@@ -19,17 +24,17 @@ use MagicSunday\Gedcom\Model\DataObject;
 class SourceCallNumber extends DataObject implements SourceCallNumberInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getNumber()
+    public function getNumber(): ?string
     {
         return $this->getValue(self::TAG_SOURCE_CALL_NUMBER);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMediaType()
+    public function getMediaType(): ?string
     {
         return $this->getValue(self::TAG_MEDI);
     }

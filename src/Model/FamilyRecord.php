@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -28,7 +33,7 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     use SourceCitationTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -36,31 +41,31 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRestrictionNotice()
+    public function getRestrictionNotice(): ?string
     {
         return $this->getValue(self::TAG_RESN);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getHusbandXref()
+    public function getHusbandXref(): ?string
     {
         return $this->getValue(self::TAG_HUSB);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getWifeXref()
+    public function getWifeXref(): ?string
     {
         return $this->getValue(self::TAG_WIFE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getChildrenXref(): array
     {
@@ -68,15 +73,15 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getChildrenCount()
+    public function getChildrenCount(): ?string
     {
         return $this->getValue(self::TAG_NCHI);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSubmitterXref(): array
     {
@@ -84,7 +89,7 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSpouseSealing(): array
     {
@@ -92,7 +97,7 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReferenceNumber(): array
     {
@@ -100,9 +105,9 @@ class FamilyRecord extends FamilyEventStructure implements FamilyRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

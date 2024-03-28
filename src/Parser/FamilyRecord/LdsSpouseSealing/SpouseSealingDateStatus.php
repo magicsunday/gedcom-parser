@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\FamilyRecord\LdsSpouseSealing;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealing\SpouseSealingDateStatusInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\LdsSpouseSealing\SpouseSealingDateStatus as SpouseSealingDateStatusModel;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common\DateExact;
 class SpouseSealingDateStatus extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SpouseSealingDateStatusModel::TAG_DATE => DateExact::class,
+            SpouseSealingDateStatusInterface::TAG_DATE => DateExact::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class SpouseSealingDateStatus extends AbstractParser
     public function parse(): SpouseSealingDateStatusModel
     {
         $status = new SpouseSealingDateStatusModel();
-        $status->setValue(SpouseSealingDateStatusModel::TAG_DATE_STATUS, $this->reader->value());
+        $status->setValue(SpouseSealingDateStatusInterface::TAG_DATE_STATUS, $this->reader->value());
 
         $this->process($status);
 

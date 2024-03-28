@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
@@ -13,43 +18,39 @@ namespace MagicSunday\Gedcom\Interfaces\Common;
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface EventDetailInterface extends
-    AddressStructureInterface,
-    MultimediaLinkInterface,
-    NoteInterface,
-    SourceCitationInterface
+interface EventDetailInterface extends AddressStructureInterface, MultimediaLinkInterface, NoteInterface, SourceCitationInterface
 {
     /**
      * A descriptive word or phrase used to further classify the parent event or attribute tag.
      */
-    const TAG_TYPE = 'TYPE';
+    public const TAG_TYPE = 'TYPE';
 
     /**
      * The date of the event.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * The place of the event.
      */
-    const TAG_PLAC = 'PLAC';
+    public const TAG_PLAC = 'PLAC';
 
     /**
-     * The organization, institution, corporation, person, or other entity that has responsibility for the
+     * The organization, institution, corporation, person, or another entity that has responsibility for the
      * associated context.
      */
-    const TAG_AGNC = 'AGNC';
+    public const TAG_AGNC = 'AGNC';
 
     /**
      * A name of the religion with which this person, event, or record was affiliated.
      */
-    const TAG_RELI = 'RELI';
+    public const TAG_RELI = 'RELI';
 
     /**
-     * Used in special cases to record the reasons which precipitated an event. Normally this will be used
+     * Used in special cases to record the reasons which precipitated an event. Normally, this will be used
      * subordinate to a death event to show cause of death, such as might be listed on a death certificate.
      */
-    const TAG_CAUS = 'CAUS';
+    public const TAG_CAUS = 'CAUS';
 
     /**
      * The restriction notice is defined for Ancestral File usage.
@@ -58,40 +59,40 @@ interface EventDetailInterface extends
      * - locked
      * - privacy
      */
-    const TAG_RESN = 'RESN';
+    public const TAG_RESN = 'RESN';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getType();
+    public function getType(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getDate();
+    public function getDate(): ?string;
 
     /**
-     * @return null|PlaceStructureInterface
+     * @return PlaceStructureInterface|null
      */
-    public function getPlace();
+    public function getPlace(): ?PlaceStructureInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getAgency();
+    public function getAgency(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getReligion();
+    public function getReligion(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getCause();
+    public function getCause(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getRestrictionNotice();
+    public function getRestrictionNotice(): ?string;
 }

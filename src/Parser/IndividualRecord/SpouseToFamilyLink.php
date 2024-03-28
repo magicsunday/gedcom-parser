@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\SpouseToFamilyLinkInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\SpouseToFamilyLink as SpouseToFamilyLinkModel;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 
@@ -20,23 +27,22 @@ use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 class SpouseToFamilyLink extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SpouseToFamilyLinkModel::TAG_NOTE => NoteStructure::class,
+            NoteInterface::TAG_NOTE => NoteStructure::class,
         ];
     }
 
     /**
-     *
      * @return SpouseToFamilyLinkModel
      */
     public function parse(): SpouseToFamilyLinkModel
     {
         $childToFamilyLink = new SpouseToFamilyLinkModel();
-        $childToFamilyLink->setValue(SpouseToFamilyLinkModel::TAG_XREF_FAM, $this->reader->xref());
+        $childToFamilyLink->setValue(SpouseToFamilyLinkInterface::TAG_XREF_FAM, $this->reader->xref());
 
         $this->process($childToFamilyLink);
 

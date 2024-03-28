@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Model\Common\DateExact as DateExactModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class DateExact extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            DateExactModel::TAG_TIME => Common::class,
+            DateExactInterface::TAG_TIME => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class DateExact extends AbstractParser
     public function parse(): DateExactModel
     {
         $dateExact = new DateExactModel();
-        $dateExact->setValue(DateExactModel::TAG_DATE_EXACT, $this->reader->value());
+        $dateExact->setValue(DateExactInterface::TAG_DATE_EXACT, $this->reader->value());
 
         $this->process($dateExact);
 

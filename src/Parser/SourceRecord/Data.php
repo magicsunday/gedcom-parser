@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\SourceRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\SourceRecord\DataInterface;
 use MagicSunday\Gedcom\Model\SourceRecord\Data as DataModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -22,14 +29,14 @@ use MagicSunday\Gedcom\Parser\SourceRecord\Data\Event;
 class Data extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            DataModel::TAG_AGNC => Common::class,
-            DataModel::TAG_EVEN => Event::class,
-            DataModel::TAG_NOTE => NoteStructure::class,
+            DataInterface::TAG_AGNC => Common::class,
+            DataInterface::TAG_EVEN => Event::class,
+            NoteInterface::TAG_NOTE => NoteStructure::class,
         ];
     }
 

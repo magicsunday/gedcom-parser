@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common;
 
 use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
@@ -28,57 +34,57 @@ class EventDetail extends DataObject implements EventDetailInterface
     use SourceCitationTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->getValue(self::TAG_TYPE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDate()
+    public function getDate(): ?string
     {
         return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPlace()
+    public function getPlace(): ?PlaceStructureInterface
     {
         return $this->getValue(self::TAG_PLAC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAgency()
+    public function getAgency(): ?string
     {
         return $this->getValue(self::TAG_AGNC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getReligion()
+    public function getReligion(): ?string
     {
         return $this->getValue(self::TAG_RELI);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCause()
+    public function getCause(): ?string
     {
         return $this->getValue(self::TAG_CAUS);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRestrictionNotice()
+    public function getRestrictionNotice(): ?string
     {
         return $this->getValue(self::TAG_RESN);
     }

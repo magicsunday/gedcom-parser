@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -30,7 +35,7 @@ class SubmissionRecord extends DataObject implements SubmissionRecordInterface
     use ChangeDateTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -38,57 +43,57 @@ class SubmissionRecord extends DataObject implements SubmissionRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getSubmitterXref()
+    public function getSubmitterXref(): ?string
     {
         return $this->getValue(self::TAG_SUBM);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getFamilyFile()
+    public function getFamilyFile(): ?string
     {
         return $this->getValue(self::TAG_FAMF);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTempleCode()
+    public function getTempleCode(): ?string
     {
         return $this->getValue(self::TAG_TEMP);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAncestorGenerations()
+    public function getAncestorGenerations(): ?string
     {
         return $this->getValue(self::TAG_ANCE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDescendantGenerations()
+    public function getDescendantGenerations(): ?string
     {
         return $this->getValue(self::TAG_DESC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getOrdinanceFlag()
+    public function getOrdinanceFlag(): ?string
     {
         return $this->getValue(self::TAG_ORDI);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\MultimediaRecord\File;
@@ -28,7 +33,7 @@ interface MediaFormatInterface
      * - tif
      * - wav
      */
-    const TAG_MULTIMEDIA_FORMAT = 'MULTIMEDIA_FORMAT';
+    public const TAG_MULTIMEDIA_FORMAT = 'MULTIMEDIA_FORMAT';
 
     /**
      * A code, selected from one of the media classifications choices above, that indicates the type of
@@ -48,7 +53,7 @@ interface MediaFormatInterface
      * - tombstone
      * - video
      */
-    const TAG_TYPE = 'TYPE';
+    public const TAG_TYPE = 'TYPE';
 
     /**
      * @return string
@@ -56,7 +61,7 @@ interface MediaFormatInterface
     public function getFormat(): string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getType();
+    public function getType(): ?string;
 }

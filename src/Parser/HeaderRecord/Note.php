@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\NoteInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\Note as NoteModel;
 
 /**
@@ -19,7 +25,7 @@ use MagicSunday\Gedcom\Model\HeaderRecord\Note as NoteModel;
 class Note extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
@@ -37,7 +43,7 @@ class Note extends AbstractParser
         $content = $this->readContent();
 
         if ($content !== '') {
-            $note->setValue(NoteModel::TAG_GEDCOM_CONTENT_DESCRIPTION, $content);
+            $note->setValue(NoteInterface::TAG_GEDCOM_CONTENT_DESCRIPTION, $content);
         }
 
         return $note;

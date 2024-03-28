@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\SourceRecord\Data;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\SourceRecord\Data\EventInterface;
 use MagicSunday\Gedcom\Model\SourceRecord\Data\Event as EventModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,13 +26,13 @@ use MagicSunday\Gedcom\Parser\Common;
 class Event extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            EventModel::TAG_DATE => Common::class,
-            EventModel::TAG_PLAC => Common::class,
+            EventInterface::TAG_DATE => Common::class,
+            EventInterface::TAG_PLAC => Common::class,
         ];
     }
 
@@ -38,7 +44,7 @@ class Event extends AbstractParser
     public function parse(): EventModel
     {
         $event = new EventModel();
-        $event->setValue(EventModel::TAG_EVENTS_RECORDED, $this->reader->value());
+        $event->setValue(EventInterface::TAG_EVENTS_RECORDED, $this->reader->value());
 
         $this->process($event);
 

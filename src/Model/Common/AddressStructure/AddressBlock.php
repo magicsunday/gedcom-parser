@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common\AddressStructure;
@@ -19,15 +24,15 @@ use MagicSunday\Gedcom\Model\DataObject;
 class AddressBlock extends DataObject implements AddressBlockInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAddressLine()
+    public function getAddressLine(): ?string
     {
         return $this->getValue(self::TAG_ADDRESS_LINE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getAdditionalLines(): array
     {
@@ -35,57 +40,57 @@ class AddressBlock extends DataObject implements AddressBlockInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getLine1()
+    public function getLine1(): ?string
     {
         return $this->getValue(self::TAG_ADR1);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getLine2()
+    public function getLine2(): ?string
     {
         return $this->getValue(self::TAG_ADR2);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getLine3()
+    public function getLine3(): ?string
     {
         return $this->getValue(self::TAG_ADR3);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCity()
+    public function getCity(): ?string
     {
         return $this->getValue(self::TAG_CITY);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getState()
+    public function getState(): ?string
     {
         return $this->getValue(self::TAG_STAE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPostalCode()
+    public function getPostalCode(): ?string
     {
         return $this->getValue(self::TAG_POST);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCountry()
+    public function getCountry(): ?string
     {
         return $this->getValue(self::TAG_CTRY);
     }

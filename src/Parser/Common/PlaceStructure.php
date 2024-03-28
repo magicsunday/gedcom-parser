@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
 use MagicSunday\Gedcom\Model\Common\PlaceStructure as PlaceStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -24,16 +31,16 @@ use MagicSunday\Gedcom\Parser\Common\PlaceStructure\PlaceRomanizedVariation;
 class PlaceStructure extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            PlaceStructureModel::TAG_FORM => Common::class,
-            PlaceStructureModel::TAG_FONE => PlacePhoneticVariation::class,
-            PlaceStructureModel::TAG_ROMN => PlaceRomanizedVariation::class,
-            PlaceStructureModel::TAG_MAP  => Map::class,
-            PlaceStructureModel::TAG_NOTE => NoteStructure::class,
+            PlaceStructureInterface::TAG_FORM => Common::class,
+            PlaceStructureInterface::TAG_FONE => PlacePhoneticVariation::class,
+            PlaceStructureInterface::TAG_ROMN => PlaceRomanizedVariation::class,
+            PlaceStructureInterface::TAG_MAP  => Map::class,
+            NoteInterface::TAG_NOTE           => NoteStructure::class,
         ];
     }
 
@@ -45,7 +52,7 @@ class PlaceStructure extends AbstractParser
     public function parse(): PlaceStructureModel
     {
         $place = new PlaceStructureModel();
-        $place->setValue(PlaceStructureModel::TAG_PLACE_NAME, $this->reader->value());
+        $place->setValue(PlaceStructureInterface::TAG_PLACE_NAME, $this->reader->value());
 
         $this->process($place);
 

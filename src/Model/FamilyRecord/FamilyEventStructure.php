@@ -1,11 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\FamilyRecord;
 
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetail\MarriageInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
@@ -19,97 +26,97 @@ use MagicSunday\Gedcom\Model\DataObject;
 class FamilyEventStructure extends DataObject implements FamilyEventStructureInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAnnulment()
+    public function getAnnulment(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_ANUL);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCensus()
+    public function getCensus(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_CENS);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDivorce()
+    public function getDivorce(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_DIV);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDivorceFiled()
+    public function getDivorceFiled(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_DIVF);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getEngagement()
+    public function getEngagement(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_ENGA);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMarriageBann()
+    public function getMarriageBann(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_MARB);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMarriageContract()
+    public function getMarriageContract(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_MARC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMarriageLicense()
+    public function getMarriageLicense(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_MARL);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMarriage()
+    public function getMarriage(): ?MarriageInterface
     {
         return $this->getValue(self::TAG_MARR);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getMarriageSettlement()
+    public function getMarriageSettlement(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_MARS);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getResidence()
+    public function getResidence(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_RESI);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCustomEvent()
+    public function getCustomEvent(): ?FamilyEventDetailInterface
     {
         return $this->getValue(self::TAG_EVEN);
     }

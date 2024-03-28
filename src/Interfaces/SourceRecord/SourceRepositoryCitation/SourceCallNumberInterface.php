@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\SourceRecord\SourceRepositoryCitation;
@@ -19,7 +24,7 @@ interface SourceCallNumberInterface
      * An identification or reference description used to file and retrieve items from the holdings
      * of a repository.
      */
-    const TAG_SOURCE_CALL_NUMBER = 'SOURCE_CALL_NUMBER';
+    public const TAG_SOURCE_CALL_NUMBER = 'SOURCE_CALL_NUMBER';
 
     /**
      * A code, selected from one of the media classifications choices above, that indicates the type of
@@ -39,15 +44,15 @@ interface SourceCallNumberInterface
      * - tombstone
      * - video
      */
-    const TAG_MEDI = 'MEDI';
+    public const TAG_MEDI = 'MEDI';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getNumber();
+    public function getNumber(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getMediaType();
+    public function getMediaType(): ?string;
 }

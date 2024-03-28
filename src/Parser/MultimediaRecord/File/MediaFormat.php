@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\MultimediaRecord\File;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\MultimediaRecord\File\MediaFormatInterface;
 use MagicSunday\Gedcom\Model\MultimediaRecord\File\MediaFormat as MediaFormatModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class MediaFormat extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
-            MediaFormatModel::TAG_TYPE => Common::class,
+            MediaFormatInterface::TAG_TYPE => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class MediaFormat extends AbstractParser
     public function parse(): MediaFormatModel
     {
         $format = new MediaFormatModel();
-        $format->setValue(MediaFormatModel::TAG_MULTIMEDIA_FORMAT, $this->reader->value());
+        $format->setValue(MediaFormatInterface::TAG_MULTIMEDIA_FORMAT, $this->reader->value());
 
         $this->process($format);
 

@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\CharacterSetInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\CharacterSet as CharacterSetModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class CharacterSet extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            CharacterSetModel::TAG_VERS => Common::class,
+            CharacterSetInterface::TAG_VERS => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class CharacterSet extends AbstractParser
     public function parse(): CharacterSetModel
     {
         $characterSet = new CharacterSetModel();
-        $characterSet->setValue(CharacterSetModel::TAG_CHARACTER_SET, $this->reader->value());
+        $characterSet->setValue(CharacterSetInterface::TAG_CHARACTER_SET, $this->reader->value());
 
         $this->process($characterSet);
 

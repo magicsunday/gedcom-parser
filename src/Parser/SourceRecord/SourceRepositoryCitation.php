@@ -1,12 +1,19 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\SourceRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\SourceRecord\SourceRepositoryCitationInterface;
 use MagicSunday\Gedcom\Model\SourceRecord\SourceRepositoryCitation as SourceRepositoryCitationModel;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
 use MagicSunday\Gedcom\Parser\SourceRecord\SourceRepositoryCitation\SourceCallNumber;
@@ -21,13 +28,13 @@ use MagicSunday\Gedcom\Parser\SourceRecord\SourceRepositoryCitation\SourceCallNu
 class SourceRepositoryCitation extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SourceRepositoryCitationModel::TAG_CALN => SourceCallNumber::class,
-            SourceRepositoryCitationModel::TAG_NOTE => NoteStructure::class,
+            SourceRepositoryCitationInterface::TAG_CALN => SourceCallNumber::class,
+            NoteInterface::TAG_NOTE                     => NoteStructure::class,
         ];
     }
 
@@ -39,7 +46,7 @@ class SourceRepositoryCitation extends AbstractParser
     public function parse(): SourceRepositoryCitationModel
     {
         $sourceRepository = new SourceRepositoryCitationModel();
-        $sourceRepository->setValue(SourceRepositoryCitationModel::TAG_XREF_REPO, $this->reader->xref());
+        $sourceRepository->setValue(SourceRepositoryCitationInterface::TAG_XREF_REPO, $this->reader->xref());
 
         $this->process($sourceRepository);
 

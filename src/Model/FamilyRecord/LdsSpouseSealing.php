@@ -1,11 +1,17 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\FamilyRecord;
 
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealing\SpouseSealingDateStatusInterface;
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealingInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
@@ -24,33 +30,33 @@ class LdsSpouseSealing extends DataObject implements LdsSpouseSealingInterface
     use SourceCitationTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDate()
+    public function getDate(): ?string
     {
         return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTempleCode()
+    public function getTempleCode(): ?string
     {
         return $this->getValue(self::TAG_TEMP);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPlace()
+    public function getPlace(): ?string
     {
         return $this->getValue(self::TAG_PLAC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDateStatus()
+    public function getDateStatus(): ?SpouseSealingDateStatusInterface
     {
         return $this->getValue(self::TAG_STAT);
     }

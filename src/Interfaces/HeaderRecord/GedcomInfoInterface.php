@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord;
@@ -19,14 +24,14 @@ interface GedcomInfoInterface
      * An identifier that represents the version level assigned to the associated product. It is defined and
      * changed by the creators of the product.
      */
-    const TAG_VERS = 'VERS';
+    public const TAG_VERS = 'VERS';
 
     /**
      * The GEDCOM form used to construct this transmission. There maybe other forms used such as
      * CommSoft's "EVENT_LINEAGE_LINKED" but these specifications define only the LINEAGELINKED
      * Form. Systems will use this value to specify GEDCOM compatible with these specifications.
      */
-    const TAG_FORM = 'FORM';
+    public const TAG_FORM = 'FORM';
 
     /**
      * @return string

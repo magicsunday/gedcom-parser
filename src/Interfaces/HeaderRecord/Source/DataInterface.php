@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord\Source;
@@ -20,30 +25,30 @@ interface DataInterface
     /**
      * The name of the electronic data source that was used to obtain the data in this transmission.
      */
-    const TAG_NAME_OF_SOURCE_DATA = 'NAME_OF_SOURCE_DATA';
+    public const TAG_NAME_OF_SOURCE_DATA = 'NAME_OF_SOURCE_DATA';
 
     /**
      * The date this source was published or created.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * A copyright statement required by the owner of data from which this information was downloaded.
      */
-    const TAG_COPR = 'COPR';
+    public const TAG_COPR = 'COPR';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
-     * @return null|DateExactInterface
+     * @return DateExactInterface|null
      */
-    public function getPublicationDate();
+    public function getPublicationDate(): ?DateExactInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getCopyright();
+    public function getCopyright(): ?string;
 }

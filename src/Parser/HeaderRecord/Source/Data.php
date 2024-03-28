@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\HeaderRecord\Source;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\Source\DataInterface;
 use MagicSunday\Gedcom\Model\HeaderRecord\Source\Data as DataModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\DateExact;
@@ -21,15 +27,15 @@ use MagicSunday\Gedcom\Parser\Common\DateExact;
 class Data extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            DataModel::TAG_DATE => DateExact::class,
+            DataInterface::TAG_DATE => DateExact::class,
 
             // TODO Handle CONT|CONC
-            DataModel::TAG_COPR => Common::class,
+            DataInterface::TAG_COPR => Common::class,
         ];
     }
 
@@ -41,7 +47,7 @@ class Data extends AbstractParser
     public function parse(): DataModel
     {
         $data = new DataModel();
-        $data->setValue(DataModel::TAG_NAME_OF_SOURCE_DATA, $this->reader->value());
+        $data->setValue(DataInterface::TAG_NAME_OF_SOURCE_DATA, $this->reader->value());
 
         $this->process($data);
 

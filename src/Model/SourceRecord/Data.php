@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\SourceRecord;
@@ -22,7 +27,7 @@ class Data extends DataObject implements DataInterface
     use NoteTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getEvents(): array
     {
@@ -30,9 +35,9 @@ class Data extends DataObject implements DataInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAgency()
+    public function getAgency(): ?string
     {
         return $this->getValue(self::TAG_AGNC);
     }

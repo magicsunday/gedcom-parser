@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\IndividualRecord;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure as PersonalNameStructureModel;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure\NamePhoneticVariation;
@@ -23,26 +29,25 @@ use MagicSunday\Gedcom\Parser\IndividualRecord\PersonalNameStructure\PersonalNam
 class PersonalNameStructure extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return PersonalNamePieces::getClassMap()
             + [
-                PersonalNameStructureModel::TAG_TYPE => Common::class,
-                PersonalNameStructureModel::TAG_FONE => NamePhoneticVariation::class,
-                PersonalNameStructureModel::TAG_ROMN => NameRomanizedVariation::class,
+                PersonalNameStructureInterface::TAG_TYPE => Common::class,
+                PersonalNameStructureInterface::TAG_FONE => NamePhoneticVariation::class,
+                PersonalNameStructureInterface::TAG_ROMN => NameRomanizedVariation::class,
             ];
     }
 
     /**
-     *
      * @return PersonalNameStructureModel
      */
     public function parse(): PersonalNameStructureModel
     {
         $personalNameStructure = new PersonalNameStructureModel();
-        $personalNameStructure->setValue(PersonalNameStructureModel::TAG_NAME_PERSONAL, $this->reader->value());
+        $personalNameStructure->setValue(PersonalNameStructureInterface::TAG_NAME_PERSONAL, $this->reader->value());
 
         $this->process($personalNameStructure);
 

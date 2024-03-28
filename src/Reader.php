@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
@@ -10,6 +15,8 @@ use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
 use SplFileObject;
+
+use function is_string;
 
 /**
  * A GEDCOM file reader.
@@ -23,23 +30,27 @@ class Reader
     /**
      * Regular expression to match the different parts of a line.
      */
-    const PATTERN = '^\s*(\d)\s+(@([^@ ]+)@\s+)?([a-zA-Z_0-9.]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
+    public const PATTERN = '^\s*(\d)\s+(@([^@ ]+)@\s+)?([a-zA-Z_0-9.]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
 
     /**
      * The matched groups of interest.
      */
-    const MATCH_GROUP_LEVEL = 1;
-    const MATCH_GROUP_ID    = 3;
-    const MATCH_GROUP_TAG   = 4;
-    const MATCH_GROUP_XREF  = 6;
-    const MATCH_GROUP_VALUE = 8;
+    public const MATCH_GROUP_LEVEL = 1;
+
+    public const MATCH_GROUP_ID = 3;
+
+    public const MATCH_GROUP_TAG = 4;
+
+    public const MATCH_GROUP_XREF = 6;
+
+    public const MATCH_GROUP_VALUE = 8;
 
     /**
      * The file object.
      *
      * @var SplFileObject
      */
-    private $file;
+    private SplFileObject $file;
 
     /**
      * The last line read from input.
@@ -53,39 +64,39 @@ class Reader
      *
      * @var int
      */
-    private $lastPosition;
+    private int $lastPosition;
 
     /**
      * Number of read lines of the file.
      *
      * @var int
      */
-    private $lineCount = 0;
+    private int $lineCount = 0;
 
     /**
      * @var int
      */
-    private $level = -1;
+    private int $level = -1;
 
     /**
      * @var string
      */
-    private $identifier;
+    private string $identifier;
 
     /**
      * @var string
      */
-    private $tag;
+    private string $tag;
 
     /**
      * @var string
      */
-    private $xref;
+    private string $xref;
 
     /**
      * @var string
      */
-    private $value;
+    private string $value;
 
     /**
      * Reader constructor.
@@ -139,7 +150,7 @@ class Reader
             $this->xref       = $matches[self::MATCH_GROUP_XREF];
             $this->value      = $matches[self::MATCH_GROUP_VALUE];
 
-            // Remove line breaks (keep white spaces at end of lines)
+            // Remove line breaks (keep white spaces at the end of lines)
             $this->value = str_replace(["\r", "\n"], '', $this->value);
         }
 
@@ -173,7 +184,7 @@ class Reader
      */
     private function valid(): bool
     {
-        return \is_string($this->lastLine) && (trim($this->lastLine) !== '');
+        return is_string($this->lastLine) && (trim($this->lastLine) !== '');
     }
 
     /**
@@ -199,9 +210,9 @@ class Reader
     /**
      * Returns the identifier pointer if there is one.
      *
-     * @return null|string
+     * @return string|null
      */
-    public function identifier()
+    public function identifier(): ?string
     {
         return $this->identifier;
     }
@@ -219,9 +230,9 @@ class Reader
     /**
      * Returns the xref of the current line if there is one.
      *
-     * @return null|string
+     * @return string|null
      */
-    public function xref()
+    public function xref(): ?string
     {
         return ($this->xref !== '') ? $this->xref : null;
     }
@@ -229,9 +240,9 @@ class Reader
     /**
      * Returns the value of the current line if there is one.
      *
-     * @return null|string
+     * @return string|null
      */
-    public function value()
+    public function value(): ?string
     {
         return ($this->value !== '') ? $this->value : null;
     }

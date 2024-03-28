@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\Common\SourceCitation;
@@ -19,17 +24,17 @@ use MagicSunday\Gedcom\Model\DataObject;
 class Event extends DataObject implements EventInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->getValue(self::TAG_TYPE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRole()
+    public function getRole(): ?string
     {
         return $this->getValue(self::TAG_ROLE);
     }

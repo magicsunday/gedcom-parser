@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
@@ -22,7 +27,7 @@ interface ChangeDateInterface
      * manage the change process with more detail, but it is sufficient for GEDCOM purposes to indicate
      * the last time that a record was modified.
      */
-    const TAG_CHAN = 'CHAN';
+    public const TAG_CHAN = 'CHAN';
 
     /**
      * @return ChangeDateStructureInterface

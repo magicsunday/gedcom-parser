@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\FamilyChildInterface;
 use MagicSunday\Gedcom\Model\Common\FamilyChild as FamilyChildModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,12 +26,12 @@ use MagicSunday\Gedcom\Parser\Common;
 class FamilyChild extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            FamilyChildModel::TAG_ADOP => Common::class,
+            FamilyChildInterface::TAG_ADOP => Common::class,
         ];
     }
 
@@ -37,7 +43,7 @@ class FamilyChild extends AbstractParser
     public function parse(): FamilyChildModel
     {
         $familyChild = new FamilyChildModel();
-        $familyChild->setValue(FamilyChildModel::TAG_XREF_FAM, $this->reader->xref());
+        $familyChild->setValue(FamilyChildInterface::TAG_XREF_FAM, $this->reader->xref());
 
         $this->process($familyChild);
 

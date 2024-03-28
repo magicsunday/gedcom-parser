@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
@@ -22,7 +27,7 @@ interface PersonalNameStructureInterface extends PersonalNamePiecesInterface
     /**
      * The name.
      */
-    const TAG_NAME_PERSONAL = 'NAME_PERSONAL';
+    public const TAG_NAME_PERSONAL = 'NAME_PERSONAL';
 
     /**
      * Indicates the name type, for example the name issued or assumed as an immigrant.
@@ -34,34 +39,34 @@ interface PersonalNameStructureInterface extends PersonalNamePiecesInterface
      * married      = name was persons previous married name
      * user_defined = other text name that defines the name type
      */
-    const TAG_TYPE = 'TYPE';
+    public const TAG_TYPE = 'TYPE';
 
     /**
      * The phonetic variation of the name is written in the same form as the was the name used in the
      * superior <NAME_PERSONAL> primitive, but phonetically written using the method indicated by the
-     * subordinate <PHONETIC_TYPE> value, for example if hiragana was used to provide a reading of a
+     * subordinate <PHONETIC_TYPE> value, for example, if hiragana was used to provide a reading of a
      * name written in kanji, then the <PHONETIC_TYPE> value would indicate ‘kana’.
      */
-    const TAG_FONE = 'FONE';
+    public const TAG_FONE = 'FONE';
 
     /**
      * The romanized variation of the name is written in the same form prescribed for the name used in the
      * superior <NAME_PERSONAL> context. The method used to romanize the name is indicated by the
-     * line_value of the subordinate <ROMANIZED_TYPE>, for example if romaji was used to provide a
+     * line_value of the subordinate <ROMANIZED_TYPE>, for example, if romaji was used to provide a
      * reading of a name written in kanji, then the ROMANIZED_TYPE subordinate to the ROMN tag
      * would indicate romaji.
      */
-    const TAG_ROMN = 'ROMN';
+    public const TAG_ROMN = 'ROMN';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getType();
+    public function getType(): ?string;
 
     /**
      * @return NamePhoneticVariationInterface[]

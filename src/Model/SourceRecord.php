@@ -1,11 +1,17 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Interfaces\SourceRecord\DataInterface;
 use MagicSunday\Gedcom\Interfaces\SourceRecordInterface;
 use MagicSunday\Gedcom\Traits\Common\ChangeDateTrait;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
@@ -25,7 +31,7 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     use NoteTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -33,56 +39,55 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getData()
+    public function getData(): ?DataInterface
     {
         return $this->getValue(self::TAG_DATA);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->getValue(self::TAG_AUTH);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->getValue(self::TAG_TITL);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAbbreviation()
+    public function getAbbreviation(): ?string
     {
         return $this->getValue(self::TAG_ABBR);
     }
 
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPublication()
+    public function getPublication(): ?string
     {
         return $this->getValue(self::TAG_PUBL);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->getValue(self::TAG_TEXT);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getRepository(): array
     {
@@ -90,7 +95,7 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReferenceNumber(): array
     {
@@ -98,9 +103,9 @@ class SourceRecord extends DataObject implements SourceRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

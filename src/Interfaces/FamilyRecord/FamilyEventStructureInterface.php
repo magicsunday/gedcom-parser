@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord;
@@ -21,126 +26,126 @@ interface FamilyEventStructureInterface
     /**
      * Declaring a marriage void from the beginning (never existed).
      */
-    const TAG_ANUL = 'ANUL';
+    public const TAG_ANUL = 'ANUL';
 
     /**
      * The event of the periodic count of the population for a designated locality, such as a national
      * or state Census.
      */
-    const TAG_CENS = 'CENS';
+    public const TAG_CENS = 'CENS';
 
     /**
      * An event of dissolving a marriage through civil action.
      */
-    const TAG_DIV = 'DIV';
+    public const TAG_DIV = 'DIV';
 
     /**
      * An event of filing for a divorce by a spouse.
      */
-    const TAG_DIVF = 'DIVF';
+    public const TAG_DIVF = 'DIVF';
 
     /**
      * An event of recording or announcing an agreement between two people to become married.
      */
-    const TAG_ENGA = 'ENGA';
+    public const TAG_ENGA = 'ENGA';
 
     /**
      * An event of an official public notice given that two people intend to marry.
      */
-    const TAG_MARB = 'MARB';
+    public const TAG_MARB = 'MARB';
 
     /**
      * An event of recording a formal agreement of marriage, including the prenuptial agreement in which
      * marriage partners reach agreement about the property rights of one or both, securing property to their
      * children.
      */
-    const TAG_MARC = 'MARC';
+    public const TAG_MARC = 'MARC';
 
     /**
      * A legal, common-law, or customary event of creating a family unit of a man and a woman as husband
      * and wife.
      */
-    const TAG_MARR = 'MARR';
+    public const TAG_MARR = 'MARR';
 
     /**
      * An event of obtaining a legal license to marry.
      */
-    const TAG_MARL = 'MARL';
+    public const TAG_MARL = 'MARL';
 
     /**
      * An event of creating an agreement between two people contemplating marriage, at which time they
      * agree to release or modify property rights that would otherwise arise from the marriage.
      */
-    const TAG_MARS = 'MARS';
+    public const TAG_MARS = 'MARS';
 
     /**
      * An address or place of residence that a family or individual resided.
      */
-    const TAG_RESI = 'RESI';
+    public const TAG_RESI = 'RESI';
 
     /**
      * Pertaining to a noteworthy happening related to an individual, a group, or an organization. An EVENt
      * structure is usually qualified or classified by a subordinate use of the TYPE tag.
      */
-    const TAG_EVEN = 'EVEN';
+    public const TAG_EVEN = 'EVEN';
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getAnnulment();
+    public function getAnnulment(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getCensus();
+    public function getCensus(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getDivorce();
+    public function getDivorce(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getDivorceFiled();
+    public function getDivorceFiled(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getEngagement();
+    public function getEngagement(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getMarriageBann();
+    public function getMarriageBann(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getMarriageContract();
+    public function getMarriageContract(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getMarriageLicense();
+    public function getMarriageLicense(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|MarriageInterface
+     * @return MarriageInterface|null
      */
-    public function getMarriage();
+    public function getMarriage(): ?MarriageInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getMarriageSettlement();
+    public function getMarriageSettlement(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getResidence();
+    public function getResidence(): ?FamilyEventDetailInterface;
 
     /**
-     * @return null|FamilyEventDetailInterface
+     * @return FamilyEventDetailInterface|null
      */
-    public function getCustomEvent();
+    public function getCustomEvent(): ?FamilyEventDetailInterface;
 }

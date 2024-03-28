@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\Common\SourceCitation\SourceCitationStructureInterface;
 use MagicSunday\Gedcom\Model\Common\SourceCitation\SourceCitationStructure;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\Note\NoteStructure;
@@ -23,17 +31,17 @@ use MagicSunday\Gedcom\Parser\Common\SourceCitation\Event;
 class SourceCitation extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SourceCitationStructure::TAG_PAGE => Common::class,
-            SourceCitationStructure::TAG_EVEN => Event::class,
-            SourceCitationStructure::TAG_DATA => Data::class,
-            SourceCitationStructure::TAG_OBJE => MultimediaLink::class,
-            SourceCitationStructure::TAG_NOTE => NoteStructure::class,
-            SourceCitationStructure::TAG_QUAY => Common::class,
+            SourceCitationStructureInterface::TAG_PAGE => Common::class,
+            SourceCitationStructureInterface::TAG_EVEN => Event::class,
+            SourceCitationStructureInterface::TAG_DATA => Data::class,
+            MultimediaLinkInterface::TAG_OBJE          => MultimediaLink::class,
+            NoteInterface::TAG_NOTE                    => NoteStructure::class,
+            SourceCitationStructureInterface::TAG_QUAY => Common::class,
         ];
     }
 
@@ -48,7 +56,7 @@ class SourceCitation extends AbstractParser
         $xref   = $this->reader->xref();
 
         if ($xref) {
-            $source->setValue(SourceCitationStructure::TAG_XREF_SOUR, $xref);
+            $source->setValue(SourceCitationStructureInterface::TAG_XREF_SOUR, $xref);
         }
 
         $this->process($source);

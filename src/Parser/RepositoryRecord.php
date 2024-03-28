@@ -1,12 +1,21 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\AddressStructureInterface;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\RepositoryRecordInterface;
 use MagicSunday\Gedcom\Model\RepositoryRecord as RepositoryRecordModel;
 use MagicSunday\Gedcom\Parser\Common\AddressStructure;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
@@ -23,21 +32,21 @@ use MagicSunday\Gedcom\Parser\Common\ReferenceNumber;
 class RepositoryRecord extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            RepositoryRecordModel::TAG_NAME  => Common::class,
-            RepositoryRecordModel::TAG_ADDR  => AddressStructure::class,
-            RepositoryRecordModel::TAG_PHON  => Common::class,
-            RepositoryRecordModel::TAG_EMAIL => Common::class,
-            RepositoryRecordModel::TAG_FAX   => Common::class,
-            RepositoryRecordModel::TAG_WWW   => Common::class,
-            RepositoryRecordModel::TAG_NOTE  => NoteStructure::class,
-            RepositoryRecordModel::TAG_REFN  => ReferenceNumber::class,
-            RepositoryRecordModel::TAG_RIN   => Common::class,
-            RepositoryRecordModel::TAG_CHAN  => ChangeDateStructure::class,
+            RepositoryRecordInterface::TAG_NAME  => Common::class,
+            AddressStructureInterface::TAG_ADDR  => AddressStructure::class,
+            AddressStructureInterface::TAG_PHON  => Common::class,
+            AddressStructureInterface::TAG_EMAIL => Common::class,
+            AddressStructureInterface::TAG_FAX   => Common::class,
+            AddressStructureInterface::TAG_WWW   => Common::class,
+            NoteInterface::TAG_NOTE              => NoteStructure::class,
+            RepositoryRecordInterface::TAG_REFN  => ReferenceNumber::class,
+            RepositoryRecordInterface::TAG_RIN   => Common::class,
+            ChangeDateInterface::TAG_CHAN        => ChangeDateStructure::class,
         ];
     }
 
@@ -49,7 +58,7 @@ class RepositoryRecord extends AbstractParser
     public function parse(): RepositoryRecordModel
     {
         $repoRecord = new RepositoryRecordModel();
-        $repoRecord->setValue(RepositoryRecordModel::TAG_XREF_REPO, $this->reader->identifier());
+        $repoRecord->setValue(RepositoryRecordInterface::TAG_XREF_REPO, $this->reader->identifier());
 
         $this->process($repoRecord);
 

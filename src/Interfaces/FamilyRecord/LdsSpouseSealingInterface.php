@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\FamilyRecord;
@@ -17,9 +22,7 @@ use MagicSunday\Gedcom\Interfaces\FamilyRecord\LdsSpouseSealing\SpouseSealingDat
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface LdsSpouseSealingInterface extends
-    NoteInterface,
-    SourceCitationInterface
+interface LdsSpouseSealingInterface extends NoteInterface, SourceCitationInterface
 {
     /**
      * LDS ordinance dates use only the Gregorian date and most often use the form of day, month, and
@@ -27,41 +30,41 @@ interface LdsSpouseSealingInterface extends
      * temple ordinance dates. Sometimes the LDS_(ordinance)_DATE_STATUS is used to indicate that an
      * ordinance date and temple code is not required, such as when BIC is used.
      */
-    const TAG_DATE = 'DATE';
+    public const TAG_DATE = 'DATE';
 
     /**
      * An abbreviation of the temple in which LDS temple ordinances were performed.
      */
-    const TAG_TEMP = 'TEMP';
+    public const TAG_TEMP = 'TEMP';
 
     /**
      * The locality of the place where a living LDS ordinance took place. Typically, a living LDS baptism
      * place would be recorded in this field.
      */
-    const TAG_PLAC = 'PLAC';
+    public const TAG_PLAC = 'PLAC';
 
     /**
      * The spouse sealing date status.
      */
-    const TAG_STAT = 'STAT';
+    public const TAG_STAT = 'STAT';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getDate();
+    public function getDate(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getTempleCode();
+    public function getTempleCode(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPlace();
+    public function getPlace(): ?string;
 
     /**
-     * @return null|SpouseSealingDateStatusInterface
+     * @return SpouseSealingDateStatusInterface|null
      */
-    public function getDateStatus();
+    public function getDateStatus(): ?SpouseSealingDateStatusInterface;
 }

@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\MultimediaRecord;
@@ -21,17 +26,17 @@ interface FileInterface
      * A complete local or remote file reference to the auxiliary data to be linked to the GEDCOM context.
      * Remote reference would include a network address where the multimedia data may be obtained.
      */
-    const TAG_FILE_REFN = 'FILE_REFN';
+    public const TAG_FILE_REFN = 'FILE_REFN';
 
     /**
      * The format structure.
      */
-    const TAG_FORM = 'FORM';
+    public const TAG_FORM = 'FORM';
 
     /**
      * The title of a work, record, item, or object.
      */
-    const TAG_TITL = 'TITL';
+    public const TAG_TITL = 'TITL';
 
     /**
      * @return string
@@ -44,7 +49,7 @@ interface FileInterface
     public function getMediaFormat(): MediaFormatInterface;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getTitle();
+    public function getTitle(): ?string;
 }

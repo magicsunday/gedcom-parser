@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\MultimediaLinkStructureInterface;
 use MagicSunday\Gedcom\Model\Common\MultimediaLink\MultimediaLinkStructure;
 use MagicSunday\Gedcom\Parser\Common;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink\File;
@@ -21,13 +27,13 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink\File;
 class MultimediaLink extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            MultimediaLinkStructure::TAG_FILE => File::class,
-            MultimediaLinkStructure::TAG_TITL => Common::class,
+            MultimediaLinkStructureInterface::TAG_FILE => File::class,
+            MultimediaLinkStructureInterface::TAG_TITL => Common::class,
         ];
     }
 
@@ -42,7 +48,7 @@ class MultimediaLink extends AbstractParser
         $xref       = $this->reader->xref();
 
         if ($xref) {
-            $multimedia->setValue(MultimediaLinkStructure::TAG_XREF_OBJE, $xref);
+            $multimedia->setValue(MultimediaLinkStructureInterface::TAG_XREF_OBJE, $xref);
         } else {
             $this->process($multimedia);
         }

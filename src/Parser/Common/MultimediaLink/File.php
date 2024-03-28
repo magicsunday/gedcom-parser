@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\Common\MultimediaLink;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLink\FileInterface;
 use MagicSunday\Gedcom\Model\Common\MultimediaLink\File as FileModel;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink\File\Format;
 
@@ -20,24 +26,24 @@ use MagicSunday\Gedcom\Parser\Common\MultimediaLink\File\Format;
 class File extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getClassMap(): array
+    protected function getClassMap(): array
     {
         return [
-            FileModel::TAG_FORM => Format::class,
+            FileInterface::TAG_FORM => Format::class,
         ];
     }
 
     /**
-     * Parses a OBJE-FILE block.
+     * Parses an OBJE-FILE block.
      *
      * @return FileModel
      */
     public function parse(): FileModel
     {
         $file = new FileModel();
-        $file->setValue(FileModel::TAG_FILE_REFN, $this->reader->value());
+        $file->setValue(FileInterface::TAG_FILE_REFN, $this->reader->value());
 
         $this->process($file);
 

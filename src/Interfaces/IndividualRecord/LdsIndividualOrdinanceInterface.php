@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
@@ -21,41 +26,41 @@ interface LdsIndividualOrdinanceInterface
     /**
      * The event of baptism performed at age eight or later by priesthood authority of the LDS Church.
      */
-    const TAG_BAPL = 'BAPL';
+    public const TAG_BAPL = 'BAPL';
 
     /**
      * The religious event by which a person receives membership in the LDS Church.
      */
-    const TAG_CONL = 'CONL';
+    public const TAG_CONL = 'CONL';
 
     /**
      * A religious event where an endowment ordinance for an individual was performed by priesthood
      * authority in an LDS temple.
      */
-    const TAG_ENDL = 'ENDL';
+    public const TAG_ENDL = 'ENDL';
 
     /**
      * A religious event pertaining to the sealing of a child to his or her parents in an LDS temple ceremony.
      */
-    const TAG_SLGC = 'SLGC';
+    public const TAG_SLGC = 'SLGC';
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsBaptism();
+    public function getLdsBaptism(): ?CommonIndividualOrdinanceInterface;
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsConfirmation();
+    public function getLdsConfirmation(): ?CommonIndividualOrdinanceInterface;
 
     /**
-     * @return null|CommonIndividualOrdinanceInterface
+     * @return CommonIndividualOrdinanceInterface|null
      */
-    public function getLdsEndowment();
+    public function getLdsEndowment(): ?CommonIndividualOrdinanceInterface;
 
     /**
-     * @return null|SealingChildInterface
+     * @return SealingChildInterface|null
      */
-    public function getLdsSealingChild();
+    public function getLdsSealingChild(): ?SealingChildInterface;
 }

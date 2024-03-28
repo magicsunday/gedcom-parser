@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord;
@@ -20,7 +25,7 @@ interface ChildToFamilyLinkInterface extends NoteInterface
     /**
      * A pointer to, or a cross-reference identifier of, a family record.
      */
-    const TAG_XREF_FAM = 'XREF:FAM';
+    public const TAG_XREF_FAM = 'XREF:FAM';
 
     /**
      * A code used to indicate the child to family relationship for pedigree navigation purposes.
@@ -30,16 +35,16 @@ interface ChildToFamilyLinkInterface extends NoteInterface
      * foster  = indicates child was included in a foster or guardian family
      * sealing = indicates child was sealed to parents other than birth parents
      */
-    const TAG_PEDI = 'PEDI';
+    public const TAG_PEDI = 'PEDI';
 
     /**
-     * A status code that allows passing on the users opinion of the status of a child to family link.
+     * A status code that allows passing on the users opinion of the status of a child to a family link.
      *
      * challenged = Linking this child to this family is suspect, but the linkage has been neither proven nor disproven
      * disproven  = There has been a claim by some that this child belongs to this family, but the linkage has been disproven
-     * proven     = There has been a claim by some that this child does not belongs to this family, but the linkage has been proven
+     * proven     = There has been a claim by some that this child does not belong to this family, but the linkage has been proven
      */
-    const TAG_STAT = 'STAT';
+    public const TAG_STAT = 'STAT';
 
     /**
      * @return string
@@ -47,12 +52,12 @@ interface ChildToFamilyLinkInterface extends NoteInterface
     public function getXref(): string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getPedigreeLinkageType();
+    public function getPedigreeLinkageType(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getChildLinkageStatus();
+    public function getChildLinkageStatus(): ?string;
 }

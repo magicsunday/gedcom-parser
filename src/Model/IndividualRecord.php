@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
@@ -33,7 +38,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     use SourceCitationTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getXref(): string
     {
@@ -41,7 +46,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getNames(): array
     {
@@ -49,7 +54,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFamilyChild(): array
     {
@@ -57,7 +62,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getFamilySpouse(): array
     {
@@ -65,7 +70,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getAssociation(): array
     {
@@ -73,23 +78,23 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRestrictionNotice()
+    public function getRestrictionNotice(): ?string
     {
         return $this->getValue(self::TAG_RESN);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getSex()
+    public function getSex(): ?string
     {
         return $this->getValue(self::TAG_SEX);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSubmitterXref(): array
     {
@@ -97,7 +102,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getAliasXref(): array
     {
@@ -105,7 +110,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getAncestorInterest(): array
     {
@@ -113,7 +118,7 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getDescendantInterest(): array
     {
@@ -121,23 +126,23 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordFileNumber()
+    public function getRecordFileNumber(): ?string
     {
         return $this->getValue(self::TAG_RFN);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getAncestralFileNumber()
+    public function getAncestralFileNumber(): ?string
     {
         return $this->getValue(self::TAG_AFN);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getReferenceNumber(): array
     {
@@ -145,9 +150,9 @@ class IndividualRecord extends DataObject implements IndividualRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getRecordIdNumber()
+    public function getRecordIdNumber(): ?string
     {
         return $this->getValue(self::TAG_RIN);
     }

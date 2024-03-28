@@ -1,16 +1,22 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Interfaces\GedcomInterface;
 use MagicSunday\Gedcom\Model\Gedcom;
 use MagicSunday\Gedcom\Parser\Custom;
-use MagicSunday\Gedcom\Parser\IndividualRecord;
 use MagicSunday\Gedcom\Parser\FamilyRecord;
 use MagicSunday\Gedcom\Parser\HeaderRecord;
+use MagicSunday\Gedcom\Parser\IndividualRecord;
 use MagicSunday\Gedcom\Parser\MultimediaRecord;
 use MagicSunday\Gedcom\Parser\NoteRecord;
 use MagicSunday\Gedcom\Parser\RepositoryRecord;
@@ -31,11 +37,11 @@ class Parser extends AbstractParser
 {
     /**
      * @param string               $fileName
-     * @param null|LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         string $fileName,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
         $this->logger = $logger ?: new NullLogger();
 
@@ -43,21 +49,21 @@ class Parser extends AbstractParser
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            Gedcom::TAG_HEAD => HeaderRecord::class,
-            Gedcom::TAG_FAM  => FamilyRecord::class,
-            Gedcom::TAG_INDI => IndividualRecord::class,
-            Gedcom::TAG_OBJE => MultimediaRecord::class,
-            Gedcom::TAG_NOTE => NoteRecord::class,
-            Gedcom::TAG_REPO => RepositoryRecord::class,
-            Gedcom::TAG_SOUR => SourceRecord::class,
-            Gedcom::TAG_SUBM => SubmitterRecord::class,
-            Gedcom::TAG_SUBN => SubmissionRecord::class,
-            Gedcom::TAG_TRLR => Custom::class,
+            GedcomInterface::TAG_HEAD => HeaderRecord::class,
+            GedcomInterface::TAG_FAM  => FamilyRecord::class,
+            GedcomInterface::TAG_INDI => IndividualRecord::class,
+            GedcomInterface::TAG_OBJE => MultimediaRecord::class,
+            GedcomInterface::TAG_NOTE => NoteRecord::class,
+            GedcomInterface::TAG_REPO => RepositoryRecord::class,
+            GedcomInterface::TAG_SOUR => SourceRecord::class,
+            GedcomInterface::TAG_SUBM => SubmitterRecord::class,
+            GedcomInterface::TAG_SUBN => SubmissionRecord::class,
+            GedcomInterface::TAG_TRLR => Custom::class,
         ];
     }
 

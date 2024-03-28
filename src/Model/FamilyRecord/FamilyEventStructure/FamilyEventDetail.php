@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure;
 
 use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyEventDetailInterface;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyPersonAgeInterface;
 use MagicSunday\Gedcom\Model\Common\EventDetail;
 use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 
@@ -22,17 +28,17 @@ class FamilyEventDetail extends EventDetail implements FamilyEventDetailInterfac
     use AddressStructureTrait;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getHusband()
+    public function getHusband(): ?FamilyPersonAgeInterface
     {
         return $this->getValue(self::TAG_HUSB);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getWife()
+    public function getWife(): ?FamilyPersonAgeInterface
     {
         return $this->getValue(self::TAG_WIFE);
     }

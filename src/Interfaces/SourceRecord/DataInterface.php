@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\SourceRecord;
@@ -21,14 +26,14 @@ interface DataInterface extends NoteInterface
     /**
      * The event structure.
      */
-    const TAG_EVEN = 'EVEN';
+    public const TAG_EVEN = 'EVEN';
 
     /**
-     * The organization, institution, corporation, person, or other entity that has responsibility for the
+     * The organization, institution, corporation, person, or another entity that has responsibility for the
      * associated context. For example, an employer of a person of an associated occupation, or a church
      * that administered rites or events, or an organization responsible for creating and/or archiving records.
      */
-    const TAG_AGNC = 'AGNC';
+    public const TAG_AGNC = 'AGNC';
 
     /**
      * @return EventInterface[]
@@ -36,7 +41,7 @@ interface DataInterface extends NoteInterface
     public function getEvents(): array;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getAgency();
+    public function getAgency(): ?string;
 }

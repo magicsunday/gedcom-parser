@@ -1,13 +1,21 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecord\CharacterSetInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecord\GedcomInfoInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\HeaderRecord\PlaceInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecord\SourceInterface;
 use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
 
@@ -21,7 +29,7 @@ use MagicSunday\Gedcom\Interfaces\HeaderRecordInterface;
 class HeaderRecord extends DataObject implements HeaderRecordInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSource(): SourceInterface
     {
@@ -29,23 +37,23 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getDestination()
+    public function getDestination(): ?string
     {
         return $this->getValue(self::TAG_DEST);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getTransmissionDate()
+    public function getTransmissionDate(): ?DateExactInterface
     {
         return $this->getValue(self::TAG_DATE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSubmitter(): string
     {
@@ -53,31 +61,31 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getSubmission()
+    public function getSubmission(): ?string
     {
         return $this->getValue(self::TAG_SUBN);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->getValue(self::TAG_FILE);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getCopyright()
+    public function getCopyright(): ?string
     {
         return $this->getValue(self::TAG_COPR);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getGedcomInfo(): GedcomInfoInterface
     {
@@ -85,7 +93,7 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCharacterSet(): CharacterSetInterface
     {
@@ -93,25 +101,25 @@ class HeaderRecord extends DataObject implements HeaderRecordInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getLanguage()
+    public function getLanguage(): ?string
     {
         return $this->getValue(self::TAG_LANG);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getPlace()
+    public function getPlace(): ?PlaceInterface
     {
         return $this->getValue(self::TAG_PLAC);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getNote()
+    public function getNote(): ?NoteInterface
     {
         return $this->getValue(self::TAG_NOTE);
     }

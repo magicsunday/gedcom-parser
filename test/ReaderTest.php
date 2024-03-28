@@ -1,13 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
+use InvalidArgumentException;
 use MagicSunday\Gedcom\Reader;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * Unit test.
@@ -20,30 +27,29 @@ class ReaderTest extends TestCase
 {
     /**
      * @test
-     *
-     * @expectedException        \RuntimeException
-     * @expectedExceptionMessage No such file or directory
      */
-    public function openFileNotFound()
+    public function openFileNotFound(): void
     {
+        $this->expectExceptionMessage('No such file or directory');
+        $this->expectException(RuntimeException::class);
         new Reader(__DIR__ . '/files/file-note-found.ged');
     }
 
     /**
      * @test
-     *
-     * @expectedException        \InvalidArgumentException
-     * @expectedExceptionMessage Can only read .ged files.
      */
-    public function openWithInvalidFilename()
+    public function openWithInvalidFilename(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Can only read .ged files.');
+
         new Reader(__DIR__ . '/files/not-supported-file.txt');
     }
 
     /**
      * @test
      */
-    public function open()
+    public function open(): void
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 
@@ -53,7 +59,7 @@ class ReaderTest extends TestCase
     /**
      * @test
      */
-    public function back()
+    public function back(): void
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 
@@ -75,7 +81,7 @@ class ReaderTest extends TestCase
     /**
      * @test
      */
-    public function identifier()
+    public function identifier(): void
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 
@@ -93,13 +99,12 @@ class ReaderTest extends TestCase
     /**
      * @test
      */
-    public function level()
+    public function level(): void
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 
         // Read to the first INDI record
         while ($reader->read()) {
-
             if ($reader->value() === 'INDI') {
                 self::assertSame(0, $reader->level());
             }
@@ -125,7 +130,7 @@ class ReaderTest extends TestCase
     /**
      * @test
      */
-    public function tag()
+    public function tag(): void
     {
         $reader = new Reader(__DIR__ . '/files/simple.ged');
 

@@ -1,12 +1,18 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser\FamilyRecord\FamilyEventStructure;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyPersonAgeInterface;
 use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure\FamilyPersonAge as FamilyPersonAgeModel;
 use MagicSunday\Gedcom\Parser\Common;
 
@@ -20,17 +26,17 @@ use MagicSunday\Gedcom\Parser\Common;
 class FamilyPersonAge extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            FamilyPersonAgeModel::TAG_AGE => Common::class,
+            FamilyPersonAgeInterface::TAG_AGE => Common::class,
         ];
     }
 
     /**
-     * Parse a AGE block.
+     * Parse an AGE block.
      *
      * @return FamilyPersonAgeModel
      */

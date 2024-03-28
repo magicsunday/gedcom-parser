@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces;
@@ -18,55 +23,55 @@ interface GedcomInterface
     /**
      * Identifies information pertaining to an entire GEDCOM transmission.
      */
-    const TAG_HEAD = 'HEAD';
+    public const TAG_HEAD = 'HEAD';
 
     /**
      * Identifies a legal, common law, or other customary relationship of man and woman and their children, if
      * any, or a family created by virtue of the birth of a child to its biological father and mother.
      */
-    const TAG_FAM = 'FAM';
+    public const TAG_FAM = 'FAM';
 
     /**
      * A person.
      */
-    const TAG_INDI = 'INDI';
+    public const TAG_INDI = 'INDI';
 
     /**
      * Pertaining to a grouping of attributes used in describing something. Usually referring to the data
-     * required to represent a multimedia object, such an audio recording, a photograph of a person, or an
+     * required to represent a multimedia object, such as an audio recording, a photograph of a person, or an
      * image of a document.
      */
-    const TAG_OBJE = 'OBJE';
+    public const TAG_OBJE = 'OBJE';
 
     /**
      * Additional information provided by the submitter for understanding the enclosing data.
      */
-    const TAG_NOTE = 'NOTE';
+    public const TAG_NOTE = 'NOTE';
 
     /**
      * An institution or person that has the specified item as part of their collection(s).
      */
-    const TAG_REPO = 'REPO';
+    public const TAG_REPO = 'REPO';
 
     /**
      * The initial or original material from which information was obtained.
      */
-    const TAG_SOUR = 'SOUR';
+    public const TAG_SOUR = 'SOUR';
 
     /**
      * An individual or organization who contributes genealogical data to a file or transfers it to someone else.
      */
-    const TAG_SUBM = 'SUBM';
+    public const TAG_SUBM = 'SUBM';
 
     /**
      * Pertains to a collection of data issued for processing.
      */
-    const TAG_SUBN = 'SUBN';
+    public const TAG_SUBN = 'SUBN';
 
     /**
      * At level 0, specifies the end of a GEDCOM transmission.
      */
-    const TAG_TRLR = 'TRLR';
+    public const TAG_TRLR = 'TRLR';
 
     /**
      * @return HeaderRecordInterface
@@ -109,7 +114,7 @@ interface GedcomInterface
     public function getSubmitter(): array;
 
     /**
-     * @return null|SubmissionRecordInterface
+     * @return SubmissionRecordInterface|null
      */
-    public function getSubmission();
+    public function getSubmission(): ?SubmissionRecordInterface;
 }

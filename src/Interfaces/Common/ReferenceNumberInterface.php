@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
@@ -20,20 +25,20 @@ interface ReferenceNumberInterface
      * record number within the submitter's automated or manual system, or it may be a page and position
      * number on a pedigree chart.
      */
-    const TAG_USER_REFERENCE_NUMBER = 'USER_REFERENCE_NUMBER';
+    public const TAG_USER_REFERENCE_NUMBER = 'USER_REFERENCE_NUMBER';
 
     /**
      * A user-defined definition of the USER_REFERENCE_NUMBER.
      */
-    const TAG_TYPE = 'TYPE';
+    public const TAG_TYPE = 'TYPE';
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getNumber();
+    public function getNumber(): ?string;
 
     /**
-     * @return null|string
+     * @return string|null
      */
-    public function getType();
+    public function getType(): ?string;
 }

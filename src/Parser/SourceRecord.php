@@ -1,12 +1,21 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parser;
 
 use MagicSunday\Gedcom\AbstractParser;
+use MagicSunday\Gedcom\Interfaces\Common\ChangeDateInterface;
+use MagicSunday\Gedcom\Interfaces\Common\MultimediaLinkInterface;
+use MagicSunday\Gedcom\Interfaces\Common\NoteInterface;
+use MagicSunday\Gedcom\Interfaces\SourceRecordInterface;
 use MagicSunday\Gedcom\Model\SourceRecord as SourceRecordModel;
 use MagicSunday\Gedcom\Parser\Common\ChangeDate\ChangeDateStructure;
 use MagicSunday\Gedcom\Parser\Common\MultimediaLink;
@@ -26,23 +35,23 @@ use MagicSunday\Gedcom\Parser\SourceRecord\SourceRepositoryCitation;
 class SourceRecord extends AbstractParser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getClassMap(): array
     {
         return [
-            SourceRecordModel::TAG_DATA => Data::class,
-            SourceRecordModel::TAG_AUTH => Text::class,
-            SourceRecordModel::TAG_TITL => Text::class,
-            SourceRecordModel::TAG_ABBR => Common::class,
-            SourceRecordModel::TAG_PUBL => Text::class,
-            SourceRecordModel::TAG_TEXT => Text::class,
-            SourceRecordModel::TAG_REPO => SourceRepositoryCitation::class,
-            SourceRecordModel::TAG_REFN => ReferenceNumber::class,
-            SourceRecordModel::TAG_RIN  => Common::class,
-            SourceRecordModel::TAG_CHAN => ChangeDateStructure::class,
-            SourceRecordModel::TAG_OBJE => MultimediaLink::class,
-            SourceRecordModel::TAG_NOTE => NoteStructure::class,
+            SourceRecordInterface::TAG_DATA   => Data::class,
+            SourceRecordInterface::TAG_AUTH   => Text::class,
+            SourceRecordInterface::TAG_TITL   => Text::class,
+            SourceRecordInterface::TAG_ABBR   => Common::class,
+            SourceRecordInterface::TAG_PUBL   => Text::class,
+            SourceRecordInterface::TAG_TEXT   => Text::class,
+            SourceRecordInterface::TAG_REPO   => SourceRepositoryCitation::class,
+            SourceRecordInterface::TAG_REFN   => ReferenceNumber::class,
+            SourceRecordInterface::TAG_RIN    => Common::class,
+            ChangeDateInterface::TAG_CHAN     => ChangeDateStructure::class,
+            MultimediaLinkInterface::TAG_OBJE => MultimediaLink::class,
+            NoteInterface::TAG_NOTE           => NoteStructure::class,
         ];
     }
 
@@ -54,7 +63,7 @@ class SourceRecord extends AbstractParser
     public function parse(): SourceRecordModel
     {
         $sourceRecord = new SourceRecordModel();
-        $sourceRecord->setValue(SourceRecordModel::TAG_XREF_SOUR, $this->reader->identifier());
+        $sourceRecord->setValue(SourceRecordInterface::TAG_XREF_SOUR, $this->reader->identifier());
 
         $this->process($sourceRecord);
 

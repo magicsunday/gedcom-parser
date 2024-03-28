@@ -1,12 +1,20 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
 use ArrayAccess;
+
+use function array_key_exists;
+use function is_array;
 
 /**
  * A data object.
@@ -22,7 +30,7 @@ class DataObject implements ArrayAccess
      *
      * @var array
      */
-    private $data;
+    private array $data;
 
     /**
      * Returns the stored value to the given key.
@@ -51,8 +59,8 @@ class DataObject implements ArrayAccess
             $value = [];
         }
 
-        if (!\is_array($value)) {
-            $value = [ $value ];
+        if (!is_array($value)) {
+            return [$value];
         }
 
         return $value;
@@ -69,8 +77,8 @@ class DataObject implements ArrayAccess
     public function setValue(string $key, $value): self
     {
         if (isset($this->data[$key])) {
-            if (!\is_array($this->data[$key])) {
-                $this->data[$key] = [ $this->data[$key] ];
+            if (!is_array($this->data[$key])) {
+                $this->data[$key] = [$this->data[$key]];
             }
 
             $this->data[$key][] = $value;
@@ -82,15 +90,15 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->data[$offset] = $value;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function offsetExists($offset): bool
     {
@@ -98,15 +106,15 @@ class DataObject implements ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->data[$offset]);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function offsetGet($offset)
     {

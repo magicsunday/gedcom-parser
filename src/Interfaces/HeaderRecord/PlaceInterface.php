@@ -1,7 +1,12 @@
 <?php
+
 /**
- * See LICENSE.md file for further details.
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\HeaderRecord;
@@ -25,7 +30,7 @@ interface PlaceInterface
      * structure stated in the HEADER. This usage is not common and, therefore, not encouraged. It should
      * only be used when a system has over-structured its place-names.
      */
-    const TAG_FORM = 'FORM';
+    public const TAG_FORM = 'FORM';
 
     /**
      * @return string
