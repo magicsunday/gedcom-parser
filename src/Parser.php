@@ -23,6 +23,7 @@ use MagicSunday\Gedcom\Parser\RepositoryRecord;
 use MagicSunday\Gedcom\Parser\SourceRecord;
 use MagicSunday\Gedcom\Parser\SubmissionRecord;
 use MagicSunday\Gedcom\Parser\SubmitterRecord;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -36,16 +37,16 @@ use Psr\Log\NullLogger;
 class Parser extends AbstractParser
 {
     /**
-     * @param string               $fileName
+     * @param StreamInterface      $stream
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        string $fileName,
+        StreamInterface $stream,
         ?LoggerInterface $logger = null
     ) {
         $this->logger = $logger ?: new NullLogger();
 
-        parent::__construct(new Reader($fileName), $this->logger);
+        parent::__construct(new Reader($stream), $this->logger);
     }
 
     /**

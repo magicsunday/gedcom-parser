@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Test;
 
 use InvalidArgumentException;
 use MagicSunday\Gedcom\Reader;
+use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -30,9 +31,11 @@ class ReaderTest extends TestCase
      */
     public function openFileNotFound(): void
     {
-        $this->expectExceptionMessage('No such file or directory');
+        $this->expectExceptionMessage('The file ' . __DIR__ . '/files/file-note-found.ged cannot be opened.');
         $this->expectException(RuntimeException::class);
-        new Reader(__DIR__ . '/files/file-note-found.ged');
+
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/file-note-found.ged');
+        $reader = new Reader($stream);
     }
 
     /**
@@ -40,10 +43,11 @@ class ReaderTest extends TestCase
      */
     public function openWithInvalidFilename(): void
     {
-        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Can only read .ged files.');
+        $this->expectException(InvalidArgumentException::class);
 
-        new Reader(__DIR__ . '/files/not-supported-file.txt');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/not-supported-file.txt');
+        $reader = new Reader($stream);
     }
 
     /**
@@ -51,7 +55,8 @@ class ReaderTest extends TestCase
      */
     public function open(): void
     {
-        $reader = new Reader(__DIR__ . '/files/simple.ged');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
+        $reader = new Reader($stream);
 
         self::assertInstanceOf(Reader::class, $reader);
     }
@@ -61,7 +66,8 @@ class ReaderTest extends TestCase
      */
     public function back(): void
     {
-        $reader = new Reader(__DIR__ . '/files/simple.ged');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
+        $reader = new Reader($stream);
 
         // Read two lines
         $reader->read();
@@ -69,7 +75,7 @@ class ReaderTest extends TestCase
 
         $line1 = $reader->current();
 
-        // Move cursor one line back and reread the line
+        // Move the cursor one line back and reread the line
         $reader->back();
         $reader->read();
 
@@ -83,7 +89,8 @@ class ReaderTest extends TestCase
      */
     public function identifier(): void
     {
-        $reader = new Reader(__DIR__ . '/files/simple.ged');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
+        $reader = new Reader($stream);
 
         // Read to the first INDI record
         while ($reader->read()) {
@@ -101,7 +108,8 @@ class ReaderTest extends TestCase
      */
     public function level(): void
     {
-        $reader = new Reader(__DIR__ . '/files/simple.ged');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
+        $reader = new Reader($stream);
 
         // Read to the first INDI record
         while ($reader->read()) {
@@ -132,7 +140,8 @@ class ReaderTest extends TestCase
      */
     public function tag(): void
     {
-        $reader = new Reader(__DIR__ . '/files/simple.ged');
+        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
+        $reader = new Reader($stream);
 
         // Read to the first INDI record
         while ($reader->read()) {

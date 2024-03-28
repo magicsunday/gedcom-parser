@@ -30,7 +30,7 @@ class DataObject implements ArrayAccess
      *
      * @var array
      */
-    private array $data;
+    private array $data = [];
 
     /**
      * Returns the stored value to the given key.

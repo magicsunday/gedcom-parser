@@ -26,9 +26,9 @@ trait AddressStructureTrait
     /**
      * @param string $key
      *
-     * @return string|null
+     * @return mixed
      */
-    abstract public function getValue(string $key): ?string;
+    abstract public function getValue(string $key);
 
     /**
      * @param string $key

@@ -12,11 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom;
 
 use InvalidArgumentException;
-use LogicException;
-use RuntimeException;
-use SplFileObject;
-
-use function is_string;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * A GEDCOM file reader.
@@ -46,25 +42,25 @@ class Reader
     public const MATCH_GROUP_VALUE = 8;
 
     /**
-     * The file object.
+     * The stream object.
      *
-     * @var SplFileObject
+     * @var StreamInterface
      */
-    private SplFileObject $file;
+    private StreamInterface $stream;
 
     /**
      * The last line read from input.
      *
-     * @var bool|string
+     * @var string
      */
-    private $lastLine;
+    private string $lastLine = '';
 
     /**
      * The last position of the internal file pointer before the next line was read.
      *
      * @var int
      */
-    private int $lastPosition;
+    private int $lastPosition = 0;
 
     /**
      * Number of read lines of the file.
@@ -81,37 +77,35 @@ class Reader
     /**
      * @var string
      */
-    private string $identifier;
+    private string $identifier = '';
 
     /**
      * @var string
      */
-    private string $tag;
+    private string $tag = '';
 
     /**
      * @var string
      */
-    private string $xref;
+    private string $xref = '';
 
     /**
      * @var string
      */
-    private string $value;
+    private string $value = '';
 
     /**
      * Reader constructor.
      *
-     * @param string $filename The file to open
-     *
-     * @throws InvalidArgumentException
-     * @throws LogicException
-     * @throws RuntimeException
+     * @param StreamInterface $stream
      */
-    public function __construct(string $filename)
+    public function __construct(StreamInterface $stream)
     {
-        $this->file = new SplFileObject($filename);
+        $this->stream = $stream;
 
-        if (strtoupper($this->file->getExtension()) !== 'GED') {
+        if (($stream->getMetadata('stream_type') === 'STDIO')
+            && (strtoupper(substr($stream->getMetadata('uri'), -3)) !== 'GED')
+        ) {
             throw new InvalidArgumentException('Can only read .ged files.');
         }
     }
@@ -123,14 +117,14 @@ class Reader
      */
     public function read(): bool
     {
-        if (!$this->file->valid()) {
+        if (!$this->stream->isSeekable()) {
             return false;
         }
 
         // TODO Use correct GEDCOM char encoding for reading the file
 
-        $this->lastPosition = (int) $this->file->ftell();
-        $this->lastLine     = $this->file->fgets();
+        $this->lastPosition = $this->stream->tell();
+        $this->lastLine     = $this->stream->fgets();
 
         ++$this->lineCount;
 
@@ -154,7 +148,7 @@ class Reader
             $this->value = str_replace(["\r", "\n"], '', $this->value);
         }
 
-        return $this->lastLine !== false;
+        return !($this->lastLine === '' && $this->stream->eof());
     }
 
     /**
@@ -170,9 +164,9 @@ class Reader
     /**
      * Returns the current read line.
      *
-     * @return bool|string
+     * @return string
      */
-    public function current()
+    public function current(): string
     {
         return $this->lastLine;
     }
@@ -184,7 +178,7 @@ class Reader
      */
     private function valid(): bool
     {
-        return is_string($this->lastLine) && (trim($this->lastLine) !== '');
+        return trim($this->lastLine) !== '';
     }
 
     /**
@@ -194,7 +188,7 @@ class Reader
      */
     public function back(): bool
     {
-        return $this->file->fseek($this->lastPosition) === 0;
+        return $this->stream->seek($this->lastPosition) === 0;
     }
 
     /**

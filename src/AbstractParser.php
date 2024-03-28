@@ -153,7 +153,7 @@ abstract class AbstractParser
                     $content .= $this->reader->value();
                     break;
 
-                    // Otherwise stop reading this block
+                    // Otherwise, stop reading this block
                 default:
                     // Go back one line
                     $this->reader->back();
