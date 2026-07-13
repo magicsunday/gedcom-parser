@@ -427,16 +427,21 @@ class Reader
             return;
         }
 
-        if ((strlen($head) >= 2) && ($head[0] === "\x00") && ($head[1] !== "\x00")) {
-            $this->beginUtf16(self::ENCODING_UTF16BE, 0);
+        // BOM-less UTF-16: the structural '0'/'1' level byte is ASCII, so one half of the first
+        // code unit is a null. The shared length guard avoids an offset warning on a single-byte
+        // stream; which half is null decides the endianness.
+        if (strlen($head) >= 2) {
+            if (($head[0] === "\x00") && ($head[1] !== "\x00")) {
+                $this->beginUtf16(self::ENCODING_UTF16BE, 0);
 
-            return;
-        }
+                return;
+            }
 
-        if ((strlen($head) >= 2) && ($head[1] === "\x00") && ($head[0] !== "\x00")) {
-            $this->beginUtf16(self::ENCODING_UTF16LE, 0);
+            if (($head[1] === "\x00") && ($head[0] !== "\x00")) {
+                $this->beginUtf16(self::ENCODING_UTF16LE, 0);
 
-            return;
+                return;
+            }
         }
 
         // A single-byte, ASCII-structured stream (ANSEL/ASCII/UTF-8): sniff the required CHAR

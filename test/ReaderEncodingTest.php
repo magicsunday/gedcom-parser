@@ -309,7 +309,9 @@ class ReaderEncodingTest extends TestCase
 
         $name = $this->firstNameValue($this->oneByteStream($bytes));
 
-        self::assertStringContainsString("\u{1F600}", $name ?? '');
+        // Pin the whole value: the trailing "X" proves the surrogate-carry flush resumes after
+        // the astral character without dropping or duplicating the following code unit.
+        self::assertSame("\u{1F600}X", $name);
     }
 
     /**
@@ -394,8 +396,9 @@ class ReaderEncodingTest extends TestCase
 
         // Reading one byte at a time pauses the buffer exactly on the cap regardless of the
         // internal chunk size, so the overrun branch fires deterministically. The UTF-8 © must
-        // not survive: the payload is decoded under the ANSEL fallback instead.
-        self::assertNotSame('©', $this->firstNameValue($this->oneByteStream($bytes)));
+        // not survive: the two bytes 0xC2 0xA9 decode under the ANSEL fallback to ℗ (U+2117) and
+        // ♭ (U+266D). The pre-bounded sniff resolved UTF-8 and returned "©", so this is red there.
+        self::assertSame("\u{2117}\u{266D}", $this->firstNameValue($this->oneByteStream($bytes)));
     }
 
     /**
