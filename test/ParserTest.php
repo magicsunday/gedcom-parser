@@ -100,6 +100,74 @@ class ParserTest extends TestCase
     }
 
     /**
+     * The given name, surname and suffix are derived from the NAME slash convention when
+     * no explicit sub-tags are present, and the display name drops the surname slashes.
+     *
+     * @dataProvider nameFormProvider
+     *
+     * @test
+     *
+     * @param string      $nameLine The GEDCOM NAME line under test.
+     * @param string|null $given    The expected given name.
+     * @param string|null $surname  The expected surname.
+     * @param string|null $suffix   The expected name suffix.
+     * @param string|null $display  The expected display name.
+     */
+    public function derivesNamePartsFromSlashConvention(
+        string $nameLine,
+        ?string $given,
+        ?string $surname,
+        ?string $suffix,
+        ?string $display
+    ): void {
+        $stream = (new StreamFactory())->createStream("0 @I1@ INDI\n" . $nameLine . "\n");
+        $stream->rewind();
+
+        $name = (new Parser($stream))->parse()->getIndividual()[0]->getNames()[0];
+
+        self::assertSame($given, $name->getGivenName());
+        self::assertSame($surname, $name->getSurname());
+        self::assertSame($suffix, $name->getNameSuffix());
+        self::assertSame($display, $name->getDisplayName());
+    }
+
+    /**
+     * One row per nameParts() branch: full form / missing trailing slash / no slash /
+     * surname only / empty name.
+     *
+     * @return array<string, array{0: string, 1: string|null, 2: string|null, 3: string|null, 4: string|null}>
+     */
+    public static function nameFormProvider(): array
+    {
+        return [
+            'full form'          => ['1 NAME John /Smith/ Jr', 'John', 'Smith', 'Jr', 'John Smith Jr'],
+            'missing trailing /' => ['1 NAME John /Smith', 'John', 'Smith', null, 'John Smith'],
+            'no slash'           => ['1 NAME John', 'John', null, null, 'John'],
+            'surname only'       => ['1 NAME /Smith/', null, 'Smith', null, 'Smith'],
+            'empty name'         => ['1 NAME', null, null, null, null],
+        ];
+    }
+
+    /**
+     * Explicit GIVN/SURN/NSFX sub-tags take precedence over the slash-derived name parts.
+     *
+     * @test
+     */
+    public function explicitNamePartsWinOverSlashDerivation(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 NAME John /Smith/ Jr\n2 GIVN Johnny\n2 SURN Smithson\n2 NSFX Sr\n"
+        );
+        $stream->rewind();
+
+        $name = (new Parser($stream))->parse()->getIndividual()[0]->getNames()[0];
+
+        self::assertSame('Johnny', $name->getGivenName());
+        self::assertSame('Smithson', $name->getSurname());
+        self::assertSame('Sr', $name->getNameSuffix());
+    }
+
+    /**
      * Provides every bundled GEDCOM fixture.
      *
      * @return array<string, array{0: string}>
