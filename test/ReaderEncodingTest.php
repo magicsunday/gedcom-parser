@@ -268,6 +268,33 @@ class ReaderEncodingTest extends TestCase
     }
 
     /**
+     * The HEAD.CHAR declaration is detected on a CR-only (classic-Mac) file too, so its
+     * charset is honoured rather than defaulting to ANSEL — the /m anchor would only see LF.
+     *
+     * @test
+     */
+    public function detectsCharOnCrOnlyLineEndings(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\r1 CHAR ANSI\r0 @I1@ INDI\r1 NAME Caf\xE9\r0 TRLR\r");
+
+        self::assertSame('Café', $this->firstNameValue($stream));
+    }
+
+    /**
+     * A present but unrecognised CHAR value (neither a 5.5.1 charset nor a Windows label,
+     * e.g. MACINTOSH) falls back to the 5.5.1 default character set, ANSEL.
+     *
+     * @test
+     */
+    public function fallsBackToAnselForAnUnrecognisedCharValue(): void
+    {
+        // 0xCF is ANSEL "es zet"; under any pass-through it would be invalid UTF-8.
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR MACINTOSH\n0 @I1@ INDI\n1 NAME \xCF\n0 TRLR\n");
+
+        self::assertSame('ß', $this->firstNameValue($stream));
+    }
+
+    /**
      * An astral character (a surrogate pair) whose halves fall on either side of a read-chunk
      * boundary must not be corrupted — the reader holds a lone high surrogate back until its
      * low half arrives. Reading one byte at a time forces the split.

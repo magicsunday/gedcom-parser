@@ -514,8 +514,10 @@ class Reader
             $matches = [];
 
             // Capture the whole CHAR value, not just the first token — real exports write
-            // multi-word values such as "IBM WINDOWS".
-            if (preg_match('/^\s*\d+\s+CHAR\s+(.+)$/mi', $head, $matches) === 1) {
+            // multi-word values such as "IBM WINDOWS". Anchor on any of the four GEDCOM
+            // terminators (CR, LF, CRLF, LFCR); the /m flag would only recognise LF, so a
+            // CR-only file's CHAR line would be missed.
+            if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)/i', $head, $matches) === 1) {
                 return self::normaliseEncoding(trim($matches[1]));
             }
 
