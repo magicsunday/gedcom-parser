@@ -21,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 
 use function count;
 use function escapeshellarg;
+use function fopen;
 use function popen;
 use function str_repeat;
 use function str_replace;
@@ -172,6 +173,44 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
+     * A line can be put back at most once: a second back() without an intervening read is a
+     * no-op, so the single push-back slot cannot be overwritten.
+     *
+     * @test
+     */
+    public function backTwiceWithoutReadIsNoOp(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 HEAD\n1 SOUR X\n0 TRLR\n");
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+        $reader->read();
+
+        self::assertTrue($reader->back(), 'The first back() after a read must succeed.');
+        self::assertFalse($reader->back(), 'A second back() without an intervening read must be a no-op.');
+    }
+
+    /**
+     * count() reports the number of real lines read, not the end-of-stream sentinel: draining
+     * a two-line document leaves the count at 2, not 3.
+     *
+     * @test
+     */
+    public function countReportsRealLinesNotTheEndOfStream(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+
+        while ($reader->read()) {
+            // Drain the reader.
+        }
+
+        self::assertSame(2, $reader->count());
+    }
+
+    /**
      * back() before any read is a no-op: it returns false and does not terminate the reader
      * (the first line is still served on the next read).
      *
@@ -198,11 +237,13 @@ class ReaderReadPathTest extends TestCase
      */
     public function parsesFinalLineWithoutTrailingTerminator(): void
     {
-        $terminated   = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n1 NAME John /Smith/\n0 TRLR\n"));
-        $unterminated = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n1 NAME John /Smith/\n0 TRLR"));
+        // The final line is a meaningful record, so an EOF drain that dropped it would lower
+        // the individual count from 2 to 1 and fail the assertion.
+        $terminated   = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n0 @I2@ INDI\n"));
+        $unterminated = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n0 @I2@ INDI"));
 
-        self::assertSame(1, $terminated);
-        self::assertSame($terminated, $unterminated, 'A missing final terminator must not change the parse.');
+        self::assertSame(2, $terminated);
+        self::assertSame($terminated, $unterminated, 'A missing final terminator must not drop the last record.');
     }
 
     /**

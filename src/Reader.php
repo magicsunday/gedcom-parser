@@ -199,11 +199,15 @@ class Reader
         } else {
             $line = $this->nextLine();
 
-            ++$this->lineCount;
+            // The empty string signals end of stream, which is not a line and must not be
+            // counted.
+            if ($line !== '') {
+                ++$this->lineCount;
 
-            // Remove a leading UTF-8 byte-order mark, once, from the first physical line.
-            if ($this->lineCount === 1) {
-                $line = $this->stripByteOrderMark($line);
+                // Remove a leading UTF-8 byte-order mark, once, from the first physical line.
+                if ($this->lineCount === 1) {
+                    $line = $this->stripByteOrderMark($line);
+                }
             }
 
             $this->lastLine = $line;
