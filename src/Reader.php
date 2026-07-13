@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom;
 
 use InvalidArgumentException;
+use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -26,7 +27,7 @@ class Reader
     /**
      * Regular expression to match the different parts of a line.
      */
-    public const PATTERN = '^\s*(\d)\s+(@([^@ ]+)@\s+)?([a-zA-Z_0-9.]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
+    public const PATTERN = '^\s*([1-9]?\d)\s+(@([^@ ]+)@\s+)?([A-Za-z0-9_]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
 
     /**
      * The matched groups of interest.
@@ -135,7 +136,7 @@ class Reader
             $matches = [];
 
             if (preg_match('/' . self::PATTERN . '/s', $this->lastLine, $matches) !== 1) {
-                throw new InvalidArgumentException('Unable to match line: <' . trim($this->lastLine) . '>');
+                throw new UnableToParseLineException($this->lastLine, $this->lineCount);
             }
 
             $this->level      = (int) $matches[self::MATCH_GROUP_LEVEL];
