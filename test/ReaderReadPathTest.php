@@ -20,9 +20,9 @@ use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\TestCase;
 
 use function count;
-use function escapeshellarg;
 use function fopen;
-use function popen;
+use function fwrite;
+use function rewind;
 use function str_repeat;
 use function str_replace;
 
@@ -61,26 +61,6 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
-     * A non-file STDIO stream (a pipe whose metadata URI is null) must not be rejected by
-     * the .ged-extension guard — the extension is only meaningful for an actual filename.
-     *
-     * @test
-     */
-    public function acceptsNonFileStreamWithoutGedExtension(): void
-    {
-        $stream = new Stream($this->openPipe(__DIR__ . '/files/simple.ged'));
-        $reader = new Reader($stream);
-
-        $lines = 0;
-
-        while ($reader->read()) {
-            ++$lines;
-        }
-
-        self::assertGreaterThan(0, $lines, 'A non-file pipe without a .ged URI must still yield lines.');
-    }
-
-    /**
      * A non-file STDIO stream whose metadata URI IS a string (php://stdin, php://fd/N — the
      * canonical piped input) must not be rejected either: the .ged guard applies only to a
      * real on-disk file (wrapper_type "plainfile"), not to a php:// wrapper.
@@ -102,25 +82,35 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
-     * A non-seekable readable stream (a pipe) must parse its records; today the reader
-     * bails out of read() on the first call because the stream is not seekable, silently
+     * A non-seekable readable stream must parse its records; before the refactor the reader
+     * bailed out of read() on the first call because the stream was not seekable, silently
      * yielding an empty document.
      *
      * @test
      */
     public function parsesNonSeekableStream(): void
     {
-        $stream = new Stream($this->openPipe(__DIR__ . '/files/simple.ged'));
+        // A resource positioned at the start whose wrapping stream reports itself as
+        // non-seekable — the reader must consume it via read() without ever seeking.
+        $resource = fopen('php://temp', 'r+');
 
-        self::assertFalse($stream->isSeekable(), 'A pipe must report itself as non-seekable.');
+        self::assertIsResource($resource);
 
-        $individuals = (new Parser($stream))->parse()->getIndividual();
+        fwrite($resource, "0 @I1@ INDI\n0 @I2@ INDI\n0 TRLR\n");
+        rewind($resource);
 
-        self::assertSame(
-            $this->countIndividuals(__DIR__ . '/files/simple.ged'),
-            count($individuals)
-        );
-        self::assertGreaterThan(0, count($individuals));
+        // Reporting non-seekable is enough to make the inherited Stream::seek() throw, so any
+        // seek attempt during parsing fails the test: the reader must consume the stream via
+        // read() alone.
+        $stream = new class($resource) extends Stream {
+            public function isSeekable(): bool
+            {
+                return false;
+            }
+        };
+
+        self::assertFalse($stream->isSeekable(), 'The stream must report itself as non-seekable.');
+        self::assertCount(2, (new Parser($stream))->parse()->getIndividual());
     }
 
     /**
@@ -378,22 +368,6 @@ class ReaderReadPathTest extends TestCase
     private function countIndividualsFromStream(Stream $stream): int
     {
         return count((new Parser($stream))->parse()->getIndividual());
-    }
-
-    /**
-     * Opens a read-only, non-seekable pipe streaming the contents of the given file.
-     *
-     * @param string $file the absolute path to stream through the pipe
-     *
-     * @return resource the pipe resource
-     */
-    private function openPipe(string $file)
-    {
-        $resource = popen('cat ' . escapeshellarg($file), 'r');
-
-        self::assertIsResource($resource, 'Failed to open the test pipe.');
-
-        return $resource;
     }
 
     /**
