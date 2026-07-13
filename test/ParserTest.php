@@ -75,6 +75,31 @@ class ParserTest extends TestCase
     }
 
     /**
+     * A child-sealing (SLGC) ordinance parses without a fatal error. Before GH-33,
+     * loading the SealingChild model linked an invalid covariant return-type override on
+     * SealingChildInterface::getDateStatus(), an uncatchable class-load fatal; this pins
+     * that regression independently of the bundled fixtures.
+     *
+     * @test
+     */
+    public function parsesSealingChildOrdinanceWithoutCovarianceFatal(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 @I1@ INDI
+            1 SLGC
+            2 STAT BIC
+            2 DATE 01 JAN 1970
+            2 FAMC @F1@
+            GEDCOM);
+
+        $stream->rewind();
+
+        $gedcom = (new Parser($stream))->parse();
+
+        self::assertCount(1, $gedcom->getIndividual());
+    }
+
+    /**
      * Provides every bundled GEDCOM fixture.
      *
      * @return array<string, array{0: string}>
@@ -84,14 +109,7 @@ class ParserTest extends TestCase
         $cases = [];
 
         foreach (glob(__DIR__ . '/files/*.ged') as $file) {
-            $name = basename($file);
-
-            // Excluded until the SLGC covariance fatal (GH-33) is fixed.
-            if ($name === 'GeorgeWashingtonFamilyBig.ged') {
-                continue;
-            }
-
-            $cases[$name] = [$file];
+            $cases[basename($file)] = [$file];
         }
 
         return $cases;
