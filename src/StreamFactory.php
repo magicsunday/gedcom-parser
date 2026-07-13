@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
-use InvalidArgumentException;
+use MagicSunday\Gedcom\Exception\InvalidStreamArgumentException;
+use MagicSunday\Gedcom\Exception\StreamException;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 use function in_array;
 use function is_resource;
@@ -52,8 +52,8 @@ class StreamFactory implements StreamFactoryInterface
      *
      * @return StreamInterface
      *
-     * @throws RuntimeException         If the file cannot be opened
-     * @throws InvalidArgumentException If the mode is invalid
+     * @throws StreamException                If the file cannot be opened
+     * @throws InvalidStreamArgumentException If the mode is invalid
      */
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
@@ -61,10 +61,10 @@ class StreamFactory implements StreamFactoryInterface
 
         if ($resource === false) {
             if ($mode === '' || in_array($mode[0], ['r', 'w', 'a', 'x', 'c'], true) === false) {
-                throw new InvalidArgumentException('The mode ' . $mode . ' is invalid.');
+                throw new InvalidStreamArgumentException('The mode ' . $mode . ' is invalid.');
             }
 
-            throw new RuntimeException('The file ' . $filename . ' cannot be opened.');
+            throw new StreamException('The file ' . $filename . ' cannot be opened.');
         }
 
         return new Stream($resource);
@@ -77,12 +77,12 @@ class StreamFactory implements StreamFactoryInterface
      *
      * @return StreamInterface
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidStreamArgumentException
      */
     public function createStreamFromResource($resource): StreamInterface
     {
         if (!is_resource($resource) || get_resource_type($resource) !== 'stream') {
-            throw new InvalidArgumentException('Invalid stream provided; must be a stream resource');
+            throw new InvalidStreamArgumentException('Invalid stream provided; must be a stream resource');
         }
 
         return new Stream($resource);
