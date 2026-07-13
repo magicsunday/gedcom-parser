@@ -37,6 +37,13 @@ ini_set('auto_detect_line_endings', '1');
 
 ## Development
 
+### Contributing
+Contributor and AI-assistant guidelines — coding standards, the buildbox-based
+tooling, the review workflow and the GEDCOM conformance rules — are documented in
+[`AGENTS.md`](AGENTS.md). The authoritative GEDCOM specifications (5.5.1 and 7.0,
+including the machine-readable 7.0 registry) are vendored under
+[`docs/spec/`](docs/spec/) as the normative reference for conformance work.
+
 ### Run tests
 ```shell
 composer update
