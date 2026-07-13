@@ -1,0 +1,20 @@
+%YAML 1.2
+---
+lang: en-US
+
+type: enumeration
+
+uri: https://gedcom.io/terms/v7/enum-BIRTH
+
+standard tag: 'BIRTH'
+
+specification:
+  - Family structure at time of birth
+  - Name given at or near birth.
+
+value of:
+  - "https://gedcom.io/terms/v7/enumset-NAME-TYPE"
+  - "https://gedcom.io/terms/v7/enumset-PEDI"
+
+contact: "https://gedcom.io/community/"
+...

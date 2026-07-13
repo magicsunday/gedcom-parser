@@ -1,0 +1,733 @@
+
+
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.28.0 by Michael Rose
+  Copyright 2013-2026 Michael Rose - mademistakes.com | @mmistakes
+  Copyright 2024-2026 iBug - ibugone.com | @iBug
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js" dir="ltr">
+  <head>
+    
+<meta charset="utf-8">
+
+
+<!-- begin _includes/seo.html --><title>GEDCOM 5.5.1 Errata - FamilySearch GEDCOM</title>
+<meta name="description" content="The official website for the GEDCOM specification used for storing and sharing genealogical information.">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FamilySearch GEDCOM">
+<meta property="og:title" content="GEDCOM 5.5.1 Errata">
+<meta property="og:url" content="/gedcom551-errata/">
+
+
+  <meta property="og:description" content="The official website for the GEDCOM specification used for storing and sharing genealogical information.">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/gedcom551-errata/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FamilySearch GEDCOM Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    
+<nav class="skip-links" aria-label="Skip links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav" aria-label="Primary navigation">
+        
+        <a class="site-title" href="/">
+          FamilySearch GEDCOM
+          <span class="site-subtitle">Genealogical Data Communication</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >About</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/specs/"
+                
+                
+              >Specifications</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tools/"
+                
+                
+              >Tools</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/guides/"
+                
+                
+              >Guides</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/community/"
+                
+                
+              >Community</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      
+      
+    
+  </ul>
+</nav>
+
+    
+  
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="GEDCOM 5.5.1 Errata">
+    
+    
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="/gedcom551-errata/" itemprop="url">GEDCOM 5.5.1 Errata
+</a>
+          </h1>
+          
+
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <p>The following is the current list of errata for <a href="https://gedcom.io/specifications/ged551.pdf">the GEDCOM Standard, Release 5.5.1, published 15 November 2019</a>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Page</th>
+      <th>Line</th>
+      <th>Heading</th>
+      <th>Original Text</th>
+      <th>Corrected Text</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>6</td>
+      <td>13</td>
+      <td>Modifications in Version 5.5.1</td>
+      <td>data may not have been supplied in the transmission. (see &lt;&lt;FAMILY_RECORD&gt;&gt;, page 24.)</td>
+      <td>data may not have been supplied in the transmission (see &lt;&lt;FAM_RECORD&gt;&gt;, page 24).</td>
+      <td>FAMILY_RECORD should be FAM_RECORD</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>4</td>
+      <td>The following tags were added:</td>
+      <td> </td>
+      <td><strong>ADR3</strong>     Address line 3.</td>
+      <td>Add ADR3 before EMAIL</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>30</td>
+      <td>Symbols Used in Chapter 2</td>
+      <td> </td>
+      <td>/* comment */    Indicates a comment about the syntax</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>23</td>
+      <td>7</td>
+      <td>LINEAGE_LINKED_GEDCOM</td>
+      <td>Tags that are required within a desired context have been bolded. Note that some contexts are not required but if they are used then the bolded tags are required.</td>
+      <td> </td>
+      <td>The use of bolding is inconsistent throughout the specification.  The cardinality indicates requirements, and should be used rather than basing requirement on whether a tag is bolded.</td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td>14</td>
+      <td>INDIVIDUAL_RECORD</td>
+      <td>@XREF:INDI@</td>
+      <td>@&lt;XREF:INDI&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>26</td>
+      <td>21</td>
+      <td>MULTIMEDIA_RECORD</td>
+      <td>@XREF:OBJE@</td>
+      <td>@&lt;XREF:OBJE&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>26</td>
+      <td>22</td>
+      <td>MULTIMEDIA_RECORD</td>
+      <td>&lt;MULTIMEDIA_FILE_REFN&gt;</td>
+      <td>&lt;MULTIMEDIA_FILE_REFERENCE&gt;</td>
+      <td>Change “REFN” to “REFERENCE”</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>7</td>
+      <td>SUBMISSION_RECORD</td>
+      <td>@XREF:SUBN@</td>
+      <td>@&lt;XREF:SUBN&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>8</td>
+      <td>SUBMISSION_RECORD</td>
+      <td>@XREF:SUBM@</td>
+      <td>@&lt;XREF:SUBM&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td>36</td>
+      <td>FAMILY_EVENT_STRUCTURE</td>
+      <td>n RESI</td>
+      <td>n RESI     {1:1}</td>
+      <td>Add cardinality</td>
+    </tr>
+    <tr>
+      <td>35</td>
+      <td>4</td>
+      <td>EVEN</td>
+      <td>n <strong>EVEN</strong>     {1:1}</td>
+      <td>n <strong>EVEN</strong> [&lt;EVENT_DESCRIPTOR&gt; | &lt;NULL&gt;]     {1:1}</td>
+      <td>Allow EVENT_DESCRIPTOR payload</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>6</td>
+      <td>MULTIMEDIA_LINK</td>
+      <td> </td>
+      <td>[</td>
+      <td>Add open bracket before first line of MULTIMEDIA_LINK</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>8</td>
+      <td>MULTIMEDIA_LINK</td>
+      <td>n <strong>OBJE</strong></td>
+      <td>n <strong>OBJE</strong>     {1:1}</td>
+      <td>Add cardinality</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>9</td>
+      <td>MULTIMEDIA_LINK</td>
+      <td>&lt;MULTIMEDIA_FILE_REFN&gt;</td>
+      <td>&lt;MULTIMEDIA_FILE_REFERENCE&gt;</td>
+      <td>Change “REFN” to “REFERENCE”</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>12</td>
+      <td>MULTIMEDIA_LINK</td>
+      <td> </td>
+      <td>]</td>
+      <td>Add close bracket after last line of MULTIMEDIA_LINK</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>36</td>
+      <td>PERSONAL_NAME_PIECES</td>
+      <td>&lt;NAME_PIECE_SURNAME_PREFIX</td>
+      <td>&lt;NAME_PIECE_SURNAME_PREFIX&gt;</td>
+      <td>Add matching angle bracket</td>
+    </tr>
+    <tr>
+      <td>40</td>
+      <td>19</td>
+      <td>SOURCE_REPOSITORY_CITATION</td>
+      <td>@XREF:REPO@</td>
+      <td>@&lt;XREF:REPO&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>42</td>
+      <td>18</td>
+      <td>AGE_AT_EVENT</td>
+      <td>]</td>
+      <td> </td>
+      <td>Remove duplicate close bracket</td>
+    </tr>
+    <tr>
+      <td>46</td>
+      <td>30</td>
+      <td>DATE_PERIOD</td>
+      <td>FROM 1904 to 1915</td>
+      <td>FROM 1904 TO 1915</td>
+      <td>“TO” should be upper case</td>
+    </tr>
+    <tr>
+      <td>49</td>
+      <td>19</td>
+      <td>EVENT_TYPE_CITED_FROM</td>
+      <td>{SIZE=1:15}</td>
+      <td>{Size=1:15}</td>
+      <td>“Size” should be lower case</td>
+    </tr>
+    <tr>
+      <td>51</td>
+      <td>4</td>
+      <td>LANGUAGE_ID</td>
+      <td>Manipuri</td>
+      <td>Mandarin | Manipuri</td>
+      <td>Both “Mandrin” and the corrected spelling “Mandarin” are in use</td>
+    </tr>
+    <tr>
+      <td>52</td>
+      <td>10</td>
+      <td>LDS_ENDOWMENT_DATE_STATUS</td>
+      <td>INFANT = Died before less than one year old, baptism or endowment not required.</td>
+      <td> </td>
+      <td>Remove the INFANT line</td>
+    </tr>
+    <tr>
+      <td>54</td>
+      <td>3</td>
+      <td>MULTIMEDIA_FILE_REFERENCE</td>
+      <td> </td>
+      <td>Values longer than 30 should not be truncated if doing so would invalidate the reference.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>54</td>
+      <td>4</td>
+      <td>MULTIMEDIA_FORMAT</td>
+      <td>{Size=3:4}</td>
+      <td>{Size=3:3}</td>
+      <td>Maximum size is 3 since all values are size 3</td>
+    </tr>
+    <tr>
+      <td>56</td>
+      <td>15</td>
+      <td>NAME_TYPE</td>
+      <td>{Size=5:30}</td>
+      <td>{Size=3:30}</td>
+      <td>Minimum size is 3 due to accommodate “aka”</td>
+    </tr>
+    <tr>
+      <td>57</td>
+      <td>33</td>
+      <td>PHONETIC_TYPE</td>
+      <td>{Size=5:30}</td>
+      <td>{Size=4:30}</td>
+      <td>Minimum size is 4 to accommodate “kana”</td>
+    </tr>
+    <tr>
+      <td>58</td>
+      <td>2</td>
+      <td>PHONETIC_TYPE</td>
+      <td>&lt;user define&gt;</td>
+      <td>&lt;user defined&gt;</td>
+      <td>Change “define” to “defined”</td>
+    </tr>
+    <tr>
+      <td>58</td>
+      <td>21</td>
+      <td>PLACE_LATITUDE</td>
+      <td>{Size=5:8}</td>
+      <td>{Size=5:10}</td>
+      <td>Maximum size is 10 to accommodate the example in line 25</td>
+    </tr>
+    <tr>
+      <td>58</td>
+      <td>32</td>
+      <td>PLACE_LONGITUDE</td>
+      <td>{Size=5:8}</td>
+      <td>{Size=5:11}</td>
+      <td>Maximum size is 11 to accommodate the example in line 35</td>
+    </tr>
+    <tr>
+      <td>59</td>
+      <td>9</td>
+      <td>PLACE_PHONETIC_VARIATION</td>
+      <td>the same form as  was the place name</td>
+      <td>the same form as was the place name</td>
+      <td>Remove extra space before “was”</td>
+    </tr>
+    <tr>
+      <td>59</td>
+      <td>11</td>
+      <td>PLACE_PHONETIC_VARIATION</td>
+      <td>for example if hiragana was used to provide a reading of a a</td>
+      <td>for example if hiragana was used to provide a reading of a</td>
+      <td>Remove duplicate “a”</td>
+    </tr>
+    <tr>
+      <td>60</td>
+      <td>8</td>
+      <td>RELATION_IS_DESCRIPTOR</td>
+      <td>@XREF:SUBM@</td>
+      <td>@&lt;XREF:SUBM&gt;@</td>
+      <td>Add angle brackets</td>
+    </tr>
+    <tr>
+      <td>60</td>
+      <td>19</td>
+      <td>RESTRICTION_NOTICE</td>
+      <td>{Size=6:7}</td>
+      <td>{Size=6:12}</td>
+      <td>Maximum size is 12 to accommodate “confidential”</td>
+    </tr>
+    <tr>
+      <td>61</td>
+      <td>9</td>
+      <td>ROLE_IN_EVENT</td>
+      <td>{Size=1:15}</td>
+      <td>{Size=1:27}</td>
+      <td>Accommodate a ROLE_DESCRIPTOR of length 25</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td>8</td>
+      <td>SOURCE_DESCRIPTIVE_TITLE</td>
+      <td>For An <em>unpublished</em> work such as:</td>
+      <td>For an <em>unpublished</em> work such as:</td>
+      <td>Lower case “an”</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td>14</td>
+      <td>SOURCE_FILED_BY_ENTRY</td>
+      <td>{Size= 1:60}</td>
+      <td>{Size=1:60}</td>
+      <td>Remove space</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td>22</td>
+      <td>SOURCE_MEDIA_TYPE</td>
+      <td>{Size=1:15}</td>
+      <td>{Size=3:10)</td>
+      <td>All alternatives are within size range 3 to 10</td>
+    </tr>
+    <tr>
+      <td>68</td>
+      <td>14</td>
+      <td>Adoption Events</td>
+      <td>ADOPTED_BY_WHICH_PARENTS</td>
+      <td>ADOPTED_BY_WHICH_PARENT</td>
+      <td>Remove “S”</td>
+    </tr>
+    <tr>
+      <td>74</td>
+      <td>21</td>
+      <td>Sample Lineage-Linked GEDCOM Transmission</td>
+      <td>Indentation and bolding are added for readability only.</td>
+      <td>Indentation, bolding, and C-style comments are added fo readability only.</td>
+      <td>Clarify that C-style comments do not appear in the actual GEDCOM file</td>
+    </tr>
+    <tr>
+      <td>84</td>
+      <td>7</td>
+      <td>ANCE</td>
+      <td>Pertaining to forbearers of an individual.</td>
+      <td>Pertaining to forebearers of an individual.</td>
+      <td>Change “forbearers” to “forebearers”</td>
+    </tr>
+    <tr>
+      <td>83</td>
+      <td>28</td>
+      <td>Lineage-Linked GEDCOM Tag Definitions</td>
+      <td> </td>
+      <td><strong>ADR3 {ADDRESS3}:=</strong></td>
+      <td>Add ADR3 after ADR2</td>
+    </tr>
+    <tr>
+      <td>83</td>
+      <td>28</td>
+      <td>Lineage-Linked GEDCOM Tag Definitions</td>
+      <td> </td>
+      <td>The third line of an address.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>84</td>
+      <td>16</td>
+      <td>BAPL</td>
+      <td><strong>BAPL {BAPTISM-LDS}:=</strong></td>
+      <td><strong>BAPL {BAPTISM_LDS}:=</strong></td>
+      <td>Change “-“ to “_”</td>
+    </tr>
+    <tr>
+      <td>87</td>
+      <td>12</td>
+      <td>EMAI</td>
+      <td><strong>EMAI {EMAIL}:=</strong></td>
+      <td><strong>EMAIL {EMAIL}:=</strong></td>
+      <td>Change EMAI to EMAIL</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td>7</td>
+      <td>FAX</td>
+      <td><strong>FAX {FACIMILIE}:=</strong></td>
+      <td><strong>FAX {FACSIMILE}:=</strong></td>
+      <td>Change FACIMILIE to FACSIMILE</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td>8</td>
+      <td>FAX</td>
+      <td>Electronic facimilie transmission.</td>
+      <td>Electronic facsimile transmission.</td>
+      <td>Change facimilie to facsimile</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td>15</td>
+      <td>FONE</td>
+      <td><strong>FONE {PHONETIC}</strong></td>
+      <td><strong>FONE {PHONETIC}:=</strong></td>
+      <td>Add “:=”</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td>16</td>
+      <td>FONE</td>
+      <td>A phonetic variation of a superior text string</td>
+      <td>A phonetic variation of a superior text string.</td>
+      <td>Add period</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td>19</td>
+      <td>GIVN</td>
+      <td><strong>GIVN {GIVEN_NAME}</strong></td>
+      <td><strong>GIVN {GIVEN_NAME}:=</strong></td>
+      <td>Add “:=”</td>
+    </tr>
+    <tr>
+      <td>90</td>
+      <td>9</td>
+      <td>NICK</td>
+      <td>A descriptive or familiar that is used</td>
+      <td>A descriptive or familiar name that is used</td>
+      <td>Insert “name”</td>
+    </tr>
+  </tbody>
+</table>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+  
+
+  
+
+
+        
+
+
+
+      </footer>
+
+      
+
+      
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+    <ul class="social-icons">
+      
+  
+      
+  
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    </ul>
+  </div>
+  
+  <div class="page__footer-copyright">© 2021 by Intellectual Reserve, Inc. All rights reserved. A service provided by The Church of Jesus Christ of Latter-day Saints 
+
+<!-- 2026 --></div>
+  
+
+      </footer>
+    </div>
+
+    
+
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+  <script> 
+    let url = '//assets.adobedtm.com/05064fe6cab0/c247cd0acad1/launch-7e623b6eec86.min.js'
+    
+    // import _satellite library
+    const script = document.createElement('script')
+    script.src = url
+    script.async = true
+    script.onload = sendPageView// you won't be able to use `window._satellite` until this has loaded
+    const child = document.querySelector('script')
+    const parentNode = child.parentNode
+    parentNode.insertBefore(script, child)
+    
+    // Now that the library is loaded, call a page view event
+    function sendPageView() {
+      const payload = {
+        site_id: 'FamilySearch',
+        site_language: 'en',
+        page_channel: 'GEDCOM.io',
+        page_detail: '/gedcom551-errata/',
+      }
+      window._satellite.track('page_view', payload)
+    }
+</script>
+
+
+
+
+
+
+
+
+  </body>
+</html>
