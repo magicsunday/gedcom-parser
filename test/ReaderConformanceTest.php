@@ -31,9 +31,9 @@ class ReaderConformanceTest extends TestCase
     /**
      * Creates a rewound reader over the given raw GEDCOM string.
      *
-     * @param string $gedcom The raw GEDCOM document to wrap.
+     * @param string $gedcom the raw GEDCOM document to wrap
      *
-     * @return Reader A reader positioned at the start of the given document.
+     * @return Reader a reader positioned at the start of the given document
      */
     private function reader(string $gedcom): Reader
     {
@@ -120,8 +120,10 @@ class ReaderConformanceTest extends TestCase
      */
     public function preservesTrailingBytesThatCollideWithTheBomMask(): void
     {
-        // Final line without a trailing newline whose value ends in » (0xC2 0xBB).
-        $reader = $this->reader("1 NOTE ab\xC2\xBB");
+        // A leading UTF-8 BOM selects UTF-8 (pass-through); the value ends in » (0xC2 0xBB),
+        // whose trailing 0xBB collides with the BOM mask but must survive — the BOM is only
+        // consumed as a leading prefix, never trimmed from a value.
+        $reader = $this->reader("\xEF\xBB\xBF1 NOTE ab\xC2\xBB");
 
         $reader->read();
 
