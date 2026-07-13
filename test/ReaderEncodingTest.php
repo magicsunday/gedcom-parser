@@ -330,6 +330,75 @@ class ReaderEncodingTest extends TestCase
     }
 
     /**
+     * The CHAR line may be the final, terminator-less line of the stream. At genuine EOF the
+     * sniff must still resolve it from the buffered header rather than defaulting to ANSEL.
+     */
+    #[Test]
+    public function resolvesUnterminatedFinalCharLine(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR UNICODE");
+        $reader = new Reader($stream);
+
+        $this->expectException(UnsupportedEncodingException::class);
+
+        while ($reader->read()) {
+            // The unterminated CHAR UNICODE line must be resolved and rejected at EOF.
+        }
+    }
+
+    /**
+     * A complete but terminator-less CHAR line that ends the stream exactly on the sniff limit
+     * is still honoured. Because the EOF flag lags a read behind the buffered bytes, the cap
+     * branch pulls once to confirm end of stream and then resolves the value rather than
+     * defaulting to ANSEL. Exercises the EOF-lag path of the sniff cap.
+     */
+    #[Test]
+    public function resolvesCompleteCharLineEndingExactlyOnTheSniffLimit(): void
+    {
+        // 7 + 10 + 7 + 65499 + 1 + 12 = 65536 bytes: the stream ends on a complete, unterminated
+        // "1 CHAR UTF-8" line whose final byte lands exactly on the 64 KB sniff cap.
+        $bytes = "0 HEAD\n1 NAME \xC2\xA9\n1 SOUR " . str_repeat('A', 65499) . "\n1 CHAR UTF-8";
+        self::assertSame(65536, strlen($bytes));
+
+        self::assertSame('©', $this->firstNameValue($this->rewoundStream($bytes)));
+    }
+
+    /**
+     * A CHAR declaration that only appears beyond the 64 KB sniff window is not honoured: the
+     * reader stops scanning at the cap and falls back to the ANSEL default rather than reading
+     * an unbounded header. The 0xCF byte then decodes to "ß" under ANSEL.
+     */
+    #[Test]
+    public function fallsBackToAnselWhenCharLiesBeyondTheSniffLimit(): void
+    {
+        $header = "0 HEAD\n" . str_repeat("1 NOTE padding\n", 5000);
+        $bytes  = $header . "1 CHAR UTF-8\n0 @I1@ INDI\n1 NAME \xCF\n0 TRLR\n";
+
+        self::assertSame('ß', $this->firstNameValue($this->rewoundStream($bytes)));
+    }
+
+    /**
+     * A CHAR value whose bytes fill the sniff window while its terminator lands just beyond the
+     * 64 KB cap must not be accepted: from within the window the reader cannot tell a complete
+     * value ("UTF-8") apart from the prefix of a longer one, so the bounded sniff falls back to
+     * ANSEL rather than honouring a possibly-truncated declaration. This pins the fix — the
+     * earlier unbounded sniff accepted the in-window value as UTF-8 (leaving the © intact).
+     */
+    #[Test]
+    public function rejectsCharValueWhoseTerminatorFallsBeyondTheSniffLimit(): void
+    {
+        // "UTF-8" ends exactly on the 64 KB cap; its terminator and the trailing record lie
+        // beyond it (7 + 10 + 7 + 65499 + 1 + 12 = 65536, then "\n0 TRLR\n").
+        $bytes = "0 HEAD\n1 NAME \xC2\xA9\n1 SOUR " . str_repeat('A', 65499) . "\n1 CHAR UTF-8\n0 TRLR\n";
+        self::assertSame(65544, strlen($bytes));
+
+        // Reading one byte at a time pauses the buffer exactly on the cap regardless of the
+        // internal chunk size, so the overrun branch fires deterministically. The UTF-8 © must
+        // not survive: the payload is decoded under the ANSEL fallback instead.
+        self::assertNotSame('©', $this->firstNameValue($this->oneByteStream($bytes)));
+    }
+
+    /**
      * Returns the value of the first NAME line parsed from the given stream.
      *
      * @param Stream $stream a readable stream over a GEDCOM document

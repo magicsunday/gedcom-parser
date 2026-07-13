@@ -83,6 +83,13 @@ class Reader
     private const CHAR_SNIFF_LIMIT = 65536;
 
     /**
+     * Core of the HEAD.CHAR line pattern, capturing the whole (possibly multi-word) value up to
+     * the line terminator. The terminated match appends a required trailing terminator to this
+     * core; the unterminated match, used only at end of stream, matches the bare core.
+     */
+    private const CHAR_LINE_PATTERN = '(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)';
+
+    /**
      * Source encodings the reader transcodes from. ANSEL is the GEDCOM 5.5.1 default.
      */
     private const ENCODING_ANSEL = 'ANSEL';
@@ -518,18 +525,42 @@ class Reader
             // terminators (CR, LF, CRLF, LFCR); the /m flag would only recognise LF, so a
             // CR-only file's CHAR line would be missed. Require a trailing terminator so a
             // value split across a chunk boundary is not accepted while still truncated.
-            if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)[\r\n]/i', $head, $matches) === 1) {
+            if (preg_match('/' . self::CHAR_LINE_PATTERN . '[\r\n]/i', $head, $matches) === 1) {
                 return self::normaliseEncoding(trim($matches[1]));
             }
 
-            if ($this->eofReached
-                || ((strlen($this->buffer) - $this->bufferOffset) >= self::CHAR_SNIFF_LIMIT)
-            ) {
-                // Final pass: the CHAR value may legitimately be the last, unterminated line.
-                if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)/i', $head, $matches) === 1) {
+            if ($this->eofReached) {
+                // At the true end of the stream the CHAR value may legitimately be the last,
+                // unterminated line — accept it without a trailing terminator.
+                if (preg_match('/' . self::CHAR_LINE_PATTERN . '/i', $head, $matches) === 1) {
                     return self::normaliseEncoding(trim($matches[1]));
                 }
 
+                return self::ENCODING_ANSEL;
+            }
+
+            if ((strlen($this->buffer) - $this->bufferOffset) >= self::CHAR_SNIFF_LIMIT) {
+                // Buffered the full sniff window without a terminated CHAR line. The EOF flag
+                // lags a read behind the buffer, so a stream that ends exactly on the cap has
+                // not set it yet. Pull exactly once — never in a loop, so a non-blocking stream
+                // that never signals EOF cannot spin the sniff — then settle the outcome.
+                $bufferedBytes = strlen($this->buffer);
+                $this->pullChunk();
+
+                if (strlen($this->buffer) > $bufferedBytes) {
+                    // Further bytes arrived: the CHAR value overruns the sniff window. Give up
+                    // rather than accept a value that may still be truncated.
+                    return self::ENCODING_ANSEL;
+                }
+
+                if ($this->eofReached) {
+                    // The stream ended exactly on the cap; re-enter so the EOF branch resolves
+                    // a complete, unterminated final CHAR line.
+                    continue;
+                }
+
+                // Neither grew nor reached EOF (a non-blocking stream momentarily without
+                // data): keep the sniff bounded by the cap and fall back to the default.
                 return self::ENCODING_ANSEL;
             }
 
