@@ -29,9 +29,4 @@ interface SealingChildInterface extends CommonIndividualOrdinanceInterface
      * @return string|null
      */
     public function getFamilyXref(): ?string;
-
-    /**
-     * @return SealingChildDateStatusInterface|null
-     */
-    public function getDateStatus(): ?SealingChildDateStatusInterface;
 }

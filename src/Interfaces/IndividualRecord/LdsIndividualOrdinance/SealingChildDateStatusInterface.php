@@ -12,30 +12,16 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\LdsIndividualOrdinance;
 
 /**
- * The LDS individual ordinance date status interface.
+ * The LDS child-sealing (SLGC) ordinance date status interface. It specialises
+ * {@see CommonDateStatusInterface} for the child-sealing context and inherits its
+ * TAG_DATE_STATUS constant and getStatus() unchanged. Per the GEDCOM specification the
+ * child-sealing status vocabulary differs from the baptism one (it additionally allows
+ * BIC and DNS); see the tracking issue for wiring this type into the parser or removing it.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface SealingChildDateStatusInterface extends CommonChangeDateInterface
+interface SealingChildDateStatusInterface extends CommonDateStatusInterface
 {
-    /**
-     * A code indicating the status of an LDS sealing child date:
-     *
-     * - BIC
-     * - COMPLETED
-     * - EXCLUDED
-     * - DNS
-     * - PRE-1970
-     * - STILLBORN
-     * - SUBMITTED
-     * - UNCLEARED
-     */
-    public const TAG_DATE_STATUS = 'DATE_STATUS';
-
-    /**
-     * @return string|null
-     */
-    public function getStatus(): ?string;
 }
