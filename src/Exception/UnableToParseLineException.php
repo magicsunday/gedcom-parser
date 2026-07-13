@@ -22,7 +22,7 @@ use function trim;
  * tokenised into its level, cross-reference, tag and value components.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 final class UnableToParseLineException extends RuntimeException implements ExceptionInterface

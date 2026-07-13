@@ -28,7 +28,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\SpouseToFamilyLinkInterface;
  * The INDI (individual) record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface IndividualRecordInterface extends ChangeDateInterface, IndividualEventStructureInterface, IndividualAttributeStructureInterface, LdsIndividualOrdinanceInterface, MultimediaLinkInterface, NoteInterface, SourceCitationInterface

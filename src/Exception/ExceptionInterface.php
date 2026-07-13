@@ -18,7 +18,7 @@ use Throwable;
  * consumers can catch all GEDCOM parser failures as a single group.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface ExceptionInterface extends Throwable

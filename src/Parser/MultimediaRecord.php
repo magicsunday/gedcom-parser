@@ -27,7 +27,7 @@ use MagicSunday\Gedcom\Parser\MultimediaRecord\File;
  * A OBJE (multimedia object) record parser.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 class MultimediaRecord extends AbstractParser

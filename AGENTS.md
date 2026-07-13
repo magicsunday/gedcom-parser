@@ -136,4 +136,4 @@ docs/spec/                                      # vendored GEDCOM specs (export-
 
 ---
 
-**Owner:** *MagicSunday* (Europe/Berlin) · **License:** GPL-3.0-or-later
+**Owner:** *MagicSunday* (Europe/Berlin) · **License:** MIT

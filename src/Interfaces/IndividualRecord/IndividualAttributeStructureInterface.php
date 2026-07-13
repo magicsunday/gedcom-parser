@@ -17,7 +17,7 @@ use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualAttributeStructure\
  * The individual attribute structure tags.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 interface IndividualAttributeStructureInterface

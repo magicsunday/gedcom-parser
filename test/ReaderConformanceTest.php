@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  * Conformance tests for the low-level line tokeniser against the GEDCOM 5.5.1 grammar.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  *
  * @covers \MagicSunday\Gedcom\Reader

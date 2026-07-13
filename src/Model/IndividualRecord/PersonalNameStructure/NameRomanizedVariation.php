@@ -21,7 +21,7 @@ use MagicSunday\Gedcom\Traits\IndividualRecord\PersonalNameStructure\PersonalNam
  * The name romanized variation model.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
- * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License v3.0
+ * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 class NameRomanizedVariation extends DataObject implements NameRomanizedVariationInterface
