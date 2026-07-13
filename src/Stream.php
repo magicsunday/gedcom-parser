@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Exception\InvalidStreamArgumentException;
 use MagicSunday\Gedcom\Exception\StreamException;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 use function is_int;
@@ -27,7 +28,7 @@ use function is_string;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Stream implements ReadableStreamInterface
+class Stream implements StreamInterface
 {
     /**
      * The actual PHP resource.
@@ -334,7 +335,7 @@ class Stream implements ReadableStreamInterface
      * @return string
      *
      * @throws StreamException if unable to read or an error occurs while
-     *                          reading
+     *                         reading
      */
     public function getContents(): string
     {
@@ -378,35 +379,5 @@ class Stream implements ReadableStreamInterface
         }
 
         return $metadata[$key] ?? null;
-    }
-
-    /**
-     * Gets line from the file pointer.
-     *
-     * @return string
-     *
-     * @throws StreamException if an error occurs
-     */
-    public function fgets(): string
-    {
-        if (!is_resource($this->resource)) {
-            throw new StreamException('No resource available; cannot read');
-        }
-
-        if (!$this->isReadable()) {
-            throw new StreamException('Stream is not readable');
-        }
-
-        $result = fgets($this->resource);
-
-        if ($result === false) {
-            if ($this->eof()) {
-                return '';
-            }
-
-            throw new StreamException('Error reading stream');
-        }
-
-        return $result;
     }
 }
