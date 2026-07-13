@@ -14,7 +14,6 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Exception\InvalidStreamArgumentException;
 use MagicSunday\Gedcom\Exception\StreamException;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\StreamInterface;
 
 use function in_array;
 use function is_resource;
@@ -31,9 +30,9 @@ class StreamFactory implements StreamFactoryInterface
      *
      * @param string $content String content with which to populate the stream
      *
-     * @return StreamInterface
+     * @return ReadableStreamInterface
      */
-    public function createStream(string $content = ''): StreamInterface
+    public function createStream(string $content = ''): ReadableStreamInterface
     {
         $stream = new Stream('php://temp', 'r+');
 
@@ -50,12 +49,12 @@ class StreamFactory implements StreamFactoryInterface
      * @param string $filename Filename or stream URI to use as a basis of stream
      * @param string $mode     Mode with which to open the underlying filename/stream
      *
-     * @return StreamInterface
+     * @return ReadableStreamInterface
      *
      * @throws StreamException                If the file cannot be opened
      * @throws InvalidStreamArgumentException If the mode is invalid
      */
-    public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
+    public function createStreamFromFile(string $filename, string $mode = 'r'): ReadableStreamInterface
     {
         $resource = @fopen($filename, $mode);
 
@@ -75,11 +74,11 @@ class StreamFactory implements StreamFactoryInterface
      *
      * @param resource $resource PHP resource to use as a basis of stream
      *
-     * @return StreamInterface
+     * @return ReadableStreamInterface
      *
      * @throws InvalidStreamArgumentException
      */
-    public function createStreamFromResource($resource): StreamInterface
+    public function createStreamFromResource($resource): ReadableStreamInterface
     {
         if (!is_resource($resource) || get_resource_type($resource) !== 'stream') {
             throw new InvalidStreamArgumentException('Invalid stream provided; must be a stream resource');
