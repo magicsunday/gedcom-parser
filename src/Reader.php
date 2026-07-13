@@ -516,14 +516,20 @@ class Reader
             // Capture the whole CHAR value, not just the first token — real exports write
             // multi-word values such as "IBM WINDOWS". Anchor on any of the four GEDCOM
             // terminators (CR, LF, CRLF, LFCR); the /m flag would only recognise LF, so a
-            // CR-only file's CHAR line would be missed.
-            if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)/i', $head, $matches) === 1) {
+            // CR-only file's CHAR line would be missed. Require a trailing terminator so a
+            // value split across a chunk boundary is not accepted while still truncated.
+            if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)[\r\n]/i', $head, $matches) === 1) {
                 return self::normaliseEncoding(trim($matches[1]));
             }
 
             if ($this->eofReached
                 || ((strlen($this->buffer) - $this->bufferOffset) >= self::CHAR_SNIFF_LIMIT)
             ) {
+                // Final pass: the CHAR value may legitimately be the last, unterminated line.
+                if (preg_match('/(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)/i', $head, $matches) === 1) {
+                    return self::normaliseEncoding(trim($matches[1]));
+                }
+
                 return self::ENCODING_ANSEL;
             }
 

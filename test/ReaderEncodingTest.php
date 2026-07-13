@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use function implode;
 use function mb_check_encoding;
 use function mb_convert_encoding;
+use function trim;
 
 /**
  * Tests that the reader honours the HEAD.CHAR / BOM source encoding and transcodes to UTF-8.
@@ -276,6 +277,20 @@ class ReaderEncodingTest extends TestCase
     public function detectsCharOnCrOnlyLineEndings(): void
     {
         $stream = $this->rewoundStream("0 HEAD\r1 CHAR ANSI\r0 @I1@ INDI\r1 NAME Caf\xE9\r0 TRLR\r");
+
+        self::assertSame('Café', $this->firstNameValue($stream));
+    }
+
+    /**
+     * The HEAD.CHAR value is resolved correctly even when the stream delivers it one byte at
+     * a time: the sniff must wait for the terminated value rather than accepting a truncated
+     * prefix (e.g. "A" of "ANSI") that would mis-detect the encoding as the ANSEL default.
+     *
+     * @test
+     */
+    public function resolvesCharThatArrivesInSingleByteReads(): void
+    {
+        $stream = $this->oneByteStream("0 HEAD\n1 CHAR ANSI\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
 
         self::assertSame('Café', $this->firstNameValue($stream));
     }
