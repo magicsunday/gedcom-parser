@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Test;
 
 use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
-use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
@@ -184,11 +183,16 @@ class ReaderEncodingTest extends TestCase
         $utf8  = "0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
         $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8') . "\x41";
 
-        $gedcom = (new Parser($this->rewoundStream($bytes)))->parse();
+        $reader = new Reader($this->rewoundStream($bytes));
+        $lines  = [];
 
-        self::assertCount(1, $gedcom->getIndividual());
-        // The truncated trailing byte did not leak a replacement character into the last name.
-        self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
+        // Reading all the way to EOF must not surface a stray line from the truncated tail
+        // (a best-effort flush would emit a "?" line and throw UnableToParseLineException).
+        while ($reader->read()) {
+            $lines[] = trim($reader->current());
+        }
+
+        self::assertSame(['0 @I1@ INDI', '1 NAME Zoë', '0 TRLR'], $lines);
     }
 
     /**
@@ -245,6 +249,20 @@ class ReaderEncodingTest extends TestCase
     {
         // 0xE9 is é in Windows-1252 but a combining caron in ANSEL.
         $stream = $this->rewoundStream("0 HEAD\n1 CHAR ANSI\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
+
+        self::assertSame('Café', $this->firstNameValue($stream));
+    }
+
+    /**
+     * A multi-word CHAR value (e.g. "IBM WINDOWS", used by real exporters — see
+     * KennedyFamily.ged) is captured in full and decoded as Windows-1252, not truncated to
+     * its first token and mangled as ANSEL.
+     *
+     * @test
+     */
+    public function decodesMultiWordIbmWindowsAsWindows1252(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR IBM WINDOWS\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
 
         self::assertSame('Café', $this->firstNameValue($stream));
     }

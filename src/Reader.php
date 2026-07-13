@@ -26,6 +26,7 @@ use function str_replace;
 use function strcspn;
 use function strlen;
 use function strncmp;
+use function strpos;
 use function strtoupper;
 use function substr;
 use function trim;
@@ -477,7 +478,9 @@ class Reader
         $complete         = substr($this->rawPending, 0, $take);
         $this->rawPending = substr($this->rawPending, $take);
 
-        return $this->transcodeUtf16($complete);
+        $result = mb_convert_encoding($complete, 'UTF-8', (string) $this->encoding);
+
+        return $result !== false ? $result : '';
     }
 
     /**
@@ -498,20 +501,6 @@ class Reader
     }
 
     /**
-     * Transcodes UTF-16 bytes (in the resolved endianness) to UTF-8.
-     *
-     * @param string $bytes the complete UTF-16 bytes to transcode
-     *
-     * @return string the UTF-8 result
-     */
-    private function transcodeUtf16(string $bytes): string
-    {
-        $result = mb_convert_encoding($bytes, 'UTF-8', (string) $this->encoding);
-
-        return $result !== false ? $result : '';
-    }
-
-    /**
      * Scans the buffered header for the HEAD.CHAR declaration and maps it to a source
      * encoding, reading further chunks up to CHAR_SNIFF_LIMIT bytes. Does not consume the
      * buffer — the header is still tokenised normally afterwards.
@@ -524,8 +513,10 @@ class Reader
             $head    = substr($this->buffer, $this->bufferOffset, self::CHAR_SNIFF_LIMIT);
             $matches = [];
 
-            if (preg_match('/^\s*\d+\s+CHAR\s+(\S+)/mi', $head, $matches) === 1) {
-                return self::normaliseEncoding($matches[1]);
+            // Capture the whole CHAR value, not just the first token — real exports write
+            // multi-word values such as "IBM WINDOWS".
+            if (preg_match('/^\s*\d+\s+CHAR\s+(.+)$/mi', $head, $matches) === 1) {
+                return self::normaliseEncoding(trim($matches[1]));
             }
 
             if ($this->eofReached
@@ -547,7 +538,9 @@ class Reader
      */
     private static function normaliseEncoding(string $characterSet): string
     {
-        switch (strtoupper($characterSet)) {
+        $normalised = strtoupper($characterSet);
+
+        switch ($normalised) {
             case 'UTF-8':
             case 'UTF8':
                 return self::ENCODING_UTF8;
@@ -555,21 +548,28 @@ class Reader
             case 'ASCII':
                 return self::ENCODING_ASCII;
 
-            case 'ANSI':
-            case 'WINDOWS-1252':
-            case 'CP1252':
-                // Not a 5.5.1 charset, but common in real Windows exports; decode as
-                // Windows-1252 rather than silently mangling it as the ANSEL default.
-                return self::ENCODING_CP1252;
+            case 'ANSEL':
+                return self::ENCODING_ANSEL;
 
             case 'UNICODE':
                 // A byte-framed stream that declares UNICODE (UTF-16) has no BOM and did not
                 // trigger the null heuristic, so it is undetectable/contradictory — reject it
                 // rather than silently mis-parsing.
                 throw new UnsupportedEncodingException($characterSet);
-            default:
-                return self::ENCODING_ANSEL;
         }
+
+        // Not 5.5.1 charsets, but common in real Windows exports (ANSI, WINDOWS-1252, and
+        // multi-word values like "IBM WINDOWS"): decode as Windows-1252 rather than silently
+        // mangling their high bytes as the ANSEL default.
+        if (($normalised === 'ANSI')
+            || ($normalised === 'CP1252')
+            || (strpos($normalised, 'WINDOWS') !== false)
+        ) {
+            return self::ENCODING_CP1252;
+        }
+
+        // Any other unrecognised value falls back to the 5.5.1 default character set.
+        return self::ENCODING_ANSEL;
     }
 
     /**
