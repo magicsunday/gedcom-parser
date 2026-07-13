@@ -46,6 +46,10 @@ foreach ($gedcom->getIndividual() as $individual) {
 
 You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
 
+The parser reads any readable stream — including non-seekable ones such as a pipe
+(`cat tree.ged | your-app`) or a network response body — and accepts all four GEDCOM 5.5.1
+line terminators (CR, LF, CRLF and LFCR), so classic-Mac (CR-only) files parse correctly.
+
 Every exception the library throws implements
 `MagicSunday\Gedcom\Exception\ExceptionInterface`, so all parser and stream failures can
 be caught as a single group.

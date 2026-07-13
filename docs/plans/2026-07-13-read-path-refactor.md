@@ -60,7 +60,7 @@ Reader state changes:
   input must not materialise the whole stream as one line (memory-unbounded, violates the
   record-by-record streaming intent). Cap the accumulated line length at a generous bound
   well above the GEDCOM 5.5.1 Appendix-A line limit (`self::MAX_LINE_LENGTH`); on overflow
-  throw `UnableToParseLineException` rather than growing `$buffer` to stream size. The
+  throw a dedicated `LineTooLongException` rather than growing `$buffer` to stream size. The
   `$pushback` LIFO stays bounded (the parser backs at most one line between reads — verified
   `AbstractParser::valid()`/`readContent()` are the only `back()` sites, each followed by a
   `read()`).
@@ -115,7 +115,7 @@ PR body and land it before the #18 release.
 5. `backReReadsThePreviousLine` (Reader-level) — read two lines, `back()`, read again → same
    line; and `count()` is not double-advanced by the re-read.
 6. `throwsOnLineExceedingMaxLength` — a terminator-less oversized input throws
-   `UnableToParseLineException`, not OOM. Guards review R-G8 (bounded buffer).
+   `LineTooLongException`, not OOM. Guards review R-G8 (bounded buffer).
 7. Existing `ReaderTest::back()` (currently seek-based) keeps passing behaviourally.
 
 ## Out of scope (follow-on, same PR, separate plan)
