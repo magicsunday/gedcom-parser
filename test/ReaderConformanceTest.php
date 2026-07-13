@@ -95,4 +95,72 @@ class ReaderConformanceTest extends TestCase
             self::assertStringContainsString('FOO.BAR', $exception->getRawLine());
         }
     }
+
+    /**
+     * A leading UTF-8 byte-order mark on the first line is removed so the line still parses.
+     *
+     * @test
+     */
+    public function stripsLeadingUtf8Bom(): void
+    {
+        $reader = $this->reader("\xEF\xBB\xBF0 HEAD\n");
+
+        $reader->read();
+
+        self::assertSame(0, $reader->level());
+        self::assertSame('HEAD', $reader->tag());
+    }
+
+    /**
+     * Bytes inside a value that happen to be part of the BOM byte sequence (here the
+     * trailing 0xBB of "»") must survive; the BOM is only stripped as a leading prefix,
+     * never trimmed from the end of every line.
+     *
+     * @test
+     */
+    public function preservesTrailingBytesThatCollideWithTheBomMask(): void
+    {
+        // Final line without a trailing newline whose value ends in » (0xC2 0xBB).
+        $reader = $this->reader("1 NOTE ab\xC2\xBB");
+
+        $reader->read();
+
+        self::assertSame("ab\xC2\xBB", $reader->value());
+    }
+
+    /**
+     * A line without a cross-reference identifier reports NULL, consistent with xref()
+     * and value() and honouring the nullable return type.
+     *
+     * @test
+     */
+    public function identifierReturnsNullWhenAbsent(): void
+    {
+        $reader = $this->reader("1 NAME John\n");
+
+        $reader->read();
+
+        self::assertNull($reader->identifier());
+    }
+
+    /**
+     * A blank line following a record must not leak the previous line's identifier,
+     * cross-reference or value into the accessors.
+     *
+     * @test
+     */
+    public function doesNotLeakIdentifierAcrossBlankLine(): void
+    {
+        $reader = $this->reader("0 @I1@ INDI\n   \n");
+
+        $reader->read();
+
+        self::assertSame('I1', $reader->identifier());
+
+        $reader->read();
+
+        self::assertNull($reader->identifier());
+        self::assertNull($reader->xref());
+        self::assertNull($reader->value());
+    }
 }

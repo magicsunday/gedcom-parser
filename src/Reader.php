@@ -15,6 +15,8 @@ use InvalidArgumentException;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use Psr\Http\Message\StreamInterface;
 
+use function substr;
+
 /**
  * A GEDCOM file reader.
  *
@@ -122,6 +124,12 @@ class Reader
             return false;
         }
 
+        // Reset the per-line state so a line missing an identifier, cross-reference or
+        // value cannot inherit the previous line's data.
+        $this->identifier = '';
+        $this->xref       = '';
+        $this->value      = '';
+
         // TODO Use correct GEDCOM char encoding for reading the file
 
         $this->lastPosition = $this->stream->tell();
@@ -130,8 +138,10 @@ class Reader
         ++$this->lineCount;
 
         if ($this->valid()) {
-            // Remove possible BOM from UTF-8 files
-            $this->lastLine = trim($this->lastLine, "\xEF\xBB\xBF");
+            // Remove a leading UTF-8 byte-order mark, once, from the first line only
+            if ($this->lineCount === 1) {
+                $this->lastLine = $this->stripByteOrderMark($this->lastLine);
+            }
 
             $matches = [];
 
@@ -150,6 +160,22 @@ class Reader
         }
 
         return !($this->lastLine === '' && $this->stream->eof());
+    }
+
+    /**
+     * Removes a leading UTF-8 byte-order mark from the given line, if present.
+     *
+     * @param string $line The raw line as read from the stream.
+     *
+     * @return string The line without a leading UTF-8 BOM.
+     */
+    private function stripByteOrderMark(string $line): string
+    {
+        if (substr($line, 0, 3) === "\xEF\xBB\xBF") {
+            return substr($line, 3);
+        }
+
+        return $line;
     }
 
     /**
@@ -209,7 +235,7 @@ class Reader
      */
     public function identifier(): ?string
     {
-        return $this->identifier;
+        return ($this->identifier !== '') ? $this->identifier : null;
     }
 
     /**
