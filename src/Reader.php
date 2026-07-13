@@ -11,16 +11,22 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Encoding\AnselDecoder;
 use MagicSunday\Gedcom\Exception\LineTooLongException;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use Psr\Http\Message\StreamInterface;
 
 use function is_string;
+use function mb_convert_encoding;
+use function ord;
 use function preg_match;
 use function str_replace;
 use function strcspn;
 use function strlen;
+use function strncmp;
+use function strpos;
 use function strtoupper;
 use function substr;
 use function trim;
@@ -69,6 +75,34 @@ class Reader
      * The number of bytes read from the underlying stream per chunk.
      */
     private const CHUNK_SIZE = 8192;
+
+    /**
+     * The maximum number of leading bytes scanned for the HEAD.CHAR declaration when no BOM
+     * decides the encoding. The (required) CHAR field always sits within the header.
+     */
+    private const CHAR_SNIFF_LIMIT = 65536;
+
+    /**
+     * Core of the HEAD.CHAR line pattern, capturing the whole (possibly multi-word) value up to
+     * the line terminator. The terminated match appends a required trailing terminator to this
+     * core; the unterminated match, used only at end of stream, matches the bare core.
+     */
+    private const CHAR_LINE_PATTERN = '(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)';
+
+    /**
+     * Source encodings the reader transcodes from. ANSEL is the GEDCOM 5.5.1 default.
+     */
+    private const ENCODING_ANSEL = 'ANSEL';
+
+    private const ENCODING_ASCII = 'ASCII';
+
+    private const ENCODING_UTF8 = 'UTF-8';
+
+    private const ENCODING_UTF16LE = 'UTF-16LE';
+
+    private const ENCODING_UTF16BE = 'UTF-16BE';
+
+    private const ENCODING_CP1252 = 'Windows-1252';
 
     /**
      * The stream object.
@@ -121,6 +155,22 @@ class Reader
      * @var bool
      */
     private bool $eofReached = false;
+
+    /**
+     * The resolved source encoding (one of the ENCODING_* constants), or NULL until it has
+     * been determined from the BOM / HEAD.CHAR on the first read.
+     *
+     * @var string|null
+     */
+    private ?string $encoding = null;
+
+    /**
+     * Raw UTF-16 bytes read but not yet transcoded, held so a code unit or surrogate pair
+     * split across a chunk boundary is completed by the next read rather than corrupted.
+     *
+     * @var string
+     */
+    private string $rawPending = '';
 
     /**
      * Number of read lines of the file.
@@ -183,13 +233,17 @@ class Reader
      */
     public function read(): bool
     {
+        // Determine the source encoding once, from the BOM / HEAD.CHAR, before any line is
+        // served, so no value is ever decoded under the wrong strategy.
+        if ($this->encoding === null) {
+            $this->resolveEncoding();
+        }
+
         // Reset the per-line state so a line missing an identifier, cross-reference or
         // value cannot inherit the previous line's data.
         $this->identifier = '';
         $this->xref       = '';
         $this->value      = '';
-
-        // TODO Use correct GEDCOM char encoding for reading the file
 
         if ($this->pushback !== null) {
             // A line put back by back() is served again without touching the stream and
@@ -204,9 +258,15 @@ class Reader
             if ($line !== '') {
                 ++$this->lineCount;
 
-                // Remove a leading UTF-8 byte-order mark, once, from the first physical line.
-                if ($this->lineCount === 1) {
-                    $line = $this->stripByteOrderMark($line);
+                // Transcode the physical line to UTF-8. ANSEL and Windows-1252 both preserve
+                // 0x00-0x7F, so the structural framing is untouched and only value bytes
+                // change; ASCII/UTF-8 pass through (a UTF-8 BOM was consumed by
+                // resolveEncoding()).
+                if ($this->encoding === self::ENCODING_ANSEL) {
+                    $line = AnselDecoder::decode($line);
+                } elseif ($this->encoding === self::ENCODING_CP1252) {
+                    $decoded = mb_convert_encoding($line, 'UTF-8', self::ENCODING_CP1252);
+                    $line    = $decoded !== false ? $decoded : $line;
                 }
             }
 
@@ -291,17 +351,269 @@ class Reader
                 $this->bufferOffset = 0;
             }
 
-            $chunk = $this->stream->read(self::CHUNK_SIZE);
+            $this->pullChunk();
+        }
+    }
 
-            if ($chunk !== '') {
-                $this->buffer .= $chunk;
-            } elseif ($this->stream->eof()) {
-                // Per PSR-7 an empty read means "no bytes available", which is end of stream
-                // only once eof() confirms it; a non-blocking or slow stream may momentarily
-                // yield nothing, so the read is retried rather than treated as EOF.
+    /**
+     * Reads one chunk from the stream into the buffer. Per PSR-7 an empty read means "no
+     * bytes available", which is end of stream only once eof() confirms it; a non-blocking or
+     * slow stream may momentarily yield nothing, so the caller retries rather than treating an
+     * empty read as EOF.
+     *
+     * @return void
+     */
+    private function pullChunk(): void
+    {
+        $chunk = $this->stream->read(self::CHUNK_SIZE);
+
+        if ($chunk === '') {
+            if ($this->stream->eof()) {
                 $this->eofReached = true;
             }
+
+            // A leftover $rawPending here can only be an incomplete UTF-16 tail (a lone byte
+            // or an unpaired high surrogate) from a truncated stream; it is dropped rather
+            // than emitted as a replacement character.
+            return;
         }
+
+        // UTF-16 is transcoded to UTF-8 before it enters the buffer, so the terminator scan
+        // and every downstream step operate on single-byte UTF-8.
+        if (($this->encoding === self::ENCODING_UTF16LE) || ($this->encoding === self::ENCODING_UTF16BE)) {
+            $this->rawPending .= $chunk;
+            $this->buffer .= $this->drainUtf16();
+
+            return;
+        }
+
+        $this->buffer .= $chunk;
+    }
+
+    /**
+     * Determines the source encoding from a leading BOM or the HEAD.CHAR declaration and
+     * consumes a UTF-8 BOM. Runs once, before the first line is served.
+     *
+     * @return void
+     */
+    private function resolveEncoding(): void
+    {
+        // Prime enough bytes to test for a BOM.
+        while (((strlen($this->buffer) - $this->bufferOffset) < 3) && !$this->eofReached) {
+            $this->pullChunk();
+        }
+
+        $head = substr($this->buffer, $this->bufferOffset);
+
+        // Consume a leading UTF-8 BOM once; there is no per-line BOM handling downstream.
+        if (strncmp($head, "\xEF\xBB\xBF", 3) === 0) {
+            $this->bufferOffset += 3;
+            $this->encoding = self::ENCODING_UTF8;
+
+            return;
+        }
+
+        // UTF-16 by BOM, then the BOM-less null-interleaving heuristic (5.5.1 does not mandate
+        // a BOM). The structural framing byte '0' is 0x30 0x00 (LE) / 0x00 0x30 (BE).
+        if (strncmp($head, "\xFF\xFE", 2) === 0) {
+            $this->beginUtf16(self::ENCODING_UTF16LE, 2);
+
+            return;
+        }
+
+        if (strncmp($head, "\xFE\xFF", 2) === 0) {
+            $this->beginUtf16(self::ENCODING_UTF16BE, 2);
+
+            return;
+        }
+
+        // BOM-less UTF-16: the structural '0'/'1' level byte is ASCII, so one half of the first
+        // code unit is a null. The shared length guard avoids an offset warning on a single-byte
+        // stream; which half is null decides the endianness.
+        if (strlen($head) >= 2) {
+            if (($head[0] === "\x00") && ($head[1] !== "\x00")) {
+                $this->beginUtf16(self::ENCODING_UTF16BE, 0);
+
+                return;
+            }
+
+            if (($head[1] === "\x00") && ($head[0] !== "\x00")) {
+                $this->beginUtf16(self::ENCODING_UTF16LE, 0);
+
+                return;
+            }
+        }
+
+        // A single-byte, ASCII-structured stream (ANSEL/ASCII/UTF-8): sniff the required CHAR
+        // field on the raw bytes (the level/tag framing is 0x00-0x7F under every candidate),
+        // defaulting to ANSEL (the 5.5.1 default) when it is absent.
+        $this->encoding = $this->sniffCharacterSet();
+    }
+
+    /**
+     * Switches to UTF-16 decoding: consumes the byte-order mark and moves the bytes already
+     * buffered while sniffing into the transcode pipe.
+     *
+     * @param string $encoding  the resolved UTF-16 endianness constant
+     * @param int    $bomLength the number of BOM bytes to drop (0 when detected without a BOM)
+     *
+     * @return void
+     */
+    private function beginUtf16(string $encoding, int $bomLength): void
+    {
+        $this->encoding     = $encoding;
+        $this->rawPending   = substr($this->buffer, $this->bufferOffset + $bomLength);
+        $this->buffer       = $this->drainUtf16();
+        $this->bufferOffset = 0;
+    }
+
+    /**
+     * Transcodes the complete-scalar prefix of the pending UTF-16 bytes to UTF-8, holding back
+     * a trailing partial code unit or a lone high surrogate so a character split across a
+     * chunk boundary is completed by the next read.
+     *
+     * @return string the transcoded UTF-8 bytes
+     */
+    private function drainUtf16(): string
+    {
+        $length = strlen($this->rawPending);
+        $take   = $length - ($length % 2);
+
+        if (($take >= 2) && $this->isHighSurrogate(substr($this->rawPending, $take - 2, 2))) {
+            $take -= 2;
+        }
+
+        if ($take === 0) {
+            return '';
+        }
+
+        $complete         = substr($this->rawPending, 0, $take);
+        $this->rawPending = substr($this->rawPending, $take);
+
+        $result = mb_convert_encoding($complete, 'UTF-8', (string) $this->encoding);
+
+        return $result !== false ? $result : '';
+    }
+
+    /**
+     * Whether the given two-byte UTF-16 code unit (in the current endianness) is a high
+     * surrogate, i.e. the first half of an astral-character surrogate pair.
+     *
+     * @param string $unit the two raw bytes of one UTF-16 code unit
+     *
+     * @return bool
+     */
+    private function isHighSurrogate(string $unit): bool
+    {
+        $codeUnit = $this->encoding === self::ENCODING_UTF16LE
+            ? (ord($unit[0]) | (ord($unit[1]) << 8))
+            : ((ord($unit[0]) << 8) | ord($unit[1]));
+
+        return ($codeUnit >= 0xD800) && ($codeUnit <= 0xDBFF);
+    }
+
+    /**
+     * Scans the buffered header for the HEAD.CHAR declaration and maps it to a source
+     * encoding, reading further chunks up to CHAR_SNIFF_LIMIT bytes. Does not consume the
+     * buffer — the header is still tokenised normally afterwards.
+     *
+     * @return string the resolved ENCODING_* constant; ANSEL when no CHAR line is found
+     */
+    private function sniffCharacterSet(): string
+    {
+        while (true) {
+            $head    = substr($this->buffer, $this->bufferOffset, self::CHAR_SNIFF_LIMIT);
+            $matches = [];
+
+            // Capture the whole CHAR value, not just the first token — real exports write
+            // multi-word values such as "IBM WINDOWS". Anchor on any of the four GEDCOM
+            // terminators (CR, LF, CRLF, LFCR); the /m flag would only recognise LF, so a
+            // CR-only file's CHAR line would be missed. Require a trailing terminator so a
+            // value split across a chunk boundary is not accepted while still truncated.
+            if (preg_match('/' . self::CHAR_LINE_PATTERN . '[\r\n]/i', $head, $matches) === 1) {
+                return self::normaliseEncoding(trim($matches[1]));
+            }
+
+            if ($this->eofReached) {
+                // At the true end of the stream the CHAR value may legitimately be the last,
+                // unterminated line — accept it without a trailing terminator.
+                if (preg_match('/' . self::CHAR_LINE_PATTERN . '/i', $head, $matches) === 1) {
+                    return self::normaliseEncoding(trim($matches[1]));
+                }
+
+                return self::ENCODING_ANSEL;
+            }
+
+            if ((strlen($this->buffer) - $this->bufferOffset) >= self::CHAR_SNIFF_LIMIT) {
+                // Buffered the full sniff window without a terminated CHAR line. The EOF flag
+                // lags a read behind the buffer, so a stream that ends exactly on the cap has
+                // not set it yet. Pull exactly once — never in a loop, so a non-blocking stream
+                // that never signals EOF cannot spin the sniff — then settle the outcome.
+                $bufferedBytes = strlen($this->buffer);
+                $this->pullChunk();
+
+                if (strlen($this->buffer) > $bufferedBytes) {
+                    // Further bytes arrived: the CHAR value overruns the sniff window. Give up
+                    // rather than accept a value that may still be truncated.
+                    return self::ENCODING_ANSEL;
+                }
+
+                if ($this->eofReached) {
+                    // The stream ended exactly on the cap; re-enter so the EOF branch resolves
+                    // a complete, unterminated final CHAR line.
+                    continue;
+                }
+
+                // Neither grew nor reached EOF (a non-blocking stream momentarily without
+                // data): keep the sniff bounded by the cap and fall back to the default.
+                return self::ENCODING_ANSEL;
+            }
+
+            $this->pullChunk();
+        }
+    }
+
+    /**
+     * Maps a HEAD.CHAR value to a source encoding constant.
+     *
+     * @param string $characterSet the raw CHAR value
+     *
+     * @return string the matching ENCODING_* constant
+     */
+    private static function normaliseEncoding(string $characterSet): string
+    {
+        $normalised = strtoupper($characterSet);
+
+        switch ($normalised) {
+            case 'UTF-8':
+            case 'UTF8':
+                return self::ENCODING_UTF8;
+
+            case 'ASCII':
+                return self::ENCODING_ASCII;
+
+            case 'ANSEL':
+                return self::ENCODING_ANSEL;
+
+            case 'UNICODE':
+                // A byte-framed stream that declares UNICODE (UTF-16) has no BOM and did not
+                // trigger the null heuristic, so it is undetectable/contradictory — reject it
+                // rather than silently mis-parsing.
+                throw new UnsupportedEncodingException($characterSet);
+        }
+
+        // Not 5.5.1 charsets, but common in real Windows exports (ANSI, WINDOWS-1252, and
+        // multi-word values like "IBM WINDOWS"): decode as Windows-1252 rather than silently
+        // mangling their high bytes as the ANSEL default.
+        if (($normalised === 'ANSI')
+            || ($normalised === 'CP1252')
+            || (strpos($normalised, 'WINDOWS') !== false)
+        ) {
+            return self::ENCODING_CP1252;
+        }
+
+        // Any other unrecognised value falls back to the 5.5.1 default character set.
+        return self::ENCODING_ANSEL;
     }
 
     /**
@@ -339,22 +651,6 @@ class Reader
         }
 
         return $index + 1;
-    }
-
-    /**
-     * Removes a leading UTF-8 byte-order mark from the given line, if present.
-     *
-     * @param string $line the raw line as read from the stream
-     *
-     * @return string the line without a leading UTF-8 BOM
-     */
-    private function stripByteOrderMark(string $line): string
-    {
-        if (substr($line, 0, 3) === "\xEF\xBB\xBF") {
-            return substr($line, 3);
-        }
-
-        return $line;
     }
 
     /**

@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Exception\StreamException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,9 +30,8 @@ class ReaderTest extends TestCase
 {
     /**
      * Opening a missing file raises a domain StreamException.
-     *
-     * @test
      */
+    #[Test]
     public function openFileNotFound(): void
     {
         $this->expectException(StreamException::class);
@@ -42,9 +42,8 @@ class ReaderTest extends TestCase
 
     /**
      * A non-.ged file is rejected with a domain UnsupportedFileException.
-     *
-     * @test
      */
+    #[Test]
     public function openWithInvalidFilename(): void
     {
         $this->expectException(UnsupportedFileException::class);
@@ -57,9 +56,8 @@ class ReaderTest extends TestCase
      * Failures from different subsystems — a non-.ged file and a missing file — are both
      * catchable through the single ExceptionInterface group, even though they extend
      * different SPL base classes.
-     *
-     * @test
      */
+    #[Test]
     public function failuresAcrossSubsystemsShareExceptionInterface(): void
     {
         $cases = [
@@ -79,8 +77,9 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @test
+     * Constructing a reader over a valid .ged fixture yields a Reader instance.
      */
+    #[Test]
     public function open(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
@@ -90,8 +89,9 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @test
+     * back() rewinds the cursor so the next read re-serves the previously read line.
      */
+    #[Test]
     public function back(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
@@ -114,9 +114,8 @@ class ReaderTest extends TestCase
 
     /**
      * A level-0 INDI record's cross-reference identifier round-trips back into its line.
-     *
-     * @test
      */
+    #[Test]
     public function identifierRoundTripsIntoIndiRecordLine(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
@@ -136,8 +135,9 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @test
+     * level() reports the GEDCOM level of the current line for records and nested substructures.
      */
+    #[Test]
     public function level(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
@@ -168,8 +168,9 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @test
+     * tag() reports the tag name of the current line as it advances through the record.
      */
+    #[Test]
     public function tag(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');

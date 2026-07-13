@@ -17,6 +17,8 @@ use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function count;
@@ -33,18 +35,16 @@ use function str_replace;
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
- *
- * @covers \MagicSunday\Gedcom\Reader
  */
+#[CoversClass(Reader::class)]
 class ReaderReadPathTest extends TestCase
 {
     /**
      * All four GEDCOM 5.5.1 line terminators (CR, LF, CRLF, LFCR) must parse a fixture into
      * the identical, non-empty individual count. Today a CR-only file yields zero records
      * because the reader splits on LF only.
-     *
-     * @test
      */
+    #[Test]
     public function parsesAllLineEndingsIdentically(): void
     {
         $baseline = $this->countIndividuals(__DIR__ . '/files/LTERLF.ged');
@@ -64,9 +64,8 @@ class ReaderReadPathTest extends TestCase
      * A non-file STDIO stream whose metadata URI IS a string (php://stdin, php://fd/N — the
      * canonical piped input) must not be rejected either: the .ged guard applies only to a
      * real on-disk file (wrapper_type "plainfile"), not to a php:// wrapper.
-     *
-     * @test
      */
+    #[Test]
     public function acceptsNonFileStreamWithStringUri(): void
     {
         $resource = fopen('php://stdin', 'r');
@@ -85,9 +84,8 @@ class ReaderReadPathTest extends TestCase
      * A non-seekable readable stream must parse its records; before the refactor the reader
      * bailed out of read() on the first call because the stream was not seekable, silently
      * yielding an empty document.
-     *
-     * @test
      */
+    #[Test]
     public function parsesNonSeekableStream(): void
     {
         // A resource positioned at the start whose wrapping stream reports itself as
@@ -117,9 +115,8 @@ class ReaderReadPathTest extends TestCase
      * A terminator pair split across a read-chunk boundary must not produce a phantom blank
      * line. Reading one byte at a time forces every CRLF/LFCR pair to straddle a boundary;
      * the parsed record count must still match the LF baseline.
-     *
-     * @test
      */
+    #[Test]
     public function parsesLineEndingSplitAcrossChunkBoundary(): void
     {
         $records  = "0 @I1@ INDI\n1 NAME John /Smith/\n0 @I2@ INDI\n1 NAME Jane /Doe/\n0 TRLR\n";
@@ -140,9 +137,8 @@ class ReaderReadPathTest extends TestCase
 
     /**
      * back() re-reads the previous line without advancing the line count for the re-read.
-     *
-     * @test
      */
+    #[Test]
     public function backReReadsThePreviousLine(): void
     {
         $stream = (new StreamFactory())->createStream("0 HEAD\n1 SOUR X\n0 TRLR\n");
@@ -165,9 +161,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * A line can be put back at most once: a second back() without an intervening read is a
      * no-op, so the single push-back slot cannot be overwritten.
-     *
-     * @test
      */
+    #[Test]
     public function backTwiceWithoutReadIsNoOp(): void
     {
         $stream = (new StreamFactory())->createStream("0 HEAD\n1 SOUR X\n0 TRLR\n");
@@ -183,9 +178,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * count() reports the number of real lines read, not the end-of-stream sentinel: draining
      * a two-line document leaves the count at 2, not 3.
-     *
-     * @test
      */
+    #[Test]
     public function countReportsRealLinesNotTheEndOfStream(): void
     {
         $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
@@ -204,9 +198,8 @@ class ReaderReadPathTest extends TestCase
      * A read that momentarily yields no bytes while the stream is not yet at its end (a
      * non-blocking or slow stream, per the PSR-7 read() contract) is retried, not treated as
      * end of stream — otherwise the records that follow would be silently dropped.
-     *
-     * @test
      */
+    #[Test]
     public function retriesReadWhenNoBytesAreMomentarilyAvailable(): void
     {
         $stream = new class("0 @I1@ INDI\n0 TRLR\n") extends Stream {
@@ -238,9 +231,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * back() is a no-op once the stream is exhausted: the end-of-stream empty line cannot be
      * put back, and a following read() still reports end of stream.
-     *
-     * @test
      */
+    #[Test]
     public function backAtEndOfStreamIsNoOp(): void
     {
         $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
@@ -259,9 +251,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * back() before any read is a no-op: it returns false and does not terminate the reader
      * (the first line is still served on the next read).
-     *
-     * @test
      */
+    #[Test]
     public function backBeforeAnyReadIsNoOp(): void
     {
         $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
@@ -278,9 +269,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * A document whose final line carries no terminator parses the same as the terminated
      * form, exercising the end-of-stream drain of the trailing partial line.
-     *
-     * @test
      */
+    #[Test]
     public function parsesFinalLineWithoutTrailingTerminator(): void
     {
         // The final line is a meaningful record, so an EOF drain that dropped it would lower
@@ -296,9 +286,8 @@ class ReaderReadPathTest extends TestCase
      * A single physical line exceeding the maximum length (no terminator on a hostile or
      * malformed stream) must be rejected instead of materialising the whole stream in
      * memory.
-     *
-     * @test
      */
+    #[Test]
     public function throwsOnLineExceedingMaxLength(): void
     {
         // A structurally valid, terminator-less line whose value is far larger than any
@@ -325,9 +314,8 @@ class ReaderReadPathTest extends TestCase
     /**
      * An oversized line is rejected even when it DOES carry a terminator that happens to
      * arrive in the same chunk that pushes the buffer past the bound.
-     *
-     * @test
      */
+    #[Test]
     public function throwsOnTerminatedLineExceedingMaxLength(): void
     {
         $content = '0 NOTE ' . str_repeat('A', Reader::MAX_LINE_LENGTH + 1024) . "\n0 TRLR\n";

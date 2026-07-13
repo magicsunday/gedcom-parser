@@ -14,6 +14,8 @@ namespace MagicSunday\Gedcom\Test;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,18 +24,17 @@ use PHPUnit\Framework\TestCase;
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
- *
- * @covers \MagicSunday\Gedcom\Reader
- * @covers \MagicSunday\Gedcom\Exception\UnableToParseLineException
  */
+#[CoversClass(Reader::class)]
+#[CoversClass(UnableToParseLineException::class)]
 class ReaderConformanceTest extends TestCase
 {
     /**
      * Creates a rewound reader over the given raw GEDCOM string.
      *
-     * @param string $gedcom The raw GEDCOM document to wrap.
+     * @param string $gedcom the raw GEDCOM document to wrap
      *
-     * @return Reader A reader positioned at the start of the given document.
+     * @return Reader a reader positioned at the start of the given document
      */
     private function reader(string $gedcom): Reader
     {
@@ -45,9 +46,8 @@ class ReaderConformanceTest extends TestCase
 
     /**
      * A level number may be one or two digits (0-99); a two-digit level must parse.
-     *
-     * @test
      */
+    #[Test]
     public function readsTwoDigitLevel(): void
     {
         $reader = $this->reader("0 @I1@ INDI\n1 BIRT\n10 NOTE deep\n");
@@ -64,9 +64,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A level number must not contain a leading zero (0-99, "not 01"); such a line is
      * rejected with a specific exception carrying the offending line and its number.
-     *
-     * @test
      */
+    #[Test]
     public function rejectsLeadingZeroLevel(): void
     {
         try {
@@ -82,9 +81,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A tag may only contain the characters A-Z, a-z, 0-9 and underscore; a tag holding
      * any other character (here a dot) is not a valid GEDCOM tag and the line is rejected.
-     *
-     * @test
      */
+    #[Test]
     public function rejectsInvalidTagCharacter(): void
     {
         try {
@@ -98,9 +96,8 @@ class ReaderConformanceTest extends TestCase
 
     /**
      * A leading UTF-8 byte-order mark on the first line is removed so the line still parses.
-     *
-     * @test
      */
+    #[Test]
     public function stripsLeadingUtf8Bom(): void
     {
         $reader = $this->reader("\xEF\xBB\xBF0 HEAD\n");
@@ -115,13 +112,14 @@ class ReaderConformanceTest extends TestCase
      * Bytes inside a value that happen to be part of the BOM byte sequence (here the
      * trailing 0xBB of "»") must survive; the BOM is only stripped as a leading prefix,
      * never trimmed from the end of every line.
-     *
-     * @test
      */
+    #[Test]
     public function preservesTrailingBytesThatCollideWithTheBomMask(): void
     {
-        // Final line without a trailing newline whose value ends in » (0xC2 0xBB).
-        $reader = $this->reader("1 NOTE ab\xC2\xBB");
+        // A leading UTF-8 BOM selects UTF-8 (pass-through); the value ends in » (0xC2 0xBB),
+        // whose trailing 0xBB collides with the BOM mask but must survive — the BOM is only
+        // consumed as a leading prefix, never trimmed from a value.
+        $reader = $this->reader("\xEF\xBB\xBF1 NOTE ab\xC2\xBB");
 
         $reader->read();
 
@@ -131,9 +129,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A line without a cross-reference identifier reports NULL, consistent with xref()
      * and value() and honouring the nullable return type.
-     *
-     * @test
      */
+    #[Test]
     public function identifierReturnsNullWhenAbsent(): void
     {
         $reader = $this->reader("1 NAME John\n");
@@ -146,9 +143,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A blank line following a record must not leak the previous line's identifier,
      * cross-reference or value into the accessors.
-     *
-     * @test
      */
+    #[Test]
     public function doesNotLeakIdentifierAcrossBlankLine(): void
     {
         $reader = $this->reader("0 @I1@ INDI\n   \n");
@@ -168,9 +164,8 @@ class ReaderConformanceTest extends TestCase
      * A DATE value carrying a calendar escape (@#DJULIAN@ …) is kept verbatim in the
      * value; the escape is text, not a cross-reference pointer, so the calendar is
      * never torn off and silently reinterpreted as Gregorian.
-     *
-     * @test
      */
+    #[Test]
     public function keepsCalendarEscapeInDateValue(): void
     {
         $reader = $this->reader("2 DATE @#DJULIAN@ 14 FEB 1732\n");
@@ -184,9 +179,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A value that is exactly a cross-reference pointer (first character alphanumeric)
      * is exposed as the xref, not as a text value.
-     *
-     * @test
      */
+    #[Test]
     public function parsesWholeValuePointer(): void
     {
         $reader = $this->reader("1 FAMS @F1@\n");
@@ -200,9 +194,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A literal at-sign inside a value is written doubled (@@) per the grammar and must
      * be decoded back to a single @.
-     *
-     * @test
      */
+    #[Test]
     public function decodesDoubledAtInValue(): void
     {
         $reader = $this->reader("1 EMAIL john@@example.com\n");
@@ -215,9 +208,8 @@ class ReaderConformanceTest extends TestCase
     /**
      * A value that legitimately begins with an at-sign is encoded @@… and decodes to a
      * single leading @ (it is not mistaken for a pointer).
-     *
-     * @test
      */
+    #[Test]
     public function decodesLeadingDoubledAt(): void
     {
         $reader = $this->reader("1 NOTE @@start\n");
