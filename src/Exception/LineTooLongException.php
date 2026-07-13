@@ -36,13 +36,6 @@ final class LineTooLongException extends RuntimeException implements ExceptionIn
     private int $lineNumber;
 
     /**
-     * The maximum number of bytes a single physical line may occupy.
-     *
-     * @var int
-     */
-    private int $maxLength;
-
-    /**
      * @param int            $lineNumber the 1-based number of the offending line
      * @param int            $maxLength  the maximum permitted line length in bytes
      * @param Throwable|null $previous   the underlying cause, if any
@@ -50,7 +43,6 @@ final class LineTooLongException extends RuntimeException implements ExceptionIn
     public function __construct(int $lineNumber, int $maxLength, ?Throwable $previous = null)
     {
         $this->lineNumber = $lineNumber;
-        $this->maxLength  = $maxLength;
 
         parent::__construct(
             sprintf(
@@ -71,15 +63,5 @@ final class LineTooLongException extends RuntimeException implements ExceptionIn
     public function getLineNumber(): int
     {
         return $this->lineNumber;
-    }
-
-    /**
-     * Returns the maximum permitted line length in bytes.
-     *
-     * @return int the configured maximum line length
-     */
-    public function getMaxLength(): int
-    {
-        return $this->maxLength;
     }
 }

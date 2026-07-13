@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Test;
 
 use MagicSunday\Gedcom\Exception\LineTooLongException;
+use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
@@ -22,6 +23,7 @@ use function count;
 use function escapeshellarg;
 use function popen;
 use function str_repeat;
+use function str_replace;
 
 /**
  * Tests the low-level read path: line-terminator handling (#11), non-seekable streams (#12)
@@ -68,11 +70,33 @@ class ReaderReadPathTest extends TestCase
         $stream = new Stream($this->openPipe(__DIR__ . '/files/simple.ged'));
         $reader = new Reader($stream);
 
-        self::assertInstanceOf(Reader::class, $reader);
+        $lines = 0;
 
-        // Drain the pipe so the feeding process finishes cleanly (no SIGPIPE noise).
         while ($reader->read()) {
-            // Intentionally empty.
+            ++$lines;
+        }
+
+        self::assertGreaterThan(0, $lines, 'A non-file pipe without a .ged URI must still yield lines.');
+    }
+
+    /**
+     * A non-file STDIO stream whose metadata URI IS a string (php://stdin, php://fd/N — the
+     * canonical piped input) must not be rejected either: the .ged guard applies only to a
+     * real on-disk file (wrapper_type "plainfile"), not to a php:// wrapper.
+     *
+     * @test
+     */
+    public function acceptsNonFileStreamWithStringUri(): void
+    {
+        $resource = fopen('php://stdin', 'r');
+
+        self::assertIsResource($resource);
+
+        try {
+            // Constructing the reader only inspects stream metadata; it does not read stdin.
+            new Reader(new Stream($resource));
+        } catch (UnsupportedFileException $exception) {
+            self::fail('A php:// stream URI must not be rejected by the .ged guard: ' . $exception->getMessage());
         }
     }
 
@@ -148,6 +172,40 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
+     * back() before any read is a no-op: it returns false and does not terminate the reader
+     * (the first line is still served on the next read).
+     *
+     * @test
+     */
+    public function backBeforeAnyReadIsNoOp(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+
+        self::assertFalse($reader->back(), 'back() before any read must be a no-op.');
+        self::assertTrue($reader->read(), 'The first line must still be readable after a leading back().');
+        self::assertSame(1, $reader->count());
+        self::assertSame('HEAD', $reader->tag());
+    }
+
+    /**
+     * A document whose final line carries no terminator parses the same as the terminated
+     * form, exercising the end-of-stream drain of the trailing partial line.
+     *
+     * @test
+     */
+    public function parsesFinalLineWithoutTrailingTerminator(): void
+    {
+        $terminated   = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n1 NAME John /Smith/\n0 TRLR\n"));
+        $unterminated = $this->countIndividualsFromStream($this->oneByteStream("0 @I1@ INDI\n1 NAME John /Smith/\n0 TRLR"));
+
+        self::assertSame(1, $terminated);
+        self::assertSame($terminated, $unterminated, 'A missing final terminator must not change the parse.');
+    }
+
+    /**
      * A single physical line exceeding the maximum length (no terminator on a hostile or
      * malformed stream) must be rejected instead of materialising the whole stream in
      * memory.
@@ -173,7 +231,29 @@ class ReaderReadPathTest extends TestCase
             self::fail('Expected ' . LineTooLongException::class . ' was not thrown.');
         } catch (LineTooLongException $exception) {
             self::assertSame(1, $exception->getLineNumber());
-            self::assertSame(Reader::MAX_LINE_LENGTH, $exception->getMaxLength());
+            self::assertStringContainsString((string) Reader::MAX_LINE_LENGTH, $exception->getMessage());
+        }
+    }
+
+    /**
+     * An oversized line is rejected even when it DOES carry a terminator that happens to
+     * arrive in the same chunk that pushes the buffer past the bound.
+     *
+     * @test
+     */
+    public function throwsOnTerminatedLineExceedingMaxLength(): void
+    {
+        $content = '0 NOTE ' . str_repeat('A', Reader::MAX_LINE_LENGTH + 1024) . "\n0 TRLR\n";
+
+        $stream = (new StreamFactory())->createStream($content);
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+
+        $this->expectException(LineTooLongException::class);
+
+        while ($reader->read()) {
+            // The terminated but oversized first line must still throw.
         }
     }
 

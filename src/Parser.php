@@ -40,11 +40,9 @@ class Parser extends AbstractParser
      * @param StreamInterface      $stream
      * @param LoggerInterface|null $logger
      */
-    public function __construct(
-        StreamInterface $stream,
-        ?LoggerInterface $logger = null,
-    ) {
-        $this->logger = $logger ?: new NullLogger();
+    public function __construct(StreamInterface $stream, ?LoggerInterface $logger = null)
+    {
+        $this->logger = $logger ?? new NullLogger();
 
         parent::__construct(new Reader($stream), $this->logger);
     }

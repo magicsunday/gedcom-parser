@@ -16,7 +16,6 @@ use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use Psr\Http\Message\StreamInterface;
 
-use function array_pop;
 use function is_string;
 use function preg_match;
 use function str_replace;
@@ -93,11 +92,28 @@ class Reader
     private string $buffer = '';
 
     /**
-     * Whole lines pushed back by back(), served again before any further stream read (LIFO).
+     * Offset of the first unconsumed byte in the buffer. Consumed bytes are dropped once per
+     * stream read rather than re-sliced on every line, keeping the read path linear.
      *
-     * @var array<int, string>
+     * @var int
      */
-    private array $pushback = [];
+    private int $bufferOffset = 0;
+
+    /**
+     * A line put back by back(), served again by the next read() before any further stream
+     * read. Only a single line can be pending, enforced by the canGoBack flag.
+     *
+     * @var string|null
+     */
+    private ?string $pushback = null;
+
+    /**
+     * Whether the last read line may still be put back. A line can be put back at most once,
+     * and only after it has actually been read.
+     *
+     * @var bool
+     */
+    private bool $canGoBack = false;
 
     /**
      * Whether the underlying stream has been read to its end.
@@ -147,11 +163,12 @@ class Reader
     {
         $this->stream = $stream;
 
-        // The .ged extension is only meaningful for an actual on-disk file. A non-file STDIO
-        // stream (a pipe, a network body) reports a null URI and must not be rejected here.
+        // The .ged extension is only meaningful for an actual on-disk file (wrapper_type
+        // "plainfile"). Every php:// wrapper (stdin, memory, fd) and anonymous pipe carries a
+        // non-file wrapper and must be accepted so non-seekable input can be parsed.
         $uri = $stream->getMetadata('uri');
 
-        if (($stream->getMetadata('stream_type') === 'STDIO')
+        if (($stream->getMetadata('wrapper_type') === 'plainfile')
             && is_string($uri)
             && (strtoupper(substr($uri, -3)) !== 'GED')
         ) {
@@ -174,10 +191,11 @@ class Reader
 
         // TODO Use correct GEDCOM char encoding for reading the file
 
-        if ($this->pushback !== []) {
+        if ($this->pushback !== null) {
             // A line put back by back() is served again without touching the stream and
             // without advancing the line count.
-            $this->lastLine = array_pop($this->pushback);
+            $this->lastLine = $this->pushback;
+            $this->pushback = null;
         } else {
             $line = $this->nextLine();
 
@@ -190,6 +208,10 @@ class Reader
 
             $this->lastLine = $line;
         }
+
+        // A real line just became current and may be put back exactly once; the end-of-stream
+        // empty line cannot.
+        $this->canGoBack = $this->lastLine !== '';
 
         if ($this->valid()) {
             $matches = [];
@@ -235,22 +257,34 @@ class Reader
             $end = $this->locateTerminatorEnd();
 
             if ($end !== null) {
-                $line         = substr($this->buffer, 0, $end);
-                $this->buffer = substr($this->buffer, $end);
+                if (($end - $this->bufferOffset) > self::MAX_LINE_LENGTH) {
+                    throw new LineTooLongException($this->lineCount + 1, self::MAX_LINE_LENGTH);
+                }
+
+                $line               = substr($this->buffer, $this->bufferOffset, $end - $this->bufferOffset);
+                $this->bufferOffset = $end;
 
                 return $line;
             }
 
             if ($this->eofReached) {
                 // No terminator remains; return whatever is left as the final line.
-                $line         = $this->buffer;
-                $this->buffer = '';
+                $line               = substr($this->buffer, $this->bufferOffset);
+                $this->buffer       = '';
+                $this->bufferOffset = 0;
 
                 return $line;
             }
 
-            if (strlen($this->buffer) > self::MAX_LINE_LENGTH) {
+            if ((strlen($this->buffer) - $this->bufferOffset) > self::MAX_LINE_LENGTH) {
                 throw new LineTooLongException($this->lineCount + 1, self::MAX_LINE_LENGTH);
+            }
+
+            // Drop already-consumed bytes once per stream read instead of re-slicing the
+            // buffer on every line.
+            if ($this->bufferOffset > 0) {
+                $this->buffer       = substr($this->buffer, $this->bufferOffset);
+                $this->bufferOffset = 0;
             }
 
             $chunk = $this->stream->read(self::CHUNK_SIZE);
@@ -264,26 +298,27 @@ class Reader
     }
 
     /**
-     * Locates the end offset (length to cut) of the terminator of the first line in the
-     * buffer. A two-byte terminator (CRLF or LFCR) always wins over a single CR/LF at the
-     * same position. A terminator byte at the very end of the buffer is undecidable while
+     * Locates the absolute end offset (one past the terminator) of the first unconsumed line
+     * in the buffer. A two-byte terminator (CRLF or LFCR) always wins over a single CR/LF at
+     * the same position. A terminator byte at the very end of the buffer is undecidable while
      * more data may follow, so the caller must read another chunk first.
      *
-     * @return int|null the number of leading bytes forming the line and its terminator, or
-     *                  NULL when no complete, decidable terminator is present yet
+     * @return int|null the absolute buffer offset one past the line's terminator, or NULL when
+     *                  no complete, decidable terminator is present yet
      */
     private function locateTerminatorEnd(): ?int
     {
-        $index = strcspn($this->buffer, "\r\n");
+        $length = strlen($this->buffer);
+        $index  = $this->bufferOffset + strcspn($this->buffer, "\r\n", $this->bufferOffset);
 
-        if ($index === strlen($this->buffer)) {
-            // The buffer holds no terminator byte at all.
+        if ($index === $length) {
+            // The unconsumed buffer holds no terminator byte at all.
             return null;
         }
 
         // A terminator byte at the very end may be the first half of a CRLF/LFCR pair whose
         // partner is still in the next chunk; wait for more data unless the stream is done.
-        if (($index === (strlen($this->buffer) - 1)) && !$this->eofReached) {
+        if (($index === ($length - 1)) && !$this->eofReached) {
             return null;
         }
 
@@ -347,13 +382,20 @@ class Reader
 
     /**
      * Puts the last read line back so the next read() serves it again. This replaces the
-     * former seek-based rewind and therefore works on non-seekable streams too.
+     * former seek-based rewind and therefore works on non-seekable streams too. It is a no-op
+     * (returning FALSE) before the first read, at the end of the stream, or when called twice
+     * without an intervening read.
      *
      * @return bool Returns TRUE on success or FALSE on failure
      */
     public function back(): bool
     {
-        $this->pushback[] = $this->lastLine;
+        if (!$this->canGoBack) {
+            return false;
+        }
+
+        $this->pushback  = $this->lastLine;
+        $this->canGoBack = false;
 
         return true;
     }
