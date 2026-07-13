@@ -46,9 +46,9 @@ foreach ($gedcom->getIndividual() as $individual) {
 
 You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
 
-A malformed GEDCOM line raises `MagicSunday\Gedcom\Exception\UnableToParseLineException`,
-which implements `MagicSunday\Gedcom\Exception\ExceptionInterface`. (Stream and file
-errors currently surface as standard SPL exceptions.)
+Every exception the library throws implements
+`MagicSunday\Gedcom\Exception\ExceptionInterface`, so all parser and stream failures can
+be caught as a single group.
 
 
 ## Development

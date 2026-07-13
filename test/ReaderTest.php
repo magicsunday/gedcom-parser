@@ -11,11 +11,12 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
-use InvalidArgumentException;
+use MagicSunday\Gedcom\Exception\ExceptionInterface;
+use MagicSunday\Gedcom\Exception\StreamException;
+use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 /**
  * Unit test.
@@ -27,27 +28,54 @@ use RuntimeException;
 class ReaderTest extends TestCase
 {
     /**
+     * Opening a missing file raises a domain StreamException.
+     *
      * @test
      */
     public function openFileNotFound(): void
     {
+        $this->expectException(StreamException::class);
         $this->expectExceptionMessage('The file ' . __DIR__ . '/files/file-note-found.ged cannot be opened.');
-        $this->expectException(RuntimeException::class);
 
-        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/file-note-found.ged');
-        $reader = new Reader($stream);
+        (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/file-note-found.ged');
     }
 
     /**
+     * A non-.ged file is rejected with a domain UnsupportedFileException.
+     *
      * @test
      */
     public function openWithInvalidFilename(): void
     {
+        $this->expectException(UnsupportedFileException::class);
         $this->expectExceptionMessage('Can only read .ged files.');
-        $this->expectException(InvalidArgumentException::class);
 
-        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/not-supported-file.txt');
-        $reader = new Reader($stream);
+        new Reader((new StreamFactory())->createStreamFromFile(__DIR__ . '/files/not-supported-file.txt'));
+    }
+
+    /**
+     * Failures from different subsystems — a non-.ged file and a missing file — are both
+     * catchable through the single ExceptionInterface group, even though they extend
+     * different SPL base classes.
+     *
+     * @test
+     */
+    public function failuresAcrossSubsystemsShareExceptionInterface(): void
+    {
+        $cases = [
+            [__DIR__ . '/files/not-supported-file.txt', UnsupportedFileException::class],
+            [__DIR__ . '/files/file-note-found.ged', StreamException::class],
+        ];
+
+        foreach ($cases as [$file, $expected]) {
+            try {
+                new Reader((new StreamFactory())->createStreamFromFile($file));
+
+                self::fail('Expected an ' . ExceptionInterface::class . ' for ' . $file);
+            } catch (ExceptionInterface $exception) {
+                self::assertInstanceOf($expected, $exception);
+            }
+        }
     }
 
     /**

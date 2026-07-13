@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
-use InvalidArgumentException;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use Psr\Http\Message\StreamInterface;
 
 use function substr;
@@ -115,7 +115,7 @@ class Reader
         if (($stream->getMetadata('stream_type') === 'STDIO')
             && (strtoupper(substr($stream->getMetadata('uri'), -3)) !== 'GED')
         ) {
-            throw new InvalidArgumentException('Can only read .ged files.');
+            throw new UnsupportedFileException('Can only read .ged files.');
         }
     }
 
