@@ -13,7 +13,6 @@ namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
-use Psr\Http\Message\StreamInterface;
 
 use function substr;
 
@@ -53,9 +52,9 @@ class Reader
     /**
      * The stream object.
      *
-     * @var StreamInterface
+     * @var ReadableStreamInterface
      */
-    private StreamInterface $stream;
+    private ReadableStreamInterface $stream;
 
     /**
      * The last line read from input.
@@ -106,9 +105,9 @@ class Reader
     /**
      * Reader constructor.
      *
-     * @param StreamInterface $stream
+     * @param ReadableStreamInterface $stream
      */
-    public function __construct(StreamInterface $stream)
+    public function __construct(ReadableStreamInterface $stream)
     {
         $this->stream = $stream;
 

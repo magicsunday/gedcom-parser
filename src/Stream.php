@@ -13,7 +13,6 @@ namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Exception\InvalidStreamArgumentException;
 use MagicSunday\Gedcom\Exception\StreamException;
-use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 use function is_int;
@@ -28,7 +27,7 @@ use function is_string;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Stream implements StreamInterface
+class Stream implements ReadableStreamInterface
 {
     /**
      * The actual PHP resource.
