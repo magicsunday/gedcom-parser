@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Test;
 
 use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
+use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
@@ -86,8 +87,8 @@ class ReaderEncodingTest extends TestCase
     }
 
     /**
-     * An ASCII document with no CHAR line still parses (default single-byte handling), and a
-     * plain-ASCII value passes through unchanged.
+     * A document declaring CHAR ASCII (simple.ged) parses, and a plain-ASCII value passes
+     * through byte-identical.
      *
      * @test
      */
@@ -99,8 +100,13 @@ class ReaderEncodingTest extends TestCase
         $found = false;
 
         while ($reader->read()) {
-            if ($reader->tag() === 'INDI') {
+            if (($reader->level() === 0) && ($reader->tag() === 'INDI')) {
                 $found = true;
+            }
+
+            // The ASCII CHAR value passes through byte-identical.
+            if ($reader->tag() === 'CHAR') {
+                self::assertSame('ASCII', $reader->value());
             }
         }
 
@@ -139,16 +145,87 @@ class ReaderEncodingTest extends TestCase
 
     /**
      * A UTF-16 document without a byte-order mark is detected by the null-interleaving
-     * heuristic and parsed correctly.
+     * heuristic — for both endiannesses — and parsed correctly.
+     *
+     * @dataProvider utf16EncodingProvider
+     *
+     * @test
+     *
+     * @param string $encoding the mb source encoding
+     */
+    public function parsesUtf16WithoutBomViaNullHeuristic(string $encoding): void
+    {
+        $utf8  = "0 HEAD\n0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
+        $bytes = (string) mb_convert_encoding($utf8, $encoding, 'UTF-8');
+
+        self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function utf16EncodingProvider(): array
+    {
+        return [
+            'little-endian' => ['UTF-16LE'],
+            'big-endian'    => ['UTF-16BE'],
+        ];
+    }
+
+    /**
+     * A UTF-16 stream truncated mid-code-unit (an odd trailing byte held back by the carry)
+     * still parses the complete records and flushes the leftover best-effort at end of stream.
      *
      * @test
      */
-    public function parsesUtf16WithoutBomViaNullHeuristic(): void
+    public function flushesTruncatedUtf16TailAtEndOfStream(): void
     {
-        $utf8  = "0 HEAD\n0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
-        $bytes = (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8');
+        $utf8  = "0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
+        $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8') . "\x41";
 
-        self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
+        $individuals = (new Parser($this->rewoundStream($bytes)))->parse()->getIndividual();
+
+        self::assertCount(1, $individuals);
+    }
+
+    /**
+     * A single-byte stream with NO CHAR declaration defaults to ANSEL (the 5.5.1 default), so
+     * a high byte decodes as ANSEL rather than passing through as raw bytes.
+     *
+     * @test
+     */
+    public function defaultsToAnselWhenCharIsAbsent(): void
+    {
+        // No HEAD.CHAR anywhere; the 0xCF byte is ANSEL "es zet".
+        $stream = $this->rewoundStream("0 @I1@ INDI\n1 NAME \xCF\n0 TRLR\n");
+
+        self::assertSame('ß', $this->firstNameValue($stream));
+    }
+
+    /**
+     * Documented known limitation: an ANSEL combining mark split from its base across a
+     * CONC continuation does not compose, because the reader decodes per physical line while
+     * CONC/CONT concatenation happens later. The correct fix (decode after assembly) is
+     * deferred to the typed-value work (#25/#20).
+     *
+     * @test
+     */
+    public function diacriticSplitAcrossConcIsAKnownLimitation(): void
+    {
+        // ANSEL acute (0xE2) ends the NAME line; its base 'e' is on the CONC continuation.
+        $stream = $this->rewoundStream("0 @I1@ INDI\n1 NAME Ren\xE2\n2 CONC e\n0 TRLR\n");
+        $reader = new Reader($stream);
+
+        $values = [];
+
+        while ($reader->read()) {
+            if (($reader->tag() === 'NAME') || ($reader->tag() === 'CONC')) {
+                $values[] = (string) $reader->value();
+            }
+        }
+
+        // The mark and its base are decoded on separate lines, so they never compose to "é".
+        self::assertStringNotContainsString('é', implode('', $values));
     }
 
     /**
