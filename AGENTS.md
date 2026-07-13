@@ -20,8 +20,10 @@ the machine-readable 7.0 YAML registry).
 * `declare(strict_types=1);` in every file; PSR-12; Rector- and php-cs-fixer-clean.
 * No `mixed`, no `empty()`, no nested ternaries. Prefer `final` classes and value objects.
 * One class per file; the test namespace mirrors the source tree (`MagicSunday\Gedcom\Test\…`).
-* PHPDoc + inline comments in **English**, with capitalised `@param`/`@return`/`@throws`
-  descriptions. Every method and constant gets a real docblock.
+* PHPDoc + inline comments in **English**. Every method and constant gets a real docblock.
+  Note: this repo's php-cs-fixer (`@Symfony` → `phpdoc_annotation_without_dot`) **lowercases**
+  the first word of `@param`/`@return`/`@throws`/`@var` descriptions and drops the trailing
+  dot — follow that (run `composer ci:cgl`); do not "correct" them to capitalised.
 * The parser is in-memory and read-only over a stream; do **not** add network/DB I/O.
 
 **Parser guardrails (conformance-critical)**
