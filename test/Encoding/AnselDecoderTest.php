@@ -12,6 +12,9 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Test\Encoding;
 
 use MagicSunday\Gedcom\Encoding\AnselDecoder;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function chr;
@@ -23,16 +26,14 @@ use function mb_check_encoding;
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
- *
- * @covers \MagicSunday\Gedcom\Encoding\AnselDecoder
  */
+#[CoversClass(AnselDecoder::class)]
 class AnselDecoderTest extends TestCase
 {
     /**
      * ASCII bytes pass through unchanged.
-     *
-     * @test
      */
+    #[Test]
     public function passesAsciiThrough(): void
     {
         self::assertSame('0 @I1@ INDI', AnselDecoder::decode('0 @I1@ INDI'));
@@ -41,13 +42,11 @@ class AnselDecoderTest extends TestCase
     /**
      * Each ANSEL graphic base byte decodes to its Z39.47 Unicode scalar.
      *
-     * @dataProvider baseCharacterProvider
-     *
-     * @test
-     *
      * @param int    $byte     the ANSEL byte
      * @param string $expected the expected UTF-8 character
      */
+    #[DataProvider('baseCharacterProvider')]
+    #[Test]
     public function decodesBaseCharacters(int $byte, string $expected): void
     {
         self::assertSame($expected, AnselDecoder::decode(chr($byte)));
@@ -75,9 +74,8 @@ class AnselDecoderTest extends TestCase
     /**
      * An ANSEL combining diacritic precedes its base; it is reordered after the base and
      * NFC-composed into a precomposed character.
-     *
-     * @test
      */
+    #[Test]
     public function reordersCombiningMarkAfterBaseAndComposes(): void
     {
         // ANSEL: 0xE2 (acute) then 'e' -> Unicode "e" + U+0301 -> NFC "é".
@@ -88,9 +86,8 @@ class AnselDecoderTest extends TestCase
 
     /**
      * Stacked combining marks (different combining classes) both apply to the base.
-     *
-     * @test
      */
+    #[Test]
     public function appliesStackedCombiningMarks(): void
     {
         // 0xE2 (acute, class 230) + 0xF0 (cedilla, class 202) then 'x' (no precomposed form,
@@ -105,9 +102,8 @@ class AnselDecoderTest extends TestCase
 
     /**
      * The MARC-8/ANSEL control region (non-sort delimiters, fill) produces no output.
-     *
-     * @test
      */
+    #[Test]
     public function stripsControlRegion(): void
     {
         self::assertSame('AB', AnselDecoder::decode('A' . chr(0x8D) . chr(0x8E) . 'B'));
@@ -116,9 +112,8 @@ class AnselDecoderTest extends TestCase
     /**
      * An undefined high byte becomes the Unicode replacement character, never a raw byte,
      * so the output is always valid UTF-8.
-     *
-     * @test
      */
+    #[Test]
     public function replacesUndefinedBytesAndStaysValidUtf8(): void
     {
         $decoded = AnselDecoder::decode(chr(0xD0) . chr(0xFF));
@@ -130,9 +125,8 @@ class AnselDecoderTest extends TestCase
     /**
      * A trailing combining mark with no following base is applied to a space so the output
      * stays valid UTF-8 rather than dangling.
-     *
-     * @test
      */
+    #[Test]
     public function appliesDanglingTrailingMarkToASpace(): void
     {
         $decoded = AnselDecoder::decode('a' . chr(0xE2));

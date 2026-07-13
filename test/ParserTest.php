@@ -15,6 +15,9 @@ use MagicSunday\Gedcom\Model\Gedcom;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function basename;
@@ -26,16 +29,14 @@ use function glob;
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
- *
- * @covers \MagicSunday\Gedcom\Parser
  */
+#[CoversClass(Parser::class)]
 class ParserTest extends TestCase
 {
     /**
      * Parses an individual record and exposes its identifier, sex and personal name.
-     *
-     * @test
      */
+    #[Test]
     public function parsePartial(): void
     {
         $stream = (new StreamFactory())->createStream(<<<GEDCOM
@@ -79,9 +80,8 @@ class ParserTest extends TestCase
      * loading the SealingChild model linked an invalid covariant return-type override on
      * SealingChildInterface::getDateStatus(), an uncatchable class-load fatal; this pins
      * that regression independently of the bundled fixtures.
-     *
-     * @test
      */
+    #[Test]
     public function parsesSealingChildOrdinanceWithoutCovarianceFatal(): void
     {
         $stream = (new StreamFactory())->createStream(<<<GEDCOM
@@ -103,22 +103,20 @@ class ParserTest extends TestCase
      * The given name, surname and suffix are derived from the NAME slash convention when
      * no explicit sub-tags are present, and the display name drops the surname slashes.
      *
-     * @dataProvider nameFormProvider
-     *
-     * @test
-     *
-     * @param string      $nameLine The GEDCOM NAME line under test.
-     * @param string|null $given    The expected given name.
-     * @param string|null $surname  The expected surname.
-     * @param string|null $suffix   The expected name suffix.
-     * @param string|null $display  The expected display name.
+     * @param string      $nameLine the GEDCOM NAME line under test
+     * @param string|null $given    the expected given name
+     * @param string|null $surname  the expected surname
+     * @param string|null $suffix   the expected name suffix
+     * @param string|null $display  the expected display name
      */
+    #[DataProvider('nameFormProvider')]
+    #[Test]
     public function derivesNamePartsFromSlashConvention(
         string $nameLine,
         ?string $given,
         ?string $surname,
         ?string $suffix,
-        ?string $display
+        ?string $display,
     ): void {
         $stream = (new StreamFactory())->createStream("0 @I1@ INDI\n" . $nameLine . "\n");
         $stream->rewind();
@@ -150,9 +148,8 @@ class ParserTest extends TestCase
 
     /**
      * Explicit GIVN/SURN/NSFX sub-tags take precedence over the slash-derived name parts.
-     *
-     * @test
      */
+    #[Test]
     public function explicitNamePartsWinOverSlashDerivation(): void
     {
         $stream = (new StreamFactory())->createStream(
@@ -186,12 +183,10 @@ class ParserTest extends TestCase
     /**
      * Every bundled fixture parses into a Gedcom document without raising an exception.
      *
-     * @dataProvider fixtureProvider
-     *
-     * @test
-     *
-     * @param string $file The absolute path to the GEDCOM fixture.
+     * @param string $file the absolute path to the GEDCOM fixture
      */
+    #[DataProvider('fixtureProvider')]
+    #[Test]
     public function parsesFixtureWithoutError(string $file): void
     {
         $stream = (new StreamFactory())->createStreamFromFile($file);

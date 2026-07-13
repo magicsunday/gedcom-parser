@@ -15,6 +15,9 @@ use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function implode;
@@ -28,16 +31,14 @@ use function trim;
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
- *
- * @covers \MagicSunday\Gedcom\Reader
  */
+#[CoversClass(Reader::class)]
 class ReaderEncodingTest extends TestCase
 {
     /**
      * The ANSEL fixture (1 CHAR ANSEL) is transcoded to valid, correctly-decoded UTF-8.
-     *
-     * @test
      */
+    #[Test]
     public function parsesAnselFixtureToUtf8(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/ansel.ged');
@@ -64,9 +65,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A file that declares CHAR UTF-8 and has a non-ASCII value BEFORE the CHAR line (a real
      * 5.5.1 header puts SOUR/COPR/FILE before CHAR) is decoded as UTF-8, not mangled as ANSEL.
-     *
-     * @test
      */
+    #[Test]
     public function decodesUtf8EvenWithNonAsciiHeaderFieldBeforeChar(): void
     {
         $gedcom = "0 HEAD\n1 SOUR X\n1 COPR © Ünëßtädt\n1 GEDC\n2 VERS 5.5.1\n1 CHAR UTF-8\n0 TRLR\n";
@@ -89,9 +89,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A document declaring CHAR ASCII (simple.ged) parses, and a plain-ASCII value passes
      * through byte-identical.
-     *
-     * @test
      */
+    #[Test]
     public function parsesAsciiPassThrough(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
@@ -117,13 +116,11 @@ class ReaderEncodingTest extends TestCase
      * A UTF-16 document (little- and big-endian, with a byte-order mark) is transcoded to
      * UTF-8 and its non-ASCII value round-trips.
      *
-     * @dataProvider utf16Provider
-     *
-     * @test
-     *
      * @param string $bom      the byte-order mark
      * @param string $encoding the mb source encoding
      */
+    #[DataProvider('utf16Provider')]
+    #[Test]
     public function parsesUtf16WithBom(string $bom, string $encoding): void
     {
         $utf8  = "0 HEAD\n1 CHAR UNICODE\n0 @I1@ INDI\n1 NAME René Ångström\n0 TRLR\n";
@@ -147,12 +144,10 @@ class ReaderEncodingTest extends TestCase
      * A UTF-16 document without a byte-order mark is detected by the null-interleaving
      * heuristic — for both endiannesses — and parsed correctly.
      *
-     * @dataProvider utf16EncodingProvider
-     *
-     * @test
-     *
      * @param string $encoding the mb source encoding
      */
+    #[DataProvider('utf16EncodingProvider')]
+    #[Test]
     public function parsesUtf16WithoutBomViaNullHeuristic(string $encoding): void
     {
         $utf8  = "0 HEAD\n0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
@@ -176,9 +171,8 @@ class ReaderEncodingTest extends TestCase
      * A UTF-16 stream truncated mid-code-unit (an odd trailing byte held back by the carry)
      * does not break parsing: the complete records are read and the incomplete tail is
      * silently discarded rather than emitted as a replacement character.
-     *
-     * @test
      */
+    #[Test]
     public function discardsIncompleteUtf16TailAtEndOfStream(): void
     {
         $utf8  = "0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
@@ -199,9 +193,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A single-byte stream with NO CHAR declaration defaults to ANSEL (the 5.5.1 default), so
      * a high byte decodes as ANSEL rather than passing through as raw bytes.
-     *
-     * @test
      */
+    #[Test]
     public function defaultsToAnselWhenCharIsAbsent(): void
     {
         // No HEAD.CHAR anywhere; the 0xCF byte is ANSEL "es zet".
@@ -215,9 +208,8 @@ class ReaderEncodingTest extends TestCase
      * CONC continuation does not compose, because the reader decodes per physical line while
      * CONC/CONT concatenation happens later. The correct fix (decode after assembly) is
      * deferred to the typed-value work (#25/#20).
-     *
-     * @test
      */
+    #[Test]
     public function diacriticSplitAcrossConcIsAKnownLimitation(): void
     {
         // ANSEL acute (0xE2) ends the NAME line; its base 'e' is on the CONC continuation.
@@ -243,9 +235,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A file declaring CHAR ANSI (a common non-5.5.1 value from Windows exports) is decoded as
      * Windows-1252, not silently mangled as the ANSEL default.
-     *
-     * @test
      */
+    #[Test]
     public function decodesAnsiAsWindows1252(): void
     {
         // 0xE9 is é in Windows-1252 but a combining caron in ANSEL.
@@ -258,9 +249,8 @@ class ReaderEncodingTest extends TestCase
      * A multi-word CHAR value (e.g. "IBM WINDOWS", used by real exporters — see
      * KennedyFamily.ged) is captured in full and decoded as Windows-1252, not truncated to
      * its first token and mangled as ANSEL.
-     *
-     * @test
      */
+    #[Test]
     public function decodesMultiWordIbmWindowsAsWindows1252(): void
     {
         $stream = $this->rewoundStream("0 HEAD\n1 CHAR IBM WINDOWS\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
@@ -271,9 +261,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * The HEAD.CHAR declaration is detected on a CR-only (classic-Mac) file too, so its
      * charset is honoured rather than defaulting to ANSEL — the /m anchor would only see LF.
-     *
-     * @test
      */
+    #[Test]
     public function detectsCharOnCrOnlyLineEndings(): void
     {
         $stream = $this->rewoundStream("0 HEAD\r1 CHAR ANSI\r0 @I1@ INDI\r1 NAME Caf\xE9\r0 TRLR\r");
@@ -285,9 +274,8 @@ class ReaderEncodingTest extends TestCase
      * The HEAD.CHAR value is resolved correctly even when the stream delivers it one byte at
      * a time: the sniff must wait for the terminated value rather than accepting a truncated
      * prefix (e.g. "A" of "ANSI") that would mis-detect the encoding as the ANSEL default.
-     *
-     * @test
      */
+    #[Test]
     public function resolvesCharThatArrivesInSingleByteReads(): void
     {
         $stream = $this->oneByteStream("0 HEAD\n1 CHAR ANSI\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
@@ -298,9 +286,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A present but unrecognised CHAR value (neither a 5.5.1 charset nor a Windows label,
      * e.g. MACINTOSH) falls back to the 5.5.1 default character set, ANSEL.
-     *
-     * @test
      */
+    #[Test]
     public function fallsBackToAnselForAnUnrecognisedCharValue(): void
     {
         // 0xCF is ANSEL "es zet"; under any pass-through it would be invalid UTF-8.
@@ -313,9 +300,8 @@ class ReaderEncodingTest extends TestCase
      * An astral character (a surrogate pair) whose halves fall on either side of a read-chunk
      * boundary must not be corrupted — the reader holds a lone high surrogate back until its
      * low half arrives. Reading one byte at a time forces the split.
-     *
-     * @test
      */
+    #[Test]
     public function decodesAstralCharacterSplitAcrossChunkBoundary(): void
     {
         $utf8  = "0 @I1@ INDI\n1 NAME \u{1F600}X\n0 TRLR\n";
@@ -329,9 +315,8 @@ class ReaderEncodingTest extends TestCase
     /**
      * A byte-framed stream that declares CHAR UNICODE but has no BOM is undetectable as
      * UTF-16 and is rejected rather than silently mis-parsed.
-     *
-     * @test
      */
+    #[Test]
     public function rejectsBomlessUnicodeDeclaration(): void
     {
         $stream = $this->rewoundStream("0 HEAD\n1 CHAR UNICODE\n0 TRLR\n");
