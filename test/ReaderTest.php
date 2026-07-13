@@ -76,6 +76,9 @@ class ReaderTest extends TestCase
         }
     }
 
+    /**
+     * Constructing a reader over a valid .ged fixture yields a Reader instance.
+     */
     #[Test]
     public function open(): void
     {
@@ -85,6 +88,9 @@ class ReaderTest extends TestCase
         self::assertInstanceOf(Reader::class, $reader);
     }
 
+    /**
+     * back() rewinds the cursor so the next read re-serves the previously read line.
+     */
     #[Test]
     public function back(): void
     {
@@ -128,6 +134,9 @@ class ReaderTest extends TestCase
         self::assertTrue($found, 'Expected at least one INDI record in simple.ged');
     }
 
+    /**
+     * level() reports the GEDCOM level of the current line for records and nested substructures.
+     */
     #[Test]
     public function level(): void
     {
@@ -158,6 +167,9 @@ class ReaderTest extends TestCase
         }
     }
 
+    /**
+     * tag() reports the tag name of the current line as it advances through the record.
+     */
     #[Test]
     public function tag(): void
     {
