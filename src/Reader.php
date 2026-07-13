@@ -29,7 +29,15 @@ class Reader
     /**
      * Regular expression to match the different parts of a line.
      */
-    public const PATTERN = '^\s*([1-9]?\d)\s+(@([^@ ]+)@\s+)?([A-Za-z0-9_]+)(\s+@([^@ ]+)@)?(\s(.*))?$';
+    public const PATTERN = '^\s*([1-9]?\d)\s+(@([^@ ]+)@\s+)?([A-Za-z0-9_]+)(\s(.*))?$';
+
+    /**
+     * Regular expression matching a line value that consists solely of a cross-reference
+     * pointer. A pointer starts with an alphanumeric character and occupies the whole
+     * value; a @#...@ calendar/charset escape (starting with '#') is therefore not a
+     * pointer but text.
+     */
+    private const POINTER_PATTERN = '^@([A-Za-z0-9][^@ ]*)@$';
 
     /**
      * The matched groups of interest.
@@ -40,9 +48,7 @@ class Reader
 
     public const MATCH_GROUP_TAG = 4;
 
-    public const MATCH_GROUP_XREF = 6;
-
-    public const MATCH_GROUP_VALUE = 8;
+    public const MATCH_GROUP_VALUE = 6;
 
     /**
      * The stream object.
@@ -152,11 +158,19 @@ class Reader
             $this->level      = (int) $matches[self::MATCH_GROUP_LEVEL];
             $this->identifier = $matches[self::MATCH_GROUP_ID];
             $this->tag        = $matches[self::MATCH_GROUP_TAG];
-            $this->xref       = $matches[self::MATCH_GROUP_XREF];
-            $this->value      = $matches[self::MATCH_GROUP_VALUE];
 
             // Remove line breaks (keep white spaces at the end of lines)
-            $this->value = str_replace(["\r", "\n"], '', $this->value);
+            $rawValue = str_replace(["\r", "\n"], '', $matches[self::MATCH_GROUP_VALUE] ?? '');
+
+            // A line value is EITHER a single cross-reference pointer (first character
+            // alphanumeric, occupying the whole value) OR text. A @#...@ calendar or
+            // character-set escape is text, not a pointer, so it stays in the value.
+            if (preg_match('/' . self::POINTER_PATTERN . '/', $rawValue, $pointer) === 1) {
+                $this->xref = $pointer[1];
+            } else {
+                // Decode the doubled-@ escape: a literal @ inside a value is written @@.
+                $this->value = str_replace('@@', '@', $rawValue);
+            }
         }
 
         return !($this->lastLine === '' && $this->stream->eof());

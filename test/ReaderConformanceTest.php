@@ -163,4 +163,68 @@ class ReaderConformanceTest extends TestCase
         self::assertNull($reader->xref());
         self::assertNull($reader->value());
     }
+
+    /**
+     * A DATE value carrying a calendar escape (@#DJULIAN@ …) is kept verbatim in the
+     * value; the escape is text, not a cross-reference pointer, so the calendar is
+     * never torn off and silently reinterpreted as Gregorian.
+     *
+     * @test
+     */
+    public function keepsCalendarEscapeInDateValue(): void
+    {
+        $reader = $this->reader("2 DATE @#DJULIAN@ 14 FEB 1732\n");
+
+        $reader->read();
+
+        self::assertNull($reader->xref());
+        self::assertSame('@#DJULIAN@ 14 FEB 1732', $reader->value());
+    }
+
+    /**
+     * A value that is exactly a cross-reference pointer (first character alphanumeric)
+     * is exposed as the xref, not as a text value.
+     *
+     * @test
+     */
+    public function parsesWholeValuePointer(): void
+    {
+        $reader = $this->reader("1 FAMS @F1@\n");
+
+        $reader->read();
+
+        self::assertSame('F1', $reader->xref());
+        self::assertNull($reader->value());
+    }
+
+    /**
+     * A literal at-sign inside a value is written doubled (@@) per the grammar and must
+     * be decoded back to a single @.
+     *
+     * @test
+     */
+    public function decodesDoubledAtInValue(): void
+    {
+        $reader = $this->reader("1 EMAIL john@@example.com\n");
+
+        $reader->read();
+
+        self::assertSame('john@example.com', $reader->value());
+    }
+
+    /**
+     * A value that legitimately begins with an at-sign is encoded @@… and decodes to a
+     * single leading @ (it is not mistaken for a pointer).
+     *
+     * @test
+     */
+    public function decodesLeadingDoubledAt(): void
+    {
+        $reader = $this->reader("1 NOTE @@start\n");
+
+        $reader->read();
+
+        self::assertNull($reader->xref());
+        self::assertSame('@start', $reader->value());
+    }
 }
