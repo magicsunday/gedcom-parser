@@ -211,6 +211,62 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
+     * A read that momentarily yields no bytes while the stream is not yet at its end (a
+     * non-blocking or slow stream, per the PSR-7 read() contract) is retried, not treated as
+     * end of stream — otherwise the records that follow would be silently dropped.
+     *
+     * @test
+     */
+    public function retriesReadWhenNoBytesAreMomentarilyAvailable(): void
+    {
+        $stream = new class("0 @I1@ INDI\n0 TRLR\n") extends Stream {
+            private int $reads = 0;
+
+            public function __construct(string $content)
+            {
+                parent::__construct('php://temp', 'r+');
+
+                $this->write($content);
+                $this->rewind();
+            }
+
+            public function read(int $length): string
+            {
+                // The first read yields no bytes yet, while eof() is still false; the real
+                // data only arrives on the following read.
+                if ($this->reads++ === 0) {
+                    return '';
+                }
+
+                return parent::read($length);
+            }
+        };
+
+        self::assertCount(1, (new Parser($stream))->parse()->getIndividual());
+    }
+
+    /**
+     * back() is a no-op once the stream is exhausted: the end-of-stream empty line cannot be
+     * put back, and a following read() still reports end of stream.
+     *
+     * @test
+     */
+    public function backAtEndOfStreamIsNoOp(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 HEAD\n0 TRLR\n");
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+
+        while ($reader->read()) {
+            // Drain the reader to the end of the stream.
+        }
+
+        self::assertFalse($reader->back(), 'back() at end of stream must be a no-op.');
+        self::assertFalse($reader->read(), 'read() after an end-of-stream back() must still report EOF.');
+    }
+
+    /**
      * back() before any read is a no-op: it returns false and does not terminate the reader
      * (the first line is still served on the next read).
      *

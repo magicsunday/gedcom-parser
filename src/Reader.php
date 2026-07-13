@@ -293,10 +293,13 @@ class Reader
 
             $chunk = $this->stream->read(self::CHUNK_SIZE);
 
-            if ($chunk === '') {
-                $this->eofReached = true;
-            } else {
+            if ($chunk !== '') {
                 $this->buffer .= $chunk;
+            } elseif ($this->stream->eof()) {
+                // Per PSR-7 an empty read means "no bytes available", which is end of stream
+                // only once eof() confirms it; a non-blocking or slow stream may momentarily
+                // yield nothing, so the read is retried rather than treated as EOF.
+                $this->eofReached = true;
             }
         }
     }
