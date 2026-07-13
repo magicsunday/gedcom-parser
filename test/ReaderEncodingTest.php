@@ -174,18 +174,21 @@ class ReaderEncodingTest extends TestCase
 
     /**
      * A UTF-16 stream truncated mid-code-unit (an odd trailing byte held back by the carry)
-     * still parses the complete records and flushes the leftover best-effort at end of stream.
+     * does not break parsing: the complete records are read and the incomplete tail is
+     * silently discarded rather than emitted as a replacement character.
      *
      * @test
      */
-    public function flushesTruncatedUtf16TailAtEndOfStream(): void
+    public function discardsIncompleteUtf16TailAtEndOfStream(): void
     {
         $utf8  = "0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
         $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8') . "\x41";
 
-        $individuals = (new Parser($this->rewoundStream($bytes)))->parse()->getIndividual();
+        $gedcom = (new Parser($this->rewoundStream($bytes)))->parse();
 
-        self::assertCount(1, $individuals);
+        self::assertCount(1, $gedcom->getIndividual());
+        // The truncated trailing byte did not leak a replacement character into the last name.
+        self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
     }
 
     /**
@@ -224,8 +227,26 @@ class ReaderEncodingTest extends TestCase
             }
         }
 
-        // The mark and its base are decoded on separate lines, so they never compose to "é".
-        self::assertStringNotContainsString('é', implode('', $values));
+        $joined = implode('', $values);
+
+        // The acute IS decoded (it lands on its own line), but because the reader decodes per
+        // physical line before CONC assembly it never composes with the base to "é".
+        self::assertStringContainsString("\u{0301}", $joined, 'the acute mark is decoded, just not composed');
+        self::assertStringNotContainsString('é', $joined);
+    }
+
+    /**
+     * A file declaring CHAR ANSI (a common non-5.5.1 value from Windows exports) is decoded as
+     * Windows-1252, not silently mangled as the ANSEL default.
+     *
+     * @test
+     */
+    public function decodesAnsiAsWindows1252(): void
+    {
+        // 0xE9 is é in Windows-1252 but a combining caron in ANSEL.
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR ANSI\n0 @I1@ INDI\n1 NAME Caf\xE9\n0 TRLR\n");
+
+        self::assertSame('Café', $this->firstNameValue($stream));
     }
 
     /**

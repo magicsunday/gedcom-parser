@@ -94,6 +94,8 @@ class Reader
 
     private const ENCODING_UTF16BE = 'UTF-16BE';
 
+    private const ENCODING_CP1252 = 'Windows-1252';
+
     /**
      * The stream object.
      *
@@ -248,11 +250,15 @@ class Reader
             if ($line !== '') {
                 ++$this->lineCount;
 
-                // Transcode the physical line to UTF-8. ANSEL preserves 0x00-0x7F, so the
-                // structural framing is untouched and only value bytes change; ASCII/UTF-8
-                // pass through (a UTF-8 BOM was already consumed by resolveEncoding()).
+                // Transcode the physical line to UTF-8. ANSEL and Windows-1252 both preserve
+                // 0x00-0x7F, so the structural framing is untouched and only value bytes
+                // change; ASCII/UTF-8 pass through (a UTF-8 BOM was consumed by
+                // resolveEncoding()).
                 if ($this->encoding === self::ENCODING_ANSEL) {
                     $line = AnselDecoder::decode($line);
+                } elseif ($this->encoding === self::ENCODING_CP1252) {
+                    $decoded = mb_convert_encoding($line, 'UTF-8', self::ENCODING_CP1252);
+                    $line    = $decoded !== false ? $decoded : $line;
                 }
             }
 
@@ -356,14 +362,11 @@ class Reader
         if ($chunk === '') {
             if ($this->stream->eof()) {
                 $this->eofReached = true;
-
-                // Flush any remaining (possibly truncated) UTF-16 bytes best-effort.
-                if ($this->rawPending !== '') {
-                    $this->buffer .= $this->transcodeUtf16($this->rawPending);
-                    $this->rawPending = '';
-                }
             }
 
+            // A leftover $rawPending here can only be an incomplete UTF-16 tail (a lone byte
+            // or an unpaired high surrogate) from a truncated stream; it is dropped rather
+            // than emitted as a replacement character.
             return;
         }
 
@@ -551,6 +554,13 @@ class Reader
 
             case 'ASCII':
                 return self::ENCODING_ASCII;
+
+            case 'ANSI':
+            case 'WINDOWS-1252':
+            case 'CP1252':
+                // Not a 5.5.1 charset, but common in real Windows exports; decode as
+                // Windows-1252 rather than silently mangling it as the ANSEL default.
+                return self::ENCODING_CP1252;
 
             case 'UNICODE':
                 // A byte-framed stream that declares UNICODE (UTF-16) has no BOM and did not
