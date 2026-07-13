@@ -13,8 +13,8 @@ namespace MagicSunday\Gedcom\Encoding;
 
 use Normalizer;
 
-use function array_key_exists;
 use function ord;
+use function preg_match;
 use function strlen;
 
 /**
@@ -129,6 +129,13 @@ final class AnselDecoder
      */
     public static function decode(string $ansel): string
     {
+        // Pure ASCII (0x00–0x7F) needs neither table decoding nor NFC normalisation. The bulk
+        // of a GEDCOM file's lines are ASCII, so this fast path skips the byte loop and the
+        // Normalizer call entirely for them.
+        if (preg_match('/[\x80-\xFF]/', $ansel) === 0) {
+            return $ansel;
+        }
+
         $result = '';
         $marks  = '';
         $length = strlen($ansel);
@@ -143,14 +150,14 @@ final class AnselDecoder
                 continue;
             }
 
-            if (array_key_exists($byte, self::COMBINING)) {
+            if (isset(self::COMBINING[$byte])) {
                 // ANSEL stores the mark before its base; buffer it until the base arrives.
                 $marks .= self::COMBINING[$byte];
 
                 continue;
             }
 
-            if (array_key_exists($byte, self::BASE)) {
+            if (isset(self::BASE[$byte])) {
                 $result .= self::BASE[$byte] . $marks;
                 $marks = '';
 
