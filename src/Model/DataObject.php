@@ -115,7 +115,12 @@ class DataObject implements ArrayAccess
 
     /**
      * {@inheritDoc}
+     *
+     * The return type is intentionally left undeclared for PHP 7.4 compatibility; the
+     * attribute suppresses the PHP 8.1+ deprecation until the floor is raised and the
+     * signature can adopt a native `mixed` return type.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->data[$offset] ?? null;

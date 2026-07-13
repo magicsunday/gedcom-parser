@@ -85,22 +85,26 @@ class ReaderTest extends TestCase
     }
 
     /**
+     * A level-0 INDI record's cross-reference identifier round-trips back into its line.
+     *
      * @test
      */
-    public function identifier(): void
+    public function identifierRoundTripsIntoIndiRecordLine(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
         $reader = new Reader($stream);
 
-        // Read to the first INDI record
-        while ($reader->read()) {
-            if ($reader->value() === 'INDI') {
-                // Grab the identifier
-                $id = $reader->identifier();
+        $found = false;
 
-                self::assertSame($reader->current(), '0 @' . $id . '@ INDI');
+        while ($reader->read()) {
+            if (($reader->level() === 0) && ($reader->tag() === 'INDI')) {
+                $found = true;
+
+                self::assertSame('0 @' . $reader->identifier() . '@ INDI', trim($reader->current()));
             }
         }
+
+        self::assertTrue($found, 'Expected at least one INDI record in simple.ged');
     }
 
     /**
