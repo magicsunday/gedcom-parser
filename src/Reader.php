@@ -22,7 +22,7 @@ use function substr;
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
- * @link    https://github.com/magicsunday/gedcom-reader/
+ * @link    https://github.com/magicsunday/gedcom-parser/
  */
 class Reader
 {

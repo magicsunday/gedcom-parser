@@ -1,56 +1,78 @@
 [![Latest version](https://img.shields.io/github/v/release/magicsunday/gedcom-parser?sort=semver)](https://github.com/magicsunday/gedcom-parser/releases/latest)
 [![License](https://img.shields.io/github/license/magicsunday/gedcom-parser)](https://github.com/magicsunday/gedcom-parser/blob/main/LICENSE)
-[![CI](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml)
+[![Security](https://github.com/magicsunday/gedcom-parser/actions/workflows/security.yml/badge.svg)](https://github.com/magicsunday/gedcom-parser/actions/workflows/security.yml)
 
 
 # GEDCOM parser
-This module provides a [GEDCOM](https://de.wikipedia.org/wiki/GEDCOM) 5.5.1 compatible file parser.
+A [GEDCOM](https://en.wikipedia.org/wiki/GEDCOM) 5.5.1 file parser for PHP. It reads a
+GEDCOM stream line by line and exposes the records (individuals, families, sources,
+notes, …) as an object model.
 
 
 ## Installation
-### Using Composer
-To install using [composer](https://getcomposer.org/), just run the following command from the command line 
-at the root directory of your installation.
+Install with [Composer](https://getcomposer.org/):
 
-``` 
+```shell
 composer require magicsunday/gedcom-parser
 ```
 
-To remove the parser, run:
-```
-composer remove magicsunday/gedcom-parser 
+To remove the parser again:
+
+```shell
+composer remove magicsunday/gedcom-parser
 ```
 
+
 ## Usage
-To allow reading of GEDCOM files encoded with a Macintosh line ending (\r) set the following PHP runtime
-configuration.  
+Create a stream for your GEDCOM file, parse it, and traverse the resulting model:
 
 ```php
 <?php
 
-// Allow handling of Macintosh line endings (\r)
-ini_set('auto_detect_line_endings', '1');
+use MagicSunday\Gedcom\Parser;
+use MagicSunday\Gedcom\StreamFactory;
 
-?>
-````
+require 'vendor/autoload.php';
+
+$stream = (new StreamFactory())->createStreamFromFile('/path/to/your/tree.ged');
+$gedcom = (new Parser($stream))->parse();
+
+foreach ($gedcom->getIndividual() as $individual) {
+    $name = $individual->getNames()[0] ?? null;
+
+    echo $individual->getXref(), ': ', $name ? $name->getName() : '(unknown)', "\n";
+}
+```
+
+You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
+
+A malformed GEDCOM line raises `MagicSunday\Gedcom\Exception\UnableToParseLineException`,
+which implements `MagicSunday\Gedcom\Exception\ExceptionInterface`. (Stream and file
+errors currently surface as standard SPL exceptions.)
 
 
 ## Development
 
 ### Contributing
-Contributor and AI-assistant guidelines — coding standards, the buildbox-based
-tooling, the review workflow and the GEDCOM conformance rules — are documented in
+Contributor and AI-assistant guidelines — coding standards, the buildbox-based tooling,
+the review workflow and the GEDCOM conformance rules — are documented in
 [`AGENTS.md`](AGENTS.md). The authoritative GEDCOM specifications (5.5.1 and 7.0,
 including the machine-readable 7.0 registry) are vendored under
 [`docs/spec/`](docs/spec/) as the normative reference for conformance work.
 
 ### Run tests
+All PHP tooling runs through the build container. Run the full check with
+`composer ci:test`, or invoke the individual steps:
+
 ```shell
 composer update
 
+# everything at once
 composer ci:test
-composer ci:test:php:phpstan
+
+# …or step by step
 composer ci:test:php:lint
-composer ci:test:php:unit
+composer ci:test:php:phpstan
 composer ci:test:php:rector
+composer ci:test:php:unit
 ```
