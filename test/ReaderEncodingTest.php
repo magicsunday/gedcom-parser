@@ -11,12 +11,15 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Reader;
+use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\TestCase;
 
 use function implode;
 use function mb_check_encoding;
+use function mb_convert_encoding;
 
 /**
  * Tests that the reader honours the HEAD.CHAR / BOM source encoding and transcodes to UTF-8.
@@ -102,5 +105,144 @@ class ReaderEncodingTest extends TestCase
         }
 
         self::assertTrue($found);
+    }
+
+    /**
+     * A UTF-16 document (little- and big-endian, with a byte-order mark) is transcoded to
+     * UTF-8 and its non-ASCII value round-trips.
+     *
+     * @dataProvider utf16Provider
+     *
+     * @test
+     *
+     * @param string $bom      the byte-order mark
+     * @param string $encoding the mb source encoding
+     */
+    public function parsesUtf16WithBom(string $bom, string $encoding): void
+    {
+        $utf8  = "0 HEAD\n1 CHAR UNICODE\n0 @I1@ INDI\n1 NAME René Ångström\n0 TRLR\n";
+        $bytes = $bom . (string) mb_convert_encoding($utf8, $encoding, 'UTF-8');
+
+        self::assertSame('René Ångström', $this->firstNameValue($this->rewoundStream($bytes)));
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function utf16Provider(): array
+    {
+        return [
+            'little-endian' => ["\xFF\xFE", 'UTF-16LE'],
+            'big-endian'    => ["\xFE\xFF", 'UTF-16BE'],
+        ];
+    }
+
+    /**
+     * A UTF-16 document without a byte-order mark is detected by the null-interleaving
+     * heuristic and parsed correctly.
+     *
+     * @test
+     */
+    public function parsesUtf16WithoutBomViaNullHeuristic(): void
+    {
+        $utf8  = "0 HEAD\n0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
+        $bytes = (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8');
+
+        self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
+    }
+
+    /**
+     * An astral character (a surrogate pair) whose halves fall on either side of a read-chunk
+     * boundary must not be corrupted — the reader holds a lone high surrogate back until its
+     * low half arrives. Reading one byte at a time forces the split.
+     *
+     * @test
+     */
+    public function decodesAstralCharacterSplitAcrossChunkBoundary(): void
+    {
+        $utf8  = "0 @I1@ INDI\n1 NAME \u{1F600}X\n0 TRLR\n";
+        $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8');
+
+        $name = $this->firstNameValue($this->oneByteStream($bytes));
+
+        self::assertStringContainsString("\u{1F600}", $name ?? '');
+    }
+
+    /**
+     * A byte-framed stream that declares CHAR UNICODE but has no BOM is undetectable as
+     * UTF-16 and is rejected rather than silently mis-parsed.
+     *
+     * @test
+     */
+    public function rejectsBomlessUnicodeDeclaration(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR UNICODE\n0 TRLR\n");
+        $reader = new Reader($stream);
+
+        $this->expectException(UnsupportedEncodingException::class);
+
+        while ($reader->read()) {
+            // The CHAR UNICODE sniff must throw before parsing completes.
+        }
+    }
+
+    /**
+     * Returns the value of the first NAME line parsed from the given stream.
+     *
+     * @param Stream $stream a readable stream over a GEDCOM document
+     *
+     * @return string|null the first NAME value, or NULL when none is present
+     */
+    private function firstNameValue(Stream $stream): ?string
+    {
+        $reader = new Reader($stream);
+
+        while ($reader->read()) {
+            if ($reader->tag() === 'NAME') {
+                return $reader->value();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Wraps the given raw bytes in a rewound in-memory stream.
+     *
+     * @param string $bytes the raw document bytes
+     *
+     * @return Stream a rewound stream over the bytes
+     */
+    private function rewoundStream(string $bytes): Stream
+    {
+        $stream = (new StreamFactory())->createStream($bytes);
+        $stream->rewind();
+
+        return $stream;
+    }
+
+    /**
+     * Wraps the given raw bytes in a stream whose read() yields at most one byte per call.
+     *
+     * @param string $bytes the raw document bytes
+     *
+     * @return Stream a rewound single-byte-per-read stream
+     */
+    private function oneByteStream(string $bytes): Stream
+    {
+        return new class($bytes) extends Stream {
+            public function __construct(string $bytes)
+            {
+                parent::__construct('php://temp', 'r+');
+
+                $this->write($bytes);
+                $this->rewind();
+            }
+
+            public function read(int $length): string
+            {
+                return parent::read(1);
+            }
+        };
     }
 }

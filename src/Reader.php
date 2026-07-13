@@ -14,10 +14,13 @@ namespace MagicSunday\Gedcom;
 use MagicSunday\Gedcom\Encoding\AnselDecoder;
 use MagicSunday\Gedcom\Exception\LineTooLongException;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use Psr\Http\Message\StreamInterface;
 
 use function is_string;
+use function mb_convert_encoding;
+use function ord;
 use function preg_match;
 use function str_replace;
 use function strcspn;
@@ -87,6 +90,10 @@ class Reader
 
     private const ENCODING_UTF8 = 'UTF-8';
 
+    private const ENCODING_UTF16LE = 'UTF-16LE';
+
+    private const ENCODING_UTF16BE = 'UTF-16BE';
+
     /**
      * The stream object.
      *
@@ -146,6 +153,14 @@ class Reader
      * @var string|null
      */
     private ?string $encoding = null;
+
+    /**
+     * Raw UTF-16 bytes read but not yet transcoded, held so a code unit or surrogate pair
+     * split across a chunk boundary is completed by the next read rather than corrupted.
+     *
+     * @var string
+     */
+    private string $rawPending = '';
 
     /**
      * Number of read lines of the file.
@@ -338,11 +353,30 @@ class Reader
     {
         $chunk = $this->stream->read(self::CHUNK_SIZE);
 
-        if ($chunk !== '') {
-            $this->buffer .= $chunk;
-        } elseif ($this->stream->eof()) {
-            $this->eofReached = true;
+        if ($chunk === '') {
+            if ($this->stream->eof()) {
+                $this->eofReached = true;
+
+                // Flush any remaining (possibly truncated) UTF-16 bytes best-effort.
+                if ($this->rawPending !== '') {
+                    $this->buffer .= $this->transcodeUtf16($this->rawPending);
+                    $this->rawPending = '';
+                }
+            }
+
+            return;
         }
+
+        // UTF-16 is transcoded to UTF-8 before it enters the buffer, so the terminator scan
+        // and every downstream step operate on single-byte UTF-8.
+        if (($this->encoding === self::ENCODING_UTF16LE) || ($this->encoding === self::ENCODING_UTF16BE)) {
+            $this->rawPending .= $chunk;
+            $this->buffer .= $this->drainUtf16();
+
+            return;
+        }
+
+        $this->buffer .= $chunk;
     }
 
     /**
@@ -358,10 +392,38 @@ class Reader
             $this->pullChunk();
         }
 
+        $head = substr($this->buffer, $this->bufferOffset);
+
         // Consume a leading UTF-8 BOM once; there is no per-line BOM handling downstream.
-        if (strncmp(substr($this->buffer, $this->bufferOffset), "\xEF\xBB\xBF", 3) === 0) {
+        if (strncmp($head, "\xEF\xBB\xBF", 3) === 0) {
             $this->bufferOffset += 3;
             $this->encoding = self::ENCODING_UTF8;
+
+            return;
+        }
+
+        // UTF-16 by BOM, then the BOM-less null-interleaving heuristic (5.5.1 does not mandate
+        // a BOM). The structural framing byte '0' is 0x30 0x00 (LE) / 0x00 0x30 (BE).
+        if (strncmp($head, "\xFF\xFE", 2) === 0) {
+            $this->beginUtf16(self::ENCODING_UTF16LE, 2);
+
+            return;
+        }
+
+        if (strncmp($head, "\xFE\xFF", 2) === 0) {
+            $this->beginUtf16(self::ENCODING_UTF16BE, 2);
+
+            return;
+        }
+
+        if ((strlen($head) >= 2) && ($head[0] === "\x00") && ($head[1] !== "\x00")) {
+            $this->beginUtf16(self::ENCODING_UTF16BE, 0);
+
+            return;
+        }
+
+        if ((strlen($head) >= 2) && ($head[1] === "\x00") && ($head[0] !== "\x00")) {
+            $this->beginUtf16(self::ENCODING_UTF16LE, 0);
 
             return;
         }
@@ -370,6 +432,80 @@ class Reader
         // field on the raw bytes (the level/tag framing is 0x00-0x7F under every candidate),
         // defaulting to ANSEL (the 5.5.1 default) when it is absent.
         $this->encoding = $this->sniffCharacterSet();
+    }
+
+    /**
+     * Switches to UTF-16 decoding: consumes the byte-order mark and moves the bytes already
+     * buffered while sniffing into the transcode pipe.
+     *
+     * @param string $encoding  the resolved UTF-16 endianness constant
+     * @param int    $bomLength the number of BOM bytes to drop (0 when detected without a BOM)
+     *
+     * @return void
+     */
+    private function beginUtf16(string $encoding, int $bomLength): void
+    {
+        $this->encoding     = $encoding;
+        $this->rawPending   = substr($this->buffer, $this->bufferOffset + $bomLength);
+        $this->buffer       = $this->drainUtf16();
+        $this->bufferOffset = 0;
+    }
+
+    /**
+     * Transcodes the complete-scalar prefix of the pending UTF-16 bytes to UTF-8, holding back
+     * a trailing partial code unit or a lone high surrogate so a character split across a
+     * chunk boundary is completed by the next read.
+     *
+     * @return string the transcoded UTF-8 bytes
+     */
+    private function drainUtf16(): string
+    {
+        $length = strlen($this->rawPending);
+        $take   = $length - ($length % 2);
+
+        if (($take >= 2) && $this->isHighSurrogate(substr($this->rawPending, $take - 2, 2))) {
+            $take -= 2;
+        }
+
+        if ($take === 0) {
+            return '';
+        }
+
+        $complete         = substr($this->rawPending, 0, $take);
+        $this->rawPending = substr($this->rawPending, $take);
+
+        return $this->transcodeUtf16($complete);
+    }
+
+    /**
+     * Whether the given two-byte UTF-16 code unit (in the current endianness) is a high
+     * surrogate, i.e. the first half of an astral-character surrogate pair.
+     *
+     * @param string $unit the two raw bytes of one UTF-16 code unit
+     *
+     * @return bool
+     */
+    private function isHighSurrogate(string $unit): bool
+    {
+        $codeUnit = $this->encoding === self::ENCODING_UTF16LE
+            ? (ord($unit[0]) | (ord($unit[1]) << 8))
+            : ((ord($unit[0]) << 8) | ord($unit[1]));
+
+        return ($codeUnit >= 0xD800) && ($codeUnit <= 0xDBFF);
+    }
+
+    /**
+     * Transcodes UTF-16 bytes (in the resolved endianness) to UTF-8.
+     *
+     * @param string $bytes the complete UTF-16 bytes to transcode
+     *
+     * @return string the UTF-8 result
+     */
+    private function transcodeUtf16(string $bytes): string
+    {
+        $result = mb_convert_encoding($bytes, 'UTF-8', (string) $this->encoding);
+
+        return $result !== false ? $result : '';
     }
 
     /**
@@ -416,6 +552,11 @@ class Reader
             case 'ASCII':
                 return self::ENCODING_ASCII;
 
+            case 'UNICODE':
+                // A byte-framed stream that declares UNICODE (UTF-16) has no BOM and did not
+                // trigger the null heuristic, so it is undetectable/contradictory — reject it
+                // rather than silently mis-parsing.
+                throw new UnsupportedEncodingException($characterSet);
             default:
                 return self::ENCODING_ANSEL;
         }
