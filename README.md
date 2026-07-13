@@ -40,7 +40,7 @@ $gedcom = (new Parser($stream))->parse();
 foreach ($gedcom->getIndividual() as $individual) {
     $name = $individual->getNames()[0] ?? null;
 
-    echo $individual->getXref(), ': ', $name ? $name->getName() : '(unknown)', "\n";
+    echo $individual->getXref(), ': ', $name ? $name->getDisplayName() : '(unknown)', "\n";
 }
 ```
 
