@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\ValueObject;
 
 use function array_pop;
 use function ctype_digit;
+use function floor;
 use function intdiv;
 use function preg_match;
 use function preg_split;
@@ -179,7 +180,10 @@ final readonly class CalendarDate
         return match ($this->calendar) {
             Calendar::Gregorian => self::gregorianToJulianDay($year, $month, $day),
             Calendar::Julian    => self::julianToJulianDay($year, $month, $day),
-            default             => null,
+            Calendar::Hebrew,
+            Calendar::FrenchRepublican,
+            Calendar::Roman,
+            Calendar::Unknown => null,
         };
     }
 
@@ -240,9 +244,9 @@ final readonly class CalendarDate
         return $day
             + intdiv((153 * $m) + 2, 5)
             + (365 * $y)
-            + intdiv($y, 4)
-            - intdiv($y, 100)
-            + intdiv($y, 400)
+            + (int) floor($y / 4)
+            - (int) floor($y / 100)
+            + (int) floor($y / 400)
             - 32045;
     }
 
@@ -264,7 +268,7 @@ final readonly class CalendarDate
         return $day
             + intdiv((153 * $m) + 2, 5)
             + (365 * $y)
-            + intdiv($y, 4)
+            + (int) floor($y / 4)
             - 32083;
     }
 }

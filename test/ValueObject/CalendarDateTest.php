@@ -118,6 +118,7 @@ class CalendarDateTest extends TestCase
             'gregorian 1 bc'         => ['1 JAN 1 B.C.', 1721060],
             'julian 2000'            => ['@#DJULIAN@ 1 JAN 2000', 2451558],
             'julian ad 1'            => ['@#DJULIAN@ 1 JAN 1', 1721424],
+            'julian day epoch'       => ['@#DJULIAN@ 1 JAN 4713 B.C.', 0],
             'partial defaults start' => ['2000', 2451545],
             'hebrew is unconverted'  => ['@#DHEBREW@ 1 TSH 5785', null],
             'french is unconverted'  => ['@#DFRENCH R@ 1 VEND 1', null],
