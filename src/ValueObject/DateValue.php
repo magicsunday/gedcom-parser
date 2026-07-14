@@ -72,6 +72,10 @@ final readonly class DateValue
             return self::fromKeyword($matches[1], $matches[2], $value);
         }
 
+        // A plain date. GEDCOM technically treats a day+month-only value (`2 JAN`) as a date
+        // phrase, but keeping it an Exact date whose CalendarDate carries a null year preserves
+        // the parsed day/month rather than discarding them; a consumer detects the partial form
+        // via the null year.
         return new self(DateType::Exact, CalendarDate::fromGedcom($trimmed), null, null, $value);
     }
 
