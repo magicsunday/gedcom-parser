@@ -16,8 +16,8 @@ namespace MagicSunday\Gedcom\TypedModel;
  *
  * A nested typed record: alongside its cross-reference identifier it exposes its events as typed
  * {@see EventDetail} objects, each carrying the typed value-object leaves the mapping layer builds
- * from the parsed tree. The birth is a list because GEDCOM 5.5.1 permits the `BIRT` event to
- * repeat ({0:M}, e.g. conflicting sources).
+ * from the parsed tree. Each event is a list because GEDCOM 5.5.1 permits it to repeat ({0:M},
+ * e.g. conflicting sources).
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -30,12 +30,16 @@ final readonly class IndividualRecord
      * @param list<PersonalName> $name The individual's names
      * @param string|null        $sex  The individual's sex, or NULL when absent
      * @param list<EventDetail>  $birt The birth events
+     * @param list<EventDetail>  $deat The death events
+     * @param list<EventDetail>  $buri The burial events
      */
     public function __construct(
         public string $xref,
         public array $name = [],
         public ?string $sex = null,
         public array $birt = [],
+        public array $deat = [],
+        public array $buri = [],
     ) {
     }
 }

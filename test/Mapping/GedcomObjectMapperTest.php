@@ -481,6 +481,52 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * An individual maps its death and burial events (each {0:M}) into typed EventDetail lists
+     * alongside birth. A DEAT carries a direct AGE substructure, so the death event's age leaf is
+     * populated, while a BURI carries the place of burial.
+     */
+    #[Test]
+    public function mapsAnIndividualDeathAndBurialEvents(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 DEAT\n2 DATE 3 MAR 1980\n2 AGE 80y\n"
+            . "1 BURI\n2 DATE 7 MAR 1980\n2 PLAC Boston, Massachusetts\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+
+        self::assertCount(1, $record->deat, 'a single DEAT maps to a one-element list');
+        $death = $record->deat[0];
+        self::assertInstanceOf(EventDetail::class, $death);
+        self::assertInstanceOf(DateValue::class, $death->date);
+        self::assertSame('3 MAR 1980', $death->date->raw);
+        self::assertInstanceOf(AgeValue::class, $death->age, 'a DEAT carries a direct AGE substructure');
+        self::assertSame(80, $death->age->years);
+
+        self::assertCount(1, $record->buri, 'a single BURI maps to a one-element list');
+        $burial = $record->buri[0];
+        self::assertInstanceOf(EventDetail::class, $burial);
+        self::assertInstanceOf(DateValue::class, $burial->date);
+        self::assertSame('7 MAR 1980', $burial->date->raw);
+        self::assertInstanceOf(PlaceValue::class, $burial->plac);
+        self::assertSame(['Boston', 'Massachusetts'], $burial->plac->levels);
+    }
+
+    /**
      * A family record maps its partner and child cross-reference pointers (HUSB/WIFE single, CHIL
      * repeatable) and its repeatable marriage events, each a typed EventDetail carrying the shared
      * event's date and place.
