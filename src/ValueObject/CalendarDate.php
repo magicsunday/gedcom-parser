@@ -181,11 +181,13 @@ final readonly class CalendarDate
         $month    = $this->month ?? 1;
         $day      = $this->day ?? 1;
 
+        // The Hebrew and French Republican calendars have no B.C. era, so a B.C. year on them is
+        // not a real date; they also take the plain year rather than the astronomical one.
         return match ($this->calendar) {
             Calendar::Gregorian        => self::gregorianToJulianDay($year, $month, $day),
             Calendar::Julian           => self::julianToJulianDay($year, $month, $day),
-            Calendar::Hebrew           => self::hebrewToJulianDay($year, $month, $day),
-            Calendar::FrenchRepublican => self::frenchRepublicanToJulianDay($year, $month, $day),
+            Calendar::Hebrew           => $this->bce ? null : self::hebrewToJulianDay($baseYear, $month, $day),
+            Calendar::FrenchRepublican => $this->bce ? null : self::frenchRepublicanToJulianDay($baseYear, $month, $day),
             Calendar::Roman,
             Calendar::Unknown => null,
         };
@@ -313,6 +315,13 @@ final readonly class CalendarDate
         $calendar->clear();
         $calendar->set($year, $icuMonth, $day);
 
+        // ICU is lenient and rolls an out-of-range day into the next month; reject that instead.
+        if (($calendar->get(IntlCalendar::FIELD_MONTH) !== $icuMonth)
+            || ($calendar->get(IntlCalendar::FIELD_DAY_OF_MONTH) !== $day)
+        ) {
+            return null;
+        }
+
         $julianDay = $calendar->get(IntlCalendar::FIELD_JULIAN_DAY);
 
         return $julianDay === false ? null : $julianDay;
@@ -330,10 +339,18 @@ final readonly class CalendarDate
      * @param int $month The 1-based month (1–12, or 13 for the complementary days)
      * @param int $day   The day of the month
      *
-     * @return int The Julian Day Number
+     * @return int|null The Julian Day Number, or NULL when the day is out of range for the month
      */
-    private static function frenchRepublicanToJulianDay(int $year, int $month, int $day): int
+    private static function frenchRepublicanToJulianDay(int $year, int $month, int $day): ?int
     {
+        // Months 1–12 have 30 days; the 13th "month" holds the five (or six, in a leap year)
+        // complementary days.
+        $monthLength = $month === 13 ? (($year % 4) === 3 ? 6 : 5) : 30;
+
+        if (($day < 1) || ($day > $monthLength)) {
+            return null;
+        }
+
         $leapYears = intdiv($year, 4);
 
         return 2375840
