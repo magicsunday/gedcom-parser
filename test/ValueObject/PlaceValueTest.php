@@ -104,14 +104,39 @@ class PlaceValueTest extends TestCase
     }
 
     /**
-     * Empty FORM labels and levels beyond the FORM label count are skipped.
+     * An empty FORM label (a padded, unnamed jurisdiction) is skipped while the aligned
+     * neighbours still map.
      */
     #[Test]
-    public function mappedSkipsEmptyLabelsAndSurplusLevels(): void
+    public function mappedSkipsAnEmptyFormLabel(): void
     {
-        $place = PlaceValue::fromGedcom('Cove, Cache, Utah, USA', 'City, , State');
+        $place = PlaceValue::fromGedcom('Cove, Cache, Utah', 'City, , State');
 
         self::assertSame(['City' => 'Cove', 'State' => 'Utah'], $place->mapped());
+    }
+
+    /**
+     * When the FORM and the place have a different number of positions the mapping cannot be
+     * trusted (it would misalign labels), so no map is produced.
+     */
+    #[Test]
+    public function mappedIsEmptyWhenFormAndPlaceCountsDiffer(): void
+    {
+        // The place omits the County comma, so `County` would wrongly bind to `Maryland`.
+        $place = PlaceValue::fromGedcom('Baltimore, Maryland, USA', 'City, County, State, Country');
+
+        self::assertSame([], $place->mapped());
+    }
+
+    /**
+     * A FORM that repeats a jurisdiction label cannot be represented unambiguously as a map.
+     */
+    #[Test]
+    public function mappedIsEmptyOnDuplicateFormLabels(): void
+    {
+        $place = PlaceValue::fromGedcom('A, B', 'Area, Area');
+
+        self::assertSame([], $place->mapped());
     }
 
     /**

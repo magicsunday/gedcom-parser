@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\ValueObject;
 
 use function array_map;
+use function count;
 use function explode;
 use function trim;
 
@@ -62,8 +63,14 @@ final readonly class PlaceValue
     /**
      * Maps the FORM labels onto the hierarchy levels by position.
      *
-     * @return array<string, string> The FORM label mapped to its jurisdiction value; empty when
-     *                               no FORM is present. Empty labels and surplus levels are skipped.
+     * A positional map is only trustworthy when the FORM lines up with the hierarchy one-to-one
+     * (the spec pads both with empty commas) and its labels are unambiguous. On a count mismatch
+     * or a repeated label the labels would bind to the wrong jurisdiction, so no map is produced.
+     * Note: only the place-local FORM is consulted; a FORM declared once in the header
+     * (`HEAD.PLAC.FORM`) is not threaded here — see GH-20.
+     *
+     * @return array<string, string> The FORM label mapped to its jurisdiction value; empty when no
+     *                               FORM is present, the counts differ, or a label repeats
      */
     public function mapped(): array
     {
@@ -72,6 +79,11 @@ final readonly class PlaceValue
         }
 
         $labels = array_map(trim(...), explode(',', $this->form));
+
+        if (count($labels) !== count($this->levels)) {
+            return [];
+        }
+
         $result = [];
 
         foreach ($labels as $index => $label) {
@@ -79,8 +91,8 @@ final readonly class PlaceValue
                 continue;
             }
 
-            if (!isset($this->levels[$index])) {
-                continue;
+            if (isset($result[$label])) {
+                return [];
             }
 
             $result[$label] = $this->levels[$index];
