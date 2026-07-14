@@ -121,8 +121,12 @@ class CalendarDateTest extends TestCase
             'julian day epoch'         => ['@#DJULIAN@ 1 JAN 4713 B.C.', 0],
             'partial defaults start'   => ['2000', 2451545],
             'dual year uses new style' => ['11 FEB 1731/32', 2353701],
-            'hebrew is unconverted'    => ['@#DHEBREW@ 1 TSH 5785', null],
-            'french is unconverted'    => ['@#DFRENCH R@ 1 VEND 1', null],
+            'hebrew tishri'            => ['@#DHEBREW@ 1 TSH 5785', 2460587],
+            'hebrew adar i in leap'    => ['@#DHEBREW@ 1 ADR 5784', 2460351],
+            'hebrew adar ii in leap'   => ['@#DHEBREW@ 1 ADS 5784', 2460381],
+            'hebrew adar ii common'    => ['@#DHEBREW@ 1 ADS 5785', null],
+            'french republican epoch'  => ['@#DFRENCH R@ 1 VEND 1', 2375840],
+            'french 18 brumaire viii'  => ['@#DFRENCH R@ 18 BRUM 8', 2378444],
             'no year is null'          => ['MAR', null],
         ];
     }
