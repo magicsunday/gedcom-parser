@@ -119,10 +119,12 @@ use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\SourceRecord;
 
 $parser = TypedGedcomParser::create(GedcomVersion::V551, [
     'INDI' => IndividualRecord::class,
     'FAM'  => FamilyRecord::class,
+    'SOUR' => SourceRecord::class,
 ]);
 
 foreach ($parser->parse($stream) as $record) {
@@ -133,9 +135,10 @@ foreach ($parser->parse($stream) as $record) {
 
 The typed record set is still growing; only the modelled records are mapped today. Currently an
 `IndividualRecord` exposes its names, sex, its birth, death and burial events, and its child- and
-spouse-to-family links (`FAMC`/`FAMS`), and a `FamilyRecord` exposes its partner and child
-cross-references and its marriage events — each event a typed `EventDetail` (date, place, age).
-Substructures not yet modelled are ignored rather than mapped.
+spouse-to-family links (`FAMC`/`FAMS`), a `FamilyRecord` exposes its partner and child
+cross-references and its marriage events — each event a typed `EventDetail` (date, place, age) —
+and a `SourceRecord` exposes its descriptive fields (title, author, publication, abbreviation,
+text). Substructures not yet modelled are ignored rather than mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
