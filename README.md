@@ -131,7 +131,11 @@ foreach ($parser->parse($stream) as $record) {
 }
 ```
 
-The typed record set is still growing; only the modelled records are mapped today.
+The typed record set is still growing; only the modelled records are mapped today. Currently an
+`IndividualRecord` exposes its names, sex and its birth, death and burial events, and a
+`FamilyRecord` exposes its partner and child cross-references and its marriage events — each event
+a typed `EventDetail` (date, place, age). Substructures not yet modelled are ignored rather than
+mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
