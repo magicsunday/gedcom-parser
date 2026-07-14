@@ -53,29 +53,43 @@
         }
     },
     "scripts": {
+        "ci:cgl": [
+            "php-cs-fixer fix --config .php-cs-fixer.dist.php --diff --verbose"
+        ],
+        "ci:rector": [
+            "rector process --config rector.php"
+        ],
+        "ci:test:php:cgl": [
+            "@ci:cgl --dry-run"
+        ],
+        "ci:test:php:cpd": [
+            "npx jscpd --config .jscpd.json --skip-comments --no-tips"
+        ],
         "ci:test:php:lint": [
-            "phplint"
+            "phplint --configuration .phplint.yml"
         ],
         "ci:test:php:phpstan": [
-            "phpstan analyze"
-        ],
-        "ci:test:php:phpstan:baseline": [
-            "phpstan analyze --generate-baseline phpstan-baseline.neon --allow-empty-baseline"
+            "phpstan analyze --configuration phpstan.neon --memory-limit=-1"
         ],
         "ci:test:php:rector": [
-            "rector process --config rector.php --dry-run"
+            "@ci:rector --dry-run"
         ],
         "ci:test:php:unit": [
-            "phpunit"
+            "phpunit --configuration phpunit.xml"
         ],
-        "ci:cgl": [
-            "php-cs-fixer fix --diff --verbose"
+        "ci:test:php:unit:coverage": [
+            "XDEBUG_MODE=coverage phpunit --configuration phpunit.xml --coverage-html .build/coverage/"
         ],
         "ci:test": [
             "@ci:test:php:lint",
+            "@ci:test:php:unit",
             "@ci:test:php:phpstan",
             "@ci:test:php:rector",
-            "@ci:test:php:unit"
+            "@ci:test:php:cgl",
+            "@ci:test:php:cpd"
+        ],
+        "post-update-cmd": [
+            "npm install jscpd@^5.0.11"
         ]
     }
 }
