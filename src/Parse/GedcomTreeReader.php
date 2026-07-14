@@ -21,8 +21,10 @@ use MagicSunday\Gedcom\Reader;
  * memory as a whole. It applies no structural grammar knowledge and simply mirrors the line
  * structure, which the schema-driven mapping layer then interprets — the one exception being the
  * `CONC`/`CONT` continuation lines, which are a physical line-length serialization of a single
- * logical value (common to both GEDCOM versions) and are reassembled into their superstructure's
- * value rather than exposed as child nodes.
+ * logical value (`CONT` in both GEDCOM versions, `CONC` in 5.5.1 only — 7.0 keeps only `CONT`)
+ * and are reassembled into their superstructure's value rather than exposed as child nodes. Only a
+ * genuine text value is continued: a continuation on a pointer line is left as a child for the
+ * mapping layer to reject, preserving the node invariant that a value and a pointer are exclusive.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -87,11 +89,14 @@ final readonly class GedcomTreeReader
 
             // A CONC/CONT line one level below this node continues its value across a physical
             // line break rather than forming a substructure: CONC appends without a separator,
-            // CONT with a newline. Fold it into the value instead of nesting it as a child.
+            // CONT with a newline. Fold it into the value instead of nesting it as a child — but
+            // only for a genuine text value; a continuation on a pointer line ($xref set) is
+            // malformed and is left as a child so a value never coexists with a pointer.
             $childTag = $this->reader->tag();
 
             if (
-                ($this->reader->level() === ($level + 1))
+                ($xref === null)
+                && ($this->reader->level() === ($level + 1))
                 && (($childTag === self::TAG_CONC) || ($childTag === self::TAG_CONT))
             ) {
                 $separator = $childTag === self::TAG_CONT ? "\n" : '';

@@ -231,6 +231,48 @@ class GedcomTreeReaderTest extends TestCase
         self::assertCount(1, $node->children);
         self::assertSame('TEXT', $node->children[0]->tag);
         self::assertSame("Line one\nLine two\nLine three", $node->children[0]->value);
+        self::assertSame([], $node->children[0]->children, 'the CONT lines are not exposed as child nodes');
+    }
+
+    /**
+     * A continuation on a value-less superstructure (the text begins on the CONT line) folds onto
+     * the empty value, yielding a leading newline rather than dropping the line or failing.
+     */
+    #[Test]
+    public function readRecordFoldsAContinuationOntoAValuelessSuperstructure(): void
+    {
+        $reader = self::readerFor("0 @I1@ INDI\n1 NOTE\n2 CONT Second line\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertCount(1, $node->children);
+        self::assertSame('NOTE', $node->children[0]->tag);
+        self::assertSame("\nSecond line", $node->children[0]->value, 'a CONT on a value-less node yields a leading newline');
+        self::assertSame([], $node->children[0]->children, 'the CONT line is not exposed as a child node');
+    }
+
+    /**
+     * A continuation illegally following a pointer line is NOT folded into the value: pointers are
+     * never continued, so folding would produce a node with both a pointer and a value. The
+     * malformed continuation stays a child for the mapping layer to reject, keeping the pointer
+     * and value mutually exclusive.
+     */
+    #[Test]
+    public function readRecordDoesNotFoldAContinuationOntoAPointer(): void
+    {
+        $reader = self::readerFor("0 @F1@ FAM\n1 HUSB @I1@\n2 CONT stray\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $husband = $node->children[0];
+        self::assertSame('HUSB', $husband->tag);
+        self::assertSame('I1', $husband->xref, 'the pointer is preserved');
+        self::assertNull($husband->value, 'no value is manufactured on the pointer node');
+        self::assertCount(1, $husband->children, 'the illegal continuation stays a child rather than folding');
+        self::assertSame('CONT', $husband->children[0]->tag);
     }
 
     /**
