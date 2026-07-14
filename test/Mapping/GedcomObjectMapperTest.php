@@ -762,6 +762,30 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A note record with no text maps to a null value rather than an empty string, honouring the
+     * shaper's absent-value branch.
+     */
+    #[Test]
+    public function mapsANoteRecordWithoutTextToANullValue(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @N1@ NOTE\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, NoteRecord::class);
+
+        self::assertInstanceOf(NoteRecord::class, $record);
+        self::assertSame('N1', $record->xref);
+        self::assertNull($record->value, 'an empty note text maps to null, not an empty string');
+    }
+
+    /**
      * Maps a submitter record from an in-memory GEDCOM string onto the typed model.
      */
     private function mapSubmitter(string $gedcom): SubmitterRecord
