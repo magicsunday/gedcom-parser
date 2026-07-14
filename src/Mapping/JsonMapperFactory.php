@@ -23,6 +23,7 @@ use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 
+use function array_key_exists;
 use function get_debug_type;
 use function is_array;
 use function is_string;
@@ -105,6 +106,12 @@ final class JsonMapperFactory
      */
     private static function leafValue(mixed $value, string $label): string
     {
+        // A value-less substructure (e.g. an empty FORM line) is shaped as a null leaf; it resolves
+        // as absent (the empty string), the same as a shaped leaf with no `value` key.
+        if ($value === null) {
+            return '';
+        }
+
         if (is_string($value)) {
             return $value;
         }

@@ -179,6 +179,37 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A value-less substructure (e.g. an empty `FORM` line) is shaped as a NULL leaf, which must
+     * resolve as absent rather than failing the whole record — the place still maps, with a null
+     * form.
+     */
+    #[Test]
+    public function mapsAPlaceWithAnEmptyFormLineWithoutFailing(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston, Massachusetts\n3 FORM\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        $place = $record->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertNull($place->form, 'an empty FORM line resolves to a null form, not a mapping failure');
+        self::assertSame(['Boston', 'Massachusetts'], $place->levels);
+    }
+
+    /**
      * A PLAC with no FORM substructure maps to a PlaceValue whose form is null while the value is
      * still split into its jurisdiction levels.
      */
