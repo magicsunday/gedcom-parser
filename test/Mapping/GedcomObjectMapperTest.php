@@ -28,6 +28,7 @@ use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\NoteRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
+use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
 use MagicSunday\Gedcom\TypedModel\SourceRecord;
 use MagicSunday\Gedcom\TypedModel\SpouseToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
@@ -64,6 +65,7 @@ use function dirname;
 #[CoversClass(SpouseToFamilyLink::class)]
 #[CoversClass(SourceRecord::class)]
 #[CoversClass(NoteRecord::class)]
+#[CoversClass(RepositoryRecord::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -733,6 +735,67 @@ class GedcomObjectMapperTest extends TestCase
 
         return (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
             ->map($node, $definition, SourceRecord::class);
+    }
+
+    /**
+     * A repository record maps its required name and its repeatable contact leaves (phone, email,
+     * fax, each {0:3}) onto the typed RepositoryRecord, the contact fields as lists.
+     */
+    #[Test]
+    public function mapsARepositoryRecordNameAndContacts(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @R1@ REPO\n"
+            . "1 NAME City Archive\n"
+            . "1 PHON 555-1000\n"
+            . "1 PHON 555-1001\n"
+            . "1 EMAIL archive@example.test\n"
+            . "1 FAX 555-1099\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, RepositoryRecord::class);
+
+        self::assertInstanceOf(RepositoryRecord::class, $record);
+        self::assertSame('R1', $record->xref);
+        self::assertSame('City Archive', $record->name);
+        self::assertSame(['555-1000', '555-1001'], $record->phon, 'the repeatable PHON leaves map to a list');
+        self::assertSame(['archive@example.test'], $record->email);
+        self::assertSame(['555-1099'], $record->fax);
+    }
+
+    /**
+     * A repository carrying only its required name maps the absent optional contact leaves to
+     * empty lists rather than null, so a consumer can iterate them unconditionally.
+     */
+    #[Test]
+    public function mapsARepositoryRecordWithoutContactsToEmptyLists(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @R2@ REPO\n1 NAME City Archive\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, RepositoryRecord::class);
+
+        self::assertInstanceOf(RepositoryRecord::class, $record);
+        self::assertSame('City Archive', $record->name);
+        self::assertSame([], $record->phon, 'an absent PHON maps to an empty list, not null');
+        self::assertSame([], $record->email);
+        self::assertSame([], $record->fax);
     }
 
     /**
