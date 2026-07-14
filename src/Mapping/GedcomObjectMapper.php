@@ -110,6 +110,10 @@ final readonly class GedcomObjectMapper
      */
     public function mapRecord(GedcomNode $node, string $className): object
     {
+        if ($node->level !== 0) {
+            throw new MappingException(sprintf('A record must be at level 0, got level %d.', $node->level));
+        }
+
         $definition = $this->schema->recordByTag($node->tag);
 
         if (!$definition instanceof StructureDefinition) {

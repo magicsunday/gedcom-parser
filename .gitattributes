@@ -1,5 +1,6 @@
 # Keep development-only files out of the Composer / `git archive` distribution.
-# Runtime consumers get src/, composer.json, LICENSE and README.md only.
+# Runtime consumers get src/, composer.json, LICENSE, README.md and the machine-readable
+# GEDCOM registry (runtime data the schema loader compiles) only.
 
 /.gitattributes         export-ignore
 /.gitignore             export-ignore
@@ -13,5 +14,12 @@
 /AGENTS.md              export-ignore
 
 /.github/               export-ignore
-/docs/                  export-ignore
 /test/                  export-ignore
+
+# Ship the machine-readable GEDCOM registry (docs/spec/gedcom7-registries) — it is runtime
+# data the schema loader compiles — but keep the large specification documents out. The docs
+# directory itself is NOT export-ignored, because git-archive skips an ignored directory whole
+# and would never descend to the registry beneath it.
+/docs/spec/*.pdf        export-ignore
+/docs/spec/*.html       export-ignore
+/docs/spec/README.md    export-ignore

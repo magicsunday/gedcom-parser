@@ -107,6 +107,25 @@ shapes a node subtree through that schema and hydrates immutable `final readonly
 with the value-object leaves (dates, places, ages) parsed by their own grammar. Until the
 untyped result model is fully replaced, the `phpstan` and `cpd` CI steps stay non-blocking.
 
+`TypedGedcomParser` ties the pipeline together: give it the GEDCOM version and a map of
+record tag to your typed record class, and it streams the level-0 records and maps each
+recognised one (unmapped records such as `HEAD`/`TRLR` are skipped):
+
+```php
+use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
+use MagicSunday\Gedcom\Schema\GedcomVersion;
+use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+
+$parser = TypedGedcomParser::create(GedcomVersion::V551, ['INDI' => IndividualRecord::class]);
+
+foreach ($parser->parse($stream) as $individual) {
+    // one typed IndividualRecord at a time, in document order (parse() yields, so a large file
+    // is never held in memory); wrap in iterator_to_array() if you need the full list
+}
+```
+
+The typed record set is still growing; only the modelled records are mapped today.
+
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
 `composer ci:test`, or invoke the individual steps:

@@ -151,6 +151,29 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * mapRecord fails with a MappingException when the node is not at level 0, so a malformed
+     * deeper line cannot be mapped as a record.
+     */
+    #[Test]
+    public function mapRecordThrowsWhenTheNodeIsNotAtLevelZero(): void
+    {
+        $stream = (new StreamFactory())->createStream("1 @I1@ INDI\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertSame(1, $node->level, 'the malformed record sits at level 1');
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $this->expectException(MappingException::class);
+
+        (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, IndividualRecord::class);
+    }
+
+    /**
      * mapRecord fails with a MappingException when the node's tag is not a top-level record.
      */
     #[Test]
