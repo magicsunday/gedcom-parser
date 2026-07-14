@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\ValueObject;
 
+use IntlCalendar;
+
 use function array_pop;
 use function ctype_digit;
 use function floor;
@@ -162,9 +164,8 @@ final readonly class CalendarDate
      * The year is required; an absent month or day defaults to the first, so a partial date sorts
      * at the start of its period. For a dual `1731/32` date the second (New Style, January-based)
      * year is used, matching the January-based year a Julian Day Number assumes. A `B.C.` year is
-     * mapped to its astronomical form (1 B.C. is year 0). Only the Gregorian and Julian calendars
-     * are converted here; the Hebrew and French Republican calendars — and the reserved/unknown
-     * ones — return NULL (see GH-56).
+     * mapped to its astronomical form (1 B.C. is year 0). The Gregorian, Julian, Hebrew and French
+     * Republican calendars are converted; the reserved Roman and unknown calendars return NULL.
      *
      * @return int|null The Julian Day Number, or NULL when the date has no year or an
      *                  unconvertible calendar
@@ -180,11 +181,13 @@ final readonly class CalendarDate
         $month    = $this->month ?? 1;
         $day      = $this->day ?? 1;
 
+        // The Hebrew and French Republican calendars have no B.C. era, so a B.C. year on them is
+        // not a real date; they also take the plain year rather than the astronomical one.
         return match ($this->calendar) {
-            Calendar::Gregorian => self::gregorianToJulianDay($year, $month, $day),
-            Calendar::Julian    => self::julianToJulianDay($year, $month, $day),
-            Calendar::Hebrew,
-            Calendar::FrenchRepublican,
+            Calendar::Gregorian        => self::gregorianToJulianDay($year, $month, $day),
+            Calendar::Julian           => self::julianToJulianDay($year, $month, $day),
+            Calendar::Hebrew           => $this->bce ? null : self::hebrewToJulianDay($baseYear, $month, $day),
+            Calendar::FrenchRepublican => $this->bce ? null : self::frenchRepublicanToJulianDay($baseYear, $month, $day),
             Calendar::Roman,
             Calendar::Unknown => null,
         };
@@ -273,5 +276,95 @@ final readonly class CalendarDate
             + (365 * $y)
             + (int) floor($y / 4)
             - 32083;
+    }
+
+    /**
+     * Converts a Hebrew date to its Julian Day Number via ICU.
+     *
+     * The GEDCOM month numbering (`TSH`=1 … `ELL`=13) is remapped to ICU's leap-aware indices:
+     * in a leap year `ADR` is Adar I and `ADS` is Adar II, while in a common year there is a single
+     * Adar and `ADS` does not exist.
+     *
+     * @param int $year  The Hebrew (Anno Mundi) year
+     * @param int $month The 1-based GEDCOM Hebrew month
+     * @param int $day   The day of the month
+     *
+     * @return int|null The Julian Day Number, or NULL when the month cannot occur in that year
+     */
+    private static function hebrewToJulianDay(int $year, int $month, int $day): ?int
+    {
+        if ($year < 1) {
+            return null;
+        }
+
+        $isLeapYear = (((7 * $year) + 1) % 19) < 7;
+
+        $icuMonth = match (true) {
+            $month <= 5  => $month - 1,
+            $month === 6 => $isLeapYear ? 5 : 6,
+            $month === 7 => $isLeapYear ? 6 : null,
+            default      => $month - 1,
+        };
+
+        if ($icuMonth === null) {
+            return null;
+        }
+
+        $calendar = IntlCalendar::createInstance('UTC', 'en@calendar=hebrew');
+
+        if (!$calendar instanceof IntlCalendar) {
+            return null;
+        }
+
+        $calendar->clear();
+        $calendar->set($year, $icuMonth, $day);
+
+        // ICU is lenient and rolls an out-of-range day into the next month; reject that instead.
+        if (($calendar->get(IntlCalendar::FIELD_MONTH) !== $icuMonth)
+            || ($calendar->get(IntlCalendar::FIELD_DAY_OF_MONTH) !== $day)
+        ) {
+            return null;
+        }
+
+        $julianDay = $calendar->get(IntlCalendar::FIELD_JULIAN_DAY);
+
+        return $julianDay === false ? null : $julianDay;
+    }
+
+    /**
+     * Converts a French Republican date to its Julian Day Number.
+     *
+     * The epoch (1 Vendémiaire An I) is Julian Day 2375840. Each year has twelve 30-day months plus
+     * five or six complementary days; the leap years are the equinox-based sextiles An III, VII, XI,
+     * … (`year mod 4 === 3`). The calendar was never in official use long enough for a century rule
+     * to apply, so the plain arithmetic rule is used throughout.
+     *
+     * @param int $year  The republican year (An I is 1)
+     * @param int $month The 1-based month (1–12, or 13 for the complementary days)
+     * @param int $day   The day of the month
+     *
+     * @return int|null The Julian Day Number, or NULL when the day is out of range for the month
+     */
+    private static function frenchRepublicanToJulianDay(int $year, int $month, int $day): ?int
+    {
+        if ($year < 1) {
+            return null;
+        }
+
+        // Months 1–12 have 30 days; the 13th "month" holds the five (or six, in a leap year)
+        // complementary days.
+        $monthLength = $month === 13 ? (($year % 4) === 3 ? 6 : 5) : 30;
+
+        if (($day < 1) || ($day > $monthLength)) {
+            return null;
+        }
+
+        $leapYears = intdiv($year, 4);
+
+        return 2375840
+            + (($year - 1) * 365)
+            + $leapYears
+            + (($month - 1) * 30)
+            + ($day - 1);
     }
 }
