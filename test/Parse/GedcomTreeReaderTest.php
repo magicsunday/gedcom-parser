@@ -199,6 +199,112 @@ class GedcomTreeReaderTest extends TestCase
     }
 
     /**
+     * A CONC continuation reassembles a value split across physical lines with no separator, so
+     * the continuation lines fold into the superstructure's value instead of becoming children.
+     */
+    #[Test]
+    public function readRecordConcatenatesConcContinuationWithoutABreak(): void
+    {
+        $reader = self::readerFor("0 @S1@ SOUR\n1 TITL A very long\n2 CONC  source title\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertCount(1, $node->children, 'the CONC line folds into the title, it is not a child');
+        self::assertSame('TITL', $node->children[0]->tag);
+        self::assertSame('A very long source title', $node->children[0]->value);
+        self::assertSame([], $node->children[0]->children, 'the CONC line is not exposed as a child node');
+    }
+
+    /**
+     * A CONT continuation reassembles a value split across physical lines with a line break, so
+     * each CONT contributes a newline plus its text.
+     */
+    #[Test]
+    public function readRecordJoinsContContinuationWithANewline(): void
+    {
+        $reader = self::readerFor("0 @S1@ SOUR\n1 TEXT Line one\n2 CONT Line two\n2 CONT Line three\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertCount(1, $node->children);
+        self::assertSame('TEXT', $node->children[0]->tag);
+        self::assertSame("Line one\nLine two\nLine three", $node->children[0]->value);
+        self::assertSame([], $node->children[0]->children, 'the CONT lines are not exposed as child nodes');
+    }
+
+    /**
+     * A continuation on a value-less superstructure (the text begins on the CONT line) folds onto
+     * the empty value, yielding a leading newline rather than dropping the line or failing.
+     */
+    #[Test]
+    public function readRecordFoldsAContinuationOntoAValuelessSuperstructure(): void
+    {
+        $reader = self::readerFor("0 @I1@ INDI\n1 NOTE\n2 CONT Second line\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertCount(1, $node->children);
+        self::assertSame('NOTE', $node->children[0]->tag);
+        self::assertSame("\nSecond line", $node->children[0]->value, 'a CONT on a value-less node yields a leading newline');
+        self::assertSame([], $node->children[0]->children, 'the CONT line is not exposed as a child node');
+    }
+
+    /**
+     * A continuation illegally following a pointer line is NOT folded into the value: pointers are
+     * never continued, so folding would produce a node with both a pointer and a value. The
+     * malformed continuation stays a child for the mapping layer to reject, keeping the pointer
+     * and value mutually exclusive.
+     */
+    #[Test]
+    public function readRecordDoesNotFoldAContinuationOntoAPointer(): void
+    {
+        $reader = self::readerFor("0 @F1@ FAM\n1 HUSB @I1@\n2 CONT stray\n0 TRLR\n");
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $husband = $node->children[0];
+        self::assertSame('HUSB', $husband->tag);
+        self::assertSame('I1', $husband->xref, 'the pointer is preserved');
+        self::assertNull($husband->value, 'no value is manufactured on the pointer node');
+        self::assertCount(1, $husband->children, 'the illegal continuation stays a child rather than folding');
+        self::assertSame('CONT', $husband->children[0]->tag);
+    }
+
+    /**
+     * CONC/CONT continuations fold into their superstructure's value while genuine substructures
+     * on the same node still nest as children, and the folding recurses to any depth.
+     */
+    #[Test]
+    public function readRecordFoldsContinuationsButKeepsRealSubstructures(): void
+    {
+        $reader = self::readerFor(
+            "0 @I1@ INDI\n1 NOTE A long\n2 CONC er note\n2 CONT on two lines\n2 SOUR @S1@\n"
+            . "1 BIRT\n2 PLAC A split\n3 CONC  place\n0 TRLR\n"
+        );
+
+        $node = $reader->readRecord();
+
+        self::assertInstanceOf(GedcomNode::class, $node);
+        self::assertCount(2, $node->children);
+
+        $note = $node->children[0];
+        self::assertSame('NOTE', $note->tag);
+        self::assertSame("A longer note\non two lines", $note->value);
+        self::assertCount(1, $note->children, 'only the real SOUR substructure remains a child');
+        self::assertSame('SOUR', $note->children[0]->tag);
+        self::assertSame('S1', $note->children[0]->xref);
+
+        $place = $node->children[1]->children[0];
+        self::assertSame('PLAC', $place->tag);
+        self::assertSame('A split place', $place->value, 'a deeper CONC folds into the nested PLAC value');
+    }
+
+    /**
      * Blank lines inside a record and a trailing blank after the trailer do not create phantom
      * nodes or a spurious extra record: the underlying reader skips them (GH-41), so the tree
      * builder only ever sees real, level-tagged lines.
