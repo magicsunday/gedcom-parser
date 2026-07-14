@@ -21,7 +21,12 @@ use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
+use MagicSunday\Gedcom\TypedModel\EventDetail;
+use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
+use MagicSunday\Gedcom\ValueObject\CalendarDate;
+use MagicSunday\Gedcom\ValueObject\DateType;
+use MagicSunday\Gedcom\ValueObject\DateValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -40,10 +45,19 @@ use function dirname;
 #[CoversClass(GedcomObjectMapper::class)]
 #[CoversClass(JsonMapperFactory::class)]
 #[CoversClass(SubmitterRecord::class)]
+#[CoversClass(IndividualRecord::class)]
+#[CoversClass(EventDetail::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
+#[UsesClass(StreamFactory::class)]
 #[UsesClass(RegistrySchemaLoader::class)]
+#[UsesClass(StructureDefinition::class)]
+#[UsesClass(GedcomVersion::class)]
+#[UsesClass(MappingException::class)]
+#[UsesClass(DateValue::class)]
+#[UsesClass(CalendarDate::class)]
+#[UsesClass(DateType::class)]
 class GedcomObjectMapperTest extends TestCase
 {
     /**
@@ -54,8 +68,24 @@ class GedcomObjectMapperTest extends TestCase
     #[Test]
     public function mapsASubmitterRecordOntoTheTypedModel(): void
     {
-        $stream = (new StreamFactory())->createStream(
+        $record = $this->mapSubmitter(
             "0 @SUBM1@ SUBM\n1 NAME John Doe\n1 PHON 555-1234\n1 PHON 555-5678\n0 TRLR\n"
+        );
+
+        self::assertSame('SUBM1', $record->xref);
+        self::assertSame('John Doe', $record->name);
+        self::assertSame(['555-1234', '555-5678'], $record->phon);
+    }
+
+    /**
+     * A nested event substructure is mapped into a typed EventDetail, and its DATE payload is
+     * parsed into a typed DateValue value object through the registered custom type handler.
+     */
+    #[Test]
+    public function mapsANestedEventWithATypedDateValueObject(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 2000\n0 TRLR\n"
         );
         $stream->rewind();
 
@@ -64,16 +94,35 @@ class GedcomObjectMapperTest extends TestCase
 
         $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
             ->load(GedcomVersion::V551);
-        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-SUBM');
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
         self::assertInstanceOf(StructureDefinition::class, $definition);
 
-        $mapper = new GedcomObjectMapper($schema, JsonMapperFactory::create());
-        $record = $mapper->map($node, $definition, SubmitterRecord::class);
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
 
-        self::assertInstanceOf(SubmitterRecord::class, $record);
-        self::assertSame('SUBM1', $record->xref);
-        self::assertSame('John Doe', $record->name);
-        self::assertSame(['555-1234', '555-5678'], $record->phon);
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertSame('I1', $record->xref);
+
+        // BIRT is {0:M} in the schema, so it maps to a list of events.
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
+        $birth = $record->birt[0];
+        self::assertInstanceOf(EventDetail::class, $birth);
+        self::assertInstanceOf(DateValue::class, $birth->date);
+        self::assertSame('1 JAN 2000', $birth->date->raw);
+        self::assertInstanceOf(CalendarDate::class, $birth->date->date);
+        self::assertSame(2451545, $birth->date->date->toJulianDay(), 'the DATE payload parsed to its Julian day');
+    }
+
+    /**
+     * A non-string DATE payload reaching the value-object handler (a mis-shaped node) fails loud
+     * as a MappingException rather than being silently parsed as an empty date.
+     */
+    #[Test]
+    public function failsLoudlyWhenADateLeafIsMisShaped(): void
+    {
+        $this->expectException(MappingException::class);
+
+        JsonMapperFactory::create()->map(['date' => ['unexpected' => 'value']], EventDetail::class);
     }
 
     /**

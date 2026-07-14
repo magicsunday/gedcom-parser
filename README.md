@@ -97,6 +97,16 @@ the review workflow and the GEDCOM conformance rules — are documented in
 including the machine-readable 7.0 registry) are vendored under
 [`docs/spec/`](docs/spec/) as the normative reference for conformance work.
 
+### Schema-driven typed model (in progress)
+The parser is being refactored onto a schema-driven, fully typed model. A generic tree
+reader (`MagicSunday\Gedcom\Parse`) turns the flat reader lines into an immutable node
+tree; a declarative schema (`MagicSunday\Gedcom\Schema`) is compiled from the vendored
+registry for either GEDCOM version; and a mapping layer (`MagicSunday\Gedcom\Mapping`)
+shapes a node subtree through that schema and hydrates immutable `final readonly` records
+(`MagicSunday\Gedcom\TypedModel`) via [`magicsunday/jsonmapper`](https://github.com/magicsunday/jsonmapper),
+with the value-object leaves (dates, places, ages) parsed by their own grammar. Until the
+untyped result model is fully replaced, the `phpstan` and `cpd` CI steps stay non-blocking.
+
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
 `composer ci:test`, or invoke the individual steps:
