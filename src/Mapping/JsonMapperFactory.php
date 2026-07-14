@@ -110,9 +110,20 @@ final class JsonMapperFactory
         }
 
         if (is_array($value)) {
-            $inner = $value['value'] ?? null;
+            // A value-less leaf (e.g. a 7.0 DATE carrying only a PHRASE) has no `value` key and
+            // resolves to the empty string; a `value` key that is present but not a string is a
+            // genuine mis-shape and fails loud rather than being silently coerced away.
+            if (!array_key_exists('value', $value)) {
+                return '';
+            }
 
-            return is_string($inner) ? $inner : '';
+            $inner = $value['value'];
+
+            if (!is_string($inner)) {
+                throw new MappingException(sprintf('Expected a string %s value, got %s.', $label, get_debug_type($inner)));
+            }
+
+            return $inner;
         }
 
         throw new MappingException(sprintf('Expected a string or shaped %s payload, got %s.', $label, get_debug_type($value)));
@@ -134,9 +145,10 @@ final class JsonMapperFactory
         $name = self::leafValue($value, 'PLAC');
         $form = null;
 
-        if (is_array($value)) {
-            $rawForm = $value['form'] ?? null;
-            $form    = is_string($rawForm) ? $rawForm : null;
+        if (is_array($value) && array_key_exists('form', $value)) {
+            // Resolve the FORM through the same leaf helper as the place name, so a shaped FORM is
+            // handled and a mis-shaped one fails loud consistently rather than being coerced away.
+            $form = self::leafValue($value['form'], 'FORM');
         }
 
         return PlaceValue::fromGedcom($name, $form);

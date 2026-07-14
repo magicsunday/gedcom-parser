@@ -165,6 +165,20 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A shaped leaf whose `value` key is present but not a string is a mis-shape (distinct from a
+     * value-less leaf, which resolves to the empty string) and fails loud rather than silently
+     * coercing the payload away.
+     */
+    #[Test]
+    public function failsLoudlyWhenAShapedLeafValueIsNotAString(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string PLAC value, got array/');
+
+        JsonMapperFactory::create()->map(['plac' => ['value' => ['nested']]], EventDetail::class);
+    }
+
+    /**
      * A PLAC with no FORM substructure maps to a PlaceValue whose form is null while the value is
      * still split into its jurisdiction levels.
      */
