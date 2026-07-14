@@ -573,6 +573,37 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A malformed, pointer-less family link (a `FAMC`/`FAMS` line with no cross-reference) carries
+     * no usable link, so it is tolerantly skipped rather than failing the whole record — a valid
+     * sibling link on the same individual still maps.
+     */
+    #[Test]
+    public function skipsAValuelessFamilyLinkAndKeepsTheValidOne(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 FAMC\n1 FAMS @F2@\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertSame([], $record->famc, 'a pointer-less FAMC is skipped rather than mapped or fatal');
+
+        self::assertCount(1, $record->fams, 'the valid FAMS on the same record still maps');
+        self::assertSame('F2', $record->fams[0]->xref);
+    }
+
+    /**
      * A family record maps its partner and child cross-reference pointers (HUSB/WIFE single, CHIL
      * repeatable) and its repeatable marriage events, each a typed EventDetail carrying the shared
      * event's date and place.
