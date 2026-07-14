@@ -14,10 +14,11 @@ concurrency:
 jobs:
     review:
         runs-on: ubuntu-latest
+        timeout-minutes: 20
 
         # Only review same-repository, non-draft pull requests: a fork PR does not receive the
-        # ANTHROPIC_API_KEY secret (GitHub withholds it from fork `pull_request` runs), so the review
-        # would fail; maintainer PRs are the ones this gate covers.
+        # secret (GitHub withholds it from fork `pull_request` runs), so its review would be inert
+        # anyway; maintainer PRs are the ones this gate covers.
         if: >-
             github.event.pull_request.draft == false
             && github.event.pull_request.head.repo.full_name == github.repository
@@ -26,17 +27,27 @@ jobs:
             contents: read
             pull-requests: write
 
+        # Authenticate with a Claude Pro/Max subscription OAuth token (generated locally by
+        # `claude setup-token`), NOT a metered ANTHROPIC_API_KEY — the review runs on the existing
+        # subscription rather than a pay-per-token API bill. When the CLAUDE_CODE_OAUTH_TOKEN secret
+        # is unset the token is empty, so every step below is skipped and the job stays green
+        # (inert) until the secret is added.
+        env:
+            CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
         steps:
             - name: Checkout repository
+              if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
               uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
               with:
                   fetch-depth: 0
                   persist-credentials: false
 
             - name: Review the pull request
+              if: env.CLAUDE_CODE_OAUTH_TOKEN != ''
               uses: anthropics/claude-code-action@f1bd27ca5b54584506e40e17884d90bdaaa1a9b3 # v1
               with:
-                  anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+                  claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
                   track_progress: true
                   prompt: |
                       Review this pull request for the magicsunday/gedcom-parser library and post
