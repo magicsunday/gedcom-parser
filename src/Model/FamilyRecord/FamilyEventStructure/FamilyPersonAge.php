@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 
 use function is_string;
+use function trim;
 
 /**
  * The family person AGE structure.
@@ -41,6 +42,6 @@ class FamilyPersonAge extends DataObject implements FamilyPersonAgeInterface
     {
         $age = $this->getValue(self::TAG_AGE);
 
-        return is_string($age) ? AgeValue::fromGedcom($age) : null;
+        return (is_string($age) && (trim($age) !== '')) ? AgeValue::fromGedcom($age) : null;
     }
 }

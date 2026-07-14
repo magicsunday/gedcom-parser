@@ -52,6 +52,24 @@ foreach ($gedcom->getIndividual() as $individual) {
 
 You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
 
+### Typed value objects
+
+Genealogically structured values are exposed as typed, `final readonly` value objects (in
+`MagicSunday\Gedcom\ValueObject`) alongside their raw strings, so you can sort, compare and
+render them without re-parsing:
+
+- `EventDetail::getDateValue(): ?DateValue` — the `DATE_VALUE` grammar (qualifiers `ABT` /
+  `CAL` / `EST`, ranges `BEF` / `AFT` / `BET … AND …`, periods `FROM` / `TO`, interpreted and
+  phrase dates) around one or two calendar-aware `CalendarDate`s (every GEDCOM calendar, plus
+  `B.C.` and dual `1699/00` years).
+- `PlaceStructure::getPlaceValue(): ?PlaceValue` — the comma-separated jurisdiction hierarchy,
+  with a `mapped()` view onto the place `FORM` labels.
+- `FamilyPersonAge`/`IndividualEventDetail::getAgeValue(): ?AgeValue` — the `AGE_AT_EVENT`
+  grammar (`< 8y`, `72y 3m 2d`, `CHILD` / `INFANT` / `STILLBORN`).
+
+Each accessor returns `null` when its tag is absent or empty; the parsed object keeps the
+original raw text.
+
 The parser reads any readable stream — including non-seekable ones such as a pipe
 (`cat tree.ged | your-app`) or a network response body — and accepts all four GEDCOM 5.5.1
 line terminators (CR, LF, CRLF and LFCR), so classic-Mac (CR-only) files parse correctly.

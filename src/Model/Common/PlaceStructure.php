@@ -18,6 +18,7 @@ use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 
 use function is_string;
+use function trim;
 
 /**
  * The PLAC (place) structure.
@@ -53,7 +54,7 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     {
         $name = $this->getValue(self::TAG_PLACE_NAME);
 
-        if (!is_string($name)) {
+        if (!is_string($name) || (trim($name) === '')) {
             return null;
         }
 

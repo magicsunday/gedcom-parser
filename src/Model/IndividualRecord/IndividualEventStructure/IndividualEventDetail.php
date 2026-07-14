@@ -17,6 +17,7 @@ use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 
 use function is_string;
+use function trim;
 
 /**
  * The individual event detail structure.
@@ -44,6 +45,6 @@ class IndividualEventDetail extends EventDetail implements IndividualEventDetail
     {
         $age = $this->getValue(self::TAG_AGE);
 
-        return is_string($age) ? AgeValue::fromGedcom($age) : null;
+        return (is_string($age) && (trim($age) !== '')) ? AgeValue::fromGedcom($age) : null;
     }
 }
