@@ -677,6 +677,26 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A descriptive leaf split across CONC/CONT continuation lines maps to its full reassembled
+     * value, not just the first physical line — the typed model reflects the whole logical text.
+     */
+    #[Test]
+    public function mapsASourceTitleReassembledFromContinuationLines(): void
+    {
+        $record = $this->mapSource(
+            "0 @S1@ SOUR\n"
+            . "1 TITL A very long\n2 CONC  source title\n2 CONT with a second line\n"
+            . "0 TRLR\n"
+        );
+
+        self::assertSame(
+            "A very long source title\nwith a second line",
+            $record->titl,
+            'the CONC/CONT continuation lines are reassembled into the typed title'
+        );
+    }
+
+    /**
      * A source record carrying only its identifier maps every optional descriptive leaf to null
      * rather than to an empty string or a fatal.
      */
