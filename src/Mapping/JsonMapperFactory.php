@@ -63,19 +63,20 @@ final class JsonMapperFactory
         );
 
         // A GEDCOM value-object leaf is parsed from its raw payload through its own grammar rather
-        // than mapped field by field, so each is registered as a custom type. DATE and AGE are
-        // plain string leaves; PLAC carries both a value and a FORM substructure, so its shaped
-        // node is an array from which the value object takes the place name and the form hierarchy.
+        // than mapped field by field, so each is registered as a custom type. A leaf that also
+        // declares substructures is shaped as an array carrying its own line value under the
+        // `value` key (a GEDCOM 7.0 DATE/AGE carries PHRASE/TIME; PLAC carries FORM), so each
+        // handler resolves the leaf value from either a bare string or that shaped array.
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
                 DateValue::class,
-                static fn (mixed $value): DateValue => DateValue::fromGedcom(self::requireString($value, 'DATE')),
+                static fn (mixed $value): DateValue => DateValue::fromGedcom(self::leafValue($value, 'DATE')),
             ),
         );
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
                 AgeValue::class,
-                static fn (mixed $value): AgeValue => AgeValue::fromGedcom(self::requireString($value, 'AGE')),
+                static fn (mixed $value): AgeValue => AgeValue::fromGedcom(self::leafValue($value, 'AGE')),
             ),
         );
         $mapper->addTypeHandler(
@@ -89,29 +90,38 @@ final class JsonMapperFactory
     }
 
     /**
-     * Returns the value as a string, failing loud when a string-payload value-object leaf is
-     * mis-shaped (a non-string reaching its handler).
+     * Resolves the string leaf payload of a value-object node. A leaf that also declares
+     * substructures is shaped as an array carrying its own line value under the `value` key (a
+     * GEDCOM 7.0 DATE/AGE carries PHRASE/TIME), so the value is taken from that key; a value-less
+     * leaf resolves to the empty string. A non-string, non-array payload is a mis-shape and fails
+     * loud.
      *
-     * @param mixed  $value The shaped payload
+     * @param mixed  $value The shaped payload (a bare string, or a shaped array)
      * @param string $label The tag name for the error message
      *
      * @return string
      *
-     * @throws MappingException When the value is not a string
+     * @throws MappingException When the value is neither a string nor a shaped array
      */
-    private static function requireString(mixed $value, string $label): string
+    private static function leafValue(mixed $value, string $label): string
     {
-        if (!is_string($value)) {
-            throw new MappingException(sprintf('Expected a string %s payload, got %s.', $label, get_debug_type($value)));
+        if (is_string($value)) {
+            return $value;
         }
 
-        return $value;
+        if (is_array($value)) {
+            $inner = $value['value'] ?? null;
+
+            return is_string($inner) ? $inner : '';
+        }
+
+        throw new MappingException(sprintf('Expected a string or shaped %s payload, got %s.', $label, get_debug_type($value)));
     }
 
     /**
      * Builds a PlaceValue from a shaped PLAC node. PLAC carries both a place-name value and a FORM
-     * substructure, so its shaped node is an array; the FORM hierarchy is passed through so the
-     * value object can map the jurisdiction labels.
+     * substructure, so its shaped node is an array; the place name is resolved as a leaf value and
+     * the FORM hierarchy passed through so the value object can map the jurisdiction labels.
      *
      * @param mixed $value The shaped PLAC payload (an array, or a plain string when form-less)
      *
@@ -121,20 +131,14 @@ final class JsonMapperFactory
      */
     private static function placeFromShaped(mixed $value): PlaceValue
     {
-        if (is_string($value)) {
-            return PlaceValue::fromGedcom($value);
-        }
+        $name = self::leafValue($value, 'PLAC');
+        $form = null;
 
         if (is_array($value)) {
-            $place = $value['value'] ?? null;
-            $form  = $value['form'] ?? null;
-
-            return PlaceValue::fromGedcom(
-                is_string($place) ? $place : '',
-                is_string($form) ? $form : null,
-            );
+            $rawForm = $value['form'] ?? null;
+            $form    = is_string($rawForm) ? $rawForm : null;
         }
 
-        throw new MappingException(sprintf('Expected a string or shaped PLAC payload, got %s.', get_debug_type($value)));
+        return PlaceValue::fromGedcom($name, $form);
     }
 }

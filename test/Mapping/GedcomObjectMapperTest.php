@@ -126,37 +126,42 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * A non-string DATE payload reaching the value-object handler (a mis-shaped node) fails loud
-     * as a MappingException rather than being silently parsed as an empty date.
+     * A scalar non-string DATE payload reaching the value-object handler (a mis-shaped node) fails
+     * loud as a MappingException. A shaped array is NOT a mis-shape — a GEDCOM 7.0 DATE carries
+     * PHRASE/TIME substructures, so its payload legitimately arrives as an array (see
+     * {@see mapsAGedcom7EventWhoseDateAndAgeCarrySubstructures}).
      */
     #[Test]
     public function failsLoudlyWhenADateLeafIsMisShaped(): void
     {
         $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped DATE payload, got/');
 
-        JsonMapperFactory::create()->map(['date' => ['unexpected' => 'value']], EventDetail::class);
+        JsonMapperFactory::create()->map(['date' => 42], EventDetail::class);
     }
 
     /**
-     * A non-array, non-string PLAC payload reaching the place handler fails loud.
+     * A scalar non-string, non-array PLAC payload reaching the place handler fails loud.
      */
     #[Test]
     public function failsLoudlyWhenAPlaceLeafIsMisShaped(): void
     {
         $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped PLAC payload, got/');
 
         JsonMapperFactory::create()->map(['plac' => 42], EventDetail::class);
     }
 
     /**
-     * A non-string AGE payload reaching the age handler fails loud.
+     * A scalar non-string AGE payload reaching the age handler fails loud.
      */
     #[Test]
     public function failsLoudlyWhenAnAgeLeafIsMisShaped(): void
     {
         $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped AGE payload, got/');
 
-        JsonMapperFactory::create()->map(['age' => ['unexpected' => 'value']], EventDetail::class);
+        JsonMapperFactory::create()->map(['age' => 42], EventDetail::class);
     }
 
     /**
@@ -187,6 +192,47 @@ class GedcomObjectMapperTest extends TestCase
         self::assertInstanceOf(PlaceValue::class, $place);
         self::assertNull($place->form, 'a PLAC without a FORM substructure has a null form');
         self::assertSame(['Boston', 'Massachusetts'], $place->levels);
+    }
+
+    /**
+     * A GEDCOM 7.0 DATE and AGE declare PHRASE/TIME substructures, so their payload is shaped as an
+     * array (with the line value under the `value` key) rather than a bare string. The date and age
+     * handlers must resolve the leaf value from that shaped array; a regression here would throw on
+     * every 7.0 event that carries a dated substructure.
+     */
+    #[Test]
+    public function mapsAGedcom7EventWhoseDateAndAgeCarrySubstructures(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n"
+            . "2 DATE 1 JAN 2000\n3 PHRASE New Year's Day\n"
+            . "2 AGE 0y\n3 PHRASE at birth\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
+        $birth = $record->birt[0];
+
+        // The DATE arrives as a shaped array (it carries a PHRASE), and its value is still parsed.
+        self::assertInstanceOf(DateValue::class, $birth->date);
+        self::assertSame('1 JAN 2000', $birth->date->raw, 'the DATE value is resolved from the shaped array');
+
+        // Likewise the AGE, shaped because it carries a PHRASE.
+        self::assertInstanceOf(AgeValue::class, $birth->age);
+        self::assertSame(0, $birth->age->years, 'the AGE value is resolved from the shaped array');
     }
 
     /**
@@ -285,7 +331,7 @@ class GedcomObjectMapperTest extends TestCase
             ->map($node, $definition, IndividualRecord::class);
 
         self::assertInstanceOf(IndividualRecord::class, $record);
-        self::assertCount(1, $record->birt);
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
         $birth = $record->birt[0];
 
         self::assertInstanceOf(DateValue::class, $birth->date);
