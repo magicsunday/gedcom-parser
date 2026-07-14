@@ -1,0 +1,62 @@
+name: Claude Code Review
+
+on:
+    pull_request:
+        types: [opened, synchronize]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: claude-review-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    review:
+        runs-on: ubuntu-latest
+
+        # Only review same-repository, non-draft pull requests: a fork PR does not receive the
+        # ANTHROPIC_API_KEY secret (GitHub withholds it from fork `pull_request` runs), so the review
+        # would fail; maintainer PRs are the ones this gate covers.
+        if: >-
+            github.event.pull_request.draft == false
+            && github.event.pull_request.head.repo.full_name == github.repository
+
+        permissions:
+            contents: read
+            pull-requests: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Review the pull request
+              uses: anthropics/claude-code-action@f1bd27ca5b54584506e40e17884d90bdaaa1a9b3 # v1
+              with:
+                  anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+                  track_progress: true
+                  prompt: |
+                      Review this pull request for the magicsunday/gedcom-parser library and post
+                      your feedback as review comments. This is a PHP 8.3+ GEDCOM 5.5.1/7.0 file
+                      parser being refactored onto a schema-driven, fully typed model.
+
+                      Focus on:
+                      - Correctness and GEDCOM 5.5.1/7.0 spec conformance (line grammar, pointers vs
+                        calendar escapes, level rules, dates/places/ages, character sets, both
+                        supported versions).
+                      - Test quality: real behavioural assertions, red-first discriminators, no
+                        vacuous or coverage-only tests, complete PHPUnit coverage annotations.
+                      - House PHP style: strict_types, final readonly value objects, use-function
+                        imports, no mixed/empty(), no @phpstan-ignore, attributes after PHPDoc.
+                      - Security and unsafe patterns.
+
+                      Do NOT flag the ~247 known PHPStan level-9 baseline errors in the legacy result
+                      model: they are tracked and deferred to the typed-model refactor (issue #20).
+                      Verify each finding against the source before raising it; be concrete and cite
+                      file:line.
+
+                      REPO: ${{ github.repository }}
+                      PR NUMBER: ${{ github.event.pull_request.number }}
