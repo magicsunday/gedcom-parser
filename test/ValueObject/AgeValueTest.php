@@ -119,6 +119,10 @@ class AgeValueTest extends TestCase
         $age = new FamilyPersonAge();
         self::assertNull($age->getAgeValue());
 
+        $empty = new FamilyPersonAge();
+        $empty->setValue(FamilyPersonAgeInterface::TAG_AGE, '  ');
+        self::assertNull($empty->getAgeValue(), 'an empty AGE is treated as absent');
+
         $age->setValue(FamilyPersonAgeInterface::TAG_AGE, '72y');
         $value = $age->getAgeValue();
 

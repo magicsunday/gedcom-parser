@@ -149,6 +149,10 @@ class PlaceValueTest extends TestCase
         $place = new PlaceStructure();
         self::assertNull($place->getPlaceValue());
 
+        $empty = new PlaceStructure();
+        $empty->setValue(PlaceStructureInterface::TAG_PLACE_NAME, '  ');
+        self::assertNull($empty->getPlaceValue(), 'an empty PLAC is treated as absent');
+
         $place->setValue(PlaceStructureInterface::TAG_PLACE_NAME, 'Cove, Cache, Utah, USA');
         $place->setValue(PlaceStructureInterface::TAG_FORM, 'City, County, State, Country');
 
