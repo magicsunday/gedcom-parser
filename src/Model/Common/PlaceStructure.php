@@ -15,6 +15,9 @@ use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\MapInterface;
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
+
+use function is_string;
 
 /**
  * The PLAC (place) structure.
@@ -41,6 +44,22 @@ class PlaceStructure extends DataObject implements PlaceStructureInterface
     public function getFormat(): ?string
     {
         return $this->getValue(self::TAG_FORM);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPlaceValue(): ?PlaceValue
+    {
+        $name = $this->getValue(self::TAG_PLACE_NAME);
+
+        if (!is_string($name)) {
+            return null;
+        }
+
+        $form = $this->getValue(self::TAG_FORM);
+
+        return PlaceValue::fromGedcom($name, is_string($form) ? $form : null);
     }
 
     /**

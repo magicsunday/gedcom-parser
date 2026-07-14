@@ -14,6 +14,7 @@ namespace MagicSunday\Gedcom\Interfaces\Common;
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\MapInterface;
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\PlacePhoneticVariationInterface;
 use MagicSunday\Gedcom\Interfaces\Common\PlaceStructure\PlaceRomanizedVariationInterface;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 
 /**
  * The PLAC (place) structure.
@@ -57,6 +58,11 @@ interface PlaceStructureInterface extends NoteInterface
     public function getName(): string;
 
     public function getFormat(): ?string;
+
+    /**
+     * Returns the place as a typed value object, or NULL when no PLACE_NAME is present.
+     */
+    public function getPlaceValue(): ?PlaceValue;
 
     /**
      * @return PlacePhoneticVariationInterface[]
