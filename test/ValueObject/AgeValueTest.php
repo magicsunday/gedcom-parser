@@ -68,6 +68,9 @@ class AgeValueTest extends TestCase
             'garbage between units' => ['72y 3 minutes 2d', null, null, null, null, null],
             'label inside a word'   => ['aged 5 years, 60y', null, null, null, null, null],
             'space within a pair'   => ['8 y', null, null, null, null, null],
+            // A relational qualifier without a valid operand is meaningless; drop it entirely.
+            'modifier only'         => ['<', null, null, null, null, null],
+            'modifier then garbage' => ['> garbage', null, null, null, null, null],
         ];
     }
 

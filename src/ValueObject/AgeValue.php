@@ -84,6 +84,17 @@ final readonly class AgeValue
             $days   = self::toInt($matches[3] ?? '');
         }
 
+        // A relational qualifier is only meaningful with an operand. When nothing followed it,
+        // the value is not a conformant age at all, so drop the qualifier too.
+        if (
+            !$keyword instanceof AgeKeyword
+            && ($years === null)
+            && ($months === null)
+            && ($days === null)
+        ) {
+            $modifier = null;
+        }
+
         return new self($modifier, $keyword, $years, $months, $days, $raw);
     }
 
