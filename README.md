@@ -61,7 +61,8 @@ render them without re-parsing:
 - `EventDetail::getDateValue(): ?DateValue` — the `DATE_VALUE` grammar (qualifiers `ABT` /
   `CAL` / `EST`, ranges `BEF` / `AFT` / `BET … AND …`, periods `FROM` / `TO`, interpreted and
   phrase dates) around one or two calendar-aware `CalendarDate`s (every GEDCOM calendar, plus
-  `B.C.` and dual `1699/00` years).
+  `B.C.` and dual `1699/00` years). `CalendarDate::toJulianDay()` gives a calendar-independent
+  Julian Day Number for sorting and comparison (Gregorian and Julian; the other calendars follow).
 - `PlaceStructure::getPlaceValue(): ?PlaceValue` — the comma-separated jurisdiction hierarchy,
   with a `mapped()` view onto the place `FORM` labels.
 - `FamilyPersonAge`/`IndividualEventDetail::getAgeValue(): ?AgeValue` — the `AGE_AT_EVENT`
