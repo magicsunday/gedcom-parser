@@ -9,6 +9,11 @@ GEDCOM stream line by line and exposes the records (individuals, families, sourc
 notes, …) as an object model.
 
 
+## Requirements
+- PHP 8.3 or newer (verified on 8.3, 8.4 and 8.5)
+- The `ext-mbstring` and `ext-intl` extensions (used to transcode the source encoding to UTF-8)
+
+
 ## Installation
 Install with [Composer](https://getcomposer.org/):
 
