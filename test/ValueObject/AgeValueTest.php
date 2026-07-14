@@ -62,6 +62,12 @@ class AgeValueTest extends TestCase
             'lowercase keyword'     => ['child', null, AgeKeyword::Child, null, null, null],
             'uppercase unit labels' => ['5Y 2M', null, null, 5, 2, null],
             'empty'                 => ['', null, null, null, null, null],
+            // Non-conformant input is left unparsed (all NULL) rather than yielding a wrong parse.
+            'reversed order'        => ['1d 2m 3y', null, null, null, null, null],
+            'keyword with trailing' => ['CHILD 4y', null, null, null, null, null],
+            'garbage between units' => ['72y 3 minutes 2d', null, null, null, null, null],
+            'label inside a word'   => ['aged 5 years, 60y', null, null, null, null, null],
+            'space within a pair'   => ['8 y', null, null, null, null, null],
         ];
     }
 

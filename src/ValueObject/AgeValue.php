@@ -72,29 +72,30 @@ final readonly class AgeValue
         $months = null;
         $days   = null;
 
-        if (!$keyword instanceof AgeKeyword) {
-            $years  = self::matchUnit($value, 'y');
-            $months = self::matchUnit($value, 'm');
-            $days   = self::matchUnit($value, 'd');
+        // The whole value must match the ordered YYy MMm DDDd grammar (any subset). A number and
+        // its label are concatenated; pairs are whitespace-separated. Anchoring rejects reordered
+        // or garbage input outright rather than salvaging wrong fields from it.
+        if (
+            !$keyword instanceof AgeKeyword
+            && (preg_match('/^(?:(\d+)y)?(?:\s*(\d+)m)?(?:\s*(\d+)d)?$/i', $value, $matches) === 1)
+        ) {
+            $years  = self::toInt($matches[1] ?? '');
+            $months = self::toInt($matches[2] ?? '');
+            $days   = self::toInt($matches[3] ?? '');
         }
 
         return new self($modifier, $keyword, $years, $months, $days, $raw);
     }
 
     /**
-     * Extracts the integer count preceding a single-letter duration label (case-insensitive).
+     * Converts a captured duration group into an integer, or NULL when the group was absent.
      *
-     * @param string $value The qualifier-stripped age value
-     * @param string $unit  The duration label to match (`y`, `m` or `d`)
+     * @param string $match The captured digits, or an empty string when the label was not present
      *
-     * @return int|null The matched count, or NULL when the label is absent
+     * @return int|null The parsed count, or NULL
      */
-    private static function matchUnit(string $value, string $unit): ?int
+    private static function toInt(string $match): ?int
     {
-        if (preg_match('/(\d+)\s*' . $unit . '/i', $value, $matches) === 1) {
-            return (int) $matches[1];
-        }
-
-        return null;
+        return $match !== '' ? (int) $match : null;
     }
 }
