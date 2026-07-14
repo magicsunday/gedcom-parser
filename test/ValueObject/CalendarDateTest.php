@@ -102,4 +102,39 @@ class CalendarDateTest extends TestCase
     {
         self::assertSame('  @#DJULIAN@ 1700  ', CalendarDate::fromGedcom('  @#DJULIAN@ 1700  ')->raw);
     }
+
+    /**
+     * Data provider for the Julian Day Number conversion.
+     *
+     * The expected values are well-known reference Julian Day Numbers.
+     *
+     * @return array<string, array{0: string, 1: int|null}>
+     */
+    public static function julianDayProvider(): array
+    {
+        return [
+            'gregorian 2000'           => ['1 JAN 2000', 2451545],
+            'gregorian unix epoch'     => ['1 JAN 1970', 2440588],
+            'gregorian 1 bc'           => ['1 JAN 1 B.C.', 1721060],
+            'julian 2000'              => ['@#DJULIAN@ 1 JAN 2000', 2451558],
+            'julian ad 1'              => ['@#DJULIAN@ 1 JAN 1', 1721424],
+            'julian day epoch'         => ['@#DJULIAN@ 1 JAN 4713 B.C.', 0],
+            'partial defaults start'   => ['2000', 2451545],
+            'dual year uses new style' => ['11 FEB 1731/32', 2353701],
+            'hebrew is unconverted'    => ['@#DHEBREW@ 1 TSH 5785', null],
+            'french is unconverted'    => ['@#DFRENCH R@ 1 VEND 1', null],
+            'no year is null'          => ['MAR', null],
+        ];
+    }
+
+    /**
+     * @param string   $raw      The raw DATE token
+     * @param int|null $expected The expected Julian Day Number, or NULL
+     */
+    #[Test]
+    #[DataProvider('julianDayProvider')]
+    public function toJulianDayConvertsSupportedCalendars(string $raw, ?int $expected): void
+    {
+        self::assertSame($expected, CalendarDate::fromGedcom($raw)->toJulianDay());
+    }
 }
