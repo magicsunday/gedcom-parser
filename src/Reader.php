@@ -239,9 +239,12 @@ class Reader
             $this->resolveEncoding();
         }
 
-        // Reset the per-line state so a line missing an identifier, cross-reference or
-        // value cannot inherit the previous line's data.
+        // Reset the per-line state so a line missing an identifier, cross-reference or value —
+        // or a skipped blank line — cannot inherit the previous line's data. The level and tag
+        // are reset too so their initial or previous values can never leak to a consumer.
+        $this->level      = -1;
         $this->identifier = '';
+        $this->tag        = '';
         $this->xref       = '';
         $this->value      = '';
 
@@ -251,24 +254,31 @@ class Reader
             $this->lastLine = $this->pushback;
             $this->pushback = null;
         } else {
-            $line = $this->nextLine();
+            do {
+                $line = $this->nextLine();
 
-            // The empty string signals end of stream, which is not a line and must not be
-            // counted.
-            if ($line !== '') {
-                ++$this->lineCount;
+                // The empty string signals end of stream, which is not a line and must not be
+                // counted.
+                if ($line !== '') {
+                    ++$this->lineCount;
 
-                // Transcode the physical line to UTF-8. ANSEL and Windows-1252 both preserve
-                // 0x00-0x7F, so the structural framing is untouched and only value bytes
-                // change; ASCII/UTF-8 pass through (a UTF-8 BOM was consumed by
-                // resolveEncoding()).
-                if ($this->encoding === self::ENCODING_ANSEL) {
-                    $line = AnselDecoder::decode($line);
-                } elseif ($this->encoding === self::ENCODING_CP1252) {
-                    $decoded = mb_convert_encoding($line, 'UTF-8', self::ENCODING_CP1252);
-                    $line    = $decoded !== false ? $decoded : $line;
+                    // Transcode the physical line to UTF-8. ANSEL and Windows-1252 both preserve
+                    // 0x00-0x7F, so the structural framing is untouched and only value bytes
+                    // change; ASCII/UTF-8 pass through (a UTF-8 BOM was consumed by
+                    // resolveEncoding()).
+                    if ($this->encoding === self::ENCODING_ANSEL) {
+                        $line = AnselDecoder::decode($line);
+                    } elseif ($this->encoding === self::ENCODING_CP1252) {
+                        $decoded = mb_convert_encoding($line, 'UTF-8', self::ENCODING_CP1252);
+                        $line    = $decoded !== false ? $decoded : $line;
+                    }
                 }
-            }
+
+                // A blank or whitespace-only line carries no level or tag, so serving it would
+                // leave the structural state undefined; skip it and read on. The counter still
+                // advanced above so error line numbers stay accurate. The empty end-of-stream
+                // marker breaks the loop.
+            } while (($line !== '') && (trim($line) === ''));
 
             $this->lastLine = $line;
         }

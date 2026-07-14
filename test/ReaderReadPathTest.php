@@ -18,6 +18,7 @@ use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Stream;
 use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -356,6 +357,103 @@ class ReaderReadPathTest extends TestCase
     private function countIndividualsFromStream(Stream $stream): int
     {
         return count((new Parser($stream))->parse()->getIndividual());
+    }
+
+    /**
+     * Data provider for blank-line skipping.
+     *
+     * @return array<string, array{0: string, 1: list<array{0: int, 1: string}>}>
+     */
+    public static function blankLineProvider(): array
+    {
+        return [
+            // A blank line between substructures at DIFFERENT levels proves the following line
+            // is served with its own level AND tag, never the previous line's stale pair.
+            'between substructures' => [
+                "0 @I1@ INDI\n1 NAME John\n\n2 GIVN John\n0 TRLR\n",
+                [[0, 'INDI'], [1, 'NAME'], [2, 'GIVN'], [0, 'TRLR']],
+            ],
+            // A trailing blank after the trailer — a common real-world export shape — must not
+            // become a phantom duplicate record.
+            'trailing after trailer' => [
+                "0 HEAD\n0 TRLR\n\n",
+                [[0, 'HEAD'], [0, 'TRLR']],
+            ],
+            // A leading blank must not be served first as a phantom -1/'' line.
+            'leading' => [
+                "\n0 HEAD\n0 TRLR\n",
+                [[0, 'HEAD'], [0, 'TRLR']],
+            ],
+            // A run of consecutive blanks exercises the skip loop iterating more than once, so
+            // an if-instead-of-while regression that skips only one blank per read() is caught.
+            'multiple consecutive' => [
+                "0 HEAD\n\n\n\n0 TRLR\n",
+                [[0, 'HEAD'], [0, 'TRLR']],
+            ],
+            // A whitespace-only line (not a bare terminator) is skipped by the trim() predicate,
+            // guarding against a future narrowing to an exact-newline check.
+            'whitespace only' => [
+                "0 HEAD\n   \n0 TRLR\n",
+                [[0, 'HEAD'], [0, 'TRLR']],
+            ],
+        ];
+    }
+
+    /**
+     * Blank and whitespace-only lines are skipped, so every served line carries its own level
+     * and tag and never inherits the previous line's stale structural state.
+     *
+     * @param string                         $gedcom   the raw GEDCOM document
+     * @param list<array{0: int, 1: string}> $expected the expected level/tag pair of each served line
+     */
+    #[Test]
+    #[DataProvider('blankLineProvider')]
+    public function readSkipsBlankLines(string $gedcom, array $expected): void
+    {
+        self::assertSame($expected, $this->drainLevelTagPairs($gedcom));
+    }
+
+    /**
+     * A skipped blank line still advances the line counter, so error line numbers reported by
+     * the exceptions stay aligned with the physical file.
+     */
+    #[Test]
+    public function readCountsSkippedBlankLinesForAccurateLineNumbers(): void
+    {
+        // Five physical lines: HEAD, SOUR, a blank, CHAR, TRLR — the blank must be counted too.
+        $stream = (new StreamFactory())->createStream("0 HEAD\n1 SOUR X\n\n1 CHAR UTF-8\n0 TRLR\n");
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+
+        while ($reader->read()) {
+            // Drain the reader.
+        }
+
+        self::assertSame(5, $reader->count(), 'the skipped blank line must still be counted');
+    }
+
+    /**
+     * Drains a reader over an in-memory GEDCOM string into an ordered list of its level and tag
+     * per served line.
+     *
+     * @param string $gedcom the raw GEDCOM document
+     *
+     * @return list<array{0: int, 1: string}> the level/tag pair of each served line, in order
+     */
+    private function drainLevelTagPairs(string $gedcom): array
+    {
+        $stream = (new StreamFactory())->createStream($gedcom);
+        $stream->rewind();
+
+        $reader = new Reader($stream);
+        $lines  = [];
+
+        while ($reader->read()) {
+            $lines[] = [$reader->level(), $reader->tag()];
+        }
+
+        return $lines;
     }
 
     /**
