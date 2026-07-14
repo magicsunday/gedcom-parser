@@ -15,7 +15,9 @@ namespace MagicSunday\Gedcom\TypedModel;
  * A typed multimedia file reference (the `FILE` substructure of an `OBJE` record).
  *
  * References an external multimedia file by its path or URL — carried as the line value —
- * together with its required {@see MediaFormat} and an optional descriptive title.
+ * together with its {@see MediaFormat} and an optional descriptive title. The reference is
+ * nullable so that a malformed, reference-less FILE does not drop the whole file list of an
+ * otherwise valid record.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -24,12 +26,13 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class MultimediaFile
 {
     /**
-     * @param string           $value The file reference — a path or URL (the FILE line value)
+     * @param string|null      $value The file reference — a path or URL (the FILE line value), or
+     *                                NULL when the FILE line carries no reference
      * @param MediaFormat|null $form  The file format (FORM), or NULL when absent
      * @param string|null      $titl  The descriptive title (TITL), or NULL when absent
      */
     public function __construct(
-        public string $value,
+        public ?string $value = null,
         public ?MediaFormat $form = null,
         public ?string $titl = null,
     ) {

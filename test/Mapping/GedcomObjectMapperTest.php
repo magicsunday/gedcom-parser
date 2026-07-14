@@ -754,8 +754,8 @@ class GedcomObjectMapperTest extends TestCase
     {
         $stream = (new StreamFactory())->createStream(
             "0 @O1@ OBJE\n"
-            . "1 FILE http://example.test/portrait.jpg\n2 FORM jpeg\n3 TYPE photo\n2 TITL Family portrait\n"
-            . "1 FILE http://example.test/register.pdf\n2 FORM pdf\n"
+            . "1 FILE http://example.test/portrait.jpg\n2 FORM jpg\n3 TYPE photo\n2 TITL Family portrait\n"
+            . "1 FILE http://example.test/register.tif\n2 FORM tif\n"
             . "0 TRLR\n"
         );
         $stream->rewind();
@@ -778,16 +778,43 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame('http://example.test/portrait.jpg', $portrait->value);
         self::assertSame('Family portrait', $portrait->titl);
         self::assertInstanceOf(MediaFormat::class, $portrait->form);
-        self::assertSame('jpeg', $portrait->form->value);
+        self::assertSame('jpg', $portrait->form->value);
         self::assertSame('photo', $portrait->form->type, 'the nested FORM TYPE is threaded through');
 
         $register = $record->file[1];
         self::assertInstanceOf(MultimediaFile::class, $register);
-        self::assertSame('http://example.test/register.pdf', $register->value);
+        self::assertSame('http://example.test/register.tif', $register->value);
         self::assertNull($register->titl, 'an absent FILE title stays null');
         self::assertInstanceOf(MediaFormat::class, $register->form);
-        self::assertSame('pdf', $register->form->value);
+        self::assertSame('tif', $register->form->value);
         self::assertNull($register->form->type, 'an absent FORM TYPE stays null');
+    }
+
+    /**
+     * A malformed, reference-less FILE must not drop the whole file list: the record still maps
+     * and a valid sibling FILE survives, while the malformed one maps to a null reference.
+     */
+    #[Test]
+    public function keepsAValidMultimediaFileAlongsideAReferencelessOne(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @O1@ OBJE\n1 FILE http://example.test/portrait.jpg\n2 FORM jpg\n1 FILE\n2 FORM tif\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, MultimediaRecord::class);
+
+        self::assertInstanceOf(MultimediaRecord::class, $record);
+        self::assertCount(2, $record->file, 'a reference-less FILE does not drop the valid sibling');
+        self::assertSame('http://example.test/portrait.jpg', $record->file[0]->value, 'the valid file survives');
+        self::assertNull($record->file[1]->value, 'the reference-less file maps to a null reference');
     }
 
     /**

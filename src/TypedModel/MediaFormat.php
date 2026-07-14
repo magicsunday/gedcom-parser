@@ -14,8 +14,8 @@ namespace MagicSunday\Gedcom\TypedModel;
 /**
  * The typed format of a multimedia file (the `FORM` substructure of an `OBJE.FILE`).
  *
- * Carries the multimedia format itself — for example `jpeg` or `pdf` — and the optional source
- * media `TYPE` that classifies what the file depicts, such as `photo` or `document`.
+ * Carries the multimedia format itself — one of the GEDCOM 5.5.1 codes such as `jpg` or `tif` —
+ * and the optional source media `TYPE` that classifies what the file depicts, such as `photo`.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
