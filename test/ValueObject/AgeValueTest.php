@@ -139,6 +139,10 @@ class AgeValueTest extends TestCase
         $detail = new IndividualEventDetail();
         self::assertNull($detail->getAgeValue());
 
+        $empty = new IndividualEventDetail();
+        $empty->setValue(IndividualEventDetailInterface::TAG_AGE, '  ');
+        self::assertNull($empty->getAgeValue(), 'an empty AGE is treated as absent');
+
         $detail->setValue(IndividualEventDetailInterface::TAG_AGE, 'CHILD');
         $value = $detail->getAgeValue();
 
