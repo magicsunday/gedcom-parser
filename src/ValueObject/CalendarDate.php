@@ -160,9 +160,11 @@ final readonly class CalendarDate
      * Converts the date to its Julian Day Number for calendar-independent comparison and sorting.
      *
      * The year is required; an absent month or day defaults to the first, so a partial date sorts
-     * at the start of its period. A `B.C.` year is mapped to its astronomical form (1 B.C. is
-     * year 0). Only the Gregorian and Julian calendars are converted here; the Hebrew and French
-     * Republican calendars — and the reserved/unknown ones — return NULL (see GH-56).
+     * at the start of its period. For a dual `1731/32` date the second (New Style, January-based)
+     * year is used, matching the January-based year a Julian Day Number assumes. A `B.C.` year is
+     * mapped to its astronomical form (1 B.C. is year 0). Only the Gregorian and Julian calendars
+     * are converted here; the Hebrew and French Republican calendars — and the reserved/unknown
+     * ones — return NULL (see GH-56).
      *
      * @return int|null The Julian Day Number, or NULL when the date has no year or an
      *                  unconvertible calendar
@@ -173,9 +175,10 @@ final readonly class CalendarDate
             return null;
         }
 
-        $year  = $this->bce ? 1 - $this->year : $this->year;
-        $month = $this->month ?? 1;
-        $day   = $this->day ?? 1;
+        $baseYear = $this->dualYear ?? $this->year;
+        $year     = $this->bce ? 1 - $baseYear : $baseYear;
+        $month    = $this->month ?? 1;
+        $day      = $this->day ?? 1;
 
         return match ($this->calendar) {
             Calendar::Gregorian => self::gregorianToJulianDay($year, $month, $day),

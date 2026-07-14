@@ -113,16 +113,17 @@ class CalendarDateTest extends TestCase
     public static function julianDayProvider(): array
     {
         return [
-            'gregorian 2000'         => ['1 JAN 2000', 2451545],
-            'gregorian unix epoch'   => ['1 JAN 1970', 2440588],
-            'gregorian 1 bc'         => ['1 JAN 1 B.C.', 1721060],
-            'julian 2000'            => ['@#DJULIAN@ 1 JAN 2000', 2451558],
-            'julian ad 1'            => ['@#DJULIAN@ 1 JAN 1', 1721424],
-            'julian day epoch'       => ['@#DJULIAN@ 1 JAN 4713 B.C.', 0],
-            'partial defaults start' => ['2000', 2451545],
-            'hebrew is unconverted'  => ['@#DHEBREW@ 1 TSH 5785', null],
-            'french is unconverted'  => ['@#DFRENCH R@ 1 VEND 1', null],
-            'no year is null'        => ['MAR', null],
+            'gregorian 2000'           => ['1 JAN 2000', 2451545],
+            'gregorian unix epoch'     => ['1 JAN 1970', 2440588],
+            'gregorian 1 bc'           => ['1 JAN 1 B.C.', 1721060],
+            'julian 2000'              => ['@#DJULIAN@ 1 JAN 2000', 2451558],
+            'julian ad 1'              => ['@#DJULIAN@ 1 JAN 1', 1721424],
+            'julian day epoch'         => ['@#DJULIAN@ 1 JAN 4713 B.C.', 0],
+            'partial defaults start'   => ['2000', 2451545],
+            'dual year uses new style' => ['11 FEB 1731/32', 2353701],
+            'hebrew is unconverted'    => ['@#DHEBREW@ 1 TSH 5785', null],
+            'french is unconverted'    => ['@#DFRENCH R@ 1 VEND 1', null],
+            'no year is null'          => ['MAR', null],
         ];
     }
 
