@@ -773,6 +773,32 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * A repository carrying only its required name maps the absent optional contact leaves to
+     * empty lists rather than null, so a consumer can iterate them unconditionally.
+     */
+    #[Test]
+    public function mapsARepositoryRecordWithoutContactsToEmptyLists(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @R2@ REPO\n1 NAME City Archive\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, RepositoryRecord::class);
+
+        self::assertInstanceOf(RepositoryRecord::class, $record);
+        self::assertSame('City Archive', $record->name);
+        self::assertSame([], $record->phon, 'an absent PHON maps to an empty list, not null');
+        self::assertSame([], $record->email);
+        self::assertSame([], $record->fax);
+    }
+
+    /**
      * A shared note record maps its text — carried as the record's own line value and reassembled
      * across CONC/CONT continuation lines — onto the typed NoteRecord.
      */
