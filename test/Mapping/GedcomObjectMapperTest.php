@@ -22,10 +22,12 @@ use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
+use MagicSunday\Gedcom\TypedModel\ChildToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
+use MagicSunday\Gedcom\TypedModel\SpouseToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\AgeKeyword;
 use MagicSunday\Gedcom\ValueObject\AgeModifier;
@@ -56,6 +58,8 @@ use function dirname;
 #[CoversClass(EventDetail::class)]
 #[CoversClass(PersonalName::class)]
 #[CoversClass(FamilyRecord::class)]
+#[CoversClass(ChildToFamilyLink::class)]
+#[CoversClass(SpouseToFamilyLink::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -524,6 +528,48 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame('7 MAR 1980', $burial->date->raw);
         self::assertInstanceOf(PlaceValue::class, $burial->plac);
         self::assertSame(['Boston', 'Massachusetts'], $burial->plac->levels);
+    }
+
+    /**
+     * An individual maps its child-to-family (FAMC) and spouse-to-family (FAMS) links, each {0:M}.
+     * Because both declare substructures, the shaped node is an object rather than a bare pointer:
+     * FAMC becomes a typed ChildToFamilyLink carrying the family cross-reference and the optional
+     * pedigree, while FAMS becomes a SpouseToFamilyLink carrying just the cross-reference.
+     */
+    #[Test]
+    public function mapsAnIndividualChildAndSpouseFamilyLinks(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 FAMC @F1@\n2 PEDI birth\n"
+            . "1 FAMS @F2@\n"
+            . "1 FAMS @F3@\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+
+        self::assertCount(1, $record->famc, 'a single FAMC maps to a one-element list');
+        $childLink = $record->famc[0];
+        self::assertInstanceOf(ChildToFamilyLink::class, $childLink);
+        self::assertSame('F1', $childLink->xref, 'the FAMC pointer maps to the family cross-reference');
+        self::assertSame('birth', $childLink->pedi, 'the PEDI substructure is threaded through');
+
+        self::assertCount(2, $record->fams, 'the repeatable FAMS links map to a list');
+        self::assertContainsOnlyInstancesOf(SpouseToFamilyLink::class, $record->fams);
+        self::assertSame(['F2', 'F3'], [$record->fams[0]->xref, $record->fams[1]->xref]);
     }
 
     /**
