@@ -86,9 +86,9 @@ final readonly class CalendarDate
         $value    = trim($date);
         $calendar = Calendar::Gregorian;
 
-        // Leading calendar escape: @#D<NAME>@.
-        if (preg_match('/^@#D([A-Z ]+)@\s*/', $value, $matches) === 1) {
-            $calendar = Calendar::tryFrom($matches[1]) ?? Calendar::Unknown;
+        // Leading calendar escape: @#D<NAME>@ (case-insensitive, like the rest of the parser).
+        if (preg_match('/^@#D([A-Za-z ]+)@\s*/i', $value, $matches) === 1) {
+            $calendar = Calendar::tryFrom(strtoupper($matches[1])) ?? Calendar::Unknown;
             $value    = trim(substr($value, strlen($matches[0])));
         }
 
@@ -135,12 +135,17 @@ final readonly class CalendarDate
             }
         }
 
+        // A day only exists alongside a recognised month; a day before an unknown month is not a
+        // conformant date component, so leave it unparsed.
         if ($monthToken !== null) {
-            $month    = self::monthNumber($calendar, $monthToken);
-            $dayToken = array_pop($tokens);
+            $month = self::monthNumber($calendar, $monthToken);
 
-            if (($dayToken !== null) && ctype_digit($dayToken)) {
-                $day = (int) $dayToken;
+            if ($month !== null) {
+                $dayToken = array_pop($tokens);
+
+                if (($dayToken !== null) && ctype_digit($dayToken)) {
+                    $day = (int) $dayToken;
+                }
             }
         }
 

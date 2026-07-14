@@ -21,6 +21,7 @@ use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 
 use function is_string;
+use function trim;
 
 /**
  * The event detail structure.
@@ -59,7 +60,7 @@ class EventDetail extends DataObject implements EventDetailInterface
     {
         $date = $this->getValue(self::TAG_DATE);
 
-        return is_string($date) ? DateValue::fromGedcom($date) : null;
+        return (is_string($date) && (trim($date) !== '')) ? DateValue::fromGedcom($date) : null;
     }
 
     /**

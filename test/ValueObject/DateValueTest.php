@@ -149,6 +149,10 @@ class DateValueTest extends TestCase
         $event = new EventDetail();
         self::assertNull($event->getDateValue());
 
+        $empty = new EventDetail();
+        $empty->setValue(EventDetailInterface::TAG_DATE, '   ');
+        self::assertNull($empty->getDateValue(), 'an empty DATE is treated as absent');
+
         $event->setValue(EventDetailInterface::TAG_DATE, 'ABT 1900');
         $value = $event->getDateValue();
 
