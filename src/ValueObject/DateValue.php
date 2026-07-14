@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\ValueObject;
 
+use function count;
 use function preg_match;
 use function preg_split;
 use function strtoupper;
@@ -60,9 +61,11 @@ final readonly class DateValue
             return new self(DateType::Phrase, null, null, $matches[1], $value);
         }
 
-        // An interpreted date: INT <date> (phrase).
+        // An interpreted date: INT <date> (phrase). The date may be omitted in malformed input.
         if (preg_match('/^INT\s+(.*?)\s*\((.*)\)$/is', $trimmed, $matches) === 1) {
-            return new self(DateType::Interpreted, CalendarDate::fromGedcom($matches[1]), null, $matches[2], $value);
+            $date = trim($matches[1]) === '' ? null : CalendarDate::fromGedcom($matches[1]);
+
+            return new self(DateType::Interpreted, $date, null, $matches[2], $value);
         }
 
         if (preg_match('/^(ABT|CAL|EST|BEF|AFT|BET|FROM|TO)\b\s*(.*)$/is', $trimmed, $matches) === 1) {
@@ -118,14 +121,16 @@ final readonly class DateValue
      */
     private static function fromTwoDates(DateType $type, string $rest, string $separator, string $raw): self
     {
-        $parts = preg_split('/\s' . $separator . '\s/i', $rest, 2);
+        $parts = preg_split('/\s' . $separator . '\s/i', $rest);
 
         if ($parts === false) {
             $parts = [$rest];
         }
 
-        $end = ($parts[1] ?? '') !== '' ? CalendarDate::fromGedcom($parts[1]) : null;
+        // The grammar allows the separator exactly once; anything else leaves the range/period
+        // open-ended rather than binding a wrong second date.
+        $end = count($parts) === 2 ? CalendarDate::fromGedcom($parts[1]) : null;
 
-        return new self($type, CalendarDate::fromGedcom($parts[0]), $end, null, $raw);
+        return new self($type, CalendarDate::fromGedcom($parts[0] ?? $rest), $end, null, $raw);
     }
 }

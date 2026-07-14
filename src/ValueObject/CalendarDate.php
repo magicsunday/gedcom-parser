@@ -92,10 +92,10 @@ final readonly class CalendarDate
             $value    = trim(substr($value, strlen($matches[0])));
         }
 
-        // Trailing era marker.
+        // Trailing GEDCOM 5.5.1 era marker (`B.C.`; the 7.0 `BCE` spelling is out of scope here).
         $bce = false;
 
-        if (preg_match('/\s(B\.C\.|BCE)$/i', ' ' . $value, $matches) === 1) {
+        if (preg_match('/\s(B\.C\.)$/i', ' ' . $value, $matches) === 1) {
             $bce   = true;
             $value = trim(substr($value, 0, strlen($value) - strlen($matches[1])));
         }
@@ -115,25 +115,32 @@ final readonly class CalendarDate
             }
         }
 
-        // The year (optionally dual) is the final token; day and month precede it.
-        $yearToken = array_pop($tokens);
+        // The final token is the year when numeric (a dual year has an exact two-digit suffix);
+        // otherwise the date carries no year and that token may be the month. The day, if any,
+        // precedes the month.
+        $lastToken  = array_pop($tokens);
+        $monthToken = null;
 
-        if (($yearToken !== null) && (preg_match('#^(\d+)(?:/(\d+))?$#', $yearToken, $matches) === 1)) {
-            $year = (int) $matches[1];
+        if ($lastToken !== null) {
+            if (preg_match('#^(\d+)(?:/(\d{2}))?$#', $lastToken, $matches) === 1) {
+                $year = (int) $matches[1];
 
-            if (($matches[2] ?? '') !== '') {
-                $dualYear = self::expandDualYear($year, $matches[2]);
-            }
-
-            $monthToken = array_pop($tokens);
-
-            if ($monthToken !== null) {
-                $month    = self::monthNumber($calendar, $monthToken);
-                $dayToken = array_pop($tokens);
-
-                if (($dayToken !== null) && ctype_digit($dayToken)) {
-                    $day = (int) $dayToken;
+                if (($matches[2] ?? '') !== '') {
+                    $dualYear = self::expandDualYear($year, $matches[2]);
                 }
+
+                $monthToken = array_pop($tokens);
+            } else {
+                $monthToken = $lastToken;
+            }
+        }
+
+        if ($monthToken !== null) {
+            $month    = self::monthNumber($calendar, $monthToken);
+            $dayToken = array_pop($tokens);
+
+            if (($dayToken !== null) && ctype_digit($dayToken)) {
+                $day = (int) $dayToken;
             }
         }
 

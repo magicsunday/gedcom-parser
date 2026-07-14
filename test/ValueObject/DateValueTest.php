@@ -48,18 +48,20 @@ class DateValueTest extends TestCase
     {
         return [
             // label            raw                          type                    startYear endYear phrase
-            'exact'       => ['1900', DateType::Exact, 1900, null, null],
-            'about'       => ['ABT 1900', DateType::About, 1900, null, null],
-            'calculated'  => ['CAL 1900', DateType::Calculated, 1900, null, null],
-            'estimated'   => ['EST 1900', DateType::Estimated, 1900, null, null],
-            'before'      => ['BEF 1900', DateType::Before, 1900, null, null],
-            'after'       => ['AFT 1900', DateType::After, 1900, null, null],
-            'between'     => ['BET 1900 AND 1910', DateType::Between, 1900, 1910, null],
-            'from'        => ['FROM 1900', DateType::From, 1900, null, null],
-            'to'          => ['TO 1910', DateType::To, 1910, null, null],
-            'from to'     => ['FROM 1900 TO 1910', DateType::FromTo, 1900, 1910, null],
-            'interpreted' => ['INT 1900 (a guess)', DateType::Interpreted, 1900, null, 'a guess'],
-            'phrase'      => ['(sometime in the past)', DateType::Phrase, null, null, 'sometime in the past'],
+            'exact'         => ['1900', DateType::Exact, 1900, null, null],
+            'about'         => ['ABT 1900', DateType::About, 1900, null, null],
+            'calculated'    => ['CAL 1900', DateType::Calculated, 1900, null, null],
+            'estimated'     => ['EST 1900', DateType::Estimated, 1900, null, null],
+            'before'        => ['BEF 1900', DateType::Before, 1900, null, null],
+            'after'         => ['AFT 1900', DateType::After, 1900, null, null],
+            'between'       => ['BET 1900 AND 1910', DateType::Between, 1900, 1910, null],
+            'between open'  => ['BET 1900', DateType::Between, 1900, null, null],
+            'between extra' => ['BET 1900 AND 1910 AND 1920', DateType::Between, 1900, null, null],
+            'from'          => ['FROM 1900', DateType::From, 1900, null, null],
+            'to'            => ['TO 1910', DateType::To, 1910, null, null],
+            'from to'       => ['FROM 1900 TO 1910', DateType::FromTo, 1900, 1910, null],
+            'interpreted'   => ['INT 1900 (a guess)', DateType::Interpreted, 1900, null, 'a guess'],
+            'phrase'        => ['(sometime in the past)', DateType::Phrase, null, null, 'sometime in the past'],
         ];
     }
 
@@ -114,6 +116,19 @@ class DateValueTest extends TestCase
         self::assertNotNull($value->date);
         self::assertSame(Calendar::Julian, $value->date->calendar);
         self::assertSame(1700, $value->date->year);
+    }
+
+    /**
+     * A malformed interpreted date with no date part yields a NULL date, keeping the phrase.
+     */
+    #[Test]
+    public function fromGedcomInterpretedWithoutADateHasANullDate(): void
+    {
+        $value = DateValue::fromGedcom('INT (a guess)');
+
+        self::assertSame(DateType::Interpreted, $value->type);
+        self::assertNull($value->date);
+        self::assertSame('a guess', $value->phrase);
     }
 
     /**
