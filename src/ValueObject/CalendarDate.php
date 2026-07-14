@@ -156,6 +156,34 @@ final readonly class CalendarDate
     }
 
     /**
+     * Converts the date to its Julian Day Number for calendar-independent comparison and sorting.
+     *
+     * The year is required; an absent month or day defaults to the first, so a partial date sorts
+     * at the start of its period. A `B.C.` year is mapped to its astronomical form (1 B.C. is
+     * year 0). Only the Gregorian and Julian calendars are converted here; the Hebrew and French
+     * Republican calendars — and the reserved/unknown ones — return NULL (see GH-56).
+     *
+     * @return int|null The Julian Day Number, or NULL when the date has no year or an
+     *                  unconvertible calendar
+     */
+    public function toJulianDay(): ?int
+    {
+        if ($this->year === null) {
+            return null;
+        }
+
+        $year  = $this->bce ? 1 - $this->year : $this->year;
+        $month = $this->month ?? 1;
+        $day   = $this->day ?? 1;
+
+        return match ($this->calendar) {
+            Calendar::Gregorian => self::gregorianToJulianDay($year, $month, $day),
+            Calendar::Julian    => self::julianToJulianDay($year, $month, $day),
+            default             => null,
+        };
+    }
+
+    /**
      * Expands the two-digit second year of a dual date into a full year.
      *
      * `1699/00` spans two reckonings of the same year; the suffix is the last digits of the second
@@ -192,5 +220,51 @@ final readonly class CalendarDate
         };
 
         return $table[strtoupper($token)] ?? null;
+    }
+
+    /**
+     * Converts a proleptic Gregorian date to its Julian Day Number (Fliegel–Van Flandern).
+     *
+     * @param int $year  The astronomical year (1 B.C. is 0)
+     * @param int $month The 1-based month
+     * @param int $day   The day of the month
+     *
+     * @return int The Julian Day Number
+     */
+    private static function gregorianToJulianDay(int $year, int $month, int $day): int
+    {
+        $a = intdiv(14 - $month, 12);
+        $y = ($year + 4800) - $a;
+        $m = ($month + (12 * $a)) - 3;
+
+        return $day
+            + intdiv((153 * $m) + 2, 5)
+            + (365 * $y)
+            + intdiv($y, 4)
+            - intdiv($y, 100)
+            + intdiv($y, 400)
+            - 32045;
+    }
+
+    /**
+     * Converts a proleptic Julian date to its Julian Day Number.
+     *
+     * @param int $year  The astronomical year (1 B.C. is 0)
+     * @param int $month The 1-based month
+     * @param int $day   The day of the month
+     *
+     * @return int The Julian Day Number
+     */
+    private static function julianToJulianDay(int $year, int $month, int $day): int
+    {
+        $a = intdiv(14 - $month, 12);
+        $y = ($year + 4800) - $a;
+        $m = ($month + (12 * $a)) - 3;
+
+        return $day
+            + intdiv((153 * $m) + 2, 5)
+            + (365 * $y)
+            + intdiv($y, 4)
+            - 32083;
     }
 }
