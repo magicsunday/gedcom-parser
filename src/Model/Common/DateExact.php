@@ -52,13 +52,25 @@ class DateExact extends DataObject implements DateExactInterface
      */
     public function getDateTime(): DateTime|false
     {
-        $dateTime = $this->createDateFromFormat($this->getDate());
+        $date = $this->getDate();
 
-        if ($dateTime !== false) {
-            return $this->createTimeFromFormat($dateTime, $this->getTime());
+        if ($date === null) {
+            return false;
         }
 
-        return $dateTime;
+        $dateTime = $this->createDateFromFormat($date);
+
+        if ($dateTime === false) {
+            return false;
+        }
+
+        $time = $this->getTime();
+
+        if ($time === null) {
+            return $dateTime;
+        }
+
+        return $this->createTimeFromFormat($dateTime, $time);
     }
 
     /**
