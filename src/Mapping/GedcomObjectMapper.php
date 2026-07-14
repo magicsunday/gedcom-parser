@@ -96,6 +96,30 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Maps a level-0 record node onto the given class, resolving the record definition from the
+     * node's tag through the schema so the caller need not supply it.
+     *
+     * @template T of object
+     *
+     * @param GedcomNode      $node      The record node to map
+     * @param class-string<T> $className The target class to build
+     *
+     * @return T The mapped, typed object
+     *
+     * @throws MappingException When the node's tag is not a top-level record in the schema
+     */
+    public function mapRecord(GedcomNode $node, string $className): object
+    {
+        $definition = $this->schema->recordByTag($node->tag);
+
+        if (!$definition instanceof StructureDefinition) {
+            throw new MappingException(sprintf('The tag "%s" is not a top-level record.', $node->tag));
+        }
+
+        return $this->map($node, $definition, $className);
+    }
+
+    /**
      * Shapes a node and its substructures into a property-name-keyed array.
      *
      * @param GedcomNode          $node       The node to shape

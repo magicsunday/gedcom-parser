@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
+use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
@@ -52,6 +53,7 @@ use function dirname;
 #[UsesClass(Reader::class)]
 #[UsesClass(StreamFactory::class)]
 #[UsesClass(RegistrySchemaLoader::class)]
+#[UsesClass(Schema::class)]
 #[UsesClass(StructureDefinition::class)]
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(MappingException::class)]
@@ -123,6 +125,50 @@ class GedcomObjectMapperTest extends TestCase
         $this->expectException(MappingException::class);
 
         JsonMapperFactory::create()->map(['date' => ['unexpected' => 'value']], EventDetail::class);
+    }
+
+    /**
+     * mapRecord resolves the record definition from the node's tag, so the caller need not supply
+     * it.
+     */
+    #[Test]
+    public function mapRecordResolvesTheDefinitionFromTheTag(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @SUBM1@ SUBM\n1 NAME John Doe\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, SubmitterRecord::class);
+
+        self::assertSame('SUBM1', $record->xref);
+        self::assertSame('John Doe', $record->name);
+    }
+
+    /**
+     * mapRecord fails with a MappingException when the node's tag is not a top-level record.
+     */
+    #[Test]
+    public function mapRecordThrowsWhenTheTagIsNotARecord(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 PHON 555\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $this->expectException(MappingException::class);
+
+        (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, SubmitterRecord::class);
     }
 
     /**
