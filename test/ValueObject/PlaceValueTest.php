@@ -71,13 +71,14 @@ class PlaceValueTest extends TestCase
     }
 
     /**
-     * An empty or whitespace-only FORM is normalised to NULL.
+     * A FORM is normalised: an empty or whitespace-only value becomes NULL, and surrounding
+     * whitespace is trimmed off a non-empty value.
      */
     #[Test]
-    public function fromGedcomNormalisesAnEmptyForm(): void
+    public function fromGedcomNormalisesTheForm(): void
     {
         self::assertNull(PlaceValue::fromGedcom('Berlin', '   ')->form);
-        self::assertSame('City', PlaceValue::fromGedcom('Berlin', 'City')->form);
+        self::assertSame('City', PlaceValue::fromGedcom('Berlin', '  City  ')->form);
     }
 
     /**

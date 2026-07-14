@@ -53,8 +53,12 @@ final readonly class PlaceValue
         $trimmed = trim($place);
         $levels  = $trimmed === '' ? [] : array_map(trim(...), explode(',', $trimmed));
 
-        if (($form !== null) && (trim($form) === '')) {
-            $form = null;
+        if ($form !== null) {
+            $form = trim($form);
+
+            if ($form === '') {
+                $form = null;
+            }
         }
 
         return new self($levels, $form, $place);
