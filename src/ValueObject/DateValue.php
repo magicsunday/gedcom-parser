@@ -108,7 +108,7 @@ final readonly class DateValue
      */
     private static function fromPeriod(string $rest, string $raw): self
     {
-        if (preg_match('/\sTO\s/i', $rest) === 1) {
+        if (preg_match('/\s+TO\b/i', $rest) === 1) {
             return self::fromTwoDates(DateType::FromTo, $rest, 'TO', $raw);
         }
 
@@ -125,15 +125,17 @@ final readonly class DateValue
      */
     private static function fromTwoDates(DateType $type, string $rest, string $separator, string $raw): self
     {
-        $parts = preg_split('/\s' . $separator . '\s/i', $rest);
+        $parts = preg_split('/\s+' . $separator . '\b\s*/i', $rest);
 
         if ($parts === false) {
             $parts = [$rest];
         }
 
-        // The grammar allows the separator exactly once; anything else leaves the range/period
-        // open-ended rather than binding a wrong second date.
-        $end = count($parts) === 2 ? CalendarDate::fromGedcom($parts[1]) : null;
+        // The grammar allows the separator exactly once; a repeated separator or a missing/empty
+        // second date leaves the range/period open-ended rather than binding a wrong second date.
+        $end = (count($parts) === 2) && ($parts[1] !== '')
+            ? CalendarDate::fromGedcom($parts[1])
+            : null;
 
         return new self($type, CalendarDate::fromGedcom($parts[0] ?? $rest), $end, null, $raw);
     }
