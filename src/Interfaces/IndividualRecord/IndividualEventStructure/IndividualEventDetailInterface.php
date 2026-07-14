@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure;
 
 use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
+use MagicSunday\Gedcom\ValueObject\AgeValue;
 
 /**
  * The family event detail structure.
@@ -29,4 +30,9 @@ interface IndividualEventDetailInterface extends EventDetailInterface
     public const TAG_AGE = 'AGE';
 
     public function getAge(): ?string;
+
+    /**
+     * Returns the age as a typed value object, or NULL when no AGE value is present.
+     */
+    public function getAgeValue(): ?AgeValue;
 }

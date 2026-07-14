@@ -14,6 +14,9 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure;
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
 use MagicSunday\Gedcom\Model\Common\EventDetail;
 use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
+use MagicSunday\Gedcom\ValueObject\AgeValue;
+
+use function is_string;
 
 /**
  * The individual event detail structure.
@@ -32,5 +35,15 @@ class IndividualEventDetail extends EventDetail implements IndividualEventDetail
     public function getAge(): ?string
     {
         return $this->getValue(self::TAG_AGE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAgeValue(): ?AgeValue
+    {
+        $age = $this->getValue(self::TAG_AGE);
+
+        return is_string($age) ? AgeValue::fromGedcom($age) : null;
     }
 }

@@ -9,31 +9,29 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure;
-
-use MagicSunday\Gedcom\ValueObject\AgeValue;
+namespace MagicSunday\Gedcom\ValueObject;
 
 /**
- * The family person AGE structure.
+ * The symbolic age keywords defined by the GEDCOM AGE_AT_EVENT grammar.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-interface FamilyPersonAgeInterface
+enum AgeKeyword: string
 {
     /**
-     * The age at the event.
+     * Less than eight years old.
      */
-    public const TAG_AGE = 'AGE';
+    case Child = 'CHILD';
 
     /**
-     * @return string
+     * Less than one year old.
      */
-    public function getAge(): string;
+    case Infant = 'INFANT';
 
     /**
-     * Returns the age as a typed value object, or NULL when no AGE value is present.
+     * Born dead.
      */
-    public function getAgeValue(): ?AgeValue;
+    case Stillborn = 'STILLBORN';
 }
