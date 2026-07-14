@@ -75,6 +75,7 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
 * `composer ci:cgl` — php-cs-fixer (apply)
+* `composer ci:rector` — Rector (apply)
 
 GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3 / 8.4 /
 8.5. The `phpstan` and `cpd` steps are `continue-on-error` until the typed-model refactor
