@@ -51,13 +51,7 @@ interface ChildToFamilyLinkInterface extends NoteInterface
      */
     public function getXref(): string;
 
-    /**
-     * @return string|null
-     */
     public function getPedigreeLinkageType(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getChildLinkageStatus(): ?string;
 }

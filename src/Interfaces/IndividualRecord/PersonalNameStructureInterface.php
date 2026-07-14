@@ -58,22 +58,16 @@ interface PersonalNameStructureInterface extends PersonalNamePiecesInterface
      */
     public const TAG_ROMN = 'ROMN';
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
     /**
      * Returns the personal name with the surname slashes removed and whitespace collapsed,
      * suitable for display.
      *
-     * @return string|null The display name, or NULL if no name is present.
+     * @return string|null the display name, or NULL if no name is present
      */
     public function getDisplayName(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string;
 
     /**

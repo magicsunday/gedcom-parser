@@ -35,7 +35,7 @@ final class AnselDecoder
      *
      * @var array<int, string>
      */
-    private const BASE = [
+    private const array BASE = [
         0xA1 => "\u{0141}", // Ł  latin capital letter l with stroke
         0xA2 => "\u{00D8}", // Ø  latin capital letter o with stroke
         0xA3 => "\u{0110}", // Đ  latin capital letter d with stroke
@@ -79,7 +79,7 @@ final class AnselDecoder
      *
      * @var array<int, string>
      */
-    private const COMBINING = [
+    private const array COMBINING = [
         0xE0 => "\u{0309}", // hook above
         0xE1 => "\u{0300}", // grave
         0xE2 => "\u{0301}", // acute

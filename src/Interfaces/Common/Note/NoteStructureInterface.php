@@ -32,15 +32,11 @@ interface NoteStructureInterface
 
     /**
      * Returns the pointer to a separate note record.
-     *
-     * @return string|null
      */
     public function getXref(): ?string;
 
     /**
      * Returns the note content. Maybe empty if a note pointer is set.
-     *
-     * @return string|null
      */
     public function getContent(): ?string;
 }

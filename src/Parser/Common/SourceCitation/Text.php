@@ -32,8 +32,6 @@ class Text extends AbstractParser
 
     /**
      * Parses a SOUR-DATA-TEXT block.
-     *
-     * @return string|null
      */
     public function parse(): ?string
     {

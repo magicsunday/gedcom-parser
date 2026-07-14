@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Interfaces\Common\DateExactInterface;
 use MagicSunday\Gedcom\Model\DataObject;
 
 use function count;
+use function intval;
 
 /**
  * A date.
@@ -49,7 +50,7 @@ class DateExact extends DataObject implements DateExactInterface
     /**
      * {@inheritDoc}
      */
-    public function getDateTime()
+    public function getDateTime(): DateTime|false
     {
         $dateTime = $this->createDateFromFormat($this->getDate());
 
@@ -94,7 +95,7 @@ class DateExact extends DataObject implements DateExactInterface
             $time = substr($time, 0, $fractionPos);
         }
 
-        $timeParts = array_map('\intval', explode(':', $time));
+        $timeParts = array_map(intval(...), explode(':', $time));
 
         // Add seconds part if missing
         if (count($timeParts) === 2) {

@@ -32,13 +32,7 @@ interface FamilyEventDetailInterface extends EventDetailInterface
      */
     public const TAG_WIFE = 'WIFE';
 
-    /**
-     * @return FamilyPersonAgeInterface|null
-     */
     public function getHusband(): ?FamilyPersonAgeInterface;
 
-    /**
-     * @return FamilyPersonAgeInterface|null
-     */
     public function getWife(): ?FamilyPersonAgeInterface;
 }

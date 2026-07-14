@@ -33,9 +33,6 @@ interface SourceRepositoryCitationInterface extends NoteInterface
      */
     public const TAG_CALN = 'CALN';
 
-    /**
-     * @return string|null
-     */
     public function getXref(): ?string;
 
     /**

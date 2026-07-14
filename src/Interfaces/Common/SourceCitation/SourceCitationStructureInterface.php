@@ -48,28 +48,13 @@ interface SourceCitationStructureInterface extends MultimediaLinkInterface, Note
      */
     public const TAG_QUAY = 'QUAY';
 
-    /**
-     * @return string|null
-     */
     public function getXref(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPage(): ?string;
 
-    /**
-     * @return EventInterface|null
-     */
     public function getEvent(): ?EventInterface;
 
-    /**
-     * @return DataInterface|null
-     */
     public function getData(): ?DataInterface;
 
-    /**
-     * @return string|null
-     */
     public function getQuality(): ?string;
 }

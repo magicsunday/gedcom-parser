@@ -41,13 +41,7 @@ interface SpouseSealingDateStatusInterface
      */
     public const TAG_DATE = 'DATE';
 
-    /**
-     * @return string|null
-     */
     public function getStatus(): ?string;
 
-    /**
-     * @return DateExactInterface|null
-     */
     public function getChangeDate(): ?DateExactInterface;
 }

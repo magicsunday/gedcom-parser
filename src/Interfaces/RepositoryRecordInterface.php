@@ -62,8 +62,5 @@ interface RepositoryRecordInterface extends AddressStructureInterface, ChangeDat
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

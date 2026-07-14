@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use ArrayAccess;
+use ReturnTypeWillChange;
 
 use function array_key_exists;
 use function is_array;
@@ -71,8 +72,6 @@ class DataObject implements ArrayAccess
      *
      * @param string $key   The key used to store the value
      * @param mixed  $value The value to store
-     *
-     * @return self
      */
     public function setValue(string $key, $value): self
     {
@@ -116,11 +115,11 @@ class DataObject implements ArrayAccess
     /**
      * {@inheritDoc}
      *
-     * The return type is intentionally left undeclared for PHP 7.4 compatibility; the
-     * attribute suppresses the PHP 8.1+ deprecation until the floor is raised and the
-     * signature can adopt a native `mixed` return type.
+     * The return type is intentionally left undeclared to avoid a native `mixed` return
+     * (project rule); the attribute suppresses the PHP 8.1+ `ArrayAccess::offsetGet(): mixed`
+     * signature deprecation without changing the runtime contract.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->data[$offset] ?? null;

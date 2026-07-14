@@ -45,23 +45,11 @@ interface CommonIndividualOrdinanceInterface extends NoteInterface, SourceCitati
      */
     public const TAG_STAT = 'STAT';
 
-    /**
-     * @return string|null
-     */
     public function getDate(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getTempleCode(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPlace(): ?string;
 
-    /**
-     * @return CommonDateStatusInterface|null
-     */
     public function getDateStatus(): ?CommonDateStatusInterface;
 }

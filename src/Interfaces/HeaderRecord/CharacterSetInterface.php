@@ -40,8 +40,5 @@ interface CharacterSetInterface
      */
     public function getCharacterSet(): string;
 
-    /**
-     * @return string|null
-     */
     public function getVersion(): ?string;
 }

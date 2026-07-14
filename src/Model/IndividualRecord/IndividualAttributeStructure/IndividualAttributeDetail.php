@@ -23,9 +23,6 @@ use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\Individua
  */
 class IndividualAttributeDetail extends IndividualEventDetail implements IndividualAttributeDetailInterface
 {
-    /**
-     * @return string|null
-     */
     public function getDetail(): ?string
     {
         return $this->getValue(self::TAG_DETAIL);

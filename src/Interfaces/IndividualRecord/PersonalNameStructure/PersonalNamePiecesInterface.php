@@ -59,33 +59,15 @@ interface PersonalNamePiecesInterface extends NoteInterface, SourceCitationInter
      */
     public const TAG_NSFX = 'NSFX';
 
-    /**
-     * @return string|null
-     */
     public function getNamePrefix(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getGivenName(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getNickName(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getSurnamePrefix(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getSurname(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getNameSuffix(): ?string;
 }

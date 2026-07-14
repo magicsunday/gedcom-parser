@@ -32,13 +32,7 @@ interface ReferenceNumberInterface
      */
     public const TAG_TYPE = 'TYPE';
 
-    /**
-     * @return string|null
-     */
     public function getNumber(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string;
 }

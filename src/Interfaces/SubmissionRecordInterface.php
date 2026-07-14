@@ -72,38 +72,17 @@ interface SubmissionRecordInterface extends ChangeDateInterface, NoteInterface
      */
     public function getXref(): string;
 
-    /**
-     * @return string|null
-     */
     public function getSubmitterXref(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getFamilyFile(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getTempleCode(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getAncestorGenerations(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getDescendantGenerations(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getOrdinanceFlag(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

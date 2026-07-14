@@ -90,7 +90,7 @@ class Stream implements StreamInterface
             $this->rewind();
 
             return $this->getContents();
-        } catch (RuntimeException $exception) {
+        } catch (RuntimeException) {
             return '';
         }
     }
@@ -295,7 +295,7 @@ class Stream implements StreamInterface
 
         $mode = $this->getMetadata('mode');
 
-        return str_contains($mode, 'r') || str_contains($mode, '+');
+        return str_contains((string) $mode, 'r') || str_contains((string) $mode, '+');
     }
 
     /**

@@ -26,9 +26,6 @@ class Corporation extends DataObject implements CorporationInterface
 {
     use AddressStructureTrait;
 
-    /**
-     * @return string|null
-     */
     public function getNameOfBusiness(): ?string
     {
         return $this->getValue(self::TAG_NAME_OF_BUSINESS);

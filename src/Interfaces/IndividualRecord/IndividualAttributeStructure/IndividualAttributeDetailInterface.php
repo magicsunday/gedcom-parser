@@ -27,8 +27,5 @@ interface IndividualAttributeDetailInterface extends IndividualEventDetailInterf
      */
     public const TAG_DETAIL = 'DETAIL';
 
-    /**
-     * @return string|null
-     */
     public function getDetail(): ?string;
 }

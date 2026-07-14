@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Exception\StreamException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\StreamFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -26,6 +27,8 @@ use PHPUnit\Framework\TestCase;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
+#[CoversClass(Reader::class)]
+#[CoversClass(StreamFactory::class)]
 class ReaderTest extends TestCase
 {
     /**

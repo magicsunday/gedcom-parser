@@ -144,14 +144,8 @@ interface IndividualRecordInterface extends ChangeDateInterface, IndividualEvent
      */
     public function getAssociation(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRestrictionNotice(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getSex(): ?string;
 
     /**
@@ -174,14 +168,8 @@ interface IndividualRecordInterface extends ChangeDateInterface, IndividualEvent
      */
     public function getDescendantInterest(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordFileNumber(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getAncestralFileNumber(): ?string;
 
     /**
@@ -189,8 +177,5 @@ interface IndividualRecordInterface extends ChangeDateInterface, IndividualEvent
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

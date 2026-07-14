@@ -70,8 +70,6 @@ abstract class AbstractParser
      * Creates an instance of a parser matching the given GEDCOM tag.
      *
      * @param string $gedcomTag A GEDCOM tag
-     *
-     * @return AbstractParser|null
      */
     private function create(string $gedcomTag): ?AbstractParser
     {
@@ -130,8 +128,6 @@ abstract class AbstractParser
 
     /**
      * Returns the complete content of CONT and CONC.
-     *
-     * @return string|null
      */
     protected function readContent(): ?string
     {

@@ -40,18 +40,9 @@ interface EventInterface
      */
     public const TAG_PLAC = 'PLAC';
 
-    /**
-     * @return string|null
-     */
     public function getEventsRecorded(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getDatePeriod(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPlaceName(): ?string;
 }

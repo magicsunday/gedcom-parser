@@ -60,8 +60,5 @@ interface MediaFormatInterface
      */
     public function getFormat(): string;
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string;
 }

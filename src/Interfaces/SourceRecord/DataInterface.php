@@ -40,8 +40,5 @@ interface DataInterface extends NoteInterface
      */
     public function getEvents(): array;
 
-    /**
-     * @return string|null
-     */
     public function getAgency(): ?string;
 }

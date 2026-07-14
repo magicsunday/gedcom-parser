@@ -25,8 +25,5 @@ interface SealingChildInterface extends CommonIndividualOrdinanceInterface
      */
     public const TAG_FAMC = 'FAMC';
 
-    /**
-     * @return string|null
-     */
     public function getFamilyXref(): ?string;
 }

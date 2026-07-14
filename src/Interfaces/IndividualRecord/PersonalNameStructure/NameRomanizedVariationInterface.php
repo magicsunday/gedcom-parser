@@ -35,9 +35,6 @@ interface NameRomanizedVariationInterface extends PersonalNamePiecesInterface
      */
     public const TAG_TYPE = 'TYPE';
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
     /**

@@ -86,19 +86,10 @@ interface FamilyRecordInterface extends ChangeDateInterface, FamilyEventStructur
      */
     public function getXref(): string;
 
-    /**
-     * @return string|null
-     */
     public function getRestrictionNotice(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getHusbandXref(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getWifeXref(): ?string;
 
     /**
@@ -106,9 +97,6 @@ interface FamilyRecordInterface extends ChangeDateInterface, FamilyEventStructur
      */
     public function getChildrenXref(): array;
 
-    /**
-     * @return string|null
-     */
     public function getChildrenCount(): ?string;
 
     /**
@@ -126,8 +114,5 @@ interface FamilyRecordInterface extends ChangeDateInterface, FamilyEventStructur
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

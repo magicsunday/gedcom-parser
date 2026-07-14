@@ -55,13 +55,7 @@ interface FormatInterface
      */
     public const TAG_MEDI = 'MEDI';
 
-    /**
-     * @return string|null
-     */
     public function getMediaFormat(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getMediaType(): ?string;
 }

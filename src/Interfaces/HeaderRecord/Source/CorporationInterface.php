@@ -27,8 +27,5 @@ interface CorporationInterface extends AddressStructureInterface
      */
     public const TAG_NAME_OF_BUSINESS = 'NAME_OF_BUSINESS';
 
-    /**
-     * @return string|null
-     */
     public function getNameOfBusiness(): ?string;
 }

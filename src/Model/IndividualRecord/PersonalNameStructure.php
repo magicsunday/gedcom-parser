@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Model\IndividualRecord;
 
 use MagicSunday\Gedcom\Interfaces\IndividualRecord\PersonalNameStructureInterface;
 use MagicSunday\Gedcom\Model\IndividualRecord\PersonalNameStructure\PersonalNamePieces;
+use Override;
 
 use function preg_match;
 use function preg_replace;
@@ -42,6 +43,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
      * Falls back to the given name derived from the NAME slash convention when no explicit
      * GIVN sub-tag is present.
      */
+    #[Override]
     public function getGivenName(): ?string
     {
         return $this->getValue(self::TAG_GIVN) ?? $this->nameParts()['given'];
@@ -53,6 +55,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
      * Falls back to the surname derived from the NAME slash convention when no explicit
      * SURN sub-tag is present.
      */
+    #[Override]
     public function getSurname(): ?string
     {
         return $this->getValue(self::TAG_SURN) ?? $this->nameParts()['surname'];
@@ -64,6 +67,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
      * Falls back to the suffix derived from the NAME slash convention when no explicit
      * NSFX sub-tag is present.
      */
+    #[Override]
     public function getNameSuffix(): ?string
     {
         return $this->getValue(self::TAG_NSFX) ?? $this->nameParts()['suffix'];
@@ -136,9 +140,7 @@ class PersonalNameStructure extends PersonalNamePieces implements PersonalNameSt
     /**
      * Trims a value and normalises the result to NULL when it is empty.
      *
-     * @param string $value The value to normalise.
-     *
-     * @return string|null
+     * @param string $value the value to normalise
      */
     private function trimToNull(string $value): ?string
     {

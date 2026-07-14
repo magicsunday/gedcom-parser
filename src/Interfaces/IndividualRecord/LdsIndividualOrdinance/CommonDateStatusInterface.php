@@ -33,8 +33,5 @@ interface CommonDateStatusInterface extends CommonChangeDateInterface
      */
     public const TAG_DATE_STATUS = 'DATE_STATUS';
 
-    /**
-     * @return string|null
-     */
     public function getStatus(): ?string;
 }

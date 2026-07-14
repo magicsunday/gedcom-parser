@@ -35,9 +35,6 @@ interface PlaceRomanizedVariationInterface
      */
     public const TAG_TYPE = 'TYPE';
 
-    /**
-     * @return string|null
-     */
     public function getPlace(): ?string;
 
     /**

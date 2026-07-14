@@ -33,9 +33,6 @@ interface FileInterface
      */
     public const TAG_FORM = 'FORM';
 
-    /**
-     * @return string|null
-     */
     public function getReference(): ?string;
 
     /**

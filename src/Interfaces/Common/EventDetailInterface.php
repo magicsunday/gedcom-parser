@@ -61,38 +61,17 @@ interface EventDetailInterface extends AddressStructureInterface, MultimediaLink
      */
     public const TAG_RESN = 'RESN';
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getDate(): ?string;
 
-    /**
-     * @return PlaceStructureInterface|null
-     */
     public function getPlace(): ?PlaceStructureInterface;
 
-    /**
-     * @return string|null
-     */
     public function getAgency(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getReligion(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getCause(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getRestrictionNotice(): ?string;
 }
