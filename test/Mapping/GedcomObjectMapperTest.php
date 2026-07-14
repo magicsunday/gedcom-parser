@@ -27,6 +27,7 @@ use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
+use MagicSunday\Gedcom\TypedModel\SourceRecord;
 use MagicSunday\Gedcom\TypedModel\SpouseToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\AgeKeyword;
@@ -60,6 +61,7 @@ use function dirname;
 #[CoversClass(FamilyRecord::class)]
 #[CoversClass(ChildToFamilyLink::class)]
 #[CoversClass(SpouseToFamilyLink::class)]
+#[CoversClass(SourceRecord::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -646,6 +648,43 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame('14 FEB 1990', $marriage->date->raw);
         self::assertInstanceOf(PlaceValue::class, $marriage->plac);
         self::assertSame(['Boston', 'Massachusetts'], $marriage->plac->levels);
+    }
+
+    /**
+     * A source record maps its single descriptive text leaves — title, author, publication facts
+     * and abbreviation — onto the typed SourceRecord, each an optional string.
+     */
+    #[Test]
+    public function mapsASourceRecordDescriptiveFields(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @S1@ SOUR\n"
+            . "1 TITL Vital Records of Boston\n"
+            . "1 AUTH City of Boston\n"
+            . "1 PUBL Boston, 1901\n"
+            . "1 ABBR Boston VR\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-SOUR');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, SourceRecord::class);
+
+        self::assertInstanceOf(SourceRecord::class, $record);
+        self::assertSame('S1', $record->xref);
+        self::assertSame('Vital Records of Boston', $record->titl);
+        self::assertSame('City of Boston', $record->auth);
+        self::assertSame('Boston, 1901', $record->publ);
+        self::assertSame('Boston VR', $record->abbr);
+        self::assertNull($record->text, 'an absent TEXT leaf stays null');
     }
 
     /**
