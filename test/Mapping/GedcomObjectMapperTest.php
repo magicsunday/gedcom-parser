@@ -26,6 +26,9 @@ use MagicSunday\Gedcom\TypedModel\ChildToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\MediaFormat;
+use MagicSunday\Gedcom\TypedModel\MultimediaFile;
+use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
 use MagicSunday\Gedcom\TypedModel\NoteRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
 use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
@@ -66,6 +69,9 @@ use function dirname;
 #[CoversClass(SourceRecord::class)]
 #[CoversClass(NoteRecord::class)]
 #[CoversClass(RepositoryRecord::class)]
+#[CoversClass(MultimediaRecord::class)]
+#[CoversClass(MultimediaFile::class)]
+#[CoversClass(MediaFormat::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -735,6 +741,53 @@ class GedcomObjectMapperTest extends TestCase
 
         return (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
             ->map($node, $definition, SourceRecord::class);
+    }
+
+    /**
+     * A multimedia record maps its repeatable FILE references onto typed MultimediaFile objects,
+     * each nesting a typed MediaFormat (format plus optional media type) and an optional title.
+     * The two files exercise the fully-populated path and the minimal path (no title, no media
+     * type) so the optional leaves are covered present and absent.
+     */
+    #[Test]
+    public function mapsAMultimediaRecordWithNestedFileFormats(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @O1@ OBJE\n"
+            . "1 FILE http://example.test/portrait.jpg\n2 FORM jpeg\n3 TYPE photo\n2 TITL Family portrait\n"
+            . "1 FILE http://example.test/register.pdf\n2 FORM pdf\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, MultimediaRecord::class);
+
+        self::assertInstanceOf(MultimediaRecord::class, $record);
+        self::assertSame('O1', $record->xref);
+        self::assertCount(2, $record->file, 'the repeatable FILE references map to a list');
+
+        $portrait = $record->file[0];
+        self::assertInstanceOf(MultimediaFile::class, $portrait);
+        self::assertSame('http://example.test/portrait.jpg', $portrait->value);
+        self::assertSame('Family portrait', $portrait->titl);
+        self::assertInstanceOf(MediaFormat::class, $portrait->form);
+        self::assertSame('jpeg', $portrait->form->value);
+        self::assertSame('photo', $portrait->form->type, 'the nested FORM TYPE is threaded through');
+
+        $register = $record->file[1];
+        self::assertInstanceOf(MultimediaFile::class, $register);
+        self::assertSame('http://example.test/register.pdf', $register->value);
+        self::assertNull($register->titl, 'an absent FILE title stays null');
+        self::assertInstanceOf(MediaFormat::class, $register->form);
+        self::assertSame('pdf', $register->form->value);
+        self::assertNull($register->form->type, 'an absent FORM TYPE stays null');
     }
 
     /**
