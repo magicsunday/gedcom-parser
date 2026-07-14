@@ -104,8 +104,11 @@ tree; a declarative schema (`MagicSunday\Gedcom\Schema`) is compiled from the ve
 registry for either GEDCOM version; and a mapping layer (`MagicSunday\Gedcom\Mapping`)
 shapes a node subtree through that schema and hydrates immutable `final readonly` records
 (`MagicSunday\Gedcom\TypedModel`) via [`magicsunday/jsonmapper`](https://github.com/magicsunday/jsonmapper),
-with the value-object leaves (dates, places, ages) parsed by their own grammar. Until the
-untyped result model is fully replaced, the `phpstan` and `cpd` CI steps stay non-blocking.
+with the value-object leaves (dates, places, ages) parsed by their own grammar. Each leaf is
+resolved regardless of the GEDCOM version — a bare payload string in 5.5.1, or the shaped node
+a 7.0 substructure-bearing leaf (a `DATE` with `PHRASE`/`TIME`, a `PLAC` with `FORM`) produces.
+Until the untyped result model is fully replaced, the `phpstan` and `cpd` CI steps stay
+non-blocking.
 
 `TypedGedcomParser` ties the pipeline together: give it the GEDCOM version and a map of
 record tag to your typed record class, and it streams the level-0 records and maps each

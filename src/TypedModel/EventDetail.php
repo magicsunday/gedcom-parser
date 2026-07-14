@@ -11,13 +11,17 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\TypedModel;
 
+use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 
 /**
- * The typed detail shared by GEDCOM events: when the event took place.
+ * The typed detail shared by GEDCOM events: when and where the event took place, and the
+ * individual's age at it.
  *
- * The date is exposed as the typed {@see DateValue} value object, parsed from the event's `DATE`
- * substructure by the mapping layer's custom type handler.
+ * Each is exposed as its typed value object — {@see DateValue}, {@see PlaceValue},
+ * {@see AgeValue} — parsed from the event's `DATE` / `PLAC` / `AGE` substructures by the mapping
+ * layer's custom type handlers.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -26,10 +30,14 @@ use MagicSunday\Gedcom\ValueObject\DateValue;
 final readonly class EventDetail
 {
     /**
-     * @param DateValue|null $date The date the event took place, or NULL when absent
+     * @param DateValue|null  $date The date the event took place, or NULL when absent
+     * @param PlaceValue|null $plac The place the event took place, or NULL when absent
+     * @param AgeValue|null   $age  The individual's age at the event, or NULL when absent
      */
     public function __construct(
         public ?DateValue $date = null,
+        public ?PlaceValue $plac = null,
+        public ?AgeValue $age = null,
     ) {
     }
 }

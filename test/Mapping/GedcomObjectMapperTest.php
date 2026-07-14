@@ -26,9 +26,13 @@ use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
+use MagicSunday\Gedcom\ValueObject\AgeKeyword;
+use MagicSunday\Gedcom\ValueObject\AgeModifier;
+use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\CalendarDate;
 use MagicSunday\Gedcom\ValueObject\DateType;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -62,6 +66,10 @@ use function dirname;
 #[UsesClass(DateValue::class)]
 #[UsesClass(CalendarDate::class)]
 #[UsesClass(DateType::class)]
+#[UsesClass(PlaceValue::class)]
+#[UsesClass(AgeValue::class)]
+#[UsesClass(AgeModifier::class)]
+#[UsesClass(AgeKeyword::class)]
 class GedcomObjectMapperTest extends TestCase
 {
     /**
@@ -118,15 +126,158 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * A non-string DATE payload reaching the value-object handler (a mis-shaped node) fails loud
-     * as a MappingException rather than being silently parsed as an empty date.
+     * A scalar non-string DATE payload reaching the value-object handler (a mis-shaped node) fails
+     * loud as a MappingException. A shaped array is NOT a mis-shape — a GEDCOM 7.0 DATE carries
+     * PHRASE/TIME substructures, so its payload legitimately arrives as an array (see
+     * {@see mapsAGedcom7EventWhoseDateAndAgeCarrySubstructures}).
      */
     #[Test]
     public function failsLoudlyWhenADateLeafIsMisShaped(): void
     {
         $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped DATE payload, got/');
 
-        JsonMapperFactory::create()->map(['date' => ['unexpected' => 'value']], EventDetail::class);
+        JsonMapperFactory::create()->map(['date' => 42], EventDetail::class);
+    }
+
+    /**
+     * A scalar non-string, non-array PLAC payload reaching the place handler fails loud.
+     */
+    #[Test]
+    public function failsLoudlyWhenAPlaceLeafIsMisShaped(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped PLAC payload, got/');
+
+        JsonMapperFactory::create()->map(['plac' => 42], EventDetail::class);
+    }
+
+    /**
+     * A scalar non-string AGE payload reaching the age handler fails loud.
+     */
+    #[Test]
+    public function failsLoudlyWhenAnAgeLeafIsMisShaped(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string or shaped AGE payload, got/');
+
+        JsonMapperFactory::create()->map(['age' => 42], EventDetail::class);
+    }
+
+    /**
+     * A shaped leaf whose `value` key is present but not a string is a mis-shape (distinct from a
+     * value-less leaf, which resolves to the empty string) and fails loud rather than silently
+     * coercing the payload away.
+     */
+    #[Test]
+    public function failsLoudlyWhenAShapedLeafValueIsNotAString(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Expected a string PLAC value, got array/');
+
+        JsonMapperFactory::create()->map(['plac' => ['value' => ['nested']]], EventDetail::class);
+    }
+
+    /**
+     * A value-less substructure (e.g. an empty `FORM` line) is shaped as a NULL leaf, which must
+     * resolve as absent rather than failing the whole record — the place still maps, with a null
+     * form.
+     */
+    #[Test]
+    public function mapsAPlaceWithAnEmptyFormLineWithoutFailing(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston, Massachusetts\n3 FORM\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        $place = $record->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertNull($place->form, 'an empty FORM line resolves to a null form, not a mapping failure');
+        self::assertSame(['Boston', 'Massachusetts'], $place->levels);
+    }
+
+    /**
+     * A PLAC with no FORM substructure maps to a PlaceValue whose form is null while the value is
+     * still split into its jurisdiction levels.
+     */
+    #[Test]
+    public function mapsAPlaceWithoutAFormAsFormNull(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston, Massachusetts\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        $place = $record->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertNull($place->form, 'a PLAC without a FORM substructure has a null form');
+        self::assertSame(['Boston', 'Massachusetts'], $place->levels);
+    }
+
+    /**
+     * A GEDCOM 7.0 DATE and AGE declare PHRASE/TIME substructures, so their payload is shaped as an
+     * array (with the line value under the `value` key) rather than a bare string. The date and age
+     * handlers must resolve the leaf value from that shaped array; a regression here would throw on
+     * every 7.0 event that carries a dated substructure.
+     */
+    #[Test]
+    public function mapsAGedcom7EventWhoseDateAndAgeCarrySubstructures(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n"
+            . "2 DATE 1 JAN 2000\n3 PHRASE New Year's Day\n"
+            . "2 AGE 0y\n3 PHRASE at birth\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
+        $birth = $record->birt[0];
+
+        // The DATE arrives as a shaped array (it carries a PHRASE), and its value is still parsed.
+        self::assertInstanceOf(DateValue::class, $birth->date);
+        self::assertSame('1 JAN 2000', $birth->date->raw, 'the DATE value is resolved from the shaped array');
+
+        // Likewise the AGE, shaped because it carries a PHRASE.
+        self::assertInstanceOf(AgeValue::class, $birth->age);
+        self::assertSame(0, $birth->age->years, 'the AGE value is resolved from the shaped array');
     }
 
     /**
@@ -194,6 +345,49 @@ class GedcomObjectMapperTest extends TestCase
 
         (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
             ->mapRecord($node, SubmitterRecord::class);
+    }
+
+    /**
+     * An event maps its DATE, PLAC and AGE substructures into their typed value objects — the
+     * PLAC carries both a value and a FORM substructure, so its shaped node is threaded through
+     * the value object with the form hierarchy.
+     */
+    #[Test]
+    public function mapsTheEventDatePlaceAndAgeValueObjects(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n"
+            . "2 DATE 1 JAN 2000\n"
+            . "2 PLAC Boston, Massachusetts, USA\n3 FORM City, State, Country\n"
+            . "2 AGE 0y\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
+        $birth = $record->birt[0];
+
+        self::assertInstanceOf(DateValue::class, $birth->date);
+
+        self::assertInstanceOf(PlaceValue::class, $birth->plac);
+        self::assertSame('Boston, Massachusetts, USA', $birth->plac->raw);
+        self::assertSame(['Boston', 'Massachusetts', 'USA'], $birth->plac->levels);
+        self::assertSame('City, State, Country', $birth->plac->form, 'the PLAC FORM substructure is threaded through');
+
+        self::assertInstanceOf(AgeValue::class, $birth->age);
+        self::assertSame(0, $birth->age->years);
     }
 
     /**
