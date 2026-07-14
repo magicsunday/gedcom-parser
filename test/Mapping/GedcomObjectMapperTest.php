@@ -26,6 +26,7 @@ use MagicSunday\Gedcom\TypedModel\ChildToFamilyLink;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\NoteRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
 use MagicSunday\Gedcom\TypedModel\SourceRecord;
 use MagicSunday\Gedcom\TypedModel\SpouseToFamilyLink;
@@ -62,6 +63,7 @@ use function dirname;
 #[CoversClass(ChildToFamilyLink::class)]
 #[CoversClass(SpouseToFamilyLink::class)]
 #[CoversClass(SourceRecord::class)]
+#[CoversClass(NoteRecord::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -731,6 +733,56 @@ class GedcomObjectMapperTest extends TestCase
 
         return (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
             ->map($node, $definition, SourceRecord::class);
+    }
+
+    /**
+     * A shared note record maps its text — carried as the record's own line value and reassembled
+     * across CONC/CONT continuation lines — onto the typed NoteRecord.
+     */
+    #[Test]
+    public function mapsANoteRecordTextFromTheRecordValue(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @N1@ NOTE This is a shared note\n1 CONT spanning two lines\n0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, NoteRecord::class);
+
+        self::assertInstanceOf(NoteRecord::class, $record);
+        self::assertSame('N1', $record->xref);
+        self::assertSame("This is a shared note\nspanning two lines", $record->value);
+    }
+
+    /**
+     * A note record with no text maps to a null value rather than an empty string, honouring the
+     * shaper's absent-value branch.
+     */
+    #[Test]
+    public function mapsANoteRecordWithoutTextToANullValue(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @N1@ NOTE\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, NoteRecord::class);
+
+        self::assertInstanceOf(NoteRecord::class, $record);
+        self::assertSame('N1', $record->xref);
+        self::assertNull($record->value, 'an empty note text maps to null, not an empty string');
     }
 
     /**
