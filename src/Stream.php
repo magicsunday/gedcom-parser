@@ -295,7 +295,7 @@ class Stream implements StreamInterface
 
         $mode = $this->getMetadata('mode');
 
-        return str_contains((string) $mode, 'r') || str_contains((string) $mode, '+');
+        return is_string($mode) && (str_contains($mode, 'r') || str_contains($mode, '+'));
     }
 
     /**
