@@ -117,13 +117,17 @@ recognised one (unmapped records such as `HEAD`/`TRLR` are skipped):
 ```php
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
+use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 
-$parser = TypedGedcomParser::create(GedcomVersion::V551, ['INDI' => IndividualRecord::class]);
+$parser = TypedGedcomParser::create(GedcomVersion::V551, [
+    'INDI' => IndividualRecord::class,
+    'FAM'  => FamilyRecord::class,
+]);
 
-foreach ($parser->parse($stream) as $individual) {
-    // one typed IndividualRecord at a time, in document order (parse() yields, so a large file
-    // is never held in memory); wrap in iterator_to_array() if you need the full list
+foreach ($parser->parse($stream) as $record) {
+    // one typed IndividualRecord or FamilyRecord at a time, in document order (parse() yields, so
+    // a large file is never held in memory); wrap in iterator_to_array() if you need the full list
 }
 ```
 

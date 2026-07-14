@@ -23,6 +23,7 @@ use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
+use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use MagicSunday\Gedcom\TypedModel\PersonalName;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
@@ -54,6 +55,7 @@ use function dirname;
 #[CoversClass(IndividualRecord::class)]
 #[CoversClass(EventDetail::class)]
 #[CoversClass(PersonalName::class)]
+#[CoversClass(FamilyRecord::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -476,6 +478,51 @@ class GedcomObjectMapperTest extends TestCase
 
         // The NAME line carries no value, so the required string name is null at construction.
         $this->mapSubmitter("0 @SUBM1@ SUBM\n1 NAME\n0 TRLR\n");
+    }
+
+    /**
+     * A family record maps its partner and child cross-reference pointers (HUSB/WIFE single, CHIL
+     * repeatable) and its repeatable marriage events, each a typed EventDetail carrying the shared
+     * event's date and place.
+     */
+    #[Test]
+    public function mapsAFamilyRecordWithPartnersChildrenAndMarriage(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @F1@ FAM\n"
+            . "1 HUSB @I1@\n"
+            . "1 WIFE @I2@\n"
+            . "1 CHIL @I3@\n"
+            . "1 CHIL @I4@\n"
+            . "1 MARR\n2 DATE 14 FEB 1990\n2 PLAC Boston, Massachusetts\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-FAM');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, FamilyRecord::class);
+
+        self::assertInstanceOf(FamilyRecord::class, $record);
+        self::assertSame('F1', $record->xref);
+        self::assertSame('I1', $record->husb, 'the HUSB pointer maps to the individual cross-reference');
+        self::assertSame('I2', $record->wife, 'the WIFE pointer maps to the individual cross-reference');
+        self::assertSame(['I3', 'I4'], $record->chil, 'the repeatable CHIL pointers map to a list');
+
+        self::assertCount(1, $record->marr, 'a single MARR maps to a one-element list');
+        $marriage = $record->marr[0];
+        self::assertInstanceOf(EventDetail::class, $marriage);
+        self::assertInstanceOf(DateValue::class, $marriage->date);
+        self::assertSame('14 FEB 1990', $marriage->date->raw);
+        self::assertInstanceOf(PlaceValue::class, $marriage->plac);
+        self::assertSame(['Boston', 'Massachusetts'], $marriage->plac->levels);
     }
 
     /**
