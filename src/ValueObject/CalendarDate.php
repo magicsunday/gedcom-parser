@@ -122,10 +122,12 @@ final readonly class CalendarDate
         $monthToken = null;
 
         if ($lastToken !== null) {
-            if (preg_match('#^(\d+)(?:/(\d{2}))?$#', $lastToken, $matches) === 1) {
+            if (preg_match('#^(\d+)(?:/(\d+))?$#', $lastToken, $matches) === 1) {
                 $year = (int) $matches[1];
 
-                if (($matches[2] ?? '') !== '') {
+                // A conformant dual suffix is exactly two digits; an invalid one is ignored while
+                // the primary year is kept, rather than losing the whole token.
+                if (strlen($matches[2] ?? '') === 2) {
                     $dualYear = self::expandDualYear($year, $matches[2]);
                 }
 
@@ -143,7 +145,8 @@ final readonly class CalendarDate
             if ($month !== null) {
                 $dayToken = array_pop($tokens);
 
-                if (($dayToken !== null) && ctype_digit($dayToken)) {
+                // A day is at most two digits in every supported calendar.
+                if (($dayToken !== null) && ctype_digit($dayToken) && (strlen($dayToken) <= 2)) {
                     $day = (int) $dayToken;
                 }
             }
