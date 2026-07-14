@@ -18,6 +18,10 @@ use MagicSunday\Gedcom\Traits\Common\AddressStructureTrait;
 use MagicSunday\Gedcom\Traits\Common\MultimediaLinkTrait;
 use MagicSunday\Gedcom\Traits\Common\NoteTrait;
 use MagicSunday\Gedcom\Traits\Common\SourceCitationTrait;
+use MagicSunday\Gedcom\ValueObject\DateValue;
+
+use function is_string;
+use function trim;
 
 /**
  * The event detail structure.
@@ -47,6 +51,16 @@ class EventDetail extends DataObject implements EventDetailInterface
     public function getDate(): ?string
     {
         return $this->getValue(self::TAG_DATE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDateValue(): ?DateValue
+    {
+        $date = $this->getValue(self::TAG_DATE);
+
+        return (is_string($date) && (trim($date) !== '')) ? DateValue::fromGedcom($date) : null;
     }
 
     /**

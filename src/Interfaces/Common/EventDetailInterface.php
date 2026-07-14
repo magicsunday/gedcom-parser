@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Interfaces\Common;
 
+use MagicSunday\Gedcom\ValueObject\DateValue;
+
 /**
  * The event detail structure.
  *
@@ -64,6 +66,11 @@ interface EventDetailInterface extends AddressStructureInterface, MultimediaLink
     public function getType(): ?string;
 
     public function getDate(): ?string;
+
+    /**
+     * Returns the event date as a typed value object, or NULL when no DATE is present.
+     */
+    public function getDateValue(): ?DateValue;
 
     public function getPlace(): ?PlaceStructureInterface;
 
