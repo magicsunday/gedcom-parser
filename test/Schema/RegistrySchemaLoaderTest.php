@@ -234,6 +234,41 @@ class RegistrySchemaLoaderTest extends TestCase
     }
 
     /**
+     * Top-level records (structures with no superstructures) are indexed by tag, while a
+     * substructure tag resolves to no record.
+     */
+    #[Test]
+    public function indexesTopLevelRecordsByTag(): void
+    {
+        $schema = self::loader()->load(GedcomVersion::V551);
+
+        $individual = $schema->recordByTag('INDI');
+        self::assertInstanceOf(StructureDefinition::class, $individual);
+        self::assertSame(self::V551_INDI, $individual->uri);
+
+        self::assertInstanceOf(StructureDefinition::class, $schema->recordByTag('SUBM'));
+        self::assertNull($schema->recordByTag('DATE'), 'a substructure tag is not a top-level record');
+        self::assertNull($schema->recordByTag('ZZZZ'), 'an unknown tag has no record');
+    }
+
+    /**
+     * The transmission structures (HEAD, TRLR) and the serialization pseudo-structures (CONT),
+     * which also have no superstructures, are not indexed as data records.
+     */
+    #[Test]
+    public function doesNotIndexTransmissionOrPseudoStructuresAsRecords(): void
+    {
+        $schema = self::loader()->load(GedcomVersion::V70);
+
+        self::assertInstanceOf(StructureDefinition::class, $schema->recordByTag('INDI'));
+        self::assertInstanceOf(StructureDefinition::class, $schema->recordByTag('SNOTE'));
+
+        self::assertNull($schema->recordByTag('CONT'), 'CONT is a serialization pseudo-structure, not a record');
+        self::assertNull($schema->recordByTag('HEAD'), 'HEAD is a transmission structure, not a data record');
+        self::assertNull($schema->recordByTag('TRLR'), 'TRLR is a transmission structure, not a data record');
+    }
+
+    /**
      * Files that are not usable structure definitions — a non-mapping document and one missing
      * its tag — are skipped, and a substructure whose URI has no structure in the slice is
      * dropped, while the valid structures still compile.

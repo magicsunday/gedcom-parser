@@ -79,8 +79,10 @@ final readonly class RegistrySchemaLoader
 
         // Second pass: build the definitions, resolving each substructure URI to its child tag.
         // A tag may map to more than one candidate (5.5.1 inline-value vs pointer variants), so
-        // each tag groups a list rather than a single substructure.
-        $structures = [];
+        // each tag groups a list rather than a single substructure. Top-level records are also
+        // indexed by tag so a parsed level-0 record resolves to its definition.
+        $structures   = [];
+        $recordsByTag = [];
 
         foreach ($parsed as $structure) {
             $substructures = [];
@@ -97,16 +99,23 @@ final readonly class RegistrySchemaLoader
                 $substructures[$childTag][] = new Substructure($uri, Cardinality::fromToken($token));
             }
 
-            $structures[$structure['uri']] = new StructureDefinition(
+            $definition = new StructureDefinition(
                 $structure['uri'],
                 $structure['tag'],
                 $structure['payload'],
                 $structure['enumerationSet'],
                 $substructures,
             );
+
+            $structures[$structure['uri']] = $definition;
+
+            // The first record wins for a given tag; the standard slice has one record per tag.
+            if ($structure['isRecord'] && !isset($recordsByTag[$structure['tag']])) {
+                $recordsByTag[$structure['tag']] = $definition;
+            }
         }
 
-        return new Schema($structures);
+        return new Schema($structures, $recordsByTag);
     }
 
     /**
@@ -146,7 +155,7 @@ final readonly class RegistrySchemaLoader
      *
      * @param string $path The path to the structure YAML file
      *
-     * @return array{uri: string, tag: string, payload: string|null, enumerationSet: string|null, substructures: array<string, string>}|null
+     * @return array{uri: string, tag: string, payload: string|null, enumerationSet: string|null, substructures: array<string, string>, isRecord: bool}|null
      */
     private function parseStructure(string $path): ?array
     {
@@ -177,12 +186,18 @@ final readonly class RegistrySchemaLoader
             }
         }
 
+        // The registry names every top-level data record `record-<TAG>` (record-INDI, …). This is
+        // narrower and safer than "has no superstructures", which also matches the HEAD/TRLR
+        // transmission structures and the CONT/CONC serialization pseudo-structures.
+        $isRecord = str_contains($uri, '/record-');
+
         return [
             'uri'            => $uri,
             'tag'            => $tag,
             'payload'        => is_string($payload) ? $payload : null,
             'enumerationSet' => is_string($enumerationSet) ? $enumerationSet : null,
             'substructures'  => $substructures,
+            'isRecord'       => $isRecord,
         ];
     }
 }
