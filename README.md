@@ -1,5 +1,6 @@
 [![Latest version](https://img.shields.io/github/v/release/magicsunday/gedcom-parser?sort=semver)](https://github.com/magicsunday/gedcom-parser/releases/latest)
 [![License](https://img.shields.io/github/license/magicsunday/gedcom-parser)](https://github.com/magicsunday/gedcom-parser/blob/main/LICENSE)
+[![CI](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/magicsunday/gedcom-parser/actions/workflows/ci.yml)
 [![Security](https://github.com/magicsunday/gedcom-parser/actions/workflows/security.yml/badge.svg)](https://github.com/magicsunday/gedcom-parser/actions/workflows/security.yml)
 
 
@@ -85,8 +86,15 @@ composer update
 composer ci:test
 
 # …or step by step
-composer ci:test:php:lint
-composer ci:test:php:phpstan
-composer ci:test:php:rector
-composer ci:test:php:unit
+composer ci:test:php:lint      # phplint
+composer ci:test:php:unit      # PHPUnit
+composer ci:test:php:phpstan   # PHPStan (static analysis)
+composer ci:test:php:rector    # Rector (dry-run)
+composer ci:test:php:cgl       # php-cs-fixer (dry-run)
+composer ci:test:php:cpd       # jscpd (copy/paste detection)
 ```
+
+The same steps run on PHP 8.3, 8.4 and 8.5 in GitHub Actions
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). The `phpstan` and
+`cpd` steps are currently non-blocking while the typed-model refactor is in
+progress.

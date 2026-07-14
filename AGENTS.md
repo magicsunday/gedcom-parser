@@ -66,13 +66,20 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 
 **Composer scripts** (bin-dir `.build/bin`, vendor-dir `.build/vendor`):
 
-* `composer ci:test` — full local gate (lint + phpstan + rector + phpunit)
+* `composer ci:test` — full local gate (lint + unit + phpstan + rector + cgl + cpd)
 * `composer ci:test:php:lint` — `phplint`
+* `composer ci:test:php:unit` — PHPUnit
 * `composer ci:test:php:phpstan` — PHPStan (currently `level: 9`; see the §3 gate / GH-20
   for the `level: max` target)
 * `composer ci:test:php:rector` — Rector dry-run
-* `composer ci:test:php:unit` — PHPUnit
-* `composer ci:cgl` — php-cs-fixer
+* `composer ci:test:php:cgl` — php-cs-fixer dry-run
+* `composer ci:test:php:cpd` — `jscpd` copy/paste detection
+* `composer ci:cgl` — php-cs-fixer (apply)
+
+GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3 / 8.4 /
+8.5. The `phpstan` and `cpd` steps are `continue-on-error` until the typed-model refactor
+(GH-20) resolves the `mixed`-model errors and collapses the duplicated boilerplate; flip
+both to hard gates with GH-20.
 
 **Git flow (house rules — override any sibling AGENTS.md that says otherwise):**
 
