@@ -38,11 +38,6 @@ class Stream implements StreamInterface
     protected $resource;
 
     /**
-     * @var string|resource
-     */
-    protected $stream;
-
-    /**
      * Constructor setting up the PHP resource.
      *
      * @param string|resource $stream A filename or resource
@@ -52,8 +47,6 @@ class Stream implements StreamInterface
      */
     public function __construct($stream, string $mode = 'r')
     {
-        $this->stream = $stream;
-
         if (is_resource($stream)) {
             $this->resource = $stream;
         } elseif (is_string($stream)) {
