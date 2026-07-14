@@ -74,6 +74,9 @@ original raw text.
 The parser reads any readable stream — including non-seekable ones such as a pipe
 (`cat tree.ged | your-app`) or a network response body — and accepts all four GEDCOM 5.5.1
 line terminators (CR, LF, CRLF and LFCR), so classic-Mac (CR-only) files parse correctly.
+Blank and whitespace-only lines — which some exporters append, most commonly after the
+trailer — are skipped rather than mis-parsed, while line numbers in error messages stay
+aligned with the physical file.
 
 The source encoding is detected from the byte-order mark or the `HEAD.CHAR` declaration and
 transcoded to UTF-8: **ANSEL** (the 5.5.1 default, decoded via the bundled Z39.47 table),
