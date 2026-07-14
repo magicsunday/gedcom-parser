@@ -24,6 +24,7 @@ use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
 use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\PersonalName;
 use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\CalendarDate;
 use MagicSunday\Gedcom\ValueObject\DateType;
@@ -48,6 +49,7 @@ use function dirname;
 #[CoversClass(SubmitterRecord::class)]
 #[CoversClass(IndividualRecord::class)]
 #[CoversClass(EventDetail::class)]
+#[CoversClass(PersonalName::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -192,6 +194,53 @@ class GedcomObjectMapperTest extends TestCase
 
         (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
             ->mapRecord($node, SubmitterRecord::class);
+    }
+
+    /**
+     * A richer individual maps its repeatable NAME substructures (each a nested structure with a
+     * value and GIVN/SURN parts), its single SEX value, and its birth event with a typed date.
+     */
+    #[Test]
+    public function mapsAnIndividualWithNamesSexAndEvents(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 NAME John /Doe/\n2 GIVN John\n2 SURN Doe\n"
+            . "1 NAME Johnny /Doe/\n"
+            . "1 SEX M\n"
+            . "1 BIRT\n2 DATE 1 JAN 2000\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertSame('M', $record->sex);
+
+        self::assertCount(2, $record->name, 'both NAME lines map to a list of names');
+        $primary = $record->name[0];
+        self::assertInstanceOf(PersonalName::class, $primary);
+        self::assertSame('John /Doe/', $primary->value, 'the NAME value string is preserved');
+        self::assertSame('John', $primary->givn, 'the GIVN name-part substructure is mapped');
+        self::assertSame('Doe', $primary->surn, 'the SURN name-part substructure is mapped');
+        $secondary = $record->name[1];
+        self::assertInstanceOf(PersonalName::class, $secondary);
+        self::assertSame('Johnny /Doe/', $secondary->value);
+        self::assertNull($secondary->givn, 'a NAME with no GIVN part maps to null');
+        self::assertNull($secondary->surn, 'a NAME with no SURN part maps to null');
+
+        self::assertCount(1, $record->birt, 'the single BIRT maps to a one-element list');
+        self::assertInstanceOf(DateValue::class, $record->birt[0]->date);
     }
 
     /**
