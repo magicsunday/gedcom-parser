@@ -4,7 +4,8 @@ includes:
 #    - %currentWorkingDirectory%/phpstan-baseline.neon
 
 parameters:
-    # You can currently choose from 10 levels (0 is the loosest and 9 is the strictest).
+    # Level 9 for now; the untyped DataObject bag still produces mixed-return errors
+    # that only the typed-model refactor (GH-20) can resolve. Raise to `max` with GH-20.
     level: 9
 
     paths:
@@ -17,5 +18,4 @@ parameters:
         - php
 
     # Ignored validations
-    checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false

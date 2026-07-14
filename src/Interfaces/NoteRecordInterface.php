@@ -51,9 +51,6 @@ interface NoteRecordInterface extends ChangeDateInterface, SourceCitationInterfa
      */
     public function getXref(): string;
 
-    /**
-     * @return string|null
-     */
     public function getText(): ?string;
 
     /**
@@ -61,8 +58,5 @@ interface NoteRecordInterface extends ChangeDateInterface, SourceCitationInterfa
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

@@ -46,13 +46,7 @@ interface SourceCallNumberInterface
      */
     public const TAG_MEDI = 'MEDI';
 
-    /**
-     * @return string|null
-     */
     public function getNumber(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getMediaType(): ?string;
 }

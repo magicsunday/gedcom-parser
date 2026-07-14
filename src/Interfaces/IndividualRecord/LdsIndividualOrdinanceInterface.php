@@ -44,23 +44,11 @@ interface LdsIndividualOrdinanceInterface
      */
     public const TAG_SLGC = 'SLGC';
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsBaptism(): ?CommonIndividualOrdinanceInterface;
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsConfirmation(): ?CommonIndividualOrdinanceInterface;
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsEndowment(): ?CommonIndividualOrdinanceInterface;
 
-    /**
-     * @return SealingChildInterface|null
-     */
     public function getLdsSealingChild(): ?SealingChildInterface;
 }

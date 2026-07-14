@@ -28,8 +28,5 @@ interface IndividualEventDetailInterface extends EventDetailInterface
      */
     public const TAG_AGE = 'AGE';
 
-    /**
-     * @return string|null
-     */
     public function getAge(): ?string;
 }

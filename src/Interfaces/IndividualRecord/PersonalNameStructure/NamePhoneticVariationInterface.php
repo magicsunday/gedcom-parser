@@ -34,9 +34,6 @@ interface NamePhoneticVariationInterface extends PersonalNamePiecesInterface
      */
     public const TAG_TYPE = 'TYPE';
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
     /**

@@ -30,9 +30,6 @@ interface DataInterface
      */
     public const TAG_TEXT = 'TEXT';
 
-    /**
-     * @return string|null
-     */
     public function getDate(): ?string;
 
     /**

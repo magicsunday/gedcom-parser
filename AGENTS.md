@@ -14,9 +14,10 @@ overriding goal is **100 % conformance to the GEDCOM grammar** — the authorita
 specs are vendored under [`docs/spec/`](docs/spec/) (5.5.1 PDF + errata, 7.0 PDF, and
 the machine-readable 7.0 YAML registry).
 
-* Target PHP: see `composer.json` (`require.php`). The codebase is being modernised to
-  `^8.3`; until the floor is bumped, write code at the **current floor** — Rector
-  upgrades it later.
+* Target PHP: `^8.3` (see `composer.json` `require.php`). Write code for the 8.3 floor —
+  typed class constants, `readonly`, enums, `match`, first-class callables are all
+  available; Rector's `UP_TO_PHP_83` set enforces the level. The `<8.4.0` upper bound is
+  gone — the library runs on 8.3/8.4/8.5.
 * `declare(strict_types=1);` in every file; PSR-12; Rector- and php-cs-fixer-clean.
 * No `mixed`, no `empty()`, no nested ternaries. Prefer `final` classes and value objects.
 * One class per file; the test namespace mirrors the source tree (`MagicSunday\Gedcom\Test\…`).
@@ -67,7 +68,8 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 
 * `composer ci:test` — full local gate (lint + phpstan + rector + phpunit)
 * `composer ci:test:php:lint` — `phplint`
-* `composer ci:test:php:phpstan` — PHPStan (target `level: max`, no baseline, no ignores)
+* `composer ci:test:php:phpstan` — PHPStan (currently `level: 9`; see the §3 gate / GH-20
+  for the `level: max` target)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:unit` — PHPUnit
 * `composer ci:cgl` — php-cs-fixer
@@ -91,8 +93,9 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * ✅ PHPUnit green — positive **and** negative/edge paths; **zero** risky/notice/deprecation.
 * ✅ New behaviour covered by fixture-driven tests where applicable (the `test/files/*.ged`
   corpus — `allged.ged`, `ansel.ged`, the `LTER*` line-ending set).
-* ✅ PHPStan clean (target `level: max`, no baseline, no `@phpstan-ignore`); Rector +
-  php-cs-fixer clean.
+* ✅ PHPStan runs clean of any **new** error at `level: 9` (the pre-existing `mixed`-model
+  errors are tracked for GH-20; do not add to them, no baseline, no `@phpstan-ignore`);
+  Rector + php-cs-fixer clean.
 * ✅ **Full reviewer audit loop** run and converged (see §4).
 * ✅ Conformance claims verified against `docs/spec/`.
 * ✅ `README.md` / docs updated when behaviour or the public API changes.

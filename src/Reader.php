@@ -22,11 +22,11 @@ use function is_string;
 use function mb_convert_encoding;
 use function ord;
 use function preg_match;
+use function str_contains;
 use function str_replace;
+use function str_starts_with;
 use function strcspn;
 use function strlen;
-use function strncmp;
-use function strpos;
 use function strtoupper;
 use function substr;
 use function trim;
@@ -51,7 +51,7 @@ class Reader
      * value; a @#...@ calendar/charset escape (starting with '#') is therefore not a
      * pointer but text.
      */
-    private const POINTER_PATTERN = '^@([A-Za-z0-9][^@ ]*)@$';
+    private const string POINTER_PATTERN = '^@([A-Za-z0-9][^@ ]*)@$';
 
     /**
      * The matched groups of interest.
@@ -74,35 +74,35 @@ class Reader
     /**
      * The number of bytes read from the underlying stream per chunk.
      */
-    private const CHUNK_SIZE = 8192;
+    private const int CHUNK_SIZE = 8192;
 
     /**
      * The maximum number of leading bytes scanned for the HEAD.CHAR declaration when no BOM
      * decides the encoding. The (required) CHAR field always sits within the header.
      */
-    private const CHAR_SNIFF_LIMIT = 65536;
+    private const int CHAR_SNIFF_LIMIT = 65536;
 
     /**
      * Core of the HEAD.CHAR line pattern, capturing the whole (possibly multi-word) value up to
      * the line terminator. The terminated match appends a required trailing terminator to this
      * core; the unterminated match, used only at end of stream, matches the bare core.
      */
-    private const CHAR_LINE_PATTERN = '(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)';
+    private const string CHAR_LINE_PATTERN = '(?:^|[\r\n])[ \t]*\d+[ \t]+CHAR[ \t]+([^\r\n]+)';
 
     /**
      * Source encodings the reader transcodes from. ANSEL is the GEDCOM 5.5.1 default.
      */
-    private const ENCODING_ANSEL = 'ANSEL';
+    private const string ENCODING_ANSEL = 'ANSEL';
 
-    private const ENCODING_ASCII = 'ASCII';
+    private const string ENCODING_ASCII = 'ASCII';
 
-    private const ENCODING_UTF8 = 'UTF-8';
+    private const string ENCODING_UTF8 = 'UTF-8';
 
-    private const ENCODING_UTF16LE = 'UTF-16LE';
+    private const string ENCODING_UTF16LE = 'UTF-16LE';
 
-    private const ENCODING_UTF16BE = 'UTF-16BE';
+    private const string ENCODING_UTF16BE = 'UTF-16BE';
 
-    private const ENCODING_CP1252 = 'Windows-1252';
+    private const string ENCODING_CP1252 = 'Windows-1252';
 
     /**
      * The stream object.
@@ -406,7 +406,7 @@ class Reader
         $head = substr($this->buffer, $this->bufferOffset);
 
         // Consume a leading UTF-8 BOM once; there is no per-line BOM handling downstream.
-        if (strncmp($head, "\xEF\xBB\xBF", 3) === 0) {
+        if (str_starts_with($head, "\xEF\xBB\xBF")) {
             $this->bufferOffset += 3;
             $this->encoding = self::ENCODING_UTF8;
 
@@ -415,13 +415,13 @@ class Reader
 
         // UTF-16 by BOM, then the BOM-less null-interleaving heuristic (5.5.1 does not mandate
         // a BOM). The structural framing byte '0' is 0x30 0x00 (LE) / 0x00 0x30 (BE).
-        if (strncmp($head, "\xFF\xFE", 2) === 0) {
+        if (str_starts_with($head, "\xFF\xFE")) {
             $this->beginUtf16(self::ENCODING_UTF16LE, 2);
 
             return;
         }
 
-        if (strncmp($head, "\xFE\xFF", 2) === 0) {
+        if (str_starts_with($head, "\xFE\xFF")) {
             $this->beginUtf16(self::ENCODING_UTF16BE, 2);
 
             return;
@@ -607,7 +607,7 @@ class Reader
         // mangling their high bytes as the ANSEL default.
         if (($normalised === 'ANSI')
             || ($normalised === 'CP1252')
-            || (strpos($normalised, 'WINDOWS') !== false)
+            || str_contains($normalised, 'WINDOWS')
         ) {
             return self::ENCODING_CP1252;
         }
@@ -715,8 +715,6 @@ class Reader
 
     /**
      * Returns the identifier pointer if there is one.
-     *
-     * @return string|null
      */
     public function identifier(): ?string
     {
@@ -735,8 +733,6 @@ class Reader
 
     /**
      * Returns the xref of the current line if there is one.
-     *
-     * @return string|null
      */
     public function xref(): ?string
     {
@@ -745,8 +741,6 @@ class Reader
 
     /**
      * Returns the value of the current line if there is one.
-     *
-     * @return string|null
      */
     public function value(): ?string
     {

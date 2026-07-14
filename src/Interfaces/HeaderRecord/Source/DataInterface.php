@@ -37,18 +37,9 @@ interface DataInterface
      */
     public const TAG_COPR = 'COPR';
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
-    /**
-     * @return DateExactInterface|null
-     */
     public function getPublicationDate(): ?DateExactInterface;
 
-    /**
-     * @return string|null
-     */
     public function getCopyright(): ?string;
 }

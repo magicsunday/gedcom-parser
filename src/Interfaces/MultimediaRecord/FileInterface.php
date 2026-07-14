@@ -48,8 +48,5 @@ interface FileInterface
      */
     public function getMediaFormat(): MediaFormatInterface;
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string;
 }

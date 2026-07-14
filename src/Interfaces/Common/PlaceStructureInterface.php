@@ -56,9 +56,6 @@ interface PlaceStructureInterface extends NoteInterface
      */
     public function getName(): string;
 
-    /**
-     * @return string|null
-     */
     public function getFormat(): ?string;
 
     /**
@@ -71,8 +68,5 @@ interface PlaceStructureInterface extends NoteInterface
      */
     public function getRomanizedVariation(): array;
 
-    /**
-     * @return MapInterface|null
-     */
     public function getMap(): ?MapInterface;
 }

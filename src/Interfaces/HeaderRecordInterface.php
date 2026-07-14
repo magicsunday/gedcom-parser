@@ -98,14 +98,8 @@ interface HeaderRecordInterface
      */
     public function getSource(): SourceInterface;
 
-    /**
-     * @return string|null
-     */
     public function getDestination(): ?string;
 
-    /**
-     * @return DateExactInterface|null
-     */
     public function getTransmissionDate(): ?DateExactInterface;
 
     /**
@@ -113,19 +107,10 @@ interface HeaderRecordInterface
      */
     public function getSubmitter(): string;
 
-    /**
-     * @return string|null
-     */
     public function getSubmission(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getFile(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getCopyright(): ?string;
 
     /**
@@ -138,18 +123,9 @@ interface HeaderRecordInterface
      */
     public function getCharacterSet(): CharacterSetInterface;
 
-    /**
-     * @return string|null
-     */
     public function getLanguage(): ?string;
 
-    /**
-     * @return PlaceInterface|null
-     */
     public function getPlace(): ?PlaceInterface;
 
-    /**
-     * @return NoteInterface|null
-     */
     public function getNote(): ?NoteInterface;
 }

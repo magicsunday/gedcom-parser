@@ -31,33 +31,21 @@ trait LdsIndividualOrdinanceTrait
      */
     abstract public function getValue(string $key);
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsBaptism(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_BAPL);
     }
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsConfirmation(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_CONL);
     }
 
-    /**
-     * @return CommonIndividualOrdinanceInterface|null
-     */
     public function getLdsEndowment(): ?CommonIndividualOrdinanceInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_ENDL);
     }
 
-    /**
-     * @return SealingChildInterface|null
-     */
     public function getLdsSealingChild(): ?SealingChildInterface
     {
         return $this->getValue(LdsIndividualOrdinanceInterface::TAG_SLGC);

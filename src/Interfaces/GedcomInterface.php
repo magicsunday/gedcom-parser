@@ -113,8 +113,5 @@ interface GedcomInterface
      */
     public function getSubmitter(): array;
 
-    /**
-     * @return SubmissionRecordInterface|null
-     */
     public function getSubmission(): ?SubmissionRecordInterface;
 }

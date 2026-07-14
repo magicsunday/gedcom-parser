@@ -27,8 +27,5 @@ interface DeathInterface extends IndividualEventDetailInterface
      */
     public const TAG_FLAG = 'EVENT_FLAG';
 
-    /**
-     * @return string|null
-     */
     public function getFlag(): ?string;
 }

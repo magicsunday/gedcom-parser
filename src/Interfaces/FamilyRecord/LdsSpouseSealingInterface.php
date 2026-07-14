@@ -48,23 +48,11 @@ interface LdsSpouseSealingInterface extends NoteInterface, SourceCitationInterfa
      */
     public const TAG_STAT = 'STAT';
 
-    /**
-     * @return string|null
-     */
     public function getDate(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getTempleCode(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPlace(): ?string;
 
-    /**
-     * @return SpouseSealingDateStatusInterface|null
-     */
     public function getDateStatus(): ?SpouseSealingDateStatusInterface;
 }

@@ -35,18 +35,9 @@ interface MultimediaLinkStructureInterface
      */
     public const TAG_TITL = 'TITL';
 
-    /**
-     * @return string|null
-     */
     public function getXref(): ?string;
 
-    /**
-     * @return FileInterface|null
-     */
     public function getFile(): ?FileInterface;
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string;
 }

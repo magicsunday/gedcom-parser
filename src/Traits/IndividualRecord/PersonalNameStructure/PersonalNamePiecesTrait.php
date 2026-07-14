@@ -29,49 +29,31 @@ trait PersonalNamePiecesTrait
      */
     abstract public function getValue(string $key);
 
-    /**
-     * @return string|null
-     */
     public function getNamePrefix(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_NPFX);
     }
 
-    /**
-     * @return string|null
-     */
     public function getGivenName(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_GIVN);
     }
 
-    /**
-     * @return string|null
-     */
     public function getNickName(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_NICK);
     }
 
-    /**
-     * @return string|null
-     */
     public function getSurnamePrefix(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_SPFX);
     }
 
-    /**
-     * @return string|null
-     */
     public function getSurname(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_SURN);
     }
 
-    /**
-     * @return string|null
-     */
     public function getNameSuffix(): ?string
     {
         return $this->getValue(PersonalNamePiecesInterface::TAG_NSFX);

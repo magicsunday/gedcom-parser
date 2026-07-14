@@ -27,8 +27,5 @@ interface NoteInterface
      */
     public const TAG_GEDCOM_CONTENT_DESCRIPTION = 'GEDCOM_CONTENT_DESCRIPTION';
 
-    /**
-     * @return string|null
-     */
     public function getContent(): ?string;
 }

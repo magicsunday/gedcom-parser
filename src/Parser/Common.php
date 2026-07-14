@@ -32,8 +32,6 @@ class Common extends AbstractParser
 
     /**
      * Parses a common block.
-     *
-     * @return string|null
      */
     public function parse(): ?string
     {

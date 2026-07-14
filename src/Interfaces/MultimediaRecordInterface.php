@@ -64,8 +64,5 @@ interface MultimediaRecordInterface extends ChangeDateInterface, NoteInterface, 
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

@@ -33,13 +33,7 @@ interface ChristeningInterface extends IndividualEventDetailInterface
      */
     public const TAG_FAMC = 'FAMC';
 
-    /**
-     * @return string|null
-     */
     public function getFlag(): ?string;
 
-    /**
-     * @return FamilyChildInterface|null
-     */
     public function getFamilyChild(): ?FamilyChildInterface;
 }

@@ -30,13 +30,7 @@ interface EventInterface
      */
     public const TAG_ROLE = 'ROLE';
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getRole(): ?string;
 }

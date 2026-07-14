@@ -32,13 +32,7 @@ interface FamilyChildInterface
      */
     public const TAG_ADOP = 'ADOP';
 
-    /**
-     * @return string|null
-     */
     public function getXref(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getAdoptedBy(): ?string;
 }

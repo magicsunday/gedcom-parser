@@ -71,9 +71,6 @@ interface AddressBlockInterface
      */
     public const TAG_CTRY = 'CTRY';
 
-    /**
-     * @return string|null
-     */
     public function getAddressLine(): ?string;
 
     /**
@@ -81,38 +78,17 @@ interface AddressBlockInterface
      */
     public function getAdditionalLines(): array;
 
-    /**
-     * @return string|null
-     */
     public function getLine1(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getLine2(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getLine3(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getCity(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getState(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPostalCode(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string;
 }

@@ -69,13 +69,7 @@ interface SubmitterRecordInterface extends AddressStructureInterface, ChangeDate
      */
     public function getLanguage(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRegisterNumber(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }

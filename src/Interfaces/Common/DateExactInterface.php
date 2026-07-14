@@ -32,14 +32,8 @@ interface DateExactInterface
      */
     public const TAG_TIME = 'TIME';
 
-    /**
-     * @return string|null
-     */
     public function getDate(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getTime(): ?string;
 
     /**

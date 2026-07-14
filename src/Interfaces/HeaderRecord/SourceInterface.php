@@ -56,23 +56,11 @@ interface SourceInterface
      */
     public function getApprovedSystemId(): string;
 
-    /**
-     * @return string|null
-     */
     public function getVersion(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
-    /**
-     * @return CorporationInterface|null
-     */
     public function getCorporation(): ?CorporationInterface;
 
-    /**
-     * @return DataInterface|null
-     */
     public function getData(): ?DataInterface;
 }

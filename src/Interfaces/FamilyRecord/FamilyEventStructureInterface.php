@@ -89,63 +89,27 @@ interface FamilyEventStructureInterface
      */
     public const TAG_EVEN = 'EVEN';
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getAnnulment(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getCensus(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getDivorce(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getDivorceFiled(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getEngagement(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getMarriageBann(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getMarriageContract(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getMarriageLicense(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return MarriageInterface|null
-     */
     public function getMarriage(): ?MarriageInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getMarriageSettlement(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getResidence(): ?FamilyEventDetailInterface;
 
-    /**
-     * @return FamilyEventDetailInterface|null
-     */
     public function getCustomEvent(): ?FamilyEventDetailInterface;
 }

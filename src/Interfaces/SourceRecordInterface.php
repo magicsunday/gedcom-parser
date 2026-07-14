@@ -89,34 +89,16 @@ interface SourceRecordInterface extends ChangeDateInterface, MultimediaLinkInter
      */
     public function getXref(): string;
 
-    /**
-     * @return DataInterface|null
-     */
     public function getData(): ?DataInterface;
 
-    /**
-     * @return string|null
-     */
     public function getAuthor(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getAbbreviation(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getPublication(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getText(): ?string;
 
     /**
@@ -129,8 +111,5 @@ interface SourceRecordInterface extends ChangeDateInterface, MultimediaLinkInter
      */
     public function getReferenceNumber(): array;
 
-    /**
-     * @return string|null
-     */
     public function getRecordIdNumber(): ?string;
 }
