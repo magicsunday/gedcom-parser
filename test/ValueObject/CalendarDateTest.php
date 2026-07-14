@@ -127,11 +127,13 @@ class CalendarDateTest extends TestCase
             'hebrew adar ii common'    => ['@#DHEBREW@ 1 ADS 5785', null],
             'hebrew invalid day'       => ['@#DHEBREW@ 31 TSH 5785', null],
             'hebrew bce is null'       => ['@#DHEBREW@ 1 TSH 1 B.C.', null],
+            'hebrew year zero is null' => ['@#DHEBREW@ 1 TSH 0', null],
             'french republican epoch'  => ['@#DFRENCH R@ 1 VEND 1', 2375840],
             'french 18 brumaire viii'  => ['@#DFRENCH R@ 18 BRUM 8', 2378444],
             'french leap sixth comp'   => ['@#DFRENCH R@ 6 COMP 3', 2376935],
             'french common sixth comp' => ['@#DFRENCH R@ 6 COMP 4', null],
             'french bce is null'       => ['@#DFRENCH R@ 1 VEND 1 B.C.', null],
+            'french year zero is null' => ['@#DFRENCH R@ 1 VEND 0', null],
             'no year is null'          => ['MAR', null],
         ];
     }

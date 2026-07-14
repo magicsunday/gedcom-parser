@@ -293,6 +293,10 @@ final readonly class CalendarDate
      */
     private static function hebrewToJulianDay(int $year, int $month, int $day): ?int
     {
+        if ($year < 1) {
+            return null;
+        }
+
         $isLeapYear = (((7 * $year) + 1) % 19) < 7;
 
         $icuMonth = match (true) {
@@ -343,6 +347,10 @@ final readonly class CalendarDate
      */
     private static function frenchRepublicanToJulianDay(int $year, int $month, int $day): ?int
     {
+        if ($year < 1) {
+            return null;
+        }
+
         // Months 1–12 have 30 days; the 13th "month" holds the five (or six, in a leap year)
         // complementary days.
         $monthLength = $month === 13 ? (($year % 4) === 3 ? 6 : 5) : 30;
