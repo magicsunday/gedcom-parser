@@ -26,14 +26,22 @@ use MagicSunday\Gedcom\TypedModel\EventDetail;
 use MagicSunday\Gedcom\TypedModel\FamilyRecord;
 use MagicSunday\Gedcom\TypedModel\GedcomDocument;
 use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
+use MagicSunday\Gedcom\TypedModel\NoteRecord;
+use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
+use MagicSunday\Gedcom\TypedModel\SourceRecord;
+use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\DateType;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
+use function basename;
 use function dirname;
+use function glob;
 
 /**
  * Tests that the reader detects the schema version from the header and maps the whole stream into a
@@ -59,10 +67,30 @@ use function dirname;
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(IndividualRecord::class)]
 #[UsesClass(FamilyRecord::class)]
+#[UsesClass(SourceRecord::class)]
+#[UsesClass(NoteRecord::class)]
+#[UsesClass(RepositoryRecord::class)]
+#[UsesClass(MultimediaRecord::class)]
+#[UsesClass(SubmitterRecord::class)]
 #[UsesClass(EventDetail::class)]
 #[UsesClass(DateValue::class)]
 class GedcomDocumentReaderTest extends TestCase
 {
+    /**
+     * The standard level-0 record tags mapped onto their typed record classes.
+     *
+     * @var array<string, class-string>
+     */
+    private const array STANDARD_RECORD_CLASSES = [
+        'INDI' => IndividualRecord::class,
+        'FAM'  => FamilyRecord::class,
+        'SOUR' => SourceRecord::class,
+        'NOTE' => NoteRecord::class,
+        'REPO' => RepositoryRecord::class,
+        'OBJE' => MultimediaRecord::class,
+        'SUBM' => SubmitterRecord::class,
+    ];
+
     /**
      * A 5.5.1 document is read into the aggregate with its records grouped by type.
      */
@@ -129,6 +157,43 @@ class GedcomDocumentReaderTest extends TestCase
     }
 
     /**
+     * Every bundled GEDCOM fixture is read by the auto-detecting reader without raising an
+     * exception, pinning the typed pipeline's parity with the real-world sample files (in
+     * particular the bare, name-less SUBM records some of them carry).
+     *
+     * @param string $file The absolute path to the GEDCOM fixture.
+     */
+    #[Test]
+    #[DataProvider('fixtureProvider')]
+    public function readsEveryBundledFixtureWithoutError(string $file): void
+    {
+        $reader = GedcomDocumentReader::create(
+            self::STANDARD_RECORD_CLASSES,
+            dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'
+        );
+
+        $document = $reader->read((new StreamFactory())->createStreamFromFile($file));
+
+        self::assertInstanceOf(GedcomDocument::class, $document);
+    }
+
+    /**
+     * Provides every bundled GEDCOM fixture.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function fixtureProvider(): array
+    {
+        $cases = [];
+
+        foreach (glob(dirname(__DIR__) . '/files/*.ged') as $file) {
+            $cases[basename($file)] = [$file];
+        }
+
+        return $cases;
+    }
+
+    /**
      * Reads a GEDCOM string through a rewound in-memory stream with the standard record-class map.
      *
      * @param string $gedcom The GEDCOM source to read.
@@ -138,10 +203,7 @@ class GedcomDocumentReaderTest extends TestCase
     private function read(string $gedcom): GedcomDocument
     {
         $reader = GedcomDocumentReader::create(
-            [
-                'INDI' => IndividualRecord::class,
-                'FAM'  => FamilyRecord::class,
-            ],
+            self::STANDARD_RECORD_CLASSES,
             dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'
         );
 
