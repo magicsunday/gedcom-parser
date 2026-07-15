@@ -132,10 +132,14 @@ Compose, never hand-pick a subset. See the repository's audit tooling / the user
 ```
 src/
     Reader.php, Stream.php, StreamFactory.php   # line tokeniser + PSR-7 stream
-    AbstractParser.php, Parser.php              # recursive-descent driver
-    Parser/**                                   # per-structure parsers
-    Model/**                                    # parsed data objects
-    Interfaces/**, Traits/**                    # tag constants + accessors
+    Parser.php                                  # public entry point → typed GedcomDocument
+    Parse/**                                    # generic node-tree reader
+    Schema/**                                   # registry-compiled per-version schema
+    Mapping/**                                  # schema-driven mapper + typed parser/reader
+    TypedModel/**                               # immutable typed records
+    ValueObject/**                              # parsed value objects (date/place/age/name/…)
+    Encoding/**                                 # ANSEL decoder
+    Model/**, Interfaces/**, Traits/**          # legacy data objects (being retired under GH-20)
     Exception/**                                # domain exceptions (ExceptionInterface)
 test/
     *Test.php, files/*.ged                      # PHPUnit + the .ged fixture corpus

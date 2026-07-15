@@ -75,9 +75,9 @@ jobs:
               run: |
                   composer ci:test:php:cgl
 
-            # Non-blocking until the typed-model refactor (GH-20): the per-structure
-            # Parser/Model/Interface/Trait boilerplate is duplicated by design and is
-            # collapsed by GH-20. Flip to a hard gate with GH-20.
+            # Non-blocking until the typed-model refactor (GH-20): the remaining legacy
+            # per-structure Model/Interface/Trait boilerplate is duplicated by design and is
+            # being collapsed by GH-20. Flip to a hard gate once GH-20 retires it.
             - name: CPD
               if: ${{ !cancelled() }}
               continue-on-error: true
