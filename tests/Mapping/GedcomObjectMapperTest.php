@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\ExternalIdentifier;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\MediaFormat;
@@ -63,6 +64,7 @@ use function dirname;
 #[CoversClass(JsonMapperFactory::class)]
 #[CoversClass(SubmitterRecord::class)]
 #[CoversClass(IndividualRecord::class)]
+#[CoversClass(ExternalIdentifier::class)]
 #[CoversClass(EventDetail::class)]
 #[CoversClass(PersonalName::class)]
 #[CoversClass(FamilyRecord::class)]
@@ -986,6 +988,88 @@ class GedcomObjectMapperTest extends TestCase
         self::assertInstanceOf(Medium::class, $scan->form->medi);
         self::assertSame('OTHER', $scan->form->medi->value);
         self::assertSame('Digital scan of a newspaper', $scan->form->medi->phrase, 'the OTHER medium keeps its phrase');
+    }
+
+    /**
+     * GEDCOM 7.0 lets a record carry external identifiers: any number of `UID` values (mapped to a
+     * list of raw strings) and any number of `EXID` identifiers, each with an optional `TYPE`
+     * authority URI (mapped to a typed {@see ExternalIdentifier}). A `TYPE`-less `EXID` must still
+     * map — the deprecated form keeps its value with a null type rather than being dropped.
+     */
+    #[Test]
+    public function mapsThe70RecordLevelExternalIdentifiers(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 UID 26D3EFD0-7A3C-4E1B-8F7A-1A2B3C4D5E6F\n"
+            . "1 UID 7F1E2D3C-4B5A-6978-8A9B-0C1D2E3F4A5B\n"
+            . "1 EXID 12345\n2 TYPE http://authority.example/tree\n"
+            . "1 EXID 67890\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertSame(
+            [
+                '26D3EFD0-7A3C-4E1B-8F7A-1A2B3C4D5E6F',
+                '7F1E2D3C-4B5A-6978-8A9B-0C1D2E3F4A5B',
+            ],
+            $record->uid,
+            'the repeatable UID values map to a list of raw strings'
+        );
+
+        self::assertCount(2, $record->exid, 'the repeatable EXID identifiers map to a list');
+        $issued = $record->exid[0];
+        self::assertSame('12345', $issued->value);
+        self::assertSame('http://authority.example/tree', $issued->type, 'the EXID TYPE authority URI is threaded through');
+        $bare = $record->exid[1];
+        self::assertSame('67890', $bare->value, 'a TYPE-less EXID keeps its value rather than being dropped');
+        self::assertNull($bare->type, 'a TYPE-less EXID maps to a null type');
+    }
+
+    /**
+     * The record-level `UID`/`EXID` identifiers are a GEDCOM 7.0 addition: the 5.5.1 grammar does not
+     * permit them on a record, so they must stay empty when the same lines are read against the
+     * 5.5.1 schema rather than leaking into the mapped record.
+     */
+    #[Test]
+    public function doesNotMapRecordLevelExternalIdentifiersForGedcom551(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 NAME John /Doe/\n"
+            . "1 UID 26D3EFD0-7A3C-4E1B-8F7A-1A2B3C4D5E6F\n"
+            . "1 EXID 12345\n2 TYPE http://authority.example/tree\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertSame([], $record->uid, 'a 5.5.1 record carries no UID');
+        self::assertSame([], $record->exid, 'a 5.5.1 record carries no EXID');
     }
 
     /**

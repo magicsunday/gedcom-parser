@@ -24,12 +24,14 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class SourceRecord
 {
     /**
-     * @param string      $xref The record cross-reference identifier.
-     * @param string|null $titl The source title (TITL), or NULL when absent.
-     * @param string|null $auth The source author (AUTH), or NULL when absent.
-     * @param string|null $publ The publication facts (PUBL), or NULL when absent.
-     * @param string|null $abbr The short abbreviated title (ABBR), or NULL when absent.
-     * @param string|null $text The verbatim source text (TEXT), or NULL when absent.
+     * @param string                   $xref The record cross-reference identifier.
+     * @param string|null              $titl The source title (TITL), or NULL when absent.
+     * @param string|null              $auth The source author (AUTH), or NULL when absent.
+     * @param string|null              $publ The publication facts (PUBL), or NULL when absent.
+     * @param string|null              $abbr The short abbreviated title (ABBR), or NULL when absent.
+     * @param string|null              $text The verbatim source text (TEXT), or NULL when absent.
+     * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
@@ -38,6 +40,8 @@ final readonly class SourceRecord
         public ?string $publ = null,
         public ?string $abbr = null,
         public ?string $text = null,
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }

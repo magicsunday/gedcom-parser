@@ -34,6 +34,8 @@ final readonly class IndividualRecord
      * @param list<EventDetail>        $buri The burial events.
      * @param list<ChildToFamilyLink>  $famc The families in which the individual is a child.
      * @param list<SpouseToFamilyLink> $fams The families in which the individual is a partner.
+     * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
@@ -44,6 +46,8 @@ final readonly class IndividualRecord
         public array $buri = [],
         public array $famc = [],
         public array $fams = [],
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }

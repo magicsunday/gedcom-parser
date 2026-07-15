@@ -25,14 +25,18 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class SubmitterRecord
 {
     /**
-     * @param string       $xref The record cross-reference identifier.
-     * @param string|null  $name The submitter's name, or NULL when the record carries none.
-     * @param list<string> $phon The submitter's phone numbers.
+     * @param string                   $xref The record cross-reference identifier.
+     * @param string|null              $name The submitter's name, or NULL when the record carries none.
+     * @param list<string>             $phon The submitter's phone numbers.
+     * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
         public ?string $name = null,
         public array $phon = [],
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }

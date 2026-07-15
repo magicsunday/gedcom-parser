@@ -25,11 +25,13 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class RepositoryRecord
 {
     /**
-     * @param string       $xref  The record cross-reference identifier.
-     * @param string|null  $name  The repository name (REPO-NAME), or NULL when the record carries none.
-     * @param list<string> $phon  The repository phone numbers.
-     * @param list<string> $email The repository email addresses.
-     * @param list<string> $fax   The repository fax numbers.
+     * @param string                   $xref  The record cross-reference identifier.
+     * @param string|null              $name  The repository name (REPO-NAME), or NULL when the record carries none.
+     * @param list<string>             $phon  The repository phone numbers.
+     * @param list<string>             $email The repository email addresses.
+     * @param list<string>             $fax   The repository fax numbers.
+     * @param list<string>             $uid   The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid  The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
@@ -37,6 +39,8 @@ final readonly class RepositoryRecord
         public array $phon = [],
         public array $email = [],
         public array $fax = [],
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }

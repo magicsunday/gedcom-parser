@@ -198,7 +198,11 @@ details, and a `MultimediaRecord` exposes its file references (each with a typed
 title). A file's format classifies what it depicts version-specifically: GEDCOM 5.5.1's free-text
 `MediaFormat::$type` (`TYPE`) or GEDCOM 7.0's enumerated `MediaFormat::$medi` (`MEDI`, a typed
 `Medium` carrying the enumerated value plus an optional `PHRASE` for the `OTHER` medium); each stays
-`null` in the other version. Substructures not yet modelled are ignored rather than mapped.
+`null` in the other version. Every record additionally exposes its GEDCOM 7.0 record-level external
+identifiers — any number of `UID` values (a `list` of raw strings) and any number of `EXID`
+identifiers (each a typed `ExternalIdentifier` carrying the identifier plus an optional `TYPE`
+authority URI); both stay empty for a 5.5.1 record, which cannot carry them. Substructures not yet
+modelled are ignored rather than mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
