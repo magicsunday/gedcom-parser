@@ -12,7 +12,7 @@ notes, …) as an object model.
 
 ## Requirements
 - PHP 8.3 or newer (verified on 8.3, 8.4 and 8.5)
-- The `ext-mbstring` and `ext-intl` extensions (used to transcode the source encoding to UTF-8)
+- The `ext-mbstring`, `ext-intl` and `ext-iconv` extensions (used to transcode the source encoding to UTF-8)
 
 
 ## Installation
@@ -81,8 +81,11 @@ aligned with the physical file.
 
 The source encoding is detected from the byte-order mark or the `HEAD.CHAR` declaration and
 transcoded to UTF-8: **ANSEL** (the 5.5.1 default, decoded via the bundled Z39.47 table),
-**UTF-8**, **UNICODE** (UTF-16, little- or big-endian) and **ASCII**. Reading requires the
-`ext-mbstring` and `ext-intl` extensions.
+**UTF-8**, **UNICODE** (UTF-16, little- or big-endian) and **ASCII**. As a real-world convenience
+beyond the 5.5.1 charset set, a Windows export is honoured too: a bare `ANSI` / `WINDOWS` decodes
+as Windows-1252, and an explicit codepage (`WINDOWS-1250`, `CP1257`, …) decodes with that exact
+codepage when the platform's `iconv` carries it, falling back to Windows-1252 otherwise. Reading
+requires the `ext-mbstring`, `ext-intl` and `ext-iconv` extensions.
 
 Every exception the library throws implements
 `MagicSunday\Gedcom\Exception\ExceptionInterface`, so all parser and stream failures can

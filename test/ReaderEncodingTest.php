@@ -259,6 +259,68 @@ class ReaderEncodingTest extends TestCase
     }
 
     /**
+     * An explicit non-1252 Windows codepage (WINDOWS-1250) is decoded with that exact codepage.
+     * 0xB3 is ł in Windows-1250 but ³ in the Windows-1252 default, so the byte discriminates the
+     * two — proving the specific codepage is honoured rather than always falling back to 1252.
+     */
+    #[Test]
+    public function decodesAnExplicitWindows1250Codepage(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR WINDOWS-1250\n0 @I1@ INDI\n1 NAME \xB3\n0 TRLR\n");
+
+        self::assertSame('ł', $this->firstNameValue($stream));
+    }
+
+    /**
+     * The CP<n> spelling of a Windows codepage is honoured just like WINDOWS-<n>.
+     */
+    #[Test]
+    public function decodesTheCpSpellingOfAWindowsCodepage(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR CP1250\n0 @I1@ INDI\n1 NAME \xB3\n0 TRLR\n");
+
+        self::assertSame('ł', $this->firstNameValue($stream));
+    }
+
+    /**
+     * A bare, codepage-less WINDOWS declaration stays Windows-1252 (the correct default for that
+     * ambiguous value): the same 0xB3 byte decodes as ³, not ł.
+     */
+    #[Test]
+    public function keepsWindows1252ForABareWindowsDeclaration(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR WINDOWS\n0 @I1@ INDI\n1 NAME \xB3\n0 TRLR\n");
+
+        self::assertSame('³', $this->firstNameValue($stream));
+    }
+
+    /**
+     * An unsupported Windows codepage number falls back to the Windows-1252 default rather than
+     * failing or mangling the high bytes: 0xB3 decodes as ³.
+     */
+    #[Test]
+    public function fallsBackToWindows1252ForAnUnsupportedCodepage(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR WINDOWS-9999\n0 @I1@ INDI\n1 NAME \xB3\n0 TRLR\n");
+
+        self::assertSame('³', $this->firstNameValue($stream));
+    }
+
+    /**
+     * The feature is scoped to the single-byte Windows-125x family. A multibyte Windows codepage
+     * (WINDOWS-936) is deliberately not routed through the per-line codepage decode — its trail
+     * bytes would collide with the line-terminator scan — so it falls back to the Windows-1252
+     * default: the lead byte 0xB3 decodes as ³.
+     */
+    #[Test]
+    public function doesNotHonourAMultibyteWindowsCodepage(): void
+    {
+        $stream = $this->rewoundStream("0 HEAD\n1 CHAR WINDOWS-936\n0 @I1@ INDI\n1 NAME \xB3\n0 TRLR\n");
+
+        self::assertSame('³', $this->firstNameValue($stream));
+    }
+
+    /**
      * The HEAD.CHAR declaration is detected on a CR-only (classic-Mac) file too, so its
      * charset is honoured rather than defaulting to ANSEL — the /m anchor would only see LF.
      */
