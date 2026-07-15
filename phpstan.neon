@@ -4,9 +4,9 @@ includes:
 #    - %currentWorkingDirectory%/phpstan-baseline.neon
 
 parameters:
-    # Level 9 for now; the untyped DataObject bag still produces mixed-return errors
-    # that only the typed-model refactor (GH-20) can resolve. Raise to `max` with GH-20.
-    level: 9
+    # The typed-model refactor (GH-20) removed the untyped DataObject bag and its mixed-return
+    # errors, so the analysis now runs clean at the strictest level with no baseline.
+    level: max
 
     tmpDir: %currentWorkingDirectory%/.build/cache/.phpstan.cache
 
