@@ -466,7 +466,7 @@ class ReaderReadPathTest extends TestCase
      */
     private function oneByteStream(string $content): Stream
     {
-        $stream = new class($content) extends Stream {
+        return new class($content) extends Stream {
             public function __construct(string $content)
             {
                 parent::__construct('php://temp', 'r+');
@@ -480,7 +480,5 @@ class ReaderReadPathTest extends TestCase
                 return parent::read(1);
             }
         };
-
-        return $stream;
     }
 }

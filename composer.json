@@ -60,7 +60,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "MagicSunday\\Gedcom\\Test\\": "test/"
+            "MagicSunday\\Gedcom\\Test\\": "tests/"
         }
     },
     "scripts": {

@@ -24,6 +24,7 @@ use Rector\TypeDeclaration\Rector\ClassMethod\ParamTypeByMethodCallTypeRector;
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         __DIR__ . '/src',
+        __DIR__ . '/tests',
     ]);
 
     // Keep the Rector caches inside the build directory rather than the repository root.
@@ -45,7 +46,6 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->skip([
         __DIR__ . '/.build',
-        __DIR__ . '/test',
     ]);
 
     $rectorConfig->phpstanConfig('phpstan.neon');

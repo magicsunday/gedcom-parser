@@ -51,7 +51,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'ValueObject'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
@@ -73,7 +74,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'Model'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
@@ -93,7 +95,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'Encoding'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
@@ -114,7 +117,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'Exception'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
@@ -137,7 +141,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'Parse'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Schema'),
@@ -158,7 +163,8 @@ class ArchitectureTest
     {
         return PHPat::rule()
             ->classes(Selector::inNamespace(self::NS . 'Schema'))
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
@@ -183,7 +189,8 @@ class ArchitectureTest
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
             )
-            ->shouldNotDependOn()
+            ->shouldNot()
+            ->dependOn()
             ->classes(Selector::classname(Parser::class))
             ->because('the public Parser entry point orchestrates the pipeline; no lower layer may depend back on it');
     }

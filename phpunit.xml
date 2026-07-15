@@ -9,9 +9,9 @@
 >
     <testsuites>
         <testsuite name="Integration Tests">
-            <directory>test</directory>
+            <directory>tests</directory>
             <!-- phpat architecture rules run inside PHPStan, not PHPUnit. -->
-            <exclude>test/Architecture</exclude>
+            <exclude>tests/Architecture</exclude>
         </testsuite>
     </testsuites>
     <source>

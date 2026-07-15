@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Schema;
 
+use MagicSunday\Gedcom\Exception\InvalidCardinalityException;
 use MagicSunday\Gedcom\Schema\Cardinality;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -75,7 +76,7 @@ class CardinalityTest extends TestCase
     #[Test]
     public function fromTokenRejectsAMalformedToken(): void
     {
-        $this->expectException(\MagicSunday\Gedcom\Exception\InvalidCardinalityException::class);
+        $this->expectException(InvalidCardinalityException::class);
 
         Cardinality::fromToken('0..1');
     }

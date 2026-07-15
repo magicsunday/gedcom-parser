@@ -70,7 +70,7 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test:php:lint` — `phplint`
 * `composer ci:test:php:unit` — PHPUnit
 * `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate; also runs
-  the `phpat` architecture rules in `test/Architecture/ArchitectureTest.php`)
+  the `phpat` architecture rules in `tests/Architecture/ArchitectureTest.php`)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
@@ -102,7 +102,7 @@ is gone.
 
 * ✅ TDD: a failing test was written first (RED), then the minimal fix (GREEN).
 * ✅ PHPUnit green — positive **and** negative/edge paths; **zero** risky/notice/deprecation.
-* ✅ New behaviour covered by fixture-driven tests where applicable (the `test/files/*.ged`
+* ✅ New behaviour covered by fixture-driven tests where applicable (the `tests/files/*.ged`
   corpus — `allged.ged`, `ansel.ged`, the `LTER*` line-ending set).
 * ✅ PHPStan runs clean at `level: max` (no baseline, no `@phpstan-ignore`); Rector +
   php-cs-fixer clean; `jscpd` finds no duplicates.
@@ -142,7 +142,7 @@ src/
     ValueObject/**                              # parsed value objects (date/place/age/name/…)
     Encoding/**                                 # ANSEL decoder
     Exception/**                                # domain exceptions (ExceptionInterface)
-test/
+tests/
     *Test.php, files/*.ged                      # PHPUnit + the .ged fixture corpus
 docs/spec/                                      # vendored GEDCOM specs (export-ignored)
 ```
