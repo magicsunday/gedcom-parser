@@ -57,6 +57,9 @@ return (new PhpCsFixer\Config())
         'phpdoc_to_comment'               => false,
         'phpdoc_no_alias_tag'             => false,
         'no_superfluous_phpdoc_tags'      => false,
+        // Keep annotation descriptions as written — capitalised, with their trailing full stop —
+        // instead of the @Symfony default that lowercases the first word and drops the dot.
+        'phpdoc_annotation_without_dot'   => false,
         'phpdoc_separation'               => [
             'groups' => [
                 [
