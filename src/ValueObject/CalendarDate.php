@@ -317,7 +317,7 @@ final readonly class CalendarDate
         }
 
         $calendar->clear();
-        $calendar->set($year, $icuMonth, $day);
+        $calendar->setDate($year, $icuMonth, $day);
 
         // ICU is lenient and rolls an out-of-range day into the next month; reject that instead.
         if (($calendar->get(IntlCalendar::FIELD_MONTH) !== $icuMonth)
