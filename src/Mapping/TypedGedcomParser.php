@@ -18,6 +18,7 @@ use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
+use MagicSunday\Gedcom\TypedModel\GedcomDocument;
 use Psr\Http\Message\StreamInterface;
 
 use function dirname;
@@ -94,5 +95,20 @@ final readonly class TypedGedcomParser
 
             yield $this->mapper->mapRecord($node, $className);
         }
+    }
+
+    /**
+     * Parses the stream eagerly into a typed {@see GedcomDocument} aggregate, grouping every
+     * recognised record by its modelled type. Unlike {@see parse()} this holds the whole document
+     * in memory; prefer it when the caller needs random access to the records rather than a single
+     * streaming pass.
+     *
+     * @param StreamInterface $stream The GEDCOM stream to parse
+     *
+     * @return GedcomDocument The populated aggregate
+     */
+    public function parseDocument(StreamInterface $stream): GedcomDocument
+    {
+        return GedcomDocument::fromRecords($this->parse($stream));
     }
 }
