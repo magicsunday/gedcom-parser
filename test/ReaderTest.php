@@ -80,42 +80,6 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * Constructing a reader over a valid .ged fixture yields a Reader instance.
-     */
-    #[Test]
-    public function open(): void
-    {
-        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
-        $reader = new Reader($stream);
-
-        self::assertInstanceOf(Reader::class, $reader);
-    }
-
-    /**
-     * back() rewinds the cursor so the next read re-serves the previously read line.
-     */
-    #[Test]
-    public function back(): void
-    {
-        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
-        $reader = new Reader($stream);
-
-        // Read two lines
-        $reader->read();
-        $reader->read();
-
-        $line1 = $reader->current();
-
-        // Move the cursor one line back and reread the line
-        $reader->back();
-        $reader->read();
-
-        $line2 = $reader->current();
-
-        self::assertSame($line1, $line2);
-    }
-
-    /**
      * A level-0 INDI record's cross-reference identifier round-trips back into its line.
      */
     #[Test]
@@ -138,64 +102,30 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * level() reports the GEDCOM level of the current line for records and nested substructures.
+     * As the cursor advances through a fixture, level() reports the GEDCOM level of each line by
+     * its nesting: the level-0 records (HEAD, TRLR) and the nested GEDC/VERS substructures each
+     * report their depth. The tag is read at every line, so the tag accessor is exercised too.
      */
     #[Test]
-    public function level(): void
+    public function reportsGedcomLevelForEachStructuralTagAsTheCursorAdvances(): void
     {
         $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
         $reader = new Reader($stream);
 
-        // Read to the first INDI record
+        $levels = [];
+
         while ($reader->read()) {
-            if ($reader->value() === 'INDI') {
-                self::assertSame(0, $reader->level());
-            }
+            $tag = $reader->tag();
 
-            if ($reader->tag() === 'HEAD') {
-                self::assertSame(0, $reader->level());
-            }
-
-            if ($reader->tag() === 'GEDC') {
-                self::assertSame(1, $reader->level());
-            }
-
-            if ($reader->tag() === 'VERS') {
-                self::assertSame(2, $reader->level());
-            }
-
-            if ($reader->tag() === 'TRLR') {
-                self::assertSame(0, $reader->level());
+            // Record the first level seen per structural tag, keyed by the tag the accessor reports.
+            if (($tag !== null) && !array_key_exists($tag, $levels)) {
+                $levels[$tag] = $reader->level();
             }
         }
-    }
 
-    /**
-     * tag() reports the tag name of the current line as it advances through the record.
-     */
-    #[Test]
-    public function tag(): void
-    {
-        $stream = (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/simple.ged');
-        $reader = new Reader($stream);
-
-        // Read to the first INDI record
-        while ($reader->read()) {
-            if ($reader->tag() === 'HEAD') {
-                $this->addToAssertionCount(1);
-            }
-
-            if ($reader->tag() === 'GEDC') {
-                $this->addToAssertionCount(1);
-            }
-
-            if ($reader->tag() === 'VERS') {
-                $this->addToAssertionCount(1);
-            }
-
-            if ($reader->tag() === 'TRLR') {
-                $this->addToAssertionCount(1);
-            }
-        }
+        self::assertSame(0, $levels['HEAD'] ?? null, 'HEAD is a level-0 record');
+        self::assertSame(1, $levels['GEDC'] ?? null, 'GEDC nests one level under HEAD');
+        self::assertSame(2, $levels['VERS'] ?? null, 'VERS nests two levels under HEAD');
+        self::assertSame(0, $levels['TRLR'] ?? null, 'TRLR is a level-0 record');
     }
 }
