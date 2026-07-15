@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\MediaFormat;
+use MagicSunday\Gedcom\Model\Medium;
 use MagicSunday\Gedcom\Model\MultimediaFile;
 use MagicSunday\Gedcom\Model\MultimediaRecord;
 use MagicSunday\Gedcom\Model\NoteRecord;
@@ -73,6 +74,7 @@ use function dirname;
 #[CoversClass(MultimediaRecord::class)]
 #[CoversClass(MultimediaFile::class)]
 #[CoversClass(MediaFormat::class)]
+#[CoversClass(Medium::class)]
 #[UsesClass(GedcomTreeReader::class)]
 #[UsesClass(GedcomNode::class)]
 #[UsesClass(Reader::class)]
@@ -931,6 +933,7 @@ class GedcomObjectMapperTest extends TestCase
         self::assertInstanceOf(MediaFormat::class, $portrait->form);
         self::assertSame('jpg', $portrait->form->value);
         self::assertSame('photo', $portrait->form->type, 'the nested FORM TYPE is threaded through');
+        self::assertNull($portrait->form->medi, 'a 5.5.1 FORM has no 7.0 MEDI');
 
         $register = $record->file[1];
         self::assertSame('http://example.test/register.tif', $register->value);
@@ -938,6 +941,51 @@ class GedcomObjectMapperTest extends TestCase
         self::assertInstanceOf(MediaFormat::class, $register->form);
         self::assertSame('tif', $register->form->value);
         self::assertNull($register->form->type, 'an absent FORM TYPE stays null');
+        self::assertNull($register->form->medi, 'a 5.5.1 FORM has no 7.0 MEDI');
+    }
+
+    /**
+     * A GEDCOM 7.0 multimedia file classifies its medium with the enumerated `MEDI` (not 5.5.1's
+     * free-text `TYPE`), which itself may carry a `PHRASE` for an `OTHER` medium. It maps onto a
+     * typed {@see Medium} nested in the file's {@see MediaFormat}. Because a 7.0 `MEDI` shapes to a
+     * substructure-bearing array, this also guards the regression where such a FORM mapped to NULL.
+     */
+    #[Test]
+    public function mapsThe70MediumClassificationOfAMultimediaFile(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @O1@ OBJE\n"
+            . "1 FILE http://example.test/portrait.jpg\n2 FORM image/jpeg\n3 MEDI PHOTO\n"
+            . "1 FILE http://example.test/scan.tiff\n2 FORM image/tiff\n3 MEDI OTHER\n4 PHRASE Digital scan of a newspaper\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, MultimediaRecord::class);
+
+        self::assertInstanceOf(MultimediaRecord::class, $record);
+        self::assertCount(2, $record->file);
+
+        $portrait = $record->file[0];
+        self::assertInstanceOf(MediaFormat::class, $portrait->form, 'a 7.0 FORM carrying MEDI must not map to null');
+        self::assertSame('image/jpeg', $portrait->form->value);
+        self::assertNull($portrait->form->type, 'a 7.0 FORM has no 5.5.1 TYPE');
+        self::assertInstanceOf(Medium::class, $portrait->form->medi);
+        self::assertSame('PHOTO', $portrait->form->medi->value);
+        self::assertNull($portrait->form->medi->phrase, 'a plain enumerated medium carries no phrase');
+
+        $scan = $record->file[1];
+        self::assertInstanceOf(MediaFormat::class, $scan->form);
+        self::assertInstanceOf(Medium::class, $scan->form->medi);
+        self::assertSame('OTHER', $scan->form->medi->value);
+        self::assertSame('Digital scan of a newspaper', $scan->form->medi->phrase, 'the OTHER medium keeps its phrase');
     }
 
     /**

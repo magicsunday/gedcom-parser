@@ -195,7 +195,10 @@ cross-references and its marriage events — each event a typed `EventDetail` (d
 a `SourceRecord` exposes its descriptive fields (title, author, publication, abbreviation,
 text), a `NoteRecord` exposes its shared-note text, a `RepositoryRecord` exposes its name and contact
 details, and a `MultimediaRecord` exposes its file references (each with a typed format and
-title). Substructures not yet modelled are ignored rather than mapped.
+title). A file's format classifies what it depicts version-specifically: GEDCOM 5.5.1's free-text
+`MediaFormat::$type` (`TYPE`) or GEDCOM 7.0's enumerated `MediaFormat::$medi` (`MEDI`, a typed
+`Medium` carrying the enumerated value plus an optional `PHRASE` for the `OTHER` medium); each stays
+`null` in the other version. Substructures not yet modelled are ignored rather than mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
