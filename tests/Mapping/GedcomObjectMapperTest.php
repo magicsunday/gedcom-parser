@@ -138,7 +138,6 @@ class GedcomObjectMapperTest extends TestCase
         // BIRT is {0:M} in the schema, so it maps to a list of events.
         self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
         $birth = $record->birt[0];
-        self::assertInstanceOf(EventDetail::class, $birth);
         self::assertInstanceOf(DateValue::class, $birth->date);
         self::assertSame('1 JAN 2000', $birth->date->raw);
         self::assertInstanceOf(CalendarDate::class, $birth->date->date);
@@ -512,12 +511,10 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(2, $record->name, 'both NAME lines map to a list of names');
         $primary = $record->name[0];
-        self::assertInstanceOf(PersonalName::class, $primary);
         self::assertSame('John /Doe/', $primary->value, 'the NAME value string is preserved');
         self::assertSame('John', $primary->givn, 'the GIVN name-part substructure is mapped');
         self::assertSame('Doe', $primary->surn, 'the SURN name-part substructure is mapped');
         $secondary = $record->name[1];
-        self::assertInstanceOf(PersonalName::class, $secondary);
         self::assertSame('Johnny /Doe/', $secondary->value);
         self::assertNull($secondary->givn, 'a NAME with no GIVN part maps to null');
         self::assertNull($secondary->surn, 'a NAME with no SURN part maps to null');
@@ -550,7 +547,6 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(1, $record->name);
         $name = $record->name[0];
-        self::assertInstanceOf(PersonalName::class, $name);
 
         self::assertSame('Johnny /Doe/ Jr', $name->value, 'the raw value is preserved');
         self::assertSame('Jonathan', $name->givn);
@@ -654,7 +650,6 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(1, $record->deat, 'a single DEAT maps to a one-element list');
         $death = $record->deat[0];
-        self::assertInstanceOf(EventDetail::class, $death);
         self::assertInstanceOf(DateValue::class, $death->date);
         self::assertSame('3 MAR 1980', $death->date->raw);
         self::assertInstanceOf(AgeValue::class, $death->age, 'a DEAT carries a direct AGE substructure');
@@ -662,7 +657,6 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(1, $record->buri, 'a single BURI maps to a one-element list');
         $burial = $record->buri[0];
-        self::assertInstanceOf(EventDetail::class, $burial);
         self::assertInstanceOf(DateValue::class, $burial->date);
         self::assertSame('7 MAR 1980', $burial->date->raw);
         self::assertInstanceOf(PlaceValue::class, $burial->plac);
@@ -702,7 +696,6 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(1, $record->famc, 'a single FAMC maps to a one-element list');
         $childLink = $record->famc[0];
-        self::assertInstanceOf(ChildToFamilyLink::class, $childLink);
         self::assertSame('F1', $childLink->xref, 'the FAMC pointer maps to the family cross-reference');
         self::assertSame('birth', $childLink->pedi, 'the PEDI substructure is threaded through');
 
@@ -780,7 +773,6 @@ class GedcomObjectMapperTest extends TestCase
 
         self::assertCount(1, $record->marr, 'a single MARR maps to a one-element list');
         $marriage = $record->marr[0];
-        self::assertInstanceOf(EventDetail::class, $marriage);
         self::assertInstanceOf(DateValue::class, $marriage->date);
         self::assertSame('14 FEB 1990', $marriage->date->raw);
         self::assertInstanceOf(PlaceValue::class, $marriage->plac);
@@ -934,7 +926,6 @@ class GedcomObjectMapperTest extends TestCase
         self::assertCount(2, $record->file, 'the repeatable FILE references map to a list');
 
         $portrait = $record->file[0];
-        self::assertInstanceOf(MultimediaFile::class, $portrait);
         self::assertSame('http://example.test/portrait.jpg', $portrait->value);
         self::assertSame('Family portrait', $portrait->titl);
         self::assertInstanceOf(MediaFormat::class, $portrait->form);
@@ -942,7 +933,6 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame('photo', $portrait->form->type, 'the nested FORM TYPE is threaded through');
 
         $register = $record->file[1];
-        self::assertInstanceOf(MultimediaFile::class, $register);
         self::assertSame('http://example.test/register.tif', $register->value);
         self::assertNull($register->titl, 'an absent FILE title stays null');
         self::assertInstanceOf(MediaFormat::class, $register->form);

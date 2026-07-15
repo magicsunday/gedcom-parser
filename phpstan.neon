@@ -1,8 +1,6 @@
 includes:
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-strict-rules/rules.neon
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    # phpstan-phpunit's test-class rules only bite once tests/ is analysed at level: max (the
-    # remaining, still-open half of GH-109); they are loaded now so that flip is a one-line change.
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-phpunit/extension.neon
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-phpunit/rules.neon
     - %currentWorkingDirectory%/.build/vendor/phpat/phpat/extension.neon
@@ -20,13 +18,7 @@ parameters:
 
     paths:
         - %currentWorkingDirectory%/src/
-
-    # The phpat rule class lives under tests/ and must be discovered via BetterReflection (not just
-    # runtime autoloading) for phpat's TestExtractor to pick it up — scan it without analysing it.
-    # Bringing the whole tests/ tree under `paths` at level: max is the remaining, still-open half
-    # of GH-109 (it needs ~19 test-only fixes first), so tests/ stays scanned-not-analysed for now.
-    scanDirectories:
-        - %currentWorkingDirectory%/tests/Architecture/
+        - %currentWorkingDirectory%/tests/
 
     excludePaths:
         - %currentWorkingDirectory%/.build/

@@ -19,6 +19,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 
 use function implode;
 use function mb_check_encoding;
@@ -466,11 +467,11 @@ class ReaderEncodingTest extends TestCase
     /**
      * Returns the value of the first NAME line parsed from the given stream.
      *
-     * @param Stream $stream A readable stream over a GEDCOM document.
+     * @param StreamInterface $stream A readable stream over a GEDCOM document.
      *
      * @return string|null The first NAME value, or NULL when none is present.
      */
-    private function firstNameValue(Stream $stream): ?string
+    private function firstNameValue(StreamInterface $stream): ?string
     {
         $reader = new Reader($stream);
 
@@ -488,9 +489,9 @@ class ReaderEncodingTest extends TestCase
      *
      * @param string $bytes The raw document bytes.
      *
-     * @return Stream A rewound stream over the bytes.
+     * @return StreamInterface A rewound stream over the bytes.
      */
-    private function rewoundStream(string $bytes): Stream
+    private function rewoundStream(string $bytes): StreamInterface
     {
         $stream = (new StreamFactory())->createStream($bytes);
         $stream->rewind();

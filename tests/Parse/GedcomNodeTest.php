@@ -50,8 +50,11 @@ class GedcomNodeTest extends TestCase
             self::child('CHAR', 'UTF-8'),
         ]);
 
-        self::assertSame('CHAR', $node->firstChild('CHAR')?->tag);
-        self::assertSame('UTF-8', $node->firstChild('CHAR')?->value);
+        $child = $node->firstChild('CHAR');
+
+        self::assertNotNull($child);
+        self::assertSame('CHAR', $child->tag);
+        self::assertSame('UTF-8', $child->value);
     }
 
     /**

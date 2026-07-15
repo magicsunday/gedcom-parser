@@ -306,14 +306,16 @@ class GedcomDocumentReaderTest extends TestCase
     #[DataProvider('fixtureProvider')]
     public function readsEveryBundledFixtureWithoutError(string $file): void
     {
+        // The read() call throws on any malformed record, so reaching the end without an exception
+        // is the assertion; the return type already guarantees a GedcomDocument.
+        $this->expectNotToPerformAssertions();
+
         $reader = GedcomDocumentReader::create(
             self::STANDARD_RECORD_CLASSES,
             dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'
         );
 
-        $document = $reader->read((new StreamFactory())->createStreamFromFile($file));
-
-        self::assertInstanceOf(GedcomDocument::class, $document);
+        $reader->read((new StreamFactory())->createStreamFromFile($file));
     }
 
     /**
@@ -324,8 +326,9 @@ class GedcomDocumentReaderTest extends TestCase
     public static function fixtureProvider(): array
     {
         $cases = [];
+        $files = glob(dirname(__DIR__) . '/files/*.ged');
 
-        foreach (glob(dirname(__DIR__) . '/files/*.ged') as $file) {
+        foreach ($files === false ? [] : $files as $file) {
             $cases[basename($file)] = [$file];
         }
 

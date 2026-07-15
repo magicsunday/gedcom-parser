@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
-use MagicSunday\Gedcom\Model\GedcomDocument;
-use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\StreamFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -65,7 +63,6 @@ class ParserTest extends TestCase
 
         $individual = $document->individuals[0];
 
-        self::assertInstanceOf(IndividualRecord::class, $individual);
         self::assertSame('X116', $individual->xref);
         self::assertSame('M', $individual->sex);
         self::assertSame(
@@ -110,8 +107,9 @@ class ParserTest extends TestCase
     public static function fixtureProvider(): array
     {
         $cases = [];
+        $files = glob(__DIR__ . '/files/*.ged');
 
-        foreach (glob(__DIR__ . '/files/*.ged') as $file) {
+        foreach ($files === false ? [] : $files as $file) {
             $cases[basename($file)] = [$file];
         }
 
@@ -127,8 +125,11 @@ class ParserTest extends TestCase
     #[Test]
     public function parsesFixtureWithoutError(string $file): void
     {
-        $stream = (new StreamFactory())->createStreamFromFile($file);
+        // parse() throws on any malformed record, so reaching the end without an exception is the
+        // assertion; the return type already guarantees a GedcomDocument.
+        $this->expectNotToPerformAssertions();
 
-        self::assertInstanceOf(GedcomDocument::class, (new Parser($stream))->parse());
+        $stream = (new StreamFactory())->createStreamFromFile($file);
+        (new Parser($stream))->parse();
     }
 }
