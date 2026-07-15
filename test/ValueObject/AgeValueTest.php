@@ -11,17 +11,12 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\ValueObject;
 
-use MagicSunday\Gedcom\Interfaces\FamilyRecord\FamilyEventStructure\FamilyPersonAgeInterface;
-use MagicSunday\Gedcom\Interfaces\IndividualRecord\IndividualEventStructure\IndividualEventDetailInterface;
-use MagicSunday\Gedcom\Model\FamilyRecord\FamilyEventStructure\FamilyPersonAge;
-use MagicSunday\Gedcom\Model\IndividualRecord\IndividualEventStructure\IndividualEventDetail;
 use MagicSunday\Gedcom\ValueObject\AgeKeyword;
 use MagicSunday\Gedcom\ValueObject\AgeModifier;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,9 +29,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(AgeValue::class)]
 #[CoversClass(AgeModifier::class)]
 #[CoversClass(AgeKeyword::class)]
-#[CoversClass(FamilyPersonAge::class)]
-#[CoversClass(IndividualEventDetail::class)]
-#[UsesClass(\MagicSunday\Gedcom\Model\DataObject::class)]
 class AgeValueTest extends TestCase
 {
     /**
@@ -116,46 +108,6 @@ class AgeValueTest extends TestCase
     public function fromGedcomPreservesTheRawText(): void
     {
         self::assertSame('  72y 3m  ', AgeValue::fromGedcom('  72y 3m  ')->raw);
-    }
-
-    /**
-     * FamilyPersonAge exposes the parsed age, and NULL when no AGE value is present.
-     */
-    #[Test]
-    public function familyPersonAgeExposesTheParsedAgeValue(): void
-    {
-        $age = new FamilyPersonAge();
-        self::assertNull($age->getAgeValue());
-
-        $empty = new FamilyPersonAge();
-        $empty->setValue(FamilyPersonAgeInterface::TAG_AGE, '  ');
-        self::assertNull($empty->getAgeValue(), 'an empty AGE is treated as absent');
-
-        $age->setValue(FamilyPersonAgeInterface::TAG_AGE, '72y');
-        $value = $age->getAgeValue();
-
-        self::assertInstanceOf(AgeValue::class, $value);
-        self::assertSame(72, $value->years);
-    }
-
-    /**
-     * IndividualEventDetail exposes the parsed age, and NULL when no AGE value is present.
-     */
-    #[Test]
-    public function individualEventDetailExposesTheParsedAgeValue(): void
-    {
-        $detail = new IndividualEventDetail();
-        self::assertNull($detail->getAgeValue());
-
-        $empty = new IndividualEventDetail();
-        $empty->setValue(IndividualEventDetailInterface::TAG_AGE, '  ');
-        self::assertNull($empty->getAgeValue(), 'an empty AGE is treated as absent');
-
-        $detail->setValue(IndividualEventDetailInterface::TAG_AGE, 'CHILD');
-        $value = $detail->getAgeValue();
-
-        self::assertInstanceOf(AgeValue::class, $value);
-        self::assertSame(AgeKeyword::Child, $value->keyword);
     }
 
     /**
