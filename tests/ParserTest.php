@@ -155,6 +155,44 @@ class ParserTest extends TestCase
     }
 
     /**
+     * A GEDCOM 7.0 shared note may carry its text in other languages or media types as repeatable
+     * `TRAN` substructures; each is mapped to a typed NoteTranslation with its own value, language
+     * and media type, and a translation that omits the optional media type leaves it NULL.
+     */
+    #[Test]
+    public function parsesA70SharedNoteTranslations(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 7.0
+            0 @N1@ SNOTE The original note text.
+            1 LANG en
+            1 MIME text/plain
+            1 TRAN Translated note text one.
+            2 LANG de
+            2 MIME text/html
+            1 TRAN Segundo texto traducido.
+            2 LANG es
+            0 TRLR
+            GEDCOM);
+
+        $stream->rewind();
+
+        $note = (new Parser($stream))->parse()->notes[0];
+
+        self::assertCount(2, $note->tran);
+
+        self::assertSame('Translated note text one.', $note->tran[0]->value);
+        self::assertSame('de', $note->tran[0]->lang);
+        self::assertSame('text/html', $note->tran[0]->mime);
+
+        self::assertSame('Segundo texto traducido.', $note->tran[1]->value);
+        self::assertSame('es', $note->tran[1]->lang);
+        self::assertNull($note->tran[1]->mime);
+    }
+
+    /**
      * A GEDCOM 7.0 header documents its custom extension tags with `HEAD.SCHMA.TAG` lines; the
      * parser surfaces them as a tag-to-URI map on the aggregate.
      */
