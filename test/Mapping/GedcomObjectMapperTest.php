@@ -41,6 +41,7 @@ use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\CalendarDate;
 use MagicSunday\Gedcom\ValueObject\DateType;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\MapCoordinates;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -85,6 +86,7 @@ use function dirname;
 #[UsesClass(CalendarDate::class)]
 #[UsesClass(DateType::class)]
 #[UsesClass(PlaceValue::class)]
+#[UsesClass(MapCoordinates::class)]
 #[UsesClass(AgeValue::class)]
 #[UsesClass(AgeModifier::class)]
 #[UsesClass(AgeKeyword::class)]
@@ -403,9 +405,33 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame('Boston, Massachusetts, USA', $birth->plac->raw);
         self::assertSame(['Boston', 'Massachusetts', 'USA'], $birth->plac->levels);
         self::assertSame('City, State, Country', $birth->plac->form, 'the PLAC FORM substructure is threaded through');
+        self::assertNull($birth->plac->coordinates, 'a PLAC without a MAP has no coordinates');
 
         self::assertInstanceOf(AgeValue::class, $birth->age);
         self::assertSame(0, $birth->age->years);
+    }
+
+    /**
+     * A PLAC carrying a MAP substructure threads the LATI/LONG coordinates onto the typed
+     * PlaceValue as signed decimal degrees (north/east positive, south/west negative).
+     */
+    #[Test]
+    public function mapsThePlaceMapCoordinates(): void
+    {
+        $record = $this->mapIndividual(
+            "0 @I1@ INDI\n1 BIRT\n"
+            . "2 PLAC Boston, Massachusetts, USA\n"
+            . "3 MAP\n4 LATI N42.3601\n4 LONG W71.0589\n"
+            . "0 TRLR\n"
+        );
+
+        self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
+        $place = $record->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+
+        self::assertInstanceOf(MapCoordinates::class, $place->coordinates, 'the MAP substructure is threaded through');
+        self::assertSame(42.3601, $place->coordinates->latitude);
+        self::assertSame(-71.0589, $place->coordinates->longitude);
     }
 
     /**

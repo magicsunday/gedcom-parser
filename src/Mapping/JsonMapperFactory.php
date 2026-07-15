@@ -14,6 +14,7 @@ namespace MagicSunday\Gedcom\Mapping;
 use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\MapCoordinates;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use MagicSunday\JsonMapper;
 use MagicSunday\JsonMapper\Converter\CamelCasePropertyNameConverter;
@@ -149,15 +150,50 @@ final class JsonMapperFactory
      */
     private static function placeFromShaped(mixed $value): PlaceValue
     {
-        $name = self::leafValue($value, 'PLAC');
-        $form = null;
+        $name        = self::leafValue($value, 'PLAC');
+        $form        = null;
+        $coordinates = null;
 
-        if (is_array($value) && array_key_exists('form', $value)) {
-            // Resolve the FORM through the same leaf helper as the place name, so a shaped FORM is
-            // handled and a mis-shaped one fails loud consistently rather than being coerced away.
-            $form = self::leafValue($value['form'], 'FORM');
+        if (is_array($value)) {
+            if (array_key_exists('form', $value)) {
+                // Resolve the FORM through the same leaf helper as the place name, so a shaped FORM
+                // is handled and a mis-shaped one fails loud consistently rather than coerced away.
+                $form = self::leafValue($value['form'], 'FORM');
+            }
+
+            if (array_key_exists('map', $value)) {
+                $coordinates = self::coordinatesFromShaped($value['map']);
+            }
         }
 
-        return PlaceValue::fromGedcom($name, $form);
+        return PlaceValue::fromGedcom($name, $form, $coordinates);
+    }
+
+    /**
+     * Builds MapCoordinates from a shaped MAP node. MAP carries no value of its own but declares the
+     * required LATI/LONG leaves, so it is shaped as an array; each axis is resolved as a leaf value
+     * and handed to the value object, which returns NULL when either axis is malformed or absent.
+     *
+     * @param mixed $map The shaped MAP payload (an array carrying the LATI/LONG leaves)
+     *
+     * @return MapCoordinates|null The parsed coordinates, or NULL when the MAP is incomplete or
+     *                             malformed
+     *
+     * @throws MappingException When a LATI/LONG leaf is itself mis-shaped
+     */
+    private static function coordinatesFromShaped(mixed $map): ?MapCoordinates
+    {
+        if (!is_array($map)) {
+            return null;
+        }
+
+        if (!array_key_exists('lati', $map) || !array_key_exists('long', $map)) {
+            return null;
+        }
+
+        return MapCoordinates::fromGedcom(
+            self::leafValue($map['lati'], 'LATI'),
+            self::leafValue($map['long'], 'LONG'),
+        );
     }
 }

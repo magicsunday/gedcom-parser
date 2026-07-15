@@ -64,7 +64,8 @@ render them without re-parsing:
   `B.C.` and dual `1699/00` years). `CalendarDate::toJulianDay()` gives a calendar-independent
   Julian Day Number for sorting and comparison (Gregorian and Julian; the other calendars follow).
 - `PlaceStructure::getPlaceValue(): ?PlaceValue` — the comma-separated jurisdiction hierarchy,
-  with a `mapped()` view onto the place `FORM` labels.
+  with a `mapped()` view onto the place `FORM` labels and the `MAP` geographic coordinates
+  (`?MapCoordinates`, signed decimal degrees) when present.
 - `FamilyPersonAge`/`IndividualEventDetail::getAgeValue(): ?AgeValue` — the `AGE_AT_EVENT`
   grammar (`< 8y`, `72y 3m 2d`, `CHILD` / `INFANT` / `STILLBORN`).
 
