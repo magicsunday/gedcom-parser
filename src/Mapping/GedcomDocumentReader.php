@@ -65,7 +65,11 @@ final readonly class GedcomDocumentReader
     {
         $registryPath ??= dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries';
 
-        return new self(new RegistrySchemaLoader($registryPath), new GedcomVersionDetector(), $recordClasses);
+        return new self(
+            new RegistrySchemaLoader($registryPath),
+            new GedcomVersionDetector(),
+            $recordClasses
+        );
     }
 
     /**
@@ -87,15 +91,24 @@ final readonly class GedcomDocumentReader
         }
 
         // The header is the first record; detect the version from it (or fall back when it is absent).
-        $version = $this->versionDetector->detect($node->tag === self::TAG_HEAD ? $node : null);
+        $header  = $node->tag === self::TAG_HEAD ? $node : null;
+        $version = $this->versionDetector->detect($header);
         $schema  = $this->schemaLoader->load($version);
 
         // A missing registry compiles to an empty schema; fail loud rather than mapping nothing.
         if ($schema->structures === []) {
-            throw new MappingException(sprintf('No GEDCOM registry could be loaded for version "%s".', $version->value));
+            throw new MappingException(
+                sprintf(
+                    'No GEDCOM registry could be loaded for version "%s".',
+                    $version->value
+                )
+            );
         }
 
-        $mapper  = new GedcomObjectMapper($schema, JsonMapperFactory::create());
+        // The header may declare the place hierarchy FORM once (HEAD.PLAC.FORM); the mapper threads
+        // it as the default so places without their own FORM still resolve their jurisdiction labels.
+        $mapper = new GedcomObjectMapper($schema, JsonMapperFactory::fromHeader($header));
+
         $records = [];
 
         do {

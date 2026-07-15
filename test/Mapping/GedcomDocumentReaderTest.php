@@ -33,6 +33,7 @@ use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\StreamFactory;
 use MagicSunday\Gedcom\ValueObject\DateType;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -74,6 +75,7 @@ use function glob;
 #[UsesClass(SubmitterRecord::class)]
 #[UsesClass(EventDetail::class)]
 #[UsesClass(DateValue::class)]
+#[UsesClass(PlaceValue::class)]
 class GedcomDocumentReaderTest extends TestCase
 {
     /**
@@ -154,6 +156,143 @@ class GedcomDocumentReaderTest extends TestCase
 
         self::assertSame([], $document->individuals);
         self::assertSame([], $document->families);
+    }
+
+    /**
+     * A place hierarchy declared once in the header (HEAD.PLAC.FORM) is threaded onto a place that
+     * carries no FORM of its own, so its jurisdiction labels resolve — the common 5.5.1 case.
+     */
+    #[Test]
+    public function threadsTheHeaderPlaceFormOntoAFormlessPlace(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 PLAC\n2 FORM City, County, State, Country\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Cove, Cache, Utah, USA\n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertSame(
+            ['City' => 'Cove', 'County' => 'Cache', 'State' => 'Utah', 'Country' => 'USA'],
+            $place->mapped(),
+        );
+    }
+
+    /**
+     * A place carrying its own FORM keeps it; the header default does not override a local FORM.
+     */
+    #[Test]
+    public function aPlaceLocalFormOverridesTheHeaderDefault(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 PLAC\n2 FORM City, County, State, Country\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Berlin\n3 FORM City\n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertSame(['City' => 'Berlin'], $place->mapped());
+    }
+
+    /**
+     * An explicitly empty local FORM counts as absent (as PlaceValue treats an empty FORM), so the
+     * place still inherits the header default rather than the empty FORM suppressing it.
+     */
+    #[Test]
+    public function anEmptyLocalFormStillInheritsTheHeaderDefault(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 PLAC\n2 FORM City, County, State, Country\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Cove, Cache, Utah, USA\n3 FORM\n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertSame(
+            ['City' => 'Cove', 'County' => 'Cache', 'State' => 'Utah', 'Country' => 'USA'],
+            $place->mapped(),
+        );
+    }
+
+    /**
+     * A whitespace-only local FORM is treated as absent as well, so the place still inherits the
+     * header default rather than the blank FORM suppressing it.
+     */
+    #[Test]
+    public function aWhitespaceOnlyLocalFormStillInheritsTheHeaderDefault(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 PLAC\n2 FORM City, County\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Cove, Cache\n3 FORM   \n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertSame(['City' => 'Cove', 'County' => 'Cache'], $place->mapped());
+    }
+
+    /**
+     * Without a header FORM and without a local one, a form-less place still parses but produces no
+     * jurisdiction map — the FORM threading must not invent one.
+     */
+    #[Test]
+    public function aFormlessPlaceWithoutAHeaderFormHasNoMap(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Cove, Cache\n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertNull($place->form);
+        self::assertSame([], $place->mapped());
+    }
+
+    /**
+     * A present but empty PLAC line yields a non-null, empty PlaceValue — presence is modelled
+     * distinctly from an absent PLAC (which leaves the event's place NULL).
+     */
+    #[Test]
+    public function anEmptyPlaceLineYieldsANonNullEmptyPlaceValue(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC\n1 DEAT\n"
+            . "0 TRLR\n"
+        );
+
+        $birth = $document->individuals[0]->birt[0];
+        self::assertInstanceOf(PlaceValue::class, $birth->plac);
+        self::assertSame([], $birth->plac->levels);
+
+        // An event without any PLAC line leaves the place absent (NULL), unlike the empty one above.
+        self::assertNull($document->individuals[0]->deat[0]->plac);
+    }
+
+    /**
+     * A PLAC may carry NOTE/FONE/ROMN substructures in 5.5.1; these are intentionally not modelled
+     * on PlaceValue (only the name, FORM hierarchy and MAP coordinates are). Such a place must still
+     * parse without error, exposing its modelled fields.
+     */
+    #[Test]
+    public function placeSubstructuresBeyondFormAndMapAreNotModelled(): void
+    {
+        $document = $this->read(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Berlin\n3 NOTE A note about the place.\n"
+            . "0 TRLR\n"
+        );
+
+        $place = $document->individuals[0]->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        // The unmodelled NOTE substructure must not corrupt the name parsing.
+        self::assertSame(['Berlin'], $place->levels);
     }
 
     /**

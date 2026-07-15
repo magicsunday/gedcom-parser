@@ -15,11 +15,13 @@ use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
+use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\SubmitterRecord;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\StreamFactory;
 use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -41,6 +43,8 @@ use function uniqid;
 #[UsesClass(JsonMapperFactory::class)]
 #[UsesClass(SubmitterRecord::class)]
 #[UsesClass(IndividualRecord::class)]
+#[UsesClass(EventDetail::class)]
+#[UsesClass(PlaceValue::class)]
 class TypedGedcomParserTest extends TestCase
 {
     /**
@@ -81,6 +85,37 @@ class TypedGedcomParserTest extends TestCase
         self::assertSame('I1', $individual->xref);
         self::assertCount(1, $individual->birt, 'the single BIRT event maps to one EventDetail');
         self::assertInstanceOf(DateValue::class, $individual->birt[0]->date, 'the BIRT DATE substructure is mapped');
+    }
+
+    /**
+     * The streaming parser threads HEAD.PLAC.FORM the same way the aggregate reader does: a place
+     * carrying no FORM of its own resolves its jurisdiction labels from the header-declared default,
+     * so the fix reaches this parallel public entry point too.
+     */
+    #[Test]
+    public function threadsTheHeaderPlaceFormOntoAFormlessPlace(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 PLAC\n2 FORM City, County, State, Country\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 PLAC Cove, Cache, Utah, USA\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $parser  = TypedGedcomParser::create(GedcomVersion::V551, ['INDI' => IndividualRecord::class]);
+        $records = iterator_to_array($parser->parse($stream));
+
+        self::assertCount(1, $records);
+
+        $individual = $records[0];
+        self::assertInstanceOf(IndividualRecord::class, $individual);
+
+        $place = $individual->birt[0]->plac;
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertSame(
+            ['City' => 'Cove', 'County' => 'Cache', 'State' => 'Utah', 'Country' => 'USA'],
+            $place->mapped(),
+        );
     }
 
     /**
