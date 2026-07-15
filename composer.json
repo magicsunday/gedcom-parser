@@ -37,6 +37,7 @@
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
+        "ext-zip": "*",
         "magicsunday/jsonmapper": "^3.1",
         "phpdocumentor/reflection-docblock": "^5.0",
         "psr/http-factory": "^1.0",

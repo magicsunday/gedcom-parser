@@ -13,6 +13,7 @@ notes, …) as an object model.
 ## Requirements
 - PHP 8.3 or newer (verified on 8.3, 8.4 and 8.5)
 - The `ext-mbstring`, `ext-intl` and `ext-iconv` extensions (used to transcode the source encoding to UTF-8)
+- The `ext-zip` extension (used to read GEDZIP `.gdz` archives)
 
 
 ## Installation
@@ -49,6 +50,20 @@ foreach ($document->individuals as $individual) {
     echo $individual->xref, ': ', $name ? $name->getDisplayName() : '(unknown)', "\n";
 }
 ```
+
+A GEDCOM 7.0 dataset may also be packaged as a **GEDZIP** (`.gdz`) archive — a ZIP container whose
+mandated `gedcom.ged` entry carries the dataset alongside any embedded media files. Read one with
+`GedcomZipReader`, which extracts that entry and returns the same typed `GedcomDocument`:
+
+```php
+use MagicSunday\Gedcom\GedcomZipReader;
+
+$document = GedcomZipReader::readFile('/path/to/your/tree.gdz');
+```
+
+`GedcomZipReader::read()` accepts a PSR-7 stream instead of a path (it is spooled to a temporary
+file, since the ZIP facility needs a seekable source). Reading GEDZIP requires the `ext-zip`
+extension.
 
 `Parser::parse()` returns the typed `GedcomDocument` aggregate — it detects the GEDCOM version
 from the header and maps the standard records (INDI, FAM, SOUR, NOTE / the GEDCOM 7.0 shared-note
