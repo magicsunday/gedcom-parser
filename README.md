@@ -110,7 +110,7 @@ reader (`MagicSunday\Gedcom\Parse`) turns the flat reader lines into an immutabl
 tree; a declarative schema (`MagicSunday\Gedcom\Schema`) is compiled from the vendored
 registry for either GEDCOM version; and a mapping layer (`MagicSunday\Gedcom\Mapping`)
 shapes a node subtree through that schema and hydrates immutable `final readonly` records
-(`MagicSunday\Gedcom\TypedModel`) via [`magicsunday/jsonmapper`](https://github.com/magicsunday/jsonmapper),
+(`MagicSunday\Gedcom\Model`) via [`magicsunday/jsonmapper`](https://github.com/magicsunday/jsonmapper),
 with the value-object leaves (dates, places, ages) parsed by their own grammar. Each leaf is
 resolved regardless of the GEDCOM version — a bare payload string in 5.5.1, or the shaped node
 a 7.0 substructure-bearing leaf (a `DATE` with `PHRASE`/`TIME`, a `PLAC` with `FORM`/`MAP`)
@@ -126,12 +126,12 @@ recognised one (unmapped records such as `HEAD`/`TRLR` are skipped):
 ```php
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
-use MagicSunday\Gedcom\TypedModel\FamilyRecord;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
-use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
-use MagicSunday\Gedcom\TypedModel\NoteRecord;
-use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
-use MagicSunday\Gedcom\TypedModel\SourceRecord;
+use MagicSunday\Gedcom\Model\FamilyRecord;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\MultimediaRecord;
+use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\RepositoryRecord;
+use MagicSunday\Gedcom\Model\SourceRecord;
 
 $parser = TypedGedcomParser::create(GedcomVersion::V551, [
     'INDI' => IndividualRecord::class,

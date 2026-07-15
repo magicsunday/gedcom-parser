@@ -9,9 +9,9 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Test\TypedModel;
+namespace MagicSunday\Gedcom\Test\Model;
 
-use MagicSunday\Gedcom\TypedModel\PersonalName;
+use MagicSunday\Gedcom\Model\PersonalName;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

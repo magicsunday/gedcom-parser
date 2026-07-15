@@ -13,12 +13,12 @@ namespace MagicSunday\Gedcom\Mapping;
 
 use Generator;
 use MagicSunday\Gedcom\Exception\MappingException;
+use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
-use MagicSunday\Gedcom\TypedModel\GedcomDocument;
 use Psr\Http\Message\StreamInterface;
 
 use function dirname;

@@ -138,7 +138,7 @@ src/
     Parse/**                                    # generic node-tree reader
     Schema/**                                   # registry-compiled per-version schema
     Mapping/**                                  # schema-driven mapper + typed parser/reader
-    TypedModel/**                               # immutable typed records
+    Model/**                               # immutable typed records
     ValueObject/**                              # parsed value objects (date/place/age/name/…)
     Encoding/**                                 # ANSEL decoder
     Exception/**                                # domain exceptions (ExceptionInterface)

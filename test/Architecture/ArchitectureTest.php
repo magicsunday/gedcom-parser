@@ -25,7 +25,7 @@ use PHPat\Test\PHPat;
  *
  * The pipeline is layered top-down: the public Parser entry point orchestrates the schema-driven
  * Mapping hub, which reads bytes through the low-level I/O primitives (Reader/Stream/StreamFactory)
- * and drives the generic node-tree reader (Parse), the per-version Schema, the immutable TypedModel
+ * and drives the generic node-tree reader (Parse), the per-version Schema, the immutable Model
  * records and their parsed ValueObject leaves. Encoding and Exception are shared leaves. Dependencies
  * may only point downward — no lower layer may depend back on the entry point — and these rules pin
  * that.
@@ -56,7 +56,7 @@ class ArchitectureTest
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
                 Selector::inNamespace(self::NS . 'Schema'),
-                Selector::inNamespace(self::NS . 'TypedModel'),
+                Selector::inNamespace(self::NS . 'Model'),
                 Selector::inNamespace(self::NS . 'Encoding'),
                 ...$this->entryPoints(),
             )
@@ -72,7 +72,7 @@ class ArchitectureTest
     public function testRecordsDependOnlyOnValueObjects(): Rule
     {
         return PHPat::rule()
-            ->classes(Selector::inNamespace(self::NS . 'TypedModel'))
+            ->classes(Selector::inNamespace(self::NS . 'Model'))
             ->shouldNotDependOn()
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
@@ -98,7 +98,7 @@ class ArchitectureTest
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
                 Selector::inNamespace(self::NS . 'Schema'),
-                Selector::inNamespace(self::NS . 'TypedModel'),
+                Selector::inNamespace(self::NS . 'Model'),
                 Selector::inNamespace(self::NS . 'ValueObject'),
                 ...$this->entryPoints(),
             )
@@ -119,7 +119,7 @@ class ArchitectureTest
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
                 Selector::inNamespace(self::NS . 'Schema'),
-                Selector::inNamespace(self::NS . 'TypedModel'),
+                Selector::inNamespace(self::NS . 'Model'),
                 Selector::inNamespace(self::NS . 'ValueObject'),
                 Selector::inNamespace(self::NS . 'Encoding'),
                 ...$this->entryPoints(),
@@ -141,7 +141,7 @@ class ArchitectureTest
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Schema'),
-                Selector::inNamespace(self::NS . 'TypedModel'),
+                Selector::inNamespace(self::NS . 'Model'),
                 Selector::inNamespace(self::NS . 'ValueObject'),
                 Selector::inNamespace(self::NS . 'Encoding'),
             )
@@ -162,7 +162,7 @@ class ArchitectureTest
             ->classes(
                 Selector::inNamespace(self::NS . 'Mapping'),
                 Selector::inNamespace(self::NS . 'Parse'),
-                Selector::inNamespace(self::NS . 'TypedModel'),
+                Selector::inNamespace(self::NS . 'Model'),
                 Selector::inNamespace(self::NS . 'ValueObject'),
                 Selector::inNamespace(self::NS . 'Encoding'),
                 ...$this->entryPoints(),

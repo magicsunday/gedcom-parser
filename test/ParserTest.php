@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
+use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\StreamFactory;
-use MagicSunday\Gedcom\TypedModel\GedcomDocument;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
