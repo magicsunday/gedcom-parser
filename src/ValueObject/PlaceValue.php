@@ -76,8 +76,8 @@ final readonly class PlaceValue
      * A positional map is only trustworthy when the FORM lines up with the hierarchy one-to-one
      * (the spec pads both with empty commas) and its labels are unambiguous. On a count mismatch
      * or a repeated label the labels would bind to the wrong jurisdiction, so no map is produced.
-     * Note: only the place-local FORM is consulted; a FORM declared once in the header
-     * (`HEAD.PLAC.FORM`) is not threaded here — see GH-20.
+     * The FORM consulted here is either the place-local one or, for a place that declares none, the
+     * header default (`HEAD.PLAC.FORM`) that the mapping layer threads in as the fallback.
      *
      * @return array<string, string> The FORM label mapped to its jurisdiction value; empty when no
      *                               FORM is present, the counts differ, or a label repeats

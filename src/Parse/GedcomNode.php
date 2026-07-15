@@ -51,4 +51,22 @@ final readonly class GedcomNode
         public array $children = [],
     ) {
     }
+
+    /**
+     * Returns the first direct child bearing the given tag, or NULL when none does.
+     *
+     * @param string $tag The GEDCOM tag to look for among the direct children.
+     *
+     * @return self|null The first matching child node, or NULL.
+     */
+    public function firstChild(string $tag): ?self
+    {
+        foreach ($this->children as $child) {
+            if ($child->tag === $tag) {
+                return $child;
+            }
+        }
+
+        return null;
+    }
 }

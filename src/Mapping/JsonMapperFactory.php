@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Mapping;
 
 use MagicSunday\Gedcom\Exception\MappingException;
+use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\MapCoordinates;
@@ -29,6 +30,7 @@ use function get_debug_type;
 use function is_array;
 use function is_string;
 use function sprintf;
+use function trim;
 
 /**
  * Builds a {@see JsonMapper} configured for the typed GEDCOM model.
@@ -45,6 +47,16 @@ use function sprintf;
 final class JsonMapperFactory
 {
     /**
+     * The place-structure tag whose header instance declares the default hierarchy FORM.
+     */
+    private const string TAG_PLAC = 'PLAC';
+
+    /**
+     * The place FORM tag naming the jurisdiction hierarchy.
+     */
+    private const string TAG_FORM = 'FORM';
+
+    /**
      * Private constructor; use {@see create()}.
      */
     private function __construct()
@@ -52,11 +64,28 @@ final class JsonMapperFactory
     }
 
     /**
+     * Builds a mapper whose place handler inherits the header-declared default hierarchy FORM
+     * (HEAD.PLAC.FORM) for every place that carries none of its own — the common GEDCOM 5.5.1 case
+     * where the jurisdiction format is declared once in the header.
+     *
+     * @param GedcomNode|null $header The parsed HEAD record, or NULL when the document has none.
+     *
+     * @return JsonMapper The configured mapper.
+     */
+    public static function fromHeader(?GedcomNode $header): JsonMapper
+    {
+        return self::create($header?->firstChild(self::TAG_PLAC)?->firstChild(self::TAG_FORM)?->value);
+    }
+
+    /**
      * Creates a mapper configured for the typed GEDCOM model.
      *
-     * @return JsonMapper
+     * @param string|null $defaultPlaceForm The header-declared default hierarchy FORM (HEAD.PLAC.FORM)
+     *                                      threaded into the place handler, or NULL.
+     *
+     * @return JsonMapper The configured mapper.
      */
-    public static function create(): JsonMapper
+    public static function create(?string $defaultPlaceForm = null): JsonMapper
     {
         $mapper = new JsonMapper(
             new PropertyInfoExtractor([new ReflectionExtractor()], [new PhpDocExtractor()]),
@@ -90,7 +119,7 @@ final class JsonMapperFactory
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
                 PlaceValue::class,
-                static fn (mixed $value): PlaceValue => self::placeFromShaped($value),
+                static fn (mixed $value): PlaceValue => self::placeFromShaped($value, $defaultPlaceForm),
             ),
         );
 
@@ -171,13 +200,14 @@ final class JsonMapperFactory
      * substructure, so its shaped node is an array; the place name is resolved as a leaf value and
      * the FORM hierarchy passed through so the value object can map the jurisdiction labels.
      *
-     * @param mixed $value The shaped PLAC payload (an array, or a plain string when form-less)
+     * @param mixed       $value       The shaped PLAC payload (an array, or a plain string when form-less).
+     * @param string|null $defaultForm The header-declared default hierarchy FORM (HEAD.PLAC.FORM), or NULL.
      *
      * @return PlaceValue
      *
      * @throws MappingException When the value is neither a string nor a shaped array.
      */
-    private static function placeFromShaped(mixed $value): PlaceValue
+    private static function placeFromShaped(mixed $value, ?string $defaultForm): PlaceValue
     {
         $name        = self::leafValue($value, 'PLAC');
         $form        = null;
@@ -187,7 +217,10 @@ final class JsonMapperFactory
             if (array_key_exists('form', $value)) {
                 // Resolve the FORM through the same leaf helper as the place name, so a shaped FORM
                 // is handled and a mis-shaped one fails loud consistently rather than coerced away.
-                $form = self::leafValue($value['form'], 'FORM');
+                // An explicitly empty local FORM counts as absent (as PlaceValue::fromGedcom treats
+                // it), so the place still inherits the header default rather than suppressing it.
+                $localForm = self::leafValue($value['form'], 'FORM');
+                $form      = trim($localForm) === '' ? null : $localForm;
             }
 
             if (array_key_exists('map', $value)) {
@@ -195,7 +228,9 @@ final class JsonMapperFactory
             }
         }
 
-        return PlaceValue::fromGedcom($name, $form, $coordinates);
+        // A place carrying no FORM of its own inherits the header default: in GEDCOM 5.5.1 the
+        // hierarchy is normally declared once as HEAD.PLAC.FORM, so a per-place FORM is the exception.
+        return PlaceValue::fromGedcom($name, $form ?? $defaultForm, $coordinates);
     }
 
     /**

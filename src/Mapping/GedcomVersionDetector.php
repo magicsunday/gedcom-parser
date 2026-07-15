@@ -54,15 +54,13 @@ final readonly class GedcomVersionDetector
             return GedcomVersion::V551;
         }
 
-        $gedc = $this->firstChild($header, self::TAG_GEDC);
+        $gedc = $header->firstChild(self::TAG_GEDC);
 
         if (!$gedc instanceof GedcomNode) {
             return GedcomVersion::V551;
         }
 
-        $vers = $this->firstChild($gedc, self::TAG_VERS);
-
-        return $this->fromVersionString($vers?->value);
+        return $this->fromVersionString($gedc->firstChild(self::TAG_VERS)?->value);
     }
 
     /**
@@ -93,24 +91,5 @@ final readonly class GedcomVersionDetector
         }
 
         return GedcomVersion::V551;
-    }
-
-    /**
-     * Returns the first direct child of a node carrying the given tag, or NULL when none does.
-     *
-     * @param GedcomNode $node The node whose children to search.
-     * @param string     $tag  The tag to look for.
-     *
-     * @return GedcomNode|null The first matching child, or NULL.
-     */
-    private function firstChild(GedcomNode $node, string $tag): ?GedcomNode
-    {
-        foreach ($node->children as $child) {
-            if ($child->tag === $tag) {
-                return $child;
-            }
-        }
-
-        return null;
     }
 }

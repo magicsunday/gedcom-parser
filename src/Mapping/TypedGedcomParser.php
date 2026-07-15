@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
+use MagicSunday\Gedcom\Schema\Schema;
 use Psr\Http\Message\StreamInterface;
 
 use function dirname;
@@ -39,11 +40,16 @@ use function sprintf;
 final readonly class TypedGedcomParser
 {
     /**
-     * @param GedcomObjectMapper          $mapper        The mapper building a typed record from a node.
+     * The header record tag whose HEAD.PLAC.FORM declares the default place hierarchy.
+     */
+    private const string TAG_HEAD = 'HEAD';
+
+    /**
+     * @param Schema                      $schema        The compiled schema shaping each record node.
      * @param array<string, class-string> $recordClasses The target class per record tag.
      */
     public function __construct(
-        private GedcomObjectMapper $mapper,
+        private Schema $schema,
         private array $recordClasses,
     ) {
     }
@@ -70,7 +76,7 @@ final readonly class TypedGedcomParser
             throw new MappingException(sprintf('No GEDCOM registry could be loaded from "%s".', $registryPath));
         }
 
-        return new self(new GedcomObjectMapper($schema, JsonMapperFactory::create()), $recordClasses);
+        return new self($schema, $recordClasses);
     }
 
     /**
@@ -85,16 +91,26 @@ final readonly class TypedGedcomParser
     public function parse(StreamInterface $stream): Generator
     {
         $treeReader = new GedcomTreeReader(new Reader($stream));
+        $node       = $treeReader->readRecord();
 
-        while (($node = $treeReader->readRecord()) instanceof GedcomNode) {
+        if (!$node instanceof GedcomNode) {
+            return;
+        }
+
+        // Build the mapper from the header (the first record) so a place hierarchy declared once as
+        // HEAD.PLAC.FORM is threaded as the default for every place that carries none of its own.
+        $header = $node->tag === self::TAG_HEAD ? $node : null;
+        $mapper = new GedcomObjectMapper($this->schema, JsonMapperFactory::fromHeader($header));
+
+        do {
             $className = $this->recordClasses[$node->tag] ?? null;
 
-            if ($className === null) {
-                continue;
+            if ($className !== null) {
+                yield $mapper->mapRecord($node, $className);
             }
 
-            yield $this->mapper->mapRecord($node, $className);
-        }
+            $node = $treeReader->readRecord();
+        } while ($node instanceof GedcomNode);
     }
 
     /**
