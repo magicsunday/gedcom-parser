@@ -100,6 +100,58 @@ class ParserTest extends TestCase
     }
 
     /**
+     * A GEDCOM 7.0 document declares its shared notes with the `SNOTE` record tag (renamed from
+     * 5.5.1's `NOTE` record). The header version drives the 7.0 schema, and the SNOTE record maps
+     * onto the same typed NoteRecord, grouped under the document's notes.
+     */
+    #[Test]
+    public function parsesA70SharedNoteRecord(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 7.0
+            0 @N1@ SNOTE A shared note in a 7.0 document.
+            0 TRLR
+            GEDCOM);
+
+        $stream->rewind();
+
+        $document = (new Parser($stream))->parse();
+
+        self::assertCount(1, $document->notes);
+        self::assertSame('N1', $document->notes[0]->xref);
+        self::assertSame('A shared note in a 7.0 document.', $document->notes[0]->value);
+    }
+
+    /**
+     * A cross-version record tag — a 7.0 `SNOTE` in a document whose header declares 5.5.1 (a
+     * mixed-version file) — is not a record in the detected 5.5.1 schema, so it is tolerated and
+     * skipped rather than aborting the parse; the records after it still map.
+     */
+    #[Test]
+    public function toleratesACrossVersionRecordTag(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 5.5.1
+            0 @N1@ SNOTE A 7.0 shared note in a 5.5.1 document.
+            0 @I1@ INDI
+            1 SEX M
+            0 TRLR
+            GEDCOM);
+
+        $stream->rewind();
+
+        $document = (new Parser($stream))->parse();
+
+        self::assertSame([], $document->notes);
+        self::assertCount(1, $document->individuals);
+        self::assertSame('I1', $document->individuals[0]->xref);
+    }
+
+    /**
      * Provides every bundled GEDCOM fixture.
      *
      * @return array<string, array{0: string}>

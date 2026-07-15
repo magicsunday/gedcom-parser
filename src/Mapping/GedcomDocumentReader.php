@@ -114,7 +114,9 @@ final readonly class GedcomDocumentReader
         do {
             $className = $this->recordClasses[$node->tag] ?? null;
 
-            if ($className !== null) {
+            // A cross-version tag (e.g. a stray 7.0 SNOTE in a 5.5.1 document) is not a record in
+            // the detected schema; skip it rather than aborting the whole read.
+            if (($className !== null) && $schema->definesRecord($node->tag)) {
                 $records[] = $mapper->mapRecord($node, $className);
             }
 

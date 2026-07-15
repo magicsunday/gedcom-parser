@@ -36,20 +36,24 @@ use Psr\Http\Message\StreamInterface;
 final readonly class Parser
 {
     /**
-     * The standard GEDCOM 5.5.1 data-bearing level-0 record tags mapped onto their typed record
-     * classes. GEDCOM 7.0 renames the shared note to `SNOTE`; completing the 7.0 record set is
-     * tracked under GH-19.
+     * The data-bearing level-0 record tags mapped onto their typed record classes. GEDCOM 7.0
+     * renames the shared-note record from 5.5.1's `NOTE` to `SNOTE`; both map to the same
+     * {@see NoteRecord}. This map is version-agnostic — the reader maps a level-0 tag only when the
+     * detected version's schema actually defines it as a record, so a 5.5.1 document resolves its
+     * `NOTE` record and a 7.0 document its `SNOTE` record, while the other (cross-version) tag,
+     * absent from that version's schema, is skipped rather than mapped.
      *
      * @var array<string, class-string>
      */
     private const array RECORD_CLASSES = [
-        'INDI' => IndividualRecord::class,
-        'FAM'  => FamilyRecord::class,
-        'SOUR' => SourceRecord::class,
-        'NOTE' => NoteRecord::class,
-        'REPO' => RepositoryRecord::class,
-        'OBJE' => MultimediaRecord::class,
-        'SUBM' => SubmitterRecord::class,
+        'INDI'  => IndividualRecord::class,
+        'FAM'   => FamilyRecord::class,
+        'SOUR'  => SourceRecord::class,
+        'NOTE'  => NoteRecord::class,
+        'SNOTE' => NoteRecord::class,
+        'REPO'  => RepositoryRecord::class,
+        'OBJE'  => MultimediaRecord::class,
+        'SUBM'  => SubmitterRecord::class,
     ];
 
     /**
