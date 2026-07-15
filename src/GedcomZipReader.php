@@ -15,6 +15,7 @@ use MagicSunday\Gedcom\Exception\InvalidArchiveException;
 use MagicSunday\Gedcom\Exception\MissingGedcomEntryException;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use Psr\Http\Message\StreamInterface;
+use Throwable;
 use ZipArchive;
 
 use function fclose;
@@ -60,16 +61,18 @@ final class GedcomZipReader
     }
 
     /**
-     * Reads a GEDZIP archive from a file path into the typed model.
+     * Opens a GEDZIP archive from a file path, parsing its dataset and keeping the archive open for
+     * embedded-media access. The caller owns the returned handle and must {@see GedcomArchive::close()}
+     * it when done.
      *
      * @param string $path The path to the `.gdz` archive on disk.
      *
-     * @return GedcomDocument The parsed document, its records grouped by type.
+     * @return GedcomArchive The open archive handle exposing the parsed document and its media.
      *
      * @throws InvalidArchiveException     When the file cannot be opened as a ZIP archive.
      * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
      */
-    public static function readFile(string $path): GedcomDocument
+    public static function openArchive(string $path): GedcomArchive
     {
         $archive = new ZipArchive();
         $opened  = $archive->open($path);
@@ -80,20 +83,47 @@ final class GedcomZipReader
             );
         }
 
+        $resource = $archive->getStream(self::GEDCOM_ENTRY);
+
+        if ($resource === false) {
+            $archive->close();
+
+            throw new MissingGedcomEntryException(
+                sprintf('The GEDZIP archive "%s" does not contain the mandated "%s" entry.', $path, self::GEDCOM_ENTRY)
+            );
+        }
+
+        // The archive stays open in the returned handle for on-demand media access; parse() consumes
+        // the whole gedcom.ged stream here, so the document is fully materialised before returning.
+        // A parse failure must close the archive too, since no handle is returned to close it.
         try {
-            $resource = $archive->getStream(self::GEDCOM_ENTRY);
+            $document = (new Parser((new StreamFactory())->createStreamFromResource($resource)))->parse();
+        } catch (Throwable $throwable) {
+            $archive->close();
 
-            if ($resource === false) {
-                throw new MissingGedcomEntryException(
-                    sprintf('The GEDZIP archive "%s" does not contain the mandated "%s" entry.', $path, self::GEDCOM_ENTRY)
-                );
-            }
+            throw $throwable;
+        }
 
-            // The archive stays open until the document is fully parsed, since the entry resource
-            // reads lazily from it; parse() consumes the whole stream before the finally closes it.
-            $stream = (new StreamFactory())->createStreamFromResource($resource);
+        return new GedcomArchive($archive, $document);
+    }
 
-            return (new Parser($stream))->parse();
+    /**
+     * Reads a GEDZIP archive from a file path into the typed model, without keeping it open for
+     * media access.
+     *
+     * @param string $path The path to the `.gdz` archive on disk.
+     *
+     * @return GedcomDocument The parsed document, its records grouped by type.
+     *
+     * @throws InvalidArchiveException     When the file cannot be opened as a ZIP archive.
+     * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
+     */
+    public static function readFile(string $path): GedcomDocument
+    {
+        $archive = self::openArchive($path);
+
+        try {
+            return $archive->getDocument();
         } finally {
             $archive->close();
         }
