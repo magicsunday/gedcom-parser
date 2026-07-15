@@ -69,7 +69,7 @@
             "@ci:cgl --dry-run"
         ],
         "ci:test:php:cpd": [
-            "npx jscpd --config .jscpd.json --skip-comments --no-tips"
+            "npx --yes jscpd@^5.0.11 --config .jscpd.json --skip-comments --no-tips"
         ],
         "ci:test:php:lint": [
             "phplint --configuration .phplint.yml"
@@ -95,7 +95,7 @@
             "@ci:test:php:cpd"
         ],
         "post-update-cmd": [
-            "npm install jscpd@^5.0.11"
+            "npm install --prefix .build jscpd@^5.0.11"
         ]
     }
 }

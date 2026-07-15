@@ -26,6 +26,23 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/src',
     ]);
 
+    // Keep the Rector caches inside the build directory rather than the repository root.
+    $rectorCacheDirectory          = __DIR__ . '/.build/cache/.rector.cache';
+    $rectorContainerCacheDirectory = __DIR__ . '/.build/cache/.rector.container.cache';
+
+    foreach ([$rectorCacheDirectory, $rectorContainerCacheDirectory] as $cacheDirectory) {
+        if (
+            !is_dir($cacheDirectory)
+            && !mkdir($cacheDirectory, 0o775, true)
+            && !is_dir($cacheDirectory)
+        ) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created.', $cacheDirectory));
+        }
+    }
+
+    $rectorConfig->cacheDirectory($rectorCacheDirectory);
+    $rectorConfig->containerCacheDirectory($rectorContainerCacheDirectory);
+
     $rectorConfig->skip([
         __DIR__ . '/.build',
         __DIR__ . '/test',

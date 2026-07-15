@@ -5,7 +5,7 @@
          columns="max"
          stderr="true"
          bootstrap="./.build/vendor/autoload.php"
-         cacheDirectory=".phpunit.cache"
+         cacheDirectory=".build/cache/.phpunit.cache"
 >
     <testsuites>
         <testsuite name="Integration Tests">
