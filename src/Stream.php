@@ -19,6 +19,7 @@ use RuntimeException;
 use function is_int;
 use function is_resource;
 use function is_string;
+use function is_writable;
 
 /**
  * Default implementation for the StreamInterface of the PSR-7 standard
@@ -50,7 +51,8 @@ class Stream implements StreamInterface
         if (is_resource($stream)) {
             $this->resource = $stream;
         } elseif (is_string($stream)) {
-            $this->resource = fopen($stream, $mode) ?: null;
+            $handle         = fopen($stream, $mode);
+            $this->resource = $handle !== false ? $handle : null;
         } else {
             throw new InvalidStreamArgumentException(
                 'Invalid stream provided; must be a string stream identifier or resource'
@@ -248,7 +250,7 @@ class Stream implements StreamInterface
 
         $uri = $this->getMetadata('uri');
 
-        return is_writable($uri);
+        return is_string($uri) && is_writable($uri);
     }
 
     /**
@@ -313,6 +315,10 @@ class Stream implements StreamInterface
             throw new StreamException('Stream is not readable');
         }
 
+        if ($length < 1) {
+            return '';
+        }
+
         $result = fread($this->resource, $length);
 
         if ($result === false) {
@@ -353,13 +359,13 @@ class Stream implements StreamInterface
      *
      * @link https://php.net/manual/en/function.stream-get-meta-data.php
      *
-     * @param string $key Specific metadata to retrieve.
+     * @param string|null $key Specific metadata to retrieve.
      *
      * @return array|mixed|null Returns an associative array if no key is
      *                          provided. Returns a specific key value if a key is provided and the
      *                          value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         if (!is_resource($this->resource)) {
             return null;
