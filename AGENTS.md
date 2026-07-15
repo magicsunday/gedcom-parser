@@ -74,6 +74,8 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
+* `composer ci:test:php:mutation` — `infection` mutation testing (**local-only**, not in `ci.yml`;
+  `minCoveredMsi: 70`, config in `infection.json5`)
 * `composer ci:cgl` — php-cs-fixer (apply)
 * `composer ci:rector` — Rector (apply)
 
