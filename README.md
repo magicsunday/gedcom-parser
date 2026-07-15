@@ -145,6 +145,20 @@ foreach ($parser->parse($stream) as $record) {
 }
 ```
 
+When you need random access rather than a single streaming pass, `parseDocument()` drains the
+same pipeline eagerly into a typed `GedcomDocument` aggregate that groups the records by their
+modelled type (`$document->individuals`, `->families`, `->sources`, `->notes`, `->repositories`,
+`->multimedia`, `->submitters`); a record whose type is not modelled is kept in `->others` rather
+than dropped:
+
+```php
+$document = $parser->parseDocument($stream);
+
+foreach ($document->individuals as $individual) {
+    echo $individual->xref, "\n";
+}
+```
+
 The typed record set is still growing; only the modelled records are mapped today. Currently an
 `IndividualRecord` exposes its names — each a typed `PersonalName` that derives the given name,
 surname and suffix from the `John /Doe/` slash convention (an explicit `GIVN`/`SURN`/`NPFX`/`SPFX`/
