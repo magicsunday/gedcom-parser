@@ -48,11 +48,47 @@ final readonly class DateValue
     }
 
     /**
+     * Parses a raw GEDCOM DATE_VALUE, optionally carrying an explicit GEDCOM 7.0 PHRASE
+     * substructure, into a typed value object.
+     *
+     * A value-less DATE carried solely by its PHRASE substructure becomes a {@see DateType::Phrase}
+     * date whose phrase is that text; a valued DATE that also carries a PHRASE keeps its parsed form
+     * and records the phrase alongside.
+     *
+     * @param string      $value  The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`
+     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present
+     */
+    public static function fromGedcom(string $value, ?string $phrase = null): self
+    {
+        $explicitPhrase = $phrase !== null ? trim($phrase) : null;
+
+        if ($explicitPhrase === '') {
+            $explicitPhrase = null;
+        }
+
+        // A value-less GEDCOM 7.0 DATE may be carried solely by its PHRASE substructure, which is
+        // then the date's only textual form (the empty date value is kept as the raw text).
+        if (($explicitPhrase !== null) && (trim($value) === '')) {
+            return new self(DateType::Phrase, null, null, $explicitPhrase, $value);
+        }
+
+        $parsed = self::parse($value);
+
+        if ($explicitPhrase === null) {
+            return $parsed;
+        }
+
+        // A valued DATE that also carries an explicit PHRASE keeps its parsed form and records the
+        // phrase, overriding any inline phrase from the value grammar.
+        return new self($parsed->type, $parsed->date, $parsed->endDate, $explicitPhrase, $parsed->raw);
+    }
+
+    /**
      * Parses a raw GEDCOM DATE_VALUE into a typed value object.
      *
      * @param string $value The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`
      */
-    public static function fromGedcom(string $value): self
+    private static function parse(string $value): self
     {
         $trimmed = trim($value);
 

@@ -291,13 +291,58 @@ class GedcomObjectMapperTest extends TestCase
         self::assertCount(1, $record->birt, 'a single BIRT maps to a one-element list');
         $birth = $record->birt[0];
 
-        // The DATE arrives as a shaped array (it carries a PHRASE), and its value is still parsed.
+        // The DATE arrives as a shaped array (it carries a PHRASE), and its value is still parsed
+        // while the PHRASE substructure is threaded onto the value object.
         self::assertInstanceOf(DateValue::class, $birth->date);
         self::assertSame('1 JAN 2000', $birth->date->raw, 'the DATE value is resolved from the shaped array');
+        self::assertSame("New Year's Day", $birth->date->phrase, 'the DATE PHRASE substructure is threaded through');
 
         // Likewise the AGE, shaped because it carries a PHRASE.
         self::assertInstanceOf(AgeValue::class, $birth->age);
         self::assertSame(0, $birth->age->years, 'the AGE value is resolved from the shaped array');
+        self::assertSame('at birth', $birth->age->phrase, 'the AGE PHRASE substructure is threaded through');
+    }
+
+    /**
+     * A GEDCOM 7.0 value-less DATE and AGE carried solely by a PHRASE substructure — a free-text
+     * form for a value that does not fit the standard grammar — thread the phrase onto the typed
+     * value objects rather than dropping it: the DATE becomes a phrase-typed date and the AGE
+     * records only its phrase.
+     */
+    #[Test]
+    public function mapsAGedcom7EventWhoseDateAndAgeAreCarriedOnlyByAPhrase(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 BIRT\n"
+            . "2 DATE\n3 PHRASE around harvest time\n"
+            . "2 AGE\n3 PHRASE a young child\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        $birth = $record->birt[0];
+
+        self::assertInstanceOf(DateValue::class, $birth->date);
+        self::assertSame(DateType::Phrase, $birth->date->type, 'a value-less DATE with a PHRASE is a phrase date');
+        self::assertNull($birth->date->date, 'a phrase-only date has no calendar date');
+        self::assertSame('around harvest time', $birth->date->phrase);
+
+        self::assertInstanceOf(AgeValue::class, $birth->age);
+        self::assertNull($birth->age->years, 'a phrase-only age has no duration');
+        self::assertNull($birth->age->keyword, 'a phrase-only age has no keyword');
+        self::assertSame('a young child', $birth->age->phrase);
     }
 
     /**
