@@ -105,7 +105,9 @@ final readonly class TypedGedcomParser
         do {
             $className = $this->recordClasses[$node->tag] ?? null;
 
-            if ($className !== null) {
+            // A cross-version tag (e.g. a stray 7.0 SNOTE under a 5.5.1 schema) is not a record in
+            // the schema; skip it rather than aborting the stream.
+            if (($className !== null) && $this->schema->definesRecord($node->tag)) {
                 yield $mapper->mapRecord($node, $className);
             }
 

@@ -53,4 +53,16 @@ final readonly class Schema
     {
         return $this->recordsByTag[$tag] ?? null;
     }
+
+    /**
+     * Whether the given tag is a top-level record in this version's schema.
+     *
+     * @param string $tag The record tag.
+     *
+     * @return bool TRUE when the tag names a top-level record.
+     */
+    public function definesRecord(string $tag): bool
+    {
+        return isset($this->recordsByTag[$tag]);
+    }
 }
