@@ -109,7 +109,7 @@ class ReaderReadPathTest extends TestCase
         };
 
         self::assertFalse($stream->isSeekable(), 'The stream must report itself as non-seekable.');
-        self::assertCount(2, (new Parser($stream))->parse()->getIndividual());
+        self::assertCount(2, (new Parser($stream))->parse()->individuals);
     }
 
     /**
@@ -226,7 +226,7 @@ class ReaderReadPathTest extends TestCase
             }
         };
 
-        self::assertCount(1, (new Parser($stream))->parse()->getIndividual());
+        self::assertCount(1, (new Parser($stream))->parse()->individuals);
     }
 
     /**
@@ -344,7 +344,7 @@ class ReaderReadPathTest extends TestCase
     {
         $stream = (new StreamFactory())->createStreamFromFile($file);
 
-        return count((new Parser($stream))->parse()->getIndividual());
+        return count((new Parser($stream))->parse()->individuals);
     }
 
     /**
@@ -356,7 +356,7 @@ class ReaderReadPathTest extends TestCase
      */
     private function countIndividualsFromStream(Stream $stream): int
     {
-        return count((new Parser($stream))->parse()->getIndividual());
+        return count((new Parser($stream))->parse()->individuals);
     }
 
     /**
