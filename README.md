@@ -51,9 +51,12 @@ foreach ($document->individuals as $individual) {
 ```
 
 `Parser::parse()` returns the typed `GedcomDocument` aggregate — it detects the GEDCOM version
-from the header and maps the standard records (INDI, FAM, SOUR, NOTE, REPO, OBJE, SUBM) onto their
-typed records grouped by type (`$document->individuals`, `->families`, …). You can also parse an
-in-memory GEDCOM string with `StreamFactory::createStream()`.
+from the header and maps the standard records (INDI, FAM, SOUR, NOTE / the GEDCOM 7.0 shared-note
+`SNOTE`, REPO, OBJE, SUBM) onto their typed records grouped by type (`$document->individuals`,
+`->families`, `->notes`, …). The record dispatch is version-aware: a 5.5.1 document resolves its
+`NOTE` record and a 7.0 document its `SNOTE`, both into `->notes`, while a cross-version tag is
+tolerated and skipped rather than aborting the parse. You can also parse an in-memory GEDCOM string
+with `StreamFactory::createStream()`.
 
 ### Typed value objects
 
