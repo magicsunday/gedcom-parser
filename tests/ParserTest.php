@@ -102,7 +102,8 @@ class ParserTest extends TestCase
     /**
      * A GEDCOM 7.0 document declares its shared notes with the `SNOTE` record tag (renamed from
      * 5.5.1's `NOTE` record). The header version drives the 7.0 schema, and the SNOTE record maps
-     * onto the same typed NoteRecord, grouped under the document's notes.
+     * onto the same typed NoteRecord — including its 7.0 `LANG` and `MIME` substructures — grouped
+     * under the document's notes.
      */
     #[Test]
     public function parsesA70SharedNoteRecord(): void
@@ -112,6 +113,8 @@ class ParserTest extends TestCase
             1 GEDC
             2 VERS 7.0
             0 @N1@ SNOTE A shared note in a 7.0 document.
+            1 MIME text/plain
+            1 LANG en
             0 TRLR
             GEDCOM);
 
@@ -122,6 +125,33 @@ class ParserTest extends TestCase
         self::assertCount(1, $document->notes);
         self::assertSame('N1', $document->notes[0]->xref);
         self::assertSame('A shared note in a 7.0 document.', $document->notes[0]->value);
+        self::assertSame('en', $document->notes[0]->lang);
+        self::assertSame('text/plain', $document->notes[0]->mime);
+    }
+
+    /**
+     * A 5.5.1 shared-note record has no language or media-type substructure, so those 7.0-only
+     * fields stay NULL.
+     */
+    #[Test]
+    public function a551NoteRecordHasNoLanguageOrMediaType(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 5.5.1
+            0 @N1@ NOTE A shared note in a 5.5.1 document.
+            0 TRLR
+            GEDCOM);
+
+        $stream->rewind();
+
+        $document = (new Parser($stream))->parse();
+
+        self::assertCount(1, $document->notes);
+        self::assertSame('A shared note in a 5.5.1 document.', $document->notes[0]->value);
+        self::assertNull($document->notes[0]->lang);
+        self::assertNull($document->notes[0]->mime);
     }
 
     /**
