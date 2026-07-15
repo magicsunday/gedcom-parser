@@ -201,8 +201,11 @@ title). A file's format classifies what it depicts version-specifically: GEDCOM 
 `null` in the other version. Every record additionally exposes its GEDCOM 7.0 record-level external
 identifiers — any number of `UID` values (a `list` of raw strings) and any number of `EXID`
 identifiers (each a typed `ExternalIdentifier` carrying the identifier plus an optional `TYPE`
-authority URI); both stay empty for a 5.5.1 record, which cannot carry them. Substructures not yet
-modelled are ignored rather than mapped.
+authority URI); both stay empty for a 5.5.1 record, which cannot carry them. A record's GEDCOM 7.0
+creation timestamp (`CREA`) is exposed as a typed `CreationDate` nesting an `ExactDate` — the raw
+exact date and optional time strings, kept unparsed because the timestamp uses the restricted
+exact-date grammar rather than the genealogical date grammar; it is `null` for a 5.5.1 record.
+Substructures not yet modelled are ignored rather than mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with

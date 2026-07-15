@@ -15,7 +15,9 @@ use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Model\ChildToFamilyLink;
+use MagicSunday\Gedcom\Model\CreationDate;
 use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\ExactDate;
 use MagicSunday\Gedcom\Model\ExternalIdentifier;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\IndividualRecord;
@@ -65,6 +67,8 @@ use function dirname;
 #[CoversClass(SubmitterRecord::class)]
 #[CoversClass(IndividualRecord::class)]
 #[CoversClass(ExternalIdentifier::class)]
+#[CoversClass(CreationDate::class)]
+#[CoversClass(ExactDate::class)]
 #[CoversClass(EventDetail::class)]
 #[CoversClass(PersonalName::class)]
 #[CoversClass(FamilyRecord::class)]
@@ -1070,6 +1074,82 @@ class GedcomObjectMapperTest extends TestCase
         self::assertInstanceOf(IndividualRecord::class, $record);
         self::assertSame([], $record->uid, 'a 5.5.1 record carries no UID');
         self::assertSame([], $record->exid, 'a 5.5.1 record carries no EXID');
+    }
+
+    /**
+     * GEDCOM 7.0 records the moment a record was created in a `CREA` substructure whose `DATE` uses
+     * the restricted exact-date grammar with an optional `TIME`. It maps onto a typed
+     * {@see CreationDate} nesting an {@see ExactDate} — the raw date and time strings, deliberately
+     * not parsed into a genealogical `DateValue`.
+     */
+    #[Test]
+    public function mapsThe70RecordCreationTimestamp(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 CREA\n2 DATE 1 JAN 2000\n3 TIME 12:00:00\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertInstanceOf(CreationDate::class, $record->crea, 'a CREA carrying a DATE must not map to null');
+        self::assertInstanceOf(ExactDate::class, $record->crea->date);
+        self::assertSame('1 JAN 2000', $record->crea->date->value, 'the exact date is kept as its raw string');
+        self::assertSame('12:00:00', $record->crea->date->time, 'the accompanying TIME is threaded through');
+    }
+
+    /**
+     * The creation timestamp is optional and 7.0-only: a 7.0 record without a `CREA` maps it to
+     * null, and a 5.5.1 record cannot carry `CREA` at all, so it stays null there as well.
+     */
+    #[Test]
+    public function leavesTheCreationTimestampNullWhenAbsentOrForGedcom551(): void
+    {
+        $withoutCrea = (new StreamFactory())->createStream("0 @I1@ INDI\n1 SEX M\n0 TRLR\n");
+        $withoutCrea->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($withoutCrea)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema70 = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition70 = $schema70->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition70);
+
+        $mapper   = new GedcomObjectMapper($schema70, JsonMapperFactory::create());
+        $record70 = $mapper->map($node, $definition70, IndividualRecord::class);
+        self::assertInstanceOf(IndividualRecord::class, $record70);
+        self::assertNull($record70->crea, 'a 7.0 record without CREA maps the creation timestamp to null');
+
+        $with551 = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n1 CREA\n2 DATE 1 JAN 2000\n3 TIME 12:00:00\n0 TRLR\n"
+        );
+        $with551->rewind();
+
+        $node551 = (new GedcomTreeReader(new Reader($with551)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node551);
+
+        $schema551 = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition551 = $schema551->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition551);
+
+        $record551 = (new GedcomObjectMapper($schema551, JsonMapperFactory::create()))
+            ->map($node551, $definition551, IndividualRecord::class);
+        self::assertInstanceOf(IndividualRecord::class, $record551);
+        self::assertNull($record551->crea, 'a 5.5.1 record carries no CREA');
     }
 
     /**
