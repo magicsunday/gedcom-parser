@@ -67,7 +67,7 @@ render them without re-parsing:
   with a `mapped()` view onto the place `FORM` labels and the `MAP` geographic coordinates
   (`?MapCoordinates`, signed decimal degrees) when present.
 - `FamilyPersonAge`/`IndividualEventDetail::getAgeValue(): ?AgeValue` — the `AGE_AT_EVENT`
-  grammar (`< 8y`, `72y 3m 2d`, `CHILD` / `INFANT` / `STILLBORN`).
+  grammar (`< 8y`, `72y 3m 2d`, the GEDCOM 7.0 weeks unit `8w`, `CHILD` / `INFANT` / `STILLBORN`).
 
 Each accessor returns `null` when its tag is absent or empty; the parsed object keeps the
 original raw text.

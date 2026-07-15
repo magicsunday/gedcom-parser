@@ -42,35 +42,40 @@ class AgeValueTest extends TestCase
     /**
      * Data provider for the AGE grammar variants.
      *
-     * @return array<string, array{0: string, 1: AgeModifier|null, 2: AgeKeyword|null, 3: int|null, 4: int|null, 5: int|null}>
+     * @return array<string, array{0: string, 1: AgeModifier|null, 2: AgeKeyword|null, 3: int|null, 4: int|null, 5: int|null, 6: int|null}>
      */
     public static function ageProvider(): array
     {
         return [
-            // label                     raw            modifier                  keyword               y     m     d
-            'full duration'         => ['72y 3m 2d', null, null, 72, 3, 2],
-            'years only'            => ['72y', null, null, 72, null, null],
-            'months only'           => ['3m', null, null, null, 3, null],
-            'days only'             => ['15d', null, null, null, null, 15],
-            'years and months'      => ['1y 6m', null, null, 1, 6, null],
-            'less than years'       => ['< 8y', AgeModifier::LessThan, null, 8, null, null],
-            'greater than years'    => ['> 99y', AgeModifier::GreaterThan, null, 99, null, null],
-            'less than no space'    => ['<1y', AgeModifier::LessThan, null, 1, null, null],
-            'child keyword'         => ['CHILD', null, AgeKeyword::Child, null, null, null],
-            'infant keyword'        => ['INFANT', null, AgeKeyword::Infant, null, null, null],
-            'stillborn keyword'     => ['STILLBORN', null, AgeKeyword::Stillborn, null, null, null],
-            'lowercase keyword'     => ['child', null, AgeKeyword::Child, null, null, null],
-            'uppercase unit labels' => ['5Y 2M', null, null, 5, 2, null],
-            'empty'                 => ['', null, null, null, null, null],
+            // label                     raw            modifier                  keyword               y     m     w     d
+            'full duration'    => ['72y 3m 2d', null, null, 72, 3, null, 2],
+            'years only'       => ['72y', null, null, 72, null, null, null],
+            'months only'      => ['3m', null, null, null, 3, null, null],
+            'days only'        => ['15d', null, null, null, null, null, 15],
+            'years and months' => ['1y 6m', null, null, 1, 6, null, null],
+            // The GEDCOM 7.0 weeks unit (5.5.1 has none), alone and within the ordered duration.
+            'weeks only'            => ['8w', null, null, null, null, 8, null],
+            'weeks with days'       => ['6w 3d', null, null, null, null, 6, 3],
+            'full 7.0 duration'     => ['1y 2m 3w 4d', null, null, 1, 2, 3, 4],
+            'less than years'       => ['< 8y', AgeModifier::LessThan, null, 8, null, null, null],
+            'greater than years'    => ['> 99y', AgeModifier::GreaterThan, null, 99, null, null, null],
+            'less than no space'    => ['<1y', AgeModifier::LessThan, null, 1, null, null, null],
+            'child keyword'         => ['CHILD', null, AgeKeyword::Child, null, null, null, null],
+            'infant keyword'        => ['INFANT', null, AgeKeyword::Infant, null, null, null, null],
+            'stillborn keyword'     => ['STILLBORN', null, AgeKeyword::Stillborn, null, null, null, null],
+            'lowercase keyword'     => ['child', null, AgeKeyword::Child, null, null, null, null],
+            'uppercase unit labels' => ['5Y 2M', null, null, 5, 2, null, null],
+            'empty'                 => ['', null, null, null, null, null, null],
             // Non-conformant input is left unparsed (all NULL) rather than yielding a wrong parse.
-            'reversed order'        => ['1d 2m 3y', null, null, null, null, null],
-            'keyword with trailing' => ['CHILD 4y', null, null, null, null, null],
-            'garbage between units' => ['72y 3 minutes 2d', null, null, null, null, null],
-            'label inside a word'   => ['aged 5 years, 60y', null, null, null, null, null],
-            'space within a pair'   => ['8 y', null, null, null, null, null],
+            'reversed order'        => ['1d 2m 3y', null, null, null, null, null, null],
+            'weeks after days'      => ['3d 8w', null, null, null, null, null, null],
+            'keyword with trailing' => ['CHILD 4y', null, null, null, null, null, null],
+            'garbage between units' => ['72y 3 minutes 2d', null, null, null, null, null, null],
+            'label inside a word'   => ['aged 5 years, 60y', null, null, null, null, null, null],
+            'space within a pair'   => ['8 y', null, null, null, null, null, null],
             // A relational qualifier without a valid operand is meaningless; drop it entirely.
-            'modifier only'         => ['<', null, null, null, null, null],
-            'modifier then garbage' => ['> garbage', null, null, null, null, null],
+            'modifier only'         => ['<', null, null, null, null, null, null],
+            'modifier then garbage' => ['> garbage', null, null, null, null, null, null],
         ];
     }
 
@@ -80,6 +85,7 @@ class AgeValueTest extends TestCase
      * @param AgeKeyword|null  $keyword  The expected symbolic keyword
      * @param int|null         $years    The expected years
      * @param int|null         $months   The expected months
+     * @param int|null         $weeks    The expected weeks
      * @param int|null         $days     The expected days
      */
     #[Test]
@@ -90,6 +96,7 @@ class AgeValueTest extends TestCase
         ?AgeKeyword $keyword,
         ?int $years,
         ?int $months,
+        ?int $weeks,
         ?int $days,
     ): void {
         $age = AgeValue::fromGedcom($raw);
@@ -98,6 +105,7 @@ class AgeValueTest extends TestCase
         self::assertSame($keyword, $age->keyword, 'keyword');
         self::assertSame($years, $age->years, 'years');
         self::assertSame($months, $age->months, 'months');
+        self::assertSame($weeks, $age->weeks, 'weeks');
         self::assertSame($days, $age->days, 'days');
     }
 
