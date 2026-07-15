@@ -139,7 +139,6 @@ src/
     TypedModel/**                               # immutable typed records
     ValueObject/**                              # parsed value objects (date/place/age/name/…)
     Encoding/**                                 # ANSEL decoder
-    Model/**, Interfaces/**, Traits/**          # legacy data objects (being retired under GH-20)
     Exception/**                                # domain exceptions (ExceptionInterface)
 test/
     *Test.php, files/*.ged                      # PHPUnit + the .ged fixture corpus

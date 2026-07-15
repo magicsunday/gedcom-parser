@@ -11,14 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\ValueObject;
 
-use MagicSunday\Gedcom\Interfaces\Common\PlaceStructureInterface;
-use MagicSunday\Gedcom\Model\Common\PlaceStructure;
-use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,8 +25,6 @@ use PHPUnit\Framework\TestCase;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 #[CoversClass(PlaceValue::class)]
-#[CoversClass(PlaceStructure::class)]
-#[UsesClass(DataObject::class)]
 class PlaceValueTest extends TestCase
 {
     /**
@@ -138,28 +132,5 @@ class PlaceValueTest extends TestCase
         $place = PlaceValue::fromGedcom('A, B', 'Area, Area');
 
         self::assertSame([], $place->mapped());
-    }
-
-    /**
-     * PlaceStructure exposes the parsed place, and NULL when no PLACE_NAME is present.
-     */
-    #[Test]
-    public function placeStructureExposesTheParsedPlaceValue(): void
-    {
-        $place = new PlaceStructure();
-        self::assertNull($place->getPlaceValue());
-
-        $empty = new PlaceStructure();
-        $empty->setValue(PlaceStructureInterface::TAG_PLACE_NAME, '  ');
-        self::assertNull($empty->getPlaceValue(), 'an empty PLAC is treated as absent');
-
-        $place->setValue(PlaceStructureInterface::TAG_PLACE_NAME, 'Cove, Cache, Utah, USA');
-        $place->setValue(PlaceStructureInterface::TAG_FORM, 'City, County, State, Country');
-
-        $value = $place->getPlaceValue();
-
-        self::assertInstanceOf(PlaceValue::class, $value);
-        self::assertSame(['Cove', 'Cache', 'Utah', 'USA'], $value->levels);
-        self::assertSame('Cove', $value->mapped()['City']);
     }
 }

@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\ValueObject;
 
-use MagicSunday\Gedcom\Interfaces\Common\EventDetailInterface;
-use MagicSunday\Gedcom\Model\Common\EventDetail;
-use MagicSunday\Gedcom\Model\DataObject;
 use MagicSunday\Gedcom\ValueObject\Calendar;
 use MagicSunday\Gedcom\ValueObject\CalendarDate;
 use MagicSunday\Gedcom\ValueObject\DateType;
@@ -33,10 +30,8 @@ use PHPUnit\Framework\TestCase;
  */
 #[CoversClass(DateValue::class)]
 #[CoversClass(DateType::class)]
-#[CoversClass(EventDetail::class)]
 #[UsesClass(CalendarDate::class)]
 #[UsesClass(Calendar::class)]
-#[UsesClass(DataObject::class)]
 class DateValueTest extends TestCase
 {
     /**
@@ -140,27 +135,6 @@ class DateValueTest extends TestCase
     public function fromGedcomPreservesTheRawText(): void
     {
         self::assertSame('  BET 1900 AND 1910  ', DateValue::fromGedcom('  BET 1900 AND 1910  ')->raw);
-    }
-
-    /**
-     * EventDetail exposes the parsed event date, and NULL when no DATE is present.
-     */
-    #[Test]
-    public function eventDetailExposesTheParsedDateValue(): void
-    {
-        $event = new EventDetail();
-        self::assertNull($event->getDateValue());
-
-        $empty = new EventDetail();
-        $empty->setValue(EventDetailInterface::TAG_DATE, '   ');
-        self::assertNull($empty->getDateValue(), 'an empty DATE is treated as absent');
-
-        $event->setValue(EventDetailInterface::TAG_DATE, 'ABT 1900');
-        $value = $event->getDateValue();
-
-        self::assertNotNull($value);
-        self::assertSame(DateType::About, $value->type);
-        self::assertSame(1900, $value->date?->year);
     }
 
     /**
