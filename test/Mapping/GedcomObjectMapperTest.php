@@ -594,17 +594,33 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * A failure inside the underlying mapper — here a non-nullable name receiving a null payload,
-     * which surfaces as a TypeError rather than a mapper exception — is wrapped in the library's
-     * own MappingException, so every mapping failure stays within the shared exception group.
+     * A failure inside the underlying mapper — here a record with no cross-reference identifier, so
+     * the required string xref is null at construction and surfaces as a TypeError rather than a
+     * mapper exception — is wrapped in the library's own MappingException, so every mapping failure
+     * stays within the shared exception group.
      */
     #[Test]
     public function wrapsAMapperFailureInAMappingException(): void
     {
         $this->expectException(MappingException::class);
 
-        // The NAME line carries no value, so the required string name is null at construction.
-        $this->mapSubmitter("0 @SUBM1@ SUBM\n1 NAME\n0 TRLR\n");
+        // The record carries no @xref@, so the required string xref is null at construction.
+        $this->mapSubmitter("0 SUBM\n1 NAME John Doe\n0 TRLR\n");
+    }
+
+    /**
+     * A submitter record with no NAME line maps to a submitter whose name is null rather than
+     * failing the whole document — real files carry bare `0 @SUBM@ SUBM` records, and the spec's
+     * {1:1} NAME requirement is treated tolerantly.
+     */
+    #[Test]
+    public function mapsASubmitterWithoutANameToANullName(): void
+    {
+        $record = $this->mapSubmitter("0 @SUBM1@ SUBM\n0 TRLR\n");
+
+        self::assertSame('SUBM1', $record->xref);
+        self::assertNull($record->name, 'a name-less SUBM maps to a null name, not a failure');
+        self::assertSame([], $record->phon);
     }
 
     /**
@@ -1020,6 +1036,30 @@ class GedcomObjectMapperTest extends TestCase
         self::assertSame([], $record->phon, 'an absent PHON maps to an empty list, not null');
         self::assertSame([], $record->email);
         self::assertSame([], $record->fax);
+    }
+
+    /**
+     * A repository record with no NAME line maps to a repository whose name is null rather than
+     * failing the whole document, tolerating the same bare-record shape as a name-less submitter.
+     */
+    #[Test]
+    public function mapsARepositoryWithoutANameToANullName(): void
+    {
+        $stream = (new StreamFactory())->createStream("0 @R3@ REPO\n0 TRLR\n");
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->mapRecord($node, RepositoryRecord::class);
+
+        self::assertInstanceOf(RepositoryRecord::class, $record);
+        self::assertSame('R3', $record->xref);
+        self::assertNull($record->name, 'a name-less REPO maps to a null name, not a failure');
     }
 
     /**
