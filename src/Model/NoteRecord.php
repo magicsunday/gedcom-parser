@@ -27,11 +27,13 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class NoteRecord
 {
     /**
-     * @param string                $xref  The record cross-reference identifier.
-     * @param string|null           $value The note text (the record's line value), or NULL when empty.
-     * @param string|null           $lang  The GEDCOM 7.0 BCP-47 language tag (SNOTE.LANG), or NULL when absent.
-     * @param string|null           $mime  The GEDCOM 7.0 media type of the text (SNOTE.MIME), or NULL when absent.
-     * @param list<NoteTranslation> $tran  The GEDCOM 7.0 translations of the note text (SNOTE.TRAN); empty when none.
+     * @param string                   $xref  The record cross-reference identifier.
+     * @param string|null              $value The note text (the record's line value), or NULL when empty.
+     * @param string|null              $lang  The GEDCOM 7.0 BCP-47 language tag (SNOTE.LANG), or NULL when absent.
+     * @param string|null              $mime  The GEDCOM 7.0 media type of the text (SNOTE.MIME), or NULL when absent.
+     * @param list<NoteTranslation>    $tran  The GEDCOM 7.0 translations of the note text (SNOTE.TRAN); empty when none.
+     * @param list<string>             $uid   The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid  The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
@@ -39,6 +41,8 @@ final readonly class NoteRecord
         public ?string $lang = null,
         public ?string $mime = null,
         public array $tran = [],
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }

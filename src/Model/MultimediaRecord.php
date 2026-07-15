@@ -25,12 +25,16 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class MultimediaRecord
 {
     /**
-     * @param string               $xref The record cross-reference identifier.
-     * @param list<MultimediaFile> $file The referenced multimedia files.
+     * @param string                   $xref The record cross-reference identifier.
+     * @param list<MultimediaFile>     $file The referenced multimedia files.
+     * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
      */
     public function __construct(
         public string $xref,
         public array $file = [],
+        public array $uid = [],
+        public array $exid = [],
     ) {
     }
 }
