@@ -21,9 +21,10 @@ use function trim;
  *
  * The 5.5.1 grammar is an optional relational qualifier (`<` / `>`) followed by either a
  * symbolic keyword (`CHILD` / `INFANT` / `STILLBORN`) or any combination of a years / months /
- * days duration (`72y 3m 2d`). A GEDCOM 7.0 AGE may additionally carry a free-text `PHRASE`
- * substructure, which is the sole carrier when the age itself is value-less. The original raw
- * text is preserved alongside the parsed parts.
+ * days duration (`72y 3m 2d`); GEDCOM 7.0 adds a weeks unit (`8w`), ordered `Yy Mm Ww Dd`. A
+ * GEDCOM 7.0 AGE may additionally carry a free-text `PHRASE` substructure, which is the sole
+ * carrier when the age itself is value-less. The original raw text is preserved alongside the
+ * parsed parts.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -36,6 +37,7 @@ final readonly class AgeValue
      * @param AgeKeyword|null  $keyword  The symbolic keyword, or NULL when a duration is given
      * @param int|null         $years    The number of full years, or NULL when absent
      * @param int|null         $months   The number of months, or NULL when absent
+     * @param int|null         $weeks    The number of weeks (GEDCOM 7.0 only), or NULL when absent
      * @param int|null         $days     The number of days, or NULL when absent
      * @param string           $raw      The original, unparsed AGE value
      * @param string|null      $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent
@@ -45,6 +47,7 @@ final readonly class AgeValue
         public ?AgeKeyword $keyword,
         public ?int $years,
         public ?int $months,
+        public ?int $weeks,
         public ?int $days,
         public string $raw,
         public ?string $phrase = null,
@@ -71,7 +74,7 @@ final readonly class AgeValue
 
         // A value-less GEDCOM 7.0 AGE may be carried solely by its PHRASE substructure.
         if (($explicitPhrase !== null) && (trim($raw) === '')) {
-            return new self(null, null, null, null, null, $raw, $explicitPhrase);
+            return new self(null, null, null, null, null, null, $raw, $explicitPhrase);
         }
 
         $parsed = self::parse($raw);
@@ -86,6 +89,7 @@ final readonly class AgeValue
             $parsed->keyword,
             $parsed->years,
             $parsed->months,
+            $parsed->weeks,
             $parsed->days,
             $parsed->raw,
             $explicitPhrase,
@@ -115,18 +119,21 @@ final readonly class AgeValue
 
         $years  = null;
         $months = null;
+        $weeks  = null;
         $days   = null;
 
-        // The whole value must match the ordered YYy MMm DDDd grammar (any subset). A number and
-        // its label are concatenated; pairs are whitespace-separated. Anchoring rejects reordered
-        // or garbage input outright rather than salvaging wrong fields from it.
+        // The whole value must match the ordered YYy MMm WWw DDd grammar (any subset; the weeks
+        // unit is GEDCOM 7.0). A number and its label are concatenated; pairs are
+        // whitespace-separated. Anchoring rejects reordered or garbage input outright rather than
+        // salvaging wrong fields from it.
         if (
             !$keyword instanceof AgeKeyword
-            && (preg_match('/^(?:(\d+)y)?(?:\s*(\d+)m)?(?:\s*(\d+)d)?$/i', $value, $matches) === 1)
+            && (preg_match('/^(?:(\d+)y)?(?:\s*(\d+)m)?(?:\s*(\d+)w)?(?:\s*(\d+)d)?$/i', $value, $matches) === 1)
         ) {
             $years  = self::toInt($matches[1] ?? '');
             $months = self::toInt($matches[2] ?? '');
-            $days   = self::toInt($matches[3] ?? '');
+            $weeks  = self::toInt($matches[3] ?? '');
+            $days   = self::toInt($matches[4] ?? '');
         }
 
         // A relational qualifier is only meaningful with an operand. When nothing followed it,
@@ -135,12 +142,13 @@ final readonly class AgeValue
             !$keyword instanceof AgeKeyword
             && ($years === null)
             && ($months === null)
+            && ($weeks === null)
             && ($days === null)
         ) {
             $modifier = null;
         }
 
-        return new self($modifier, $keyword, $years, $months, $days, $raw);
+        return new self($modifier, $keyword, $years, $months, $weeks, $days, $raw);
     }
 
     /**
