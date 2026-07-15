@@ -456,6 +456,46 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
+     * Every {0:1} name-part substructure (GIVN, SURN, NPFX, SPFX, NSFX, NICK, TYPE) is shaped by
+     * the schema onto the typed name, and the resulting object interprets the slash convention
+     * end-to-end so that its display name is slash-free. The slash-derivation branches themselves
+     * are exercised directly in PersonalNameTest.
+     */
+    #[Test]
+    public function mapsEveryNamePartSubstructureOntoTheTypedName(): void
+    {
+        $record = $this->mapIndividual(
+            "0 @I1@ INDI\n"
+            . "1 NAME Johnny /Doe/ Jr\n"
+            . "2 TYPE birth\n"
+            . "2 NPFX Dr\n"
+            . "2 GIVN Jonathan\n"
+            . "2 SPFX van\n"
+            . "2 SURN Smith\n"
+            . "2 NSFX PhD\n"
+            . "2 NICK Johnny\n"
+            . "0 TRLR\n"
+        );
+
+        self::assertCount(1, $record->name);
+        $name = $record->name[0];
+        self::assertInstanceOf(PersonalName::class, $name);
+
+        self::assertSame('Johnny /Doe/ Jr', $name->value, 'the raw value is preserved');
+        self::assertSame('Jonathan', $name->givn);
+        self::assertSame('Smith', $name->surn);
+        self::assertSame('Dr', $name->npfx);
+        self::assertSame('van', $name->spfx);
+        self::assertSame('PhD', $name->nsfx);
+        self::assertSame('Johnny', $name->nick);
+        self::assertSame('birth', $name->type);
+
+        // One end-to-end assertion that the mapped object is a usable, slash-free name; the
+        // derivation rules themselves live in PersonalNameTest.
+        self::assertSame('Johnny Doe Jr', $name->getDisplayName(), 'the display name strips the slashes');
+    }
+
+    /**
      * A line whose tag is not a permitted substructure is silently ignored rather than breaking
      * the mapping.
      */
@@ -724,9 +764,42 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * Maps a source record from an in-memory GEDCOM string onto the typed model.
+     * Maps the single SOUR record in the GEDCOM source onto the typed SourceRecord.
+     *
+     * @param string $gedcom The GEDCOM source carrying one SOUR record
+     *
+     * @return SourceRecord The hydrated source record
      */
     private function mapSource(string $gedcom): SourceRecord
+    {
+        return $this->mapRecordViaSchema($gedcom, 'https://gedcom.io/terms/v5.5.1/record-SOUR', SourceRecord::class);
+    }
+
+    /**
+     * Maps the single INDI record in the GEDCOM source onto the typed IndividualRecord.
+     *
+     * @param string $gedcom The GEDCOM source carrying one INDI record
+     *
+     * @return IndividualRecord The hydrated individual record
+     */
+    private function mapIndividual(string $gedcom): IndividualRecord
+    {
+        return $this->mapRecordViaSchema($gedcom, 'https://gedcom.io/terms/v5.5.1/record-INDI', IndividualRecord::class);
+    }
+
+    /**
+     * Reads the single level-0 record from the GEDCOM source and maps it, through the 5.5.1
+     * registry schema, onto the given typed record class.
+     *
+     * @template TRecord of object
+     *
+     * @param string                $gedcom    The GEDCOM source carrying one level-0 record
+     * @param string                $recordUri The registry URI of that record's structure
+     * @param class-string<TRecord> $class     The typed record class to hydrate
+     *
+     * @return TRecord The hydrated typed record
+     */
+    private function mapRecordViaSchema(string $gedcom, string $recordUri, string $class): object
     {
         $stream = (new StreamFactory())->createStream($gedcom);
         $stream->rewind();
@@ -736,11 +809,11 @@ class GedcomObjectMapperTest extends TestCase
 
         $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
             ->load(GedcomVersion::V551);
-        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-SOUR');
+        $definition = $schema->byUri($recordUri);
         self::assertInstanceOf(StructureDefinition::class, $definition);
 
         return (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
-            ->map($node, $definition, SourceRecord::class);
+            ->map($node, $definition, $class);
     }
 
     /**
@@ -929,22 +1002,14 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * Maps a submitter record from an in-memory GEDCOM string onto the typed model.
+     * Maps the single SUBM record in the GEDCOM source onto the typed SubmitterRecord.
+     *
+     * @param string $gedcom The GEDCOM source carrying one SUBM record
+     *
+     * @return SubmitterRecord The hydrated submitter record
      */
     private function mapSubmitter(string $gedcom): SubmitterRecord
     {
-        $stream = (new StreamFactory())->createStream($gedcom);
-        $stream->rewind();
-
-        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
-        self::assertInstanceOf(GedcomNode::class, $node);
-
-        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
-            ->load(GedcomVersion::V551);
-        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-SUBM');
-        self::assertInstanceOf(StructureDefinition::class, $definition);
-
-        return (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
-            ->map($node, $definition, SubmitterRecord::class);
+        return $this->mapRecordViaSchema($gedcom, 'https://gedcom.io/terms/v5.5.1/record-SUBM', SubmitterRecord::class);
     }
 }
