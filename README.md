@@ -159,6 +159,20 @@ foreach ($document->individuals as $individual) {
 }
 ```
 
+`TypedGedcomParser` needs the version stated up front. When you would rather let the file say which
+version it is, `GedcomDocumentReader` detects it from the header's `GEDC.VERS` line (defaulting to
+5.5.1 for a version-less or unrecognised header) and reads the whole stream into the same typed
+`GedcomDocument` — so you only supply the record-tag map:
+
+```php
+use MagicSunday\Gedcom\Mapping\GedcomDocumentReader;
+
+$document = GedcomDocumentReader::create([
+    'INDI' => IndividualRecord::class,
+    'FAM'  => FamilyRecord::class,
+])->read($stream);
+```
+
 The typed record set is still growing; only the modelled records are mapped today. Currently an
 `IndividualRecord` exposes its names — each a typed `PersonalName` that derives the given name,
 surname and suffix from the `John /Doe/` slash convention (an explicit `GIVN`/`SURN`/`NPFX`/`SPFX`/
