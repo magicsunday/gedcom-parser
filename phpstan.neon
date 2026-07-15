@@ -1,6 +1,7 @@
 includes:
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-strict-rules/rules.neon
     - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - %currentWorkingDirectory%/.build/vendor/phpat/phpat/extension.neon
 #    - %currentWorkingDirectory%/phpstan-baseline.neon
 
 parameters:
@@ -8,10 +9,19 @@ parameters:
     # errors, so the analysis now runs clean at the strictest level with no baseline.
     level: max
 
+    # Report the failing rule method name (not just the class pair) when an architecture rule breaks.
+    phpat:
+        show_rule_names: true
+
     tmpDir: %currentWorkingDirectory%/.build/cache/.phpstan.cache
 
     paths:
         - %currentWorkingDirectory%/src/
+
+    # The phpat rule class lives under test/ and must be discovered via BetterReflection (not just
+    # runtime autoloading) for phpat's TestExtractor to pick it up — scan it without analysing it.
+    scanDirectories:
+        - %currentWorkingDirectory%/test/Architecture/
 
     excludePaths:
         - %currentWorkingDirectory%/.build/
@@ -21,3 +31,10 @@ parameters:
 
     # Ignored validations
     treatPhpDocTypesAsCertain: false
+
+services:
+    # Architecture rules enforced by phpat during the analysis (see test/Architecture).
+    -
+        class: MagicSunday\Gedcom\Test\Architecture\ArchitectureTest
+        tags:
+            - phpat.test

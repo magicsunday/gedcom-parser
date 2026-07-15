@@ -69,7 +69,8 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test` — full local gate (lint + unit + phpstan + rector + cgl + cpd)
 * `composer ci:test:php:lint` — `phplint`
 * `composer ci:test:php:unit` — PHPUnit
-* `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate)
+* `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate; also runs
+  the `phpat` architecture rules in `test/Architecture/ArchitectureTest.php`)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
