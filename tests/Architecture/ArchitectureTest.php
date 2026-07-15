@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Architecture;
 
+use MagicSunday\Gedcom\GedcomArchive;
 use MagicSunday\Gedcom\GedcomZipReader;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\Reader;
@@ -210,6 +211,7 @@ class ArchitectureTest
             Selector::classname(StreamFactory::class),
             Selector::classname(Parser::class),
             Selector::classname(GedcomZipReader::class),
+            Selector::classname(GedcomArchive::class),
         ];
     }
 }

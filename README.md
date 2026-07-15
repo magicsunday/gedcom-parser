@@ -65,6 +65,28 @@ $document = GedcomZipReader::readFile('/path/to/your/tree.gdz');
 file, since the ZIP facility needs a seekable source). Reading GEDZIP requires the `ext-zip`
 extension.
 
+To also read the archive's embedded media, open it with `GedcomZipReader::openArchive()`, which
+returns a `GedcomArchive` handle exposing the parsed document and resolving an `OBJE.FILE` reference
+to a stream over its embedded entry. Close the handle when done — the media streams read lazily from
+the archive:
+
+```php
+$archive = GedcomZipReader::openArchive('/path/to/your/tree.gdz');
+
+try {
+    foreach ($archive->getDocument()->multimedia as $object) {
+        foreach ($object->file as $file) {
+            $media = $archive->openFile($file->value); // null for a web URL or an unresolved reference
+        }
+    }
+} finally {
+    $archive->close();
+}
+```
+
+`openFile()` returns `null` when the reference is a web/`file:` URL, an absolute or traversing path,
+or names an entry the archive does not contain.
+
 `Parser::parse()` returns the typed `GedcomDocument` aggregate — it detects the GEDCOM version
 from the header and maps the standard records (INDI, FAM, SOUR, NOTE / the GEDCOM 7.0 shared-note
 `SNOTE`, REPO, OBJE, SUBM) onto their typed records grouped by type (`$document->individuals`,
