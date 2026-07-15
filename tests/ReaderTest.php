@@ -118,7 +118,7 @@ class ReaderTest extends TestCase
             $tag = $reader->tag();
 
             // Record the first level seen per structural tag, keyed by the tag the accessor reports.
-            if (($tag !== null) && !array_key_exists($tag, $levels)) {
+            if (!array_key_exists($tag, $levels)) {
                 $levels[$tag] = $reader->level();
             }
         }

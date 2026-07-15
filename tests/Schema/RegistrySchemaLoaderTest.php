@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Schema;
 
+use MagicSunday\Gedcom\Schema\Cardinality;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\Schema;
@@ -46,7 +47,7 @@ use function unlink;
 #[CoversClass(StructureDefinition::class)]
 #[CoversClass(Substructure::class)]
 #[CoversClass(GedcomVersion::class)]
-#[UsesClass(\MagicSunday\Gedcom\Schema\Cardinality::class)]
+#[UsesClass(Cardinality::class)]
 class RegistrySchemaLoaderTest extends TestCase
 {
     private const string V551_INDI = 'https://gedcom.io/terms/v5.5.1/record-INDI';
@@ -352,7 +353,11 @@ class RegistrySchemaLoaderTest extends TestCase
         }
 
         foreach (scandir($directory) ?: [] as $entry) {
-            if (($entry === '.') || ($entry === '..')) {
+            if ($entry === '.') {
+                continue;
+            }
+
+            if ($entry === '..') {
                 continue;
             }
 

@@ -124,7 +124,7 @@ class ReaderEncodingTest extends TestCase
     public function parsesUtf16WithBom(string $bom, string $encoding): void
     {
         $utf8  = "0 HEAD\n1 CHAR UNICODE\n0 @I1@ INDI\n1 NAME René Ångström\n0 TRLR\n";
-        $bytes = $bom . (string) mb_convert_encoding($utf8, $encoding, 'UTF-8');
+        $bytes = $bom . mb_convert_encoding($utf8, $encoding, 'UTF-8');
 
         self::assertSame('René Ångström', $this->firstNameValue($this->rewoundStream($bytes)));
     }
@@ -151,7 +151,7 @@ class ReaderEncodingTest extends TestCase
     public function parsesUtf16WithoutBomViaNullHeuristic(string $encoding): void
     {
         $utf8  = "0 HEAD\n0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
-        $bytes = (string) mb_convert_encoding($utf8, $encoding, 'UTF-8');
+        $bytes = mb_convert_encoding($utf8, $encoding, 'UTF-8');
 
         self::assertSame('Zoë', $this->firstNameValue($this->rewoundStream($bytes)));
     }
@@ -176,7 +176,7 @@ class ReaderEncodingTest extends TestCase
     public function discardsIncompleteUtf16TailAtEndOfStream(): void
     {
         $utf8  = "0 @I1@ INDI\n1 NAME Zoë\n0 TRLR\n";
-        $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8') . "\x41";
+        $bytes = "\xFF\xFE" . mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8') . "\x41";
 
         $reader = new Reader($this->rewoundStream($bytes));
         $lines  = [];
@@ -367,7 +367,7 @@ class ReaderEncodingTest extends TestCase
     public function decodesAstralCharacterSplitAcrossChunkBoundary(): void
     {
         $utf8  = "0 @I1@ INDI\n1 NAME \u{1F600}X\n0 TRLR\n";
-        $bytes = "\xFF\xFE" . (string) mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8');
+        $bytes = "\xFF\xFE" . mb_convert_encoding($utf8, 'UTF-16LE', 'UTF-8');
 
         $name = $this->firstNameValue($this->oneByteStream($bytes));
 
