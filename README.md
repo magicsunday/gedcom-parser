@@ -204,8 +204,11 @@ identifiers (each a typed `ExternalIdentifier` carrying the identifier plus an o
 authority URI); both stay empty for a 5.5.1 record, which cannot carry them. A record's GEDCOM 7.0
 creation timestamp (`CREA`) is exposed as a typed `CreationDate` nesting an `ExactDate` — the raw
 exact date and optional time strings, kept unparsed because the timestamp uses the restricted
-exact-date grammar rather than the genealogical date grammar; it is `null` for a 5.5.1 record.
-Substructures not yet modelled are ignored rather than mapped.
+exact-date grammar rather than the genealogical date grammar; it is `null` for a 5.5.1 record. A
+record's change timestamp (`CHAN`) is exposed as a typed `ChangeDate` — the same `ExactDate` plus any
+inline notes (`Note`, with their 7.0 language, media type and translations) and 7.0 shared-note
+references documenting the change; unlike the creation timestamp it exists in both GEDCOM versions, so
+it is populated for a 5.5.1 record too. Substructures not yet modelled are ignored rather than mapped.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with

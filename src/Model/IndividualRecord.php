@@ -37,6 +37,7 @@ final readonly class IndividualRecord
      * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
+     * @param ChangeDate|null          $chan The record change timestamp (CHAN), or NULL when absent.
      */
     public function __construct(
         public string $xref,
@@ -50,6 +51,7 @@ final readonly class IndividualRecord
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
+        public ?ChangeDate $chan = null,
     ) {
     }
 }
