@@ -14,6 +14,7 @@ namespace MagicSunday\Gedcom\Test\Mapping;
 use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
+use MagicSunday\Gedcom\Model\ChangeDate;
 use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use MagicSunday\Gedcom\Model\CreationDate;
 use MagicSunday\Gedcom\Model\EventDetail;
@@ -25,7 +26,9 @@ use MagicSunday\Gedcom\Model\MediaFormat;
 use MagicSunday\Gedcom\Model\Medium;
 use MagicSunday\Gedcom\Model\MultimediaFile;
 use MagicSunday\Gedcom\Model\MultimediaRecord;
+use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\NoteTranslation;
 use MagicSunday\Gedcom\Model\PersonalName;
 use MagicSunday\Gedcom\Model\RepositoryRecord;
 use MagicSunday\Gedcom\Model\SourceRecord;
@@ -69,6 +72,9 @@ use function dirname;
 #[CoversClass(ExternalIdentifier::class)]
 #[CoversClass(CreationDate::class)]
 #[CoversClass(ExactDate::class)]
+#[CoversClass(ChangeDate::class)]
+#[CoversClass(Note::class)]
+#[CoversClass(NoteTranslation::class)]
 #[CoversClass(EventDetail::class)]
 #[CoversClass(PersonalName::class)]
 #[CoversClass(FamilyRecord::class)]
@@ -1150,6 +1156,161 @@ class GedcomObjectMapperTest extends TestCase
             ->map($node551, $definition551, IndividualRecord::class);
         self::assertInstanceOf(IndividualRecord::class, $record551);
         self::assertNull($record551->crea, 'a 5.5.1 record carries no CREA');
+    }
+
+    /**
+     * A GEDCOM 7.0 record documents its last change in a `CHAN` substructure: an exact date with an
+     * optional time, plus any inline `NOTE`s (with their 7.0 language, media type and translations)
+     * and `SNOTE` references to shared notes. It maps onto a typed {@see ChangeDate}. An inline note
+     * carrying a source citation still maps — the unmodelled citation is dropped rather than mapping
+     * the whole note away.
+     */
+    #[Test]
+    public function mapsThe70RecordChangeTimestampWithNotes(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 CHAN\n2 DATE 2 JAN 2001\n3 TIME 13:00:00\n"
+            . "2 NOTE A recorded change\n3 LANG en\n3 MIME text/plain\n3 TRAN Een geregistreerde wijziging\n4 LANG nl\n"
+            . "2 NOTE Change with a citation\n3 SOUR @S1@\n4 PAGE p. 42\n"
+            . "2 SNOTE @N1@\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V70);
+        $definition = $schema->byUri('https://gedcom.io/terms/v7/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertInstanceOf(ChangeDate::class, $record->chan, 'a CHAN carrying notes must not map to null');
+        self::assertInstanceOf(ExactDate::class, $record->chan->date);
+        self::assertSame('2 JAN 2001', $record->chan->date->value);
+        self::assertSame('13:00:00', $record->chan->date->time);
+
+        self::assertCount(2, $record->chan->note, 'both inline NOTE lines map to a list');
+        $documented = $record->chan->note[0];
+        self::assertSame('A recorded change', $documented->value);
+        self::assertSame('en', $documented->lang, 'the note LANG is threaded through');
+        self::assertSame('text/plain', $documented->mime, 'the note MIME is threaded through');
+        self::assertCount(1, $documented->tran, 'the note translation maps to a list');
+        self::assertSame('Een geregistreerde wijziging', $documented->tran[0]->value);
+        self::assertSame('nl', $documented->tran[0]->lang);
+
+        $cited = $record->chan->note[1];
+        self::assertSame('Change with a citation', $cited->value, 'a note with an unmodelled SOUR citation still maps its text');
+
+        self::assertSame(['N1'], $record->chan->snote, 'the SNOTE reference maps to the shared-note cross-reference');
+    }
+
+    /**
+     * The change timestamp exists in both GEDCOM versions, so a 5.5.1 record's `CHAN` maps too: its
+     * `DATE` uses the same exact-date grammar, and its notes — inline submitter text and pointers to
+     * shared notes alike — are carried as the plain note value (5.5.1 has no separate `SNOTE`).
+     */
+    #[Test]
+    public function mapsThe551RecordChangeTimestampNotesAsPlainText(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 @I1@ INDI\n"
+            . "1 CHAN\n2 DATE 2 JAN 2001\n3 TIME 13:00:00\n"
+            . "2 NOTE A submitter change note\n"
+            . "2 NOTE @N1@\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+        self::assertInstanceOf(GedcomNode::class, $node);
+
+        $schema = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))
+            ->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/record-INDI');
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+            ->map($node, $definition, IndividualRecord::class);
+
+        self::assertInstanceOf(IndividualRecord::class, $record);
+        self::assertInstanceOf(ChangeDate::class, $record->chan);
+        self::assertInstanceOf(ExactDate::class, $record->chan->date, 'the 5.5.1 CHAN.DATE reuses the exact-date shape');
+        self::assertSame('2 JAN 2001', $record->chan->date->value);
+        self::assertSame('13:00:00', $record->chan->date->time);
+
+        self::assertCount(2, $record->chan->note, 'both 5.5.1 CHAN notes map');
+        self::assertSame('A submitter change note', $record->chan->note[0]->value, 'the inline submitter text survives');
+        self::assertSame('N1', $record->chan->note[1]->value, 'a pointer note carries the shared-note cross-reference as its value');
+        self::assertSame([], $record->chan->snote, 'a 5.5.1 record has no separate SNOTE reference');
+    }
+
+    /**
+     * A record without a `CHAN` maps the change timestamp to null in both GEDCOM versions.
+     */
+    #[Test]
+    public function leavesTheChangeTimestampNullWhenAbsent(): void
+    {
+        $mapNode = static function (string $gedcom, GedcomVersion $version, string $uri): ?ChangeDate {
+            $stream = (new StreamFactory())->createStream($gedcom);
+            $stream->rewind();
+
+            $node = (new GedcomTreeReader(new Reader($stream)))->readRecord();
+            self::assertInstanceOf(GedcomNode::class, $node);
+
+            $schema     = (new RegistrySchemaLoader(dirname(__DIR__, 2) . '/docs/spec/gedcom7-registries'))->load($version);
+            $definition = $schema->byUri($uri);
+            self::assertInstanceOf(StructureDefinition::class, $definition);
+
+            $record = (new GedcomObjectMapper($schema, JsonMapperFactory::create()))
+                ->map($node, $definition, IndividualRecord::class);
+            self::assertInstanceOf(IndividualRecord::class, $record);
+
+            return $record->chan;
+        };
+
+        self::assertNull(
+            $mapNode("0 @I1@ INDI\n1 SEX M\n0 TRLR\n", GedcomVersion::V70, 'https://gedcom.io/terms/v7/record-INDI'),
+            'a 7.0 record without CHAN maps the change timestamp to null'
+        );
+        self::assertNull(
+            $mapNode("0 @I1@ INDI\n1 SEX M\n0 TRLR\n", GedcomVersion::V551, 'https://gedcom.io/terms/v5.5.1/record-INDI'),
+            'a 5.5.1 record without CHAN maps the change timestamp to null'
+        );
+    }
+
+    /**
+     * The inline-note handler builds a note defensively from a mis-shaped payload: a note leaf that
+     * is neither a string nor a shaped array yields an empty note rather than failing, and a
+     * translation element that is not a shaped array is skipped rather than dropping the whole note.
+     */
+    #[Test]
+    public function buildsInlineChangeNotesDefensivelyFromMalformedShapes(): void
+    {
+        $mapper = JsonMapperFactory::create();
+
+        $misShaped = $mapper->map(['note' => [42]], ChangeDate::class);
+        self::assertInstanceOf(ChangeDate::class, $misShaped);
+        self::assertCount(1, $misShaped->note);
+        self::assertNull($misShaped->note[0]->value, 'a mis-shaped note payload maps to an empty note');
+
+        $withTran = $mapper->map(
+            ['note' => [['value' => 'text', 'tran' => ['skip-me', ['value' => 'vertaald', 'lang' => 'nl']]]]],
+            ChangeDate::class,
+        );
+        self::assertInstanceOf(ChangeDate::class, $withTran);
+        self::assertCount(1, $withTran->note[0]->tran, 'a non-array translation element is skipped');
+        self::assertSame('vertaald', $withTran->note[0]->tran[0]->value);
+        self::assertSame('nl', $withTran->note[0]->tran[0]->lang);
+
+        $nonListTran = $mapper->map(['note' => [['value' => 'text', 'tran' => 'not-a-list']]], ChangeDate::class);
+        self::assertInstanceOf(ChangeDate::class, $nonListTran);
+        self::assertSame([], $nonListTran->note[0]->tran, 'a non-array tran payload yields no translations');
     }
 
     /**

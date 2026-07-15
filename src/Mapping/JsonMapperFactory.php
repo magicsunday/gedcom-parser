@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Mapping;
 
 use MagicSunday\Gedcom\Exception\MappingException;
+use MagicSunday\Gedcom\Model\Note;
+use MagicSunday\Gedcom\Model\NoteTranslation;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
@@ -120,6 +122,16 @@ final class JsonMapperFactory
             new ClosureTypeHandler(
                 PlaceValue::class,
                 static fn (mixed $value): PlaceValue => self::placeFromShaped($value, $defaultPlaceForm),
+            ),
+        );
+
+        // A registered handler intercepts every Note conversion — including each element of a
+        // `list<Note>` — so a single handler covers a record's inline change-notes. The resolution
+        // of the bare-string and shaped-array forms itself lives in noteFromShaped().
+        $mapper->addTypeHandler(
+            new ClosureTypeHandler(
+                Note::class,
+                static fn (mixed $value): Note => self::noteFromShaped($value),
             ),
         );
 
@@ -259,5 +271,65 @@ final class JsonMapperFactory
             self::leafValue($map['lati'], 'LATI'),
             self::leafValue($map['long'], 'LONG'),
         );
+    }
+
+    /**
+     * Builds an inline {@see Note} from its shaped payload. A GEDCOM 5.5.1 note — and a shared-note
+     * pointer — is a bare string carried directly as the note value; a GEDCOM 7.0 note is shaped as
+     * an array carrying its own text under the `value` key alongside its LANG/MIME/TRAN
+     * substructures. Only the modelled keys are read, so an unmodelled child (a `SOURCE_CITATION`,
+     * which is not yet mapped) is ignored rather than dropping the whole note.
+     *
+     * @param mixed $value The shaped payload (a bare string, a shaped array, or NULL).
+     *
+     * @return Note
+     */
+    private static function noteFromShaped(mixed $value): Note
+    {
+        if (is_string($value)) {
+            return new Note($value);
+        }
+
+        // A value-less note (or any non-array payload) carries no text.
+        if (!is_array($value)) {
+            return new Note();
+        }
+
+        $translations = [];
+        $tran         = $value['tran'] ?? [];
+
+        if (is_array($tran)) {
+            foreach ($tran as $translation) {
+                if (!is_array($translation)) {
+                    continue;
+                }
+
+                $translations[] = new NoteTranslation(
+                    self::nullableString($translation['value'] ?? null),
+                    self::nullableString($translation['lang'] ?? null),
+                    self::nullableString($translation['mime'] ?? null),
+                );
+            }
+        }
+
+        return new Note(
+            self::nullableString($value['value'] ?? null),
+            self::nullableString($value['lang'] ?? null),
+            self::nullableString($value['mime'] ?? null),
+            $translations,
+        );
+    }
+
+    /**
+     * Narrows a shaped payload value to a string, treating any non-string (an absent key, a nested
+     * array, NULL) as absent so a mis-shaped leaf is dropped rather than coerced.
+     *
+     * @param mixed $value The shaped value to narrow.
+     *
+     * @return string|null The value when it is a string, or NULL otherwise.
+     */
+    private static function nullableString(mixed $value): ?string
+    {
+        return is_string($value) ? $value : null;
     }
 }
