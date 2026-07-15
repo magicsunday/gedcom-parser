@@ -55,8 +55,10 @@ from the header and maps the standard records (INDI, FAM, SOUR, NOTE / the GEDCO
 `SNOTE`, REPO, OBJE, SUBM) onto their typed records grouped by type (`$document->individuals`,
 `->families`, `->notes`, …). The record dispatch is version-aware: a 5.5.1 document resolves its
 `NOTE` record and a 7.0 document its `SNOTE`, both into `->notes`, while a cross-version tag is
-tolerated and skipped rather than aborting the parse. You can also parse an in-memory GEDCOM string
-with `StreamFactory::createStream()`.
+tolerated and skipped rather than aborting the parse. A GEDCOM 7.0 document's header extension-tag
+schema (`HEAD.SCHMA.TAG`) is exposed on `$document->extensionTags` as a map of each extension tag to
+its declared URIs (a `list`, since 7.0 allows a tag to be documented more than once; empty for a
+5.5.1 document). You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
 
 ### Typed value objects
 

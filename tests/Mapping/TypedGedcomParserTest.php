@@ -16,6 +16,7 @@ use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
 use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\SubmitterRecord;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
@@ -45,6 +46,7 @@ use function uniqid;
 #[UsesClass(IndividualRecord::class)]
 #[UsesClass(EventDetail::class)]
 #[UsesClass(PlaceValue::class)]
+#[UsesClass(GedcomDocument::class)]
 class TypedGedcomParserTest extends TestCase
 {
     /**
@@ -116,6 +118,31 @@ class TypedGedcomParserTest extends TestCase
             ['City' => 'Cove', 'County' => 'Cache', 'State' => 'Utah', 'Country' => 'USA'],
             $place->mapped(),
         );
+    }
+
+    /**
+     * The eager parseDocument() surfaces the GEDCOM 7.0 header extension-tag schema (HEAD.SCHMA.TAG)
+     * on the aggregate — the streaming parse() cannot, so this path must.
+     */
+    #[Test]
+    public function parseDocumentSurfacesTheHeaderExtensionTagSchema(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 7.0
+            1 SCHMA
+            2 TAG _LOC https://example.com/loc
+            0 @I1@ INDI
+            0 TRLR
+            GEDCOM);
+        $stream->rewind();
+
+        $parser   = TypedGedcomParser::create(GedcomVersion::V70, ['INDI' => IndividualRecord::class]);
+        $document = $parser->parseDocument($stream);
+
+        self::assertSame(['_LOC' => ['https://example.com/loc']], $document->extensionTags);
+        self::assertCount(1, $document->individuals);
     }
 
     /**
