@@ -30,6 +30,7 @@ final readonly class SubmitterRecord
      * @param list<string>             $phon The submitter's phone numbers.
      * @param list<string>             $uid  The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid The GEDCOM 7.0 external identifiers (EXID); empty when none.
+     * @param CreationDate|null        $crea The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
      */
     public function __construct(
         public string $xref,
@@ -37,6 +38,7 @@ final readonly class SubmitterRecord
         public array $phon = [],
         public array $uid = [],
         public array $exid = [],
+        public ?CreationDate $crea = null,
     ) {
     }
 }
