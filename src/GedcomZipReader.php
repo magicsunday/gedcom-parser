@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace MagicSunday\Gedcom;
+
+use MagicSunday\Gedcom\Exception\InvalidArchiveException;
+use MagicSunday\Gedcom\Exception\MissingGedcomEntryException;
+use MagicSunday\Gedcom\Model\GedcomDocument;
+use Psr\Http\Message\StreamInterface;
+use ZipArchive;
+
+use function fclose;
+use function fopen;
+use function fwrite;
+use function sprintf;
+use function strlen;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+
+/**
+ * Reads a GEDZIP (`.gdz`) archive into the typed model.
+ *
+ * GEDZIP is the GEDCOM 7.0 ZIP container format: a ZIP archive carrying the dataset in a mandated
+ * `gedcom.ged` entry alongside any embedded local media files. This reader locates that entry,
+ * streams it into the ordinary schema-driven pipeline through {@see Parser}, and returns the typed
+ * {@see GedcomDocument} — the container is a pure packaging concern, so the dataset inside is parsed
+ * exactly as a plain `.ged` stream. Embedded media files are not resolved here.
+ *
+ * @author  Rico Sonntag <mail@ricosonntag.de>
+ * @license https://opensource.org/licenses/MIT
+ * @link    https://github.com/magicsunday/gedcom-parser/
+ */
+final class GedcomZipReader
+{
+    /**
+     * The mandated archive entry name carrying the GEDCOM dataset (case-sensitive, per the GEDZIP
+     * specification).
+     */
+    private const string GEDCOM_ENTRY = 'gedcom.ged';
+
+    /**
+     * The chunk size, in bytes, used to spool a stream input to a temporary file.
+     */
+    private const int SPOOL_CHUNK = 1 << 16;
+
+    /**
+     * Private constructor; use the static reader methods.
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * Reads a GEDZIP archive from a file path into the typed model.
+     *
+     * @param string $path The path to the `.gdz` archive on disk.
+     *
+     * @return GedcomDocument The parsed document, its records grouped by type.
+     *
+     * @throws InvalidArchiveException     When the file cannot be opened as a ZIP archive.
+     * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
+     */
+    public static function readFile(string $path): GedcomDocument
+    {
+        $archive = new ZipArchive();
+        $opened  = $archive->open($path);
+
+        if ($opened !== true) {
+            throw new InvalidArchiveException(
+                sprintf('Unable to open GEDZIP archive "%s" (ZipArchive error code %d).', $path, $opened)
+            );
+        }
+
+        try {
+            $resource = $archive->getStream(self::GEDCOM_ENTRY);
+
+            if ($resource === false) {
+                throw new MissingGedcomEntryException(
+                    sprintf('The GEDZIP archive "%s" does not contain the mandated "%s" entry.', $path, self::GEDCOM_ENTRY)
+                );
+            }
+
+            // The archive stays open until the document is fully parsed, since the entry resource
+            // reads lazily from it; parse() consumes the whole stream before the finally closes it.
+            $stream = (new StreamFactory())->createStreamFromResource($resource);
+
+            return (new Parser($stream))->parse();
+        } finally {
+            $archive->close();
+        }
+    }
+
+    /**
+     * Reads a GEDZIP archive from a stream into the typed model. Because the ZIP facility requires a
+     * seekable file, the stream is first spooled to a temporary file, which is removed afterwards.
+     *
+     * @param StreamInterface $stream The `.gdz` archive stream.
+     *
+     * @return GedcomDocument The parsed document, its records grouped by type.
+     *
+     * @throws InvalidArchiveException     When the stream cannot be spooled or opened as a ZIP archive.
+     * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
+     */
+    public static function read(StreamInterface $stream): GedcomDocument
+    {
+        $path = tempnam(sys_get_temp_dir(), 'gdz');
+
+        if ($path === false) {
+            throw new InvalidArchiveException('Unable to create a temporary file to spool the GEDZIP stream.');
+        }
+
+        try {
+            self::spool($stream, $path);
+
+            return self::readFile($path);
+        } finally {
+            unlink($path);
+        }
+    }
+
+    /**
+     * Spools a stream to a file on disk in bounded chunks so a large archive is not held in memory.
+     *
+     * @param StreamInterface $stream The source stream.
+     * @param string          $path   The destination file path.
+     *
+     * @return void
+     *
+     * @throws InvalidArchiveException When the destination file cannot be opened for writing.
+     */
+    private static function spool(StreamInterface $stream, string $path): void
+    {
+        $handle = fopen($path, 'wb');
+
+        if ($handle === false) {
+            throw new InvalidArchiveException(sprintf('Unable to open the temporary file "%s" for writing.', $path));
+        }
+
+        if ($stream->isSeekable()) {
+            $stream->rewind();
+        }
+
+        try {
+            while (!$stream->eof()) {
+                $chunk = $stream->read(self::SPOOL_CHUNK);
+
+                if ($chunk === '') {
+                    break;
+                }
+
+                if (fwrite($handle, $chunk) !== strlen($chunk)) {
+                    throw new InvalidArchiveException(
+                        sprintf('Unable to spool the GEDZIP stream to the temporary file "%s".', $path)
+                    );
+                }
+            }
+        } finally {
+            fclose($handle);
+        }
+    }
+}
