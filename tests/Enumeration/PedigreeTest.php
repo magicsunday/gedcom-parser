@@ -11,15 +11,15 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Enumeration;
 
-use MagicSunday\Gedcom\Enumeration\MediumType;
-use MagicSunday\Gedcom\Model\Medium;
+use MagicSunday\Gedcom\Enumeration\Pedigree;
+use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests the MEDI enumeration constant holder: its constants carry the raw spec values, its value
+ * Tests the PEDI enumeration constant holder: its constants carry the raw spec values, its value
  * list stays in sync with the vendored registry, and the carrying model field remains a tolerant
  * string.
  *
@@ -27,27 +27,27 @@ use PHPUnit\Framework\TestCase;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-#[CoversClass(MediumType::class)]
-#[UsesClass(Medium::class)]
-class MediumTypeTest extends TestCase
+#[CoversClass(Pedigree::class)]
+#[UsesClass(ChildToFamilyLink::class)]
+class PedigreeTest extends TestCase
 {
     /**
-     * Every constant's value is its own name — the MEDI tokens are legal identifiers — which catches
+     * Every constant's value is its own name — the PEDI tokens are legal identifiers — which catches
      * a value typo or a name/value swap the registry set comparison would miss.
      */
     #[Test]
     public function eachConstantNameEqualsItsRawSpecValue(): void
     {
-        EnumerationRegistry::assertConstantNamesEqualValues(MediumType::class);
+        EnumerationRegistry::assertConstantNamesEqualValues(Pedigree::class);
     }
 
     /**
-     * The holder's value list matches the vendored `enumset-MEDI` registry exactly.
+     * The holder's value list matches the vendored `enumset-PEDI` registry exactly.
      */
     #[Test]
     public function theValueListMatchesTheRegistry(): void
     {
-        EnumerationRegistry::assertMatchesRegistry('MEDI', MediumType::values());
+        EnumerationRegistry::assertMatchesRegistry('PEDI', Pedigree::values());
     }
 
     /**
@@ -57,9 +57,9 @@ class MediumTypeTest extends TestCase
     #[Test]
     public function theModelFieldRemainsATolerantString(): void
     {
-        self::assertSame(MediumType::PHOTO, (new Medium(MediumType::PHOTO))->value);
+        self::assertSame(Pedigree::BIRTH, (new ChildToFamilyLink('F1', Pedigree::BIRTH))->pedi);
 
-        self::assertNotContains('_CUSTOM', MediumType::values(), 'an extension value is not a known standard value');
-        self::assertSame('_CUSTOM', (new Medium('_CUSTOM'))->value, 'an extension value is preserved on the model');
+        self::assertNotContains('_CUSTOM', Pedigree::values(), 'an extension value is not a known standard value');
+        self::assertSame('_CUSTOM', (new ChildToFamilyLink('F1', '_CUSTOM'))->pedi, 'an extension value is preserved on the model');
     }
 }

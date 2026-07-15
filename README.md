@@ -235,9 +235,11 @@ details, and a `MultimediaRecord` exposes its file references (each with a typed
 title). A file's format classifies what it depicts version-specifically: GEDCOM 5.5.1's free-text
 `MediaFormat::$type` (`TYPE`) or GEDCOM 7.0's enumerated `MediaFormat::$medi` (`MEDI`, a typed
 `Medium` carrying the enumerated value plus an optional `PHRASE` for the `OTHER` medium); each stays
-`null` in the other version. The enumerated medium value stays a plain string so an extension or
-unlisted value is preserved, and the known standard values are available as typed constants on
-`MagicSunday\Gedcom\Enumeration\MediumType` (e.g. `MediumType::PHOTO`) for discoverable comparison. Every record additionally exposes its GEDCOM 7.0 record-level external
+`null` in the other version. Enumerated GEDCOM 7.0 values (a medium, an individual's sex, a
+child-to-family pedigree, a name type) stay plain strings so an extension or unlisted value is
+preserved, and the known standard values of each set are available as typed constants under
+`MagicSunday\Gedcom\Enumeration` (`MediumType`, `Sex`, `Pedigree`, `NameType` — e.g.
+`MediumType::PHOTO`, `Sex::FEMALE`) for discoverable comparison. Every record additionally exposes its GEDCOM 7.0 record-level external
 identifiers — any number of `UID` values (a `list` of raw strings) and any number of `EXID`
 identifiers (each a typed `ExternalIdentifier` carrying the identifier plus an optional `TYPE`
 authority URI); both stay empty for a 5.5.1 record, which cannot carry them. A record's GEDCOM 7.0
