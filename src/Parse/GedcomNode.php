@@ -35,12 +35,12 @@ namespace MagicSunday\Gedcom\Parse;
 final readonly class GedcomNode
 {
     /**
-     * @param int              $level      The original GEDCOM level number of the line
-     * @param string           $tag        The GEDCOM tag of the line
-     * @param string|null      $identifier The cross-reference identifier declared before the tag (`@X@`), normally only on a level-0 record line, or NULL
-     * @param string|null      $xref       The cross-reference pointer carried as the value, or NULL
-     * @param string|null      $value      The literal line value, or NULL when absent or a pointer
-     * @param list<GedcomNode> $children   The nested substructure nodes, in document order
+     * @param int              $level      The original GEDCOM level number of the line.
+     * @param string           $tag        The GEDCOM tag of the line.
+     * @param string|null      $identifier The cross-reference identifier declared before the tag (`@X@`), normally only on a level-0 record line, or NULL.
+     * @param string|null      $xref       The cross-reference pointer carried as the value, or NULL.
+     * @param string|null      $value      The literal line value, or NULL when absent or a pointer.
+     * @param list<GedcomNode> $children   The nested substructure nodes, in document order.
      */
     public function __construct(
         public int $level,

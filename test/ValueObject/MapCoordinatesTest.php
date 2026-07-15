@@ -32,10 +32,10 @@ class MapCoordinatesTest extends TestCase
      * The hemisphere prefix (`N`/`S` for latitude, `E`/`W` for longitude) drives the sign of the
      * decimal degrees: north and east are positive, south and west negative.
      *
-     * @param string $latitude          The raw LATI payload
-     * @param string $longitude         The raw LONG payload
-     * @param float  $expectedLatitude  The expected signed latitude
-     * @param float  $expectedLongitude The expected signed longitude
+     * @param string $latitude          The raw LATI payload.
+     * @param string $longitude         The raw LONG payload.
+     * @param float  $expectedLatitude  The expected signed latitude.
+     * @param float  $expectedLongitude The expected signed longitude.
      */
     #[Test]
     #[DataProvider('coordinateProvider')]
@@ -73,8 +73,8 @@ class MapCoordinatesTest extends TestCase
      * / ±180 longitude bounds — yields no coordinates rather than a partial, mis-signed or
      * impossible value.
      *
-     * @param string $latitude  The raw LATI payload
-     * @param string $longitude The raw LONG payload
+     * @param string $latitude  The raw LATI payload.
+     * @param string $longitude The raw LONG payload.
      */
     #[Test]
     #[DataProvider('malformedProvider')]

@@ -32,11 +32,11 @@ use function trim;
 final readonly class DateValue
 {
     /**
-     * @param DateType          $type    The kind of date value
-     * @param CalendarDate|null $date    The (start) date, or NULL for a bare phrase
-     * @param CalendarDate|null $endDate The end date of a range or period, or NULL
-     * @param string|null       $phrase  The free-text phrase of a phrase/interpreted date, or NULL
-     * @param string            $raw     The original, unparsed DATE_VALUE
+     * @param DateType          $type    The kind of date value.
+     * @param CalendarDate|null $date    The (start) date, or NULL for a bare phrase.
+     * @param CalendarDate|null $endDate The end date of a range or period, or NULL.
+     * @param string|null       $phrase  The free-text phrase of a phrase/interpreted date, or NULL.
+     * @param string            $raw     The original, unparsed DATE_VALUE.
      */
     public function __construct(
         public DateType $type,
@@ -55,8 +55,8 @@ final readonly class DateValue
      * date whose phrase is that text; a valued DATE that also carries a PHRASE keeps its parsed form
      * and records the phrase alongside.
      *
-     * @param string      $value  The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`
-     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present
+     * @param string      $value  The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`.
+     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present.
      */
     public static function fromGedcom(string $value, ?string $phrase = null): self
     {
@@ -86,7 +86,7 @@ final readonly class DateValue
     /**
      * Parses a raw GEDCOM DATE_VALUE into a typed value object.
      *
-     * @param string $value The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`
+     * @param string $value The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`.
      */
     private static function parse(string $value): self
     {
@@ -119,8 +119,8 @@ final readonly class DateValue
      * Builds the value object for a recognised leading keyword.
      *
      * @param string $keyword The matched keyword (any case)
-     * @param string $rest    The remainder after the keyword
-     * @param string $raw     The original, unparsed DATE_VALUE
+     * @param string $rest    The remainder after the keyword.
+     * @param string $raw     The original, unparsed DATE_VALUE.
      */
     private static function fromKeyword(string $keyword, string $rest, string $raw): self
     {
@@ -139,8 +139,8 @@ final readonly class DateValue
     /**
      * Builds a FROM period, which may or may not carry a `TO` bound.
      *
-     * @param string $rest The remainder after `FROM`
-     * @param string $raw  The original, unparsed DATE_VALUE
+     * @param string $rest The remainder after `FROM`.
+     * @param string $raw  The original, unparsed DATE_VALUE.
      */
     private static function fromPeriod(string $rest, string $raw): self
     {
@@ -154,10 +154,10 @@ final readonly class DateValue
     /**
      * Splits a two-date range/period on its separator keyword and builds the value object.
      *
-     * @param DateType $type      The resulting date type
-     * @param string   $rest      The two dates joined by the separator
+     * @param DateType $type      The resulting date type.
+     * @param string   $rest      The two dates joined by the separator.
      * @param string   $separator The uppercase separator keyword (`AND` or `TO`)
-     * @param string   $raw       The original, unparsed DATE_VALUE
+     * @param string   $raw       The original, unparsed DATE_VALUE.
      */
     private static function fromTwoDates(DateType $type, string $rest, string $separator, string $raw): self
     {

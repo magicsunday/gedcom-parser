@@ -65,13 +65,13 @@ class CalendarDateTest extends TestCase
     }
 
     /**
-     * @param string   $raw      The raw DATE token
-     * @param Calendar $calendar The expected calendar
-     * @param int|null $day      The expected day
-     * @param int|null $month    The expected 1-based month number
-     * @param int|null $year     The expected year
-     * @param bool     $bce      The expected B.C. flag
-     * @param int|null $dualYear The expected expanded dual year
+     * @param string   $raw      The raw DATE token.
+     * @param Calendar $calendar The expected calendar.
+     * @param int|null $day      The expected day.
+     * @param int|null $month    The expected 1-based month number.
+     * @param int|null $year     The expected year.
+     * @param bool     $bce      The expected B.C. flag.
+     * @param int|null $dualYear The expected expanded dual year.
      */
     #[Test]
     #[DataProvider('dateProvider')]
@@ -139,8 +139,8 @@ class CalendarDateTest extends TestCase
     }
 
     /**
-     * @param string   $raw      The raw DATE token
-     * @param int|null $expected The expected Julian Day Number, or NULL
+     * @param string   $raw      The raw DATE token.
+     * @param int|null $expected The expected Julian Day Number, or NULL.
      */
     #[Test]
     #[DataProvider('julianDayProvider')]

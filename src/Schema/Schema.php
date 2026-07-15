@@ -23,8 +23,8 @@ namespace MagicSunday\Gedcom\Schema;
 final readonly class Schema
 {
     /**
-     * @param array<string, StructureDefinition> $structures   The structure definitions, keyed by URI
-     * @param array<string, StructureDefinition> $recordsByTag The top-level record definitions, keyed by tag
+     * @param array<string, StructureDefinition> $structures   The structure definitions, keyed by URI.
+     * @param array<string, StructureDefinition> $recordsByTag The top-level record definitions, keyed by tag.
      */
     public function __construct(
         public array $structures,
@@ -36,7 +36,7 @@ final readonly class Schema
      * Returns the structure definition for the given URI, or NULL when the version has no such
      * structure.
      *
-     * @param string $uri The structure URI
+     * @param string $uri The structure URI.
      */
     public function byUri(string $uri): ?StructureDefinition
     {
@@ -47,7 +47,7 @@ final readonly class Schema
      * Returns the top-level record definition for the given tag (e.g. `INDI`), or NULL when the
      * tag is not a record in this version.
      *
-     * @param string $tag The record tag
+     * @param string $tag The record tag.
      */
     public function recordByTag(string $tag): ?StructureDefinition
     {

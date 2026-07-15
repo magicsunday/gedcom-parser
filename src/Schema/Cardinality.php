@@ -31,7 +31,7 @@ use function trim;
 final readonly class Cardinality
 {
     /**
-     * @param int      $minimum The minimum number of occurrences
+     * @param int      $minimum The minimum number of occurrences.
      * @param int|null $maximum The maximum number of occurrences, or NULL when unbounded (`M`)
      */
     public function __construct(
@@ -43,9 +43,9 @@ final readonly class Cardinality
     /**
      * Parses a `{minimum:maximum}` registry cardinality token.
      *
-     * @param string $token The raw cardinality token, e.g. `{0:1}` or `{1:M}`
+     * @param string $token The raw cardinality token, e.g. `{0:1}` or `{1:M}`.
      *
-     * @throws InvalidCardinalityException When the token is not of the expected form
+     * @throws InvalidCardinalityException When the token is not of the expected form.
      */
     public static function fromToken(string $token): self
     {

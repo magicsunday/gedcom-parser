@@ -32,9 +32,9 @@ class ReaderConformanceTest extends TestCase
     /**
      * Creates a rewound reader over the given raw GEDCOM string.
      *
-     * @param string $gedcom the raw GEDCOM document to wrap
+     * @param string $gedcom The raw GEDCOM document to wrap.
      *
-     * @return Reader a reader positioned at the start of the given document
+     * @return Reader A reader positioned at the start of the given document.
      */
     private function reader(string $gedcom): Reader
     {

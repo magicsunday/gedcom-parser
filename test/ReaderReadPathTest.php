@@ -336,9 +336,9 @@ class ReaderReadPathTest extends TestCase
     /**
      * Counts the individuals parsed from a fixture file.
      *
-     * @param string $file the absolute path to the GEDCOM fixture
+     * @param string $file The absolute path to the GEDCOM fixture.
      *
-     * @return int the number of parsed individual records
+     * @return int The number of parsed individual records.
      */
     private function countIndividuals(string $file): int
     {
@@ -350,9 +350,9 @@ class ReaderReadPathTest extends TestCase
     /**
      * Counts the individuals parsed from an already-prepared stream.
      *
-     * @param Stream $stream a rewound readable stream over a GEDCOM document
+     * @param Stream $stream A rewound readable stream over a GEDCOM document.
      *
-     * @return int the number of parsed individual records
+     * @return int The number of parsed individual records.
      */
     private function countIndividualsFromStream(Stream $stream): int
     {
@@ -403,8 +403,8 @@ class ReaderReadPathTest extends TestCase
      * Blank and whitespace-only lines are skipped, so every served line carries its own level
      * and tag and never inherits the previous line's stale structural state.
      *
-     * @param string                         $gedcom   the raw GEDCOM document
-     * @param list<array{0: int, 1: string}> $expected the expected level/tag pair of each served line
+     * @param string                         $gedcom   The raw GEDCOM document.
+     * @param list<array{0: int, 1: string}> $expected The expected level/tag pair of each served line.
      */
     #[Test]
     #[DataProvider('blankLineProvider')]
@@ -437,7 +437,7 @@ class ReaderReadPathTest extends TestCase
      * Drains a reader over an in-memory GEDCOM string into an ordered list of its level and tag
      * per served line.
      *
-     * @param string $gedcom the raw GEDCOM document
+     * @param string $gedcom The raw GEDCOM document.
      *
      * @return list<array{0: int, 1: string}> the level/tag pair of each served line, in order
      */
@@ -460,9 +460,9 @@ class ReaderReadPathTest extends TestCase
      * Wraps a GEDCOM document in a stream whose read() yields at most one byte per call,
      * forcing every terminator pair to straddle a chunk boundary.
      *
-     * @param string $content the raw GEDCOM document
+     * @param string $content The raw GEDCOM document.
      *
-     * @return Stream a rewound single-byte-per-read stream
+     * @return Stream A rewound single-byte-per-read stream.
      */
     private function oneByteStream(string $content): Stream
     {

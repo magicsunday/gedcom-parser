@@ -44,9 +44,9 @@ final readonly class GedcomVersionDetector
     /**
      * Detects the GEDCOM version from a parsed HEAD record node.
      *
-     * @param GedcomNode|null $header The parsed HEAD record, or NULL when the document has none
+     * @param GedcomNode|null $header The parsed HEAD record, or NULL when the document has none.
      *
-     * @return GedcomVersion The detected version, defaulting to 5.5.1
+     * @return GedcomVersion The detected version, defaulting to 5.5.1.
      */
     public function detect(?GedcomNode $header): GedcomVersion
     {
@@ -68,9 +68,9 @@ final readonly class GedcomVersionDetector
     /**
      * Maps a raw `GEDC.VERS` value to a typed version, defaulting to 5.5.1.
      *
-     * @param string|null $version The raw VERS value, or NULL when absent
+     * @param string|null $version The raw VERS value, or NULL when absent.
      *
-     * @return GedcomVersion The matching version
+     * @return GedcomVersion The matching version.
      */
     private function fromVersionString(?string $version): GedcomVersion
     {
@@ -98,10 +98,10 @@ final readonly class GedcomVersionDetector
     /**
      * Returns the first direct child of a node carrying the given tag, or NULL when none does.
      *
-     * @param GedcomNode $node The node whose children to search
-     * @param string     $tag  The tag to look for
+     * @param GedcomNode $node The node whose children to search.
+     * @param string     $tag  The tag to look for.
      *
-     * @return GedcomNode|null The first matching child, or NULL
+     * @return GedcomNode|null The first matching child, or NULL.
      */
     private function firstChild(GedcomNode $node, string $tag): ?GedcomNode
     {

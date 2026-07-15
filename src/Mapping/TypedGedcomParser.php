@@ -39,8 +39,8 @@ use function sprintf;
 final readonly class TypedGedcomParser
 {
     /**
-     * @param GedcomObjectMapper          $mapper        The mapper building a typed record from a node
-     * @param array<string, class-string> $recordClasses The target class per record tag
+     * @param GedcomObjectMapper          $mapper        The mapper building a typed record from a node.
+     * @param array<string, class-string> $recordClasses The target class per record tag.
      */
     public function __construct(
         private GedcomObjectMapper $mapper,
@@ -52,9 +52,9 @@ final readonly class TypedGedcomParser
      * Creates a parser for the given version, wired with the registry schema and the given record
      * class map.
      *
-     * @param GedcomVersion               $version       The GEDCOM version whose schema to compile
-     * @param array<string, class-string> $recordClasses The target class per record tag
-     * @param string|null                 $registryPath  The registry directory, or NULL for the vendored one
+     * @param GedcomVersion               $version       The GEDCOM version whose schema to compile.
+     * @param array<string, class-string> $recordClasses The target class per record tag.
+     * @param string|null                 $registryPath  The registry directory, or NULL for the vendored one.
      *
      * @throws MappingException When the registry cannot be loaded (no structures compiled)
      */
@@ -78,7 +78,7 @@ final readonly class TypedGedcomParser
      * order. Yielding keeps the whole file out of memory: the caller processes one record at a
      * time (wrap in `iterator_to_array()` for the full list).
      *
-     * @param StreamInterface $stream The GEDCOM stream to parse
+     * @param StreamInterface $stream The GEDCOM stream to parse.
      *
      * @return Generator<object>
      */
@@ -103,9 +103,9 @@ final readonly class TypedGedcomParser
      * in memory; prefer it when the caller needs random access to the records rather than a single
      * streaming pass.
      *
-     * @param StreamInterface $stream The GEDCOM stream to parse
+     * @param StreamInterface $stream The GEDCOM stream to parse.
      *
-     * @return GedcomDocument The populated aggregate
+     * @return GedcomDocument The populated aggregate.
      */
     public function parseDocument(StreamInterface $stream): GedcomDocument
     {

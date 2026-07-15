@@ -32,11 +32,11 @@ namespace MagicSunday\Gedcom\Schema;
 final readonly class StructureDefinition
 {
     /**
-     * @param string                            $uri            The URI identifying the structure
-     * @param string                            $tag            The GEDCOM tag of the structure
-     * @param string|null                       $payload        The payload (value) type token, or NULL when the structure has no value
-     * @param string|null                       $enumerationSet The URI of the enumeration set constraining the payload, or NULL
-     * @param array<string, list<Substructure>> $substructures  The permitted substructures, grouped by child tag
+     * @param string                            $uri            The URI identifying the structure.
+     * @param string                            $tag            The GEDCOM tag of the structure.
+     * @param string|null                       $payload        The payload (value) type token, or NULL when the structure has no value.
+     * @param string|null                       $enumerationSet The URI of the enumeration set constraining the payload, or NULL.
+     * @param array<string, list<Substructure>> $substructures  The permitted substructures, grouped by child tag.
      */
     public function __construct(
         public string $uri,
@@ -51,7 +51,7 @@ final readonly class StructureDefinition
      * Returns the candidate substructures permitted under the given child tag, in registry
      * order, or an empty list when the tag is not a substructure of this structure.
      *
-     * @param string $tag The child GEDCOM tag
+     * @param string $tag The child GEDCOM tag.
      *
      * @return list<Substructure>
      */

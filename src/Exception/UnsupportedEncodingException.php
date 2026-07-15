@@ -35,8 +35,8 @@ final class UnsupportedEncodingException extends RuntimeException implements Exc
     private string $characterSet;
 
     /**
-     * @param string         $characterSet the declared, unhandled character set
-     * @param Throwable|null $previous     the underlying cause, if any
+     * @param string         $characterSet The declared, unhandled character set.
+     * @param Throwable|null $previous     The underlying cause, if any.
      */
     public function __construct(string $characterSet, ?Throwable $previous = null)
     {
@@ -52,7 +52,7 @@ final class UnsupportedEncodingException extends RuntimeException implements Exc
     /**
      * Returns the declared character set that could not be handled.
      *
-     * @return string the offending character set
+     * @return string The offending character set.
      */
     public function getCharacterSet(): string
     {

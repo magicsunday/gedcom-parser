@@ -155,9 +155,9 @@ class RegistrySchemaLoaderTest extends TestCase
      * rather than one silently overwriting the other, and each resolves to its own definition so
      * the mapping layer can distinguish them by payload.
      *
-     * @param string       $parentUri    The URI of the parent record
-     * @param string       $tag          The colliding child tag
-     * @param list<string> $expectedUris The URIs of both variants, alphabetically sorted
+     * @param string       $parentUri    The URI of the parent record.
+     * @param string       $tag          The colliding child tag.
+     * @param list<string> $expectedUris The URIs of both variants, alphabetically sorted.
      */
     #[Test]
     #[DataProvider('collidingTagProvider')]
@@ -318,9 +318,9 @@ class RegistrySchemaLoaderTest extends TestCase
     /**
      * Creates a temporary registry directory containing the given `structure/standard` files.
      *
-     * @param array<string, string> $files A map of file name to YAML content
+     * @param array<string, string> $files A map of file name to YAML content.
      *
-     * @return string The temporary registry base path
+     * @return string The temporary registry base path.
      */
     private function writeTemporaryRegistry(array $files): string
     {
@@ -343,7 +343,7 @@ class RegistrySchemaLoaderTest extends TestCase
     /**
      * Recursively removes a directory and its contents.
      *
-     * @param string $directory The directory to remove
+     * @param string $directory The directory to remove.
      */
     private static function removeDirectory(string $directory): void
     {

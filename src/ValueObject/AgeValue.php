@@ -33,14 +33,14 @@ use function trim;
 final readonly class AgeValue
 {
     /**
-     * @param AgeModifier|null $modifier The relational qualifier, or NULL when the age is exact
-     * @param AgeKeyword|null  $keyword  The symbolic keyword, or NULL when a duration is given
-     * @param int|null         $years    The number of full years, or NULL when absent
-     * @param int|null         $months   The number of months, or NULL when absent
-     * @param int|null         $weeks    The number of weeks (GEDCOM 7.0 only), or NULL when absent
-     * @param int|null         $days     The number of days, or NULL when absent
-     * @param string           $raw      The original, unparsed AGE value
-     * @param string|null      $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent
+     * @param AgeModifier|null $modifier The relational qualifier, or NULL when the age is exact.
+     * @param AgeKeyword|null  $keyword  The symbolic keyword, or NULL when a duration is given.
+     * @param int|null         $years    The number of full years, or NULL when absent.
+     * @param int|null         $months   The number of months, or NULL when absent.
+     * @param int|null         $weeks    The number of weeks (GEDCOM 7.0 only), or NULL when absent.
+     * @param int|null         $days     The number of days, or NULL when absent.
+     * @param string           $raw      The original, unparsed AGE value.
+     * @param string|null      $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent.
      */
     public function __construct(
         public ?AgeModifier $modifier,
@@ -61,8 +61,8 @@ final readonly class AgeValue
      * A value-less AGE carried solely by its PHRASE substructure records only the phrase; a valued
      * AGE that also carries a PHRASE keeps its parsed parts and records the phrase alongside.
      *
-     * @param string      $raw    The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`
-     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present
+     * @param string      $raw    The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`.
+     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present.
      */
     public static function fromGedcom(string $raw, ?string $phrase = null): self
     {
@@ -99,7 +99,7 @@ final readonly class AgeValue
     /**
      * Parses a raw GEDCOM AGE_AT_EVENT value into a typed value object.
      *
-     * @param string $raw The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`
+     * @param string $raw The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`.
      */
     private static function parse(string $raw): self
     {
@@ -154,9 +154,9 @@ final readonly class AgeValue
     /**
      * Converts a captured duration group into an integer, or NULL when the group was absent.
      *
-     * @param string $match The captured digits, or an empty string when the label was not present
+     * @param string $match The captured digits, or an empty string when the label was not present.
      *
-     * @return int|null The parsed count, or NULL
+     * @return int|null The parsed count, or NULL.
      */
     private static function toInt(string $match): ?int
     {

@@ -25,8 +25,8 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class ChildToFamilyLink
 {
     /**
-     * @param string      $xref The linked family's cross-reference pointer
-     * @param string|null $pedi The pedigree qualifying the linkage (PEDI), or NULL when absent
+     * @param string      $xref The linked family's cross-reference pointer.
+     * @param string|null $pedi The pedigree qualifying the linkage (PEDI), or NULL when absent.
      */
     public function __construct(
         public string $xref,

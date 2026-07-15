@@ -24,7 +24,7 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class SpouseToFamilyLink
 {
     /**
-     * @param string $xref The linked family's cross-reference pointer
+     * @param string $xref The linked family's cross-reference pointer.
      */
     public function __construct(
         public string $xref,

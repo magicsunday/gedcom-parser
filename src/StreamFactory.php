@@ -29,7 +29,7 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * Create a new stream from a string.
      *
-     * @param string $content String content with which to populate the stream
+     * @param string $content String content with which to populate the stream.
      *
      * @return StreamInterface
      */
@@ -47,13 +47,13 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * Create a stream from an existing file. The `$filename` may be any string supported by `fopen()`.
      *
-     * @param string $filename Filename or stream URI to use as a basis of stream
-     * @param string $mode     Mode with which to open the underlying filename/stream
+     * @param string $filename Filename or stream URI to use as a basis of stream.
+     * @param string $mode     Mode with which to open the underlying filename/stream.
      *
      * @return StreamInterface
      *
-     * @throws StreamException                If the file cannot be opened
-     * @throws InvalidStreamArgumentException If the mode is invalid
+     * @throws StreamException                If the file cannot be opened.
+     * @throws InvalidStreamArgumentException If the mode is invalid.
      */
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
@@ -73,7 +73,7 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * Create a new stream from an existing resource. The stream must be readable and may be writable.
      *
-     * @param resource $resource PHP resource to use as a basis of stream
+     * @param resource $resource PHP resource to use as a basis of stream.
      *
      * @return StreamInterface
      *
