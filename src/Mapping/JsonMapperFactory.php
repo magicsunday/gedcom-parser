@@ -72,13 +72,19 @@ final class JsonMapperFactory
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
                 DateValue::class,
-                static fn (mixed $value): DateValue => DateValue::fromGedcom(self::leafValue($value, 'DATE')),
+                static fn (mixed $value): DateValue => DateValue::fromGedcom(
+                    self::leafValue($value, 'DATE'),
+                    self::phraseOf($value),
+                ),
             ),
         );
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
                 AgeValue::class,
-                static fn (mixed $value): AgeValue => AgeValue::fromGedcom(self::leafValue($value, 'AGE')),
+                static fn (mixed $value): AgeValue => AgeValue::fromGedcom(
+                    self::leafValue($value, 'AGE'),
+                    self::phraseOf($value),
+                ),
             ),
         );
         $mapper->addTypeHandler(
@@ -135,6 +141,29 @@ final class JsonMapperFactory
         }
 
         throw new MappingException(sprintf('Expected a string or shaped %s payload, got %s.', $label, get_debug_type($value)));
+    }
+
+    /**
+     * Resolves the GEDCOM 7.0 PHRASE substructure of a shaped leaf. A DATE or AGE that carries a
+     * PHRASE is shaped as an array with a `phrase` key; the phrase text is resolved through the same
+     * leaf helper, and an absent or empty phrase yields NULL so the value object is not handed a
+     * meaningless empty string.
+     *
+     * @param mixed $value The shaped leaf payload (an array when it carries substructures)
+     *
+     * @return string|null The PHRASE text, or NULL when the leaf carries no phrase
+     *
+     * @throws MappingException When the PHRASE leaf is itself mis-shaped
+     */
+    private static function phraseOf(mixed $value): ?string
+    {
+        if (!is_array($value) || !array_key_exists('phrase', $value)) {
+            return null;
+        }
+
+        $phrase = self::leafValue($value['phrase'], 'PHRASE');
+
+        return $phrase === '' ? null : $phrase;
     }
 
     /**

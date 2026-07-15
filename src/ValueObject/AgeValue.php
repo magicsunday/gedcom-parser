@@ -21,7 +21,9 @@ use function trim;
  *
  * The 5.5.1 grammar is an optional relational qualifier (`<` / `>`) followed by either a
  * symbolic keyword (`CHILD` / `INFANT` / `STILLBORN`) or any combination of a years / months /
- * days duration (`72y 3m 2d`). The original raw text is preserved alongside the parsed parts.
+ * days duration (`72y 3m 2d`). A GEDCOM 7.0 AGE may additionally carry a free-text `PHRASE`
+ * substructure, which is the sole carrier when the age itself is value-less. The original raw
+ * text is preserved alongside the parsed parts.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -36,6 +38,7 @@ final readonly class AgeValue
      * @param int|null         $months   The number of months, or NULL when absent
      * @param int|null         $days     The number of days, or NULL when absent
      * @param string           $raw      The original, unparsed AGE value
+     * @param string|null      $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent
      */
     public function __construct(
         public ?AgeModifier $modifier,
@@ -44,7 +47,49 @@ final readonly class AgeValue
         public ?int $months,
         public ?int $days,
         public string $raw,
+        public ?string $phrase = null,
     ) {
+    }
+
+    /**
+     * Parses a raw GEDCOM AGE_AT_EVENT value, optionally carrying an explicit GEDCOM 7.0 PHRASE
+     * substructure, into a typed value object.
+     *
+     * A value-less AGE carried solely by its PHRASE substructure records only the phrase; a valued
+     * AGE that also carries a PHRASE keeps its parsed parts and records the phrase alongside.
+     *
+     * @param string      $raw    The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`
+     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present
+     */
+    public static function fromGedcom(string $raw, ?string $phrase = null): self
+    {
+        $explicitPhrase = $phrase !== null ? trim($phrase) : null;
+
+        if ($explicitPhrase === '') {
+            $explicitPhrase = null;
+        }
+
+        // A value-less GEDCOM 7.0 AGE may be carried solely by its PHRASE substructure.
+        if (($explicitPhrase !== null) && (trim($raw) === '')) {
+            return new self(null, null, null, null, null, $raw, $explicitPhrase);
+        }
+
+        $parsed = self::parse($raw);
+
+        if ($explicitPhrase === null) {
+            return $parsed;
+        }
+
+        // A valued AGE that also carries an explicit PHRASE keeps its parsed parts and records it.
+        return new self(
+            $parsed->modifier,
+            $parsed->keyword,
+            $parsed->years,
+            $parsed->months,
+            $parsed->days,
+            $parsed->raw,
+            $explicitPhrase,
+        );
     }
 
     /**
@@ -52,7 +97,7 @@ final readonly class AgeValue
      *
      * @param string $raw The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`
      */
-    public static function fromGedcom(string $raw): self
+    private static function parse(string $raw): self
     {
         $value = trim($raw);
 

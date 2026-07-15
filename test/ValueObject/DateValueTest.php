@@ -162,4 +162,48 @@ class DateValueTest extends TestCase
         self::assertSame(DateType::About, $value->type);
         self::assertSame(1900, $value->date?->year);
     }
+
+    /**
+     * A value-less DATE carried solely by a GEDCOM 7.0 PHRASE substructure becomes a phrase-typed
+     * date: the phrase is recorded, there is no calendar date, and the empty value is kept as raw.
+     */
+    #[Test]
+    public function fromGedcomBuildsAPhraseDateFromAValueLessDate(): void
+    {
+        $value = DateValue::fromGedcom('', 'around harvest time');
+
+        self::assertSame(DateType::Phrase, $value->type);
+        self::assertNull($value->date);
+        self::assertNull($value->endDate);
+        self::assertSame('around harvest time', $value->phrase);
+        self::assertSame('', $value->raw);
+    }
+
+    /**
+     * A valued DATE that also carries an explicit GEDCOM 7.0 PHRASE keeps its parsed form and
+     * records the phrase alongside, overriding any inline phrase from the value grammar.
+     */
+    #[Test]
+    public function fromGedcomAttachesAnExplicitPhraseToAValuedDate(): void
+    {
+        $value = DateValue::fromGedcom('1 JAN 2000', "New Year's Day");
+
+        self::assertSame(DateType::Exact, $value->type);
+        self::assertSame(2000, $value->date?->year);
+        self::assertSame("New Year's Day", $value->phrase);
+        self::assertSame('1 JAN 2000', $value->raw);
+    }
+
+    /**
+     * An empty or whitespace-only explicit phrase is treated as absent, leaving the parsed date
+     * untouched.
+     */
+    #[Test]
+    public function fromGedcomTreatsAnEmptyExplicitPhraseAsAbsent(): void
+    {
+        $value = DateValue::fromGedcom('1 JAN 2000', '   ');
+
+        self::assertSame(DateType::Exact, $value->type);
+        self::assertNull($value->phrase);
+    }
 }

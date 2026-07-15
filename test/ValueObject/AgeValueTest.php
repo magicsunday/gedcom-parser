@@ -149,4 +149,48 @@ class AgeValueTest extends TestCase
         self::assertInstanceOf(AgeValue::class, $value);
         self::assertSame(AgeKeyword::Child, $value->keyword);
     }
+
+    /**
+     * A value-less AGE carried solely by a GEDCOM 7.0 PHRASE substructure records only the phrase,
+     * with no duration, keyword or modifier.
+     */
+    #[Test]
+    public function fromGedcomBuildsAPhraseOnlyAgeFromAValueLessAge(): void
+    {
+        $value = AgeValue::fromGedcom('', 'a young child');
+
+        self::assertNull($value->modifier);
+        self::assertNull($value->keyword);
+        self::assertNull($value->years);
+        self::assertNull($value->months);
+        self::assertNull($value->days);
+        self::assertSame('a young child', $value->phrase);
+    }
+
+    /**
+     * A valued AGE that also carries an explicit GEDCOM 7.0 PHRASE keeps its parsed parts and
+     * records the phrase alongside.
+     */
+    #[Test]
+    public function fromGedcomAttachesAnExplicitPhraseToAValuedAge(): void
+    {
+        $value = AgeValue::fromGedcom('72y 3m 2d', 'at the wedding');
+
+        self::assertSame(72, $value->years);
+        self::assertSame(3, $value->months);
+        self::assertSame(2, $value->days);
+        self::assertSame('at the wedding', $value->phrase);
+    }
+
+    /**
+     * An empty or whitespace-only explicit phrase is treated as absent.
+     */
+    #[Test]
+    public function fromGedcomTreatsAnEmptyExplicitAgePhraseAsAbsent(): void
+    {
+        $value = AgeValue::fromGedcom('CHILD', '   ');
+
+        self::assertSame(AgeKeyword::Child, $value->keyword);
+        self::assertNull($value->phrase);
+    }
 }
