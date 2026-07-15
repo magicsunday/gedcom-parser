@@ -111,6 +111,30 @@ class ArchitectureTest
     }
 
     /**
+     * The enumeration constant holders are shared leaves — typed comparison targets for the raw
+     * enumerated string values — and must not depend on any other layer.
+     *
+     * @return Rule The architecture rule.
+     */
+    public function testEnumerationsAreAPureLeaf(): Rule
+    {
+        return PHPat::rule()
+            ->classes(Selector::inNamespace(self::NS . 'Enumeration'))
+            ->shouldNot()
+            ->dependOn()
+            ->classes(
+                Selector::inNamespace(self::NS . 'Mapping'),
+                Selector::inNamespace(self::NS . 'Parse'),
+                Selector::inNamespace(self::NS . 'Schema'),
+                Selector::inNamespace(self::NS . 'Model'),
+                Selector::inNamespace(self::NS . 'ValueObject'),
+                Selector::inNamespace(self::NS . 'Encoding'),
+                ...$this->entryPoints(),
+            )
+            ->because('the enumeration constant holders are self-contained comparison targets with no upward dependencies');
+    }
+
+    /**
      * Domain exceptions are shared leaves and must not depend on any other layer.
      *
      * @return Rule The architecture rule.
