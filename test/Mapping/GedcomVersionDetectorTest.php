@@ -39,8 +39,8 @@ class GedcomVersionDetectorTest extends TestCase
      * any 7.x patch level as 7.0, surrounding whitespace tolerated, and an unrecognised or older
      * value falling back to 5.5.1.
      *
-     * @param string        $versValue The raw GEDC.VERS value
-     * @param GedcomVersion $expected  The expected resolved version
+     * @param string        $versValue The raw GEDC.VERS value.
+     * @param GedcomVersion $expected  The expected resolved version.
      */
     #[Test]
     #[DataProvider('versionValueProvider')]
@@ -117,9 +117,9 @@ class GedcomVersionDetectorTest extends TestCase
     /**
      * Builds a minimal HEAD record node carrying a GEDC.VERS line with the given value.
      *
-     * @param string $versValue The GEDC.VERS value to embed
+     * @param string $versValue The GEDC.VERS value to embed.
      *
-     * @return GedcomNode The header node
+     * @return GedcomNode The header node.
      */
     private function header(string $versValue): GedcomNode
     {

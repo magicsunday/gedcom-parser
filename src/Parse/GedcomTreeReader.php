@@ -43,7 +43,7 @@ final readonly class GedcomTreeReader
     private const string TAG_CONT = 'CONT';
 
     /**
-     * @param Reader $reader The line reader to build the tree from
+     * @param Reader $reader The line reader to build the tree from.
      */
     public function __construct(
         private Reader $reader,
@@ -53,7 +53,7 @@ final readonly class GedcomTreeReader
     /**
      * Reads the next level-0 record and its complete substructure subtree.
      *
-     * @return GedcomNode|null The next record node, or NULL at end of stream
+     * @return GedcomNode|null The next record node, or NULL at end of stream.
      */
     public function readRecord(): ?GedcomNode
     {
@@ -68,7 +68,7 @@ final readonly class GedcomTreeReader
      * Builds the node for the line the reader currently sits on, recursively consuming every
      * deeper line as a child and putting back the first line that is not part of this subtree.
      *
-     * @return GedcomNode The node for the current line
+     * @return GedcomNode The node for the current line.
      */
     private function buildCurrentNode(): GedcomNode
     {

@@ -36,9 +36,9 @@ final class LineTooLongException extends RuntimeException implements ExceptionIn
     private int $lineNumber;
 
     /**
-     * @param int            $lineNumber the 1-based number of the offending line
-     * @param int            $maxLength  the maximum permitted line length in bytes
-     * @param Throwable|null $previous   the underlying cause, if any
+     * @param int            $lineNumber The 1-based number of the offending line.
+     * @param int            $maxLength  The maximum permitted line length in bytes.
+     * @param Throwable|null $previous   The underlying cause, if any.
      */
     public function __construct(int $lineNumber, int $maxLength, ?Throwable $previous = null)
     {
@@ -58,7 +58,7 @@ final class LineTooLongException extends RuntimeException implements ExceptionIn
     /**
      * Returns the 1-based number of the offending line within the document.
      *
-     * @return int the line number the failure occurred on
+     * @return int The line number the failure occurred on.
      */
     public function getLineNumber(): int
     {

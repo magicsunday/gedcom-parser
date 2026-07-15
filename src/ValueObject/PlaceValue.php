@@ -34,8 +34,8 @@ final readonly class PlaceValue
     /**
      * @param list<string>        $levels      The trimmed jurisdiction names, most specific first
      *                                         (empties kept)
-     * @param string|null         $form        The raw place FORM, or NULL when none is declared
-     * @param string              $raw         The original, unparsed PLACE_NAME value
+     * @param string|null         $form        The raw place FORM, or NULL when none is declared.
+     * @param string              $raw         The original, unparsed PLACE_NAME value.
      * @param MapCoordinates|null $coordinates The geographic coordinates from the MAP substructure,
      *                                         or NULL when absent or malformed
      */
@@ -50,9 +50,9 @@ final readonly class PlaceValue
     /**
      * Parses a raw GEDCOM PLACE_NAME (and optional FORM and coordinates) into a typed value object.
      *
-     * @param string              $place       The raw place name, e.g. `Cove, Cache, Utah, USA`
-     * @param string|null         $form        The raw place FORM, e.g. `City, County, State, Country`
-     * @param MapCoordinates|null $coordinates The geographic coordinates from the MAP substructure
+     * @param string              $place       The raw place name, e.g. `Cove, Cache, Utah, USA`.
+     * @param string|null         $form        The raw place FORM, e.g. `City, County, State, Country`.
+     * @param MapCoordinates|null $coordinates The geographic coordinates from the MAP substructure.
      */
     public static function fromGedcom(string $place, ?string $form = null, ?MapCoordinates $coordinates = null): self
     {

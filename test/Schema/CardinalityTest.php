@@ -46,11 +46,11 @@ class CardinalityTest extends TestCase
     }
 
     /**
-     * @param string   $token      The raw cardinality token
-     * @param int      $minimum    The expected minimum occurrence
-     * @param int|null $maximum    The expected maximum occurrence, or NULL for unbounded
-     * @param bool     $required   Whether the substructure is required
-     * @param bool     $collection Whether more than one occurrence is allowed
+     * @param string   $token      The raw cardinality token.
+     * @param int      $minimum    The expected minimum occurrence.
+     * @param int|null $maximum    The expected maximum occurrence, or NULL for unbounded.
+     * @param bool     $required   Whether the substructure is required.
+     * @param bool     $collection Whether more than one occurrence is allowed.
      */
     #[Test]
     #[DataProvider('cardinalityProvider')]

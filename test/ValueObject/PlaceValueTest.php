@@ -51,8 +51,8 @@ class PlaceValueTest extends TestCase
     }
 
     /**
-     * @param string       $place    The raw PLACE_NAME value
-     * @param list<string> $expected The expected trimmed, positional levels
+     * @param string       $place    The raw PLACE_NAME value.
+     * @param list<string> $expected The expected trimmed, positional levels.
      */
     #[Test]
     #[DataProvider('levelsProvider')]

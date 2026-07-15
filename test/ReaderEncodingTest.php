@@ -116,8 +116,8 @@ class ReaderEncodingTest extends TestCase
      * A UTF-16 document (little- and big-endian, with a byte-order mark) is transcoded to
      * UTF-8 and its non-ASCII value round-trips.
      *
-     * @param string $bom      the byte-order mark
-     * @param string $encoding the mb source encoding
+     * @param string $bom      The byte-order mark.
+     * @param string $encoding The mb source encoding.
      */
     #[DataProvider('utf16Provider')]
     #[Test]
@@ -144,7 +144,7 @@ class ReaderEncodingTest extends TestCase
      * A UTF-16 document without a byte-order mark is detected by the null-interleaving
      * heuristic — for both endiannesses — and parsed correctly.
      *
-     * @param string $encoding the mb source encoding
+     * @param string $encoding The mb source encoding.
      */
     #[DataProvider('utf16EncodingProvider')]
     #[Test]
@@ -466,9 +466,9 @@ class ReaderEncodingTest extends TestCase
     /**
      * Returns the value of the first NAME line parsed from the given stream.
      *
-     * @param Stream $stream a readable stream over a GEDCOM document
+     * @param Stream $stream A readable stream over a GEDCOM document.
      *
-     * @return string|null the first NAME value, or NULL when none is present
+     * @return string|null The first NAME value, or NULL when none is present.
      */
     private function firstNameValue(Stream $stream): ?string
     {
@@ -486,9 +486,9 @@ class ReaderEncodingTest extends TestCase
     /**
      * Wraps the given raw bytes in a rewound in-memory stream.
      *
-     * @param string $bytes the raw document bytes
+     * @param string $bytes The raw document bytes.
      *
-     * @return Stream a rewound stream over the bytes
+     * @return Stream A rewound stream over the bytes.
      */
     private function rewoundStream(string $bytes): Stream
     {
@@ -501,9 +501,9 @@ class ReaderEncodingTest extends TestCase
     /**
      * Wraps the given raw bytes in a stream whose read() yields at most one byte per call.
      *
-     * @param string $bytes the raw document bytes
+     * @param string $bytes The raw document bytes.
      *
-     * @return Stream a rewound single-byte-per-read stream
+     * @return Stream A rewound single-byte-per-read stream.
      */
     private function oneByteStream(string $bytes): Stream
     {

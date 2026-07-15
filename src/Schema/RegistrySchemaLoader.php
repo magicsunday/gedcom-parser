@@ -39,7 +39,7 @@ use function str_contains;
 final readonly class RegistrySchemaLoader
 {
     /**
-     * @param string $registryPath The absolute path to the vendored `gedcom7-registries` directory
+     * @param string $registryPath The absolute path to the vendored `gedcom7-registries` directory.
      */
     public function __construct(
         private string $registryPath,
@@ -49,7 +49,7 @@ final readonly class RegistrySchemaLoader
     /**
      * Compiles the schema for the given GEDCOM version.
      *
-     * @param GedcomVersion $version The version whose structure slice to compile
+     * @param GedcomVersion $version The version whose structure slice to compile.
      *
      * @return Schema
      */
@@ -153,7 +153,7 @@ final readonly class RegistrySchemaLoader
      * Parses one registry structure file into a typed intermediate shape, or NULL when the file
      * is not a usable structure definition.
      *
-     * @param string $path The path to the structure YAML file
+     * @param string $path The path to the structure YAML file.
      *
      * @return array{uri: string, tag: string, payload: string|null, enumerationSet: string|null, substructures: array<string, string>, isRecord: bool}|null
      */

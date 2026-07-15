@@ -48,8 +48,8 @@ use function strtolower;
 final readonly class GedcomObjectMapper
 {
     /**
-     * @param Schema     $schema     The compiled schema resolving substructures to their definitions
-     * @param JsonMapper $jsonMapper The mapper building the typed target from the shaped array
+     * @param Schema     $schema     The compiled schema resolving substructures to their definitions.
+     * @param JsonMapper $jsonMapper The mapper building the typed target from the shaped array.
      */
     public function __construct(
         private Schema $schema,
@@ -62,13 +62,13 @@ final readonly class GedcomObjectMapper
      *
      * @template T of object
      *
-     * @param GedcomNode          $node       The node to map
-     * @param StructureDefinition $definition The schema definition of the node's structure
-     * @param class-string<T>     $className  The target class to build
+     * @param GedcomNode          $node       The node to map.
+     * @param StructureDefinition $definition The schema definition of the node's structure.
+     * @param class-string<T>     $className  The target class to build.
      *
-     * @return T The mapped, typed object
+     * @return T The mapped, typed object.
      *
-     * @throws MappingException When the mapper does not produce an instance of the target class
+     * @throws MappingException When the mapper does not produce an instance of the target class.
      */
     public function map(GedcomNode $node, StructureDefinition $definition, string $className): object
     {
@@ -101,12 +101,12 @@ final readonly class GedcomObjectMapper
      *
      * @template T of object
      *
-     * @param GedcomNode      $node      The record node to map
-     * @param class-string<T> $className The target class to build
+     * @param GedcomNode      $node      The record node to map.
+     * @param class-string<T> $className The target class to build.
      *
-     * @return T The mapped, typed object
+     * @return T The mapped, typed object.
      *
-     * @throws MappingException When the node's tag is not a top-level record in the schema
+     * @throws MappingException When the node's tag is not a top-level record in the schema.
      */
     public function mapRecord(GedcomNode $node, string $className): object
     {
@@ -126,8 +126,8 @@ final readonly class GedcomObjectMapper
     /**
      * Shapes a node and its substructures into a property-name-keyed array.
      *
-     * @param GedcomNode          $node       The node to shape
-     * @param StructureDefinition $definition The schema definition of the node's structure
+     * @param GedcomNode          $node       The node to shape.
+     * @param StructureDefinition $definition The schema definition of the node's structure.
      *
      * @return array<string, mixed>
      */
@@ -191,10 +191,10 @@ final readonly class GedcomObjectMapper
      * Resolves the substructure a child node maps to, disambiguating same-tag variants by whether
      * the child carries a cross-reference pointer.
      *
-     * @param StructureDefinition $definition The parent structure definition
-     * @param GedcomNode          $child      The child node to resolve
+     * @param StructureDefinition $definition The parent structure definition.
+     * @param GedcomNode          $child      The child node to resolve.
      *
-     * @return Substructure|null The resolved substructure, or NULL when the tag is not permitted
+     * @return Substructure|null The resolved substructure, or NULL when the tag is not permitted.
      */
     private function resolveSubstructure(StructureDefinition $definition, GedcomNode $child): ?Substructure
     {

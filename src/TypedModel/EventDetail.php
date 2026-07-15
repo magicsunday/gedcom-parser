@@ -30,9 +30,9 @@ use MagicSunday\Gedcom\ValueObject\PlaceValue;
 final readonly class EventDetail
 {
     /**
-     * @param DateValue|null  $date The date the event took place, or NULL when absent
-     * @param PlaceValue|null $plac The place the event took place, or NULL when absent
-     * @param AgeValue|null   $age  The individual's age at the event, or NULL when absent
+     * @param DateValue|null  $date The date the event took place, or NULL when absent.
+     * @param PlaceValue|null $plac The place the event took place, or NULL when absent.
+     * @param AgeValue|null   $age  The individual's age at the event, or NULL when absent.
      */
     public function __construct(
         public ?DateValue $date = null,

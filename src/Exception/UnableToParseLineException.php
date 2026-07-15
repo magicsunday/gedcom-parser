@@ -42,9 +42,9 @@ final class UnableToParseLineException extends RuntimeException implements Excep
     private int $lineNumber;
 
     /**
-     * @param string         $rawLine    the raw line that failed to tokenise
-     * @param int            $lineNumber the 1-based number of the offending line
-     * @param Throwable|null $previous   the underlying cause, if any
+     * @param string         $rawLine    The raw line that failed to tokenise.
+     * @param int            $lineNumber The 1-based number of the offending line.
+     * @param Throwable|null $previous   The underlying cause, if any.
      */
     public function __construct(string $rawLine, int $lineNumber, ?Throwable $previous = null)
     {
@@ -61,7 +61,7 @@ final class UnableToParseLineException extends RuntimeException implements Excep
     /**
      * Returns the raw line that could not be tokenised.
      *
-     * @return string the offending line as read from the input
+     * @return string The offending line as read from the input.
      */
     public function getRawLine(): string
     {
@@ -71,7 +71,7 @@ final class UnableToParseLineException extends RuntimeException implements Excep
     /**
      * Returns the 1-based number of the offending line within the document.
      *
-     * @return int the line number the failure occurred on
+     * @return int The line number the failure occurred on.
      */
     public function getLineNumber(): int
     {

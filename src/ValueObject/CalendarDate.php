@@ -61,12 +61,12 @@ final readonly class CalendarDate
 
     /**
      * @param Calendar $calendar The calendar the date is expressed in (Gregorian by default)
-     * @param int|null $day      The day of the month, or NULL when absent
-     * @param int|null $month    The 1-based month number within the calendar, or NULL when absent
-     * @param int|null $year     The year, or NULL when absent
+     * @param int|null $day      The day of the month, or NULL when absent.
+     * @param int|null $month    The 1-based month number within the calendar, or NULL when absent.
+     * @param int|null $year     The year, or NULL when absent.
      * @param bool     $bce      Whether the year is before the common era (`B.C.`)
-     * @param int|null $dualYear The expanded second year of a dual `1699/00` date, or NULL
-     * @param string   $raw      The original, unparsed DATE token
+     * @param int|null $dualYear The expanded second year of a dual `1699/00` date, or NULL.
+     * @param string   $raw      The original, unparsed DATE token.
      */
     public function __construct(
         public Calendar $calendar,
@@ -82,7 +82,7 @@ final readonly class CalendarDate
     /**
      * Parses a raw GEDCOM DATE token into a typed calendar-aware date.
      *
-     * @param string $date The raw DATE token, e.g. `15 MAR 1700`, `@#DJULIAN@ 1699/00` or `44 B.C.`
+     * @param string $date The raw DATE token, e.g. `15 MAR 1700`, `@#DJULIAN@ 1699/00` or `44 B.C.`.
      */
     public static function fromGedcom(string $date): self
     {
@@ -200,10 +200,10 @@ final readonly class CalendarDate
      * year (`1700`). The result is the nearest year at or after the primary year whose trailing
      * digits match the suffix.
      *
-     * @param int    $year   The primary year
-     * @param string $suffix The captured trailing digits of the second year
+     * @param int    $year   The primary year.
+     * @param string $suffix The captured trailing digits of the second year.
      *
-     * @return int The expanded second year
+     * @return int The expanded second year.
      */
     private static function expandDualYear(int $year, string $suffix): int
     {
@@ -216,10 +216,10 @@ final readonly class CalendarDate
     /**
      * Resolves a GEDCOM month abbreviation to its 1-based number within the given calendar.
      *
-     * @param Calendar $calendar The calendar whose month table applies
-     * @param string   $token    The month abbreviation, e.g. `MAR` or `BRUM`
+     * @param Calendar $calendar The calendar whose month table applies.
+     * @param string   $token    The month abbreviation, e.g. `MAR` or `BRUM`.
      *
-     * @return int|null The month number, or NULL when the token is not a known month
+     * @return int|null The month number, or NULL when the token is not a known month.
      */
     private static function monthNumber(Calendar $calendar, string $token): ?int
     {
@@ -236,10 +236,10 @@ final readonly class CalendarDate
      * Converts a proleptic Gregorian date to its Julian Day Number (Fliegel–Van Flandern).
      *
      * @param int $year  The astronomical year (1 B.C. is 0)
-     * @param int $month The 1-based month
-     * @param int $day   The day of the month
+     * @param int $month The 1-based month.
+     * @param int $day   The day of the month.
      *
-     * @return int The Julian Day Number
+     * @return int The Julian Day Number.
      */
     private static function gregorianToJulianDay(int $year, int $month, int $day): int
     {
@@ -260,10 +260,10 @@ final readonly class CalendarDate
      * Converts a proleptic Julian date to its Julian Day Number.
      *
      * @param int $year  The astronomical year (1 B.C. is 0)
-     * @param int $month The 1-based month
-     * @param int $day   The day of the month
+     * @param int $month The 1-based month.
+     * @param int $day   The day of the month.
      *
-     * @return int The Julian Day Number
+     * @return int The Julian Day Number.
      */
     private static function julianToJulianDay(int $year, int $month, int $day): int
     {
@@ -285,11 +285,11 @@ final readonly class CalendarDate
      * in a leap year `ADR` is Adar I and `ADS` is Adar II, while in a common year there is a single
      * Adar and `ADS` does not exist.
      *
-     * @param int $year  The Hebrew (Anno Mundi) year
-     * @param int $month The 1-based GEDCOM Hebrew month
-     * @param int $day   The day of the month
+     * @param int $year  The Hebrew (Anno Mundi) year.
+     * @param int $month The 1-based GEDCOM Hebrew month.
+     * @param int $day   The day of the month.
      *
-     * @return int|null The Julian Day Number, or NULL when the month cannot occur in that year
+     * @return int|null The Julian Day Number, or NULL when the month cannot occur in that year.
      */
     private static function hebrewToJulianDay(int $year, int $month, int $day): ?int
     {
@@ -341,9 +341,9 @@ final readonly class CalendarDate
      *
      * @param int $year  The republican year (An I is 1)
      * @param int $month The 1-based month (1–12, or 13 for the complementary days)
-     * @param int $day   The day of the month
+     * @param int $day   The day of the month.
      *
-     * @return int|null The Julian Day Number, or NULL when the day is out of range for the month
+     * @return int|null The Julian Day Number, or NULL when the day is out of range for the month.
      */
     private static function frenchRepublicanToJulianDay(int $year, int $month, int $day): ?int
     {

@@ -28,8 +28,8 @@ final readonly class MultimediaFile
     /**
      * @param string|null      $value The file reference — a path or URL (the FILE line value), or
      *                                NULL when the FILE line carries no reference
-     * @param MediaFormat|null $form  The file format (FORM), or NULL when absent
-     * @param string|null      $titl  The descriptive title (TITL), or NULL when absent
+     * @param MediaFormat|null $form  The file format (FORM), or NULL when absent.
+     * @param string|null      $titl  The descriptive title (TITL), or NULL when absent.
      */
     public function __construct(
         public ?string $value = null,

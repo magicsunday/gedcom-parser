@@ -22,8 +22,8 @@ namespace MagicSunday\Gedcom\Schema;
 final readonly class Substructure
 {
     /**
-     * @param string      $uri         The URI of the referenced child structure definition
-     * @param Cardinality $cardinality How often the child may occur under its parent
+     * @param string      $uri         The URI of the referenced child structure definition.
+     * @param Cardinality $cardinality How often the child may occur under its parent.
      */
     public function __construct(
         public string $uri,

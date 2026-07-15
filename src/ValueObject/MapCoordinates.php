@@ -41,10 +41,10 @@ final readonly class MapCoordinates
     /**
      * Parses a raw GEDCOM MAP latitude/longitude pair into typed coordinates.
      *
-     * @param string $latitude  The raw LATI payload, e.g. `N42.3601`
-     * @param string $longitude The raw LONG payload, e.g. `W71.0589`
+     * @param string $latitude  The raw LATI payload, e.g. `N42.3601`.
+     * @param string $longitude The raw LONG payload, e.g. `W71.0589`.
      *
-     * @return self|null The parsed coordinates, or NULL when either axis is malformed or absent
+     * @return self|null The parsed coordinates, or NULL when either axis is malformed or absent.
      */
     public static function fromGedcom(string $latitude, string $longitude): ?self
     {
@@ -61,7 +61,7 @@ final readonly class MapCoordinates
     /**
      * Parses one hemisphere-prefixed axis into signed decimal degrees within its valid bounds.
      *
-     * @param string $value      The raw axis payload
+     * @param string $value      The raw axis payload.
      * @param string $positive   The hemisphere letter denoting a positive value (`N` or `E`)
      * @param string $negative   The hemisphere letter denoting a negative value (`S` or `W`)
      * @param float  $maxDegrees The inclusive upper bound on the magnitude (90 latitude, 180

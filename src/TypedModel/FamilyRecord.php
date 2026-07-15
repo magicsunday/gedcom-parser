@@ -25,11 +25,11 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class FamilyRecord
 {
     /**
-     * @param string            $xref The record cross-reference identifier
-     * @param string|null       $husb The husband's individual cross-reference pointer, or NULL
-     * @param string|null       $wife The wife's individual cross-reference pointer, or NULL
-     * @param list<string>      $chil The children's individual cross-reference pointers
-     * @param list<EventDetail> $marr The marriage events
+     * @param string            $xref The record cross-reference identifier.
+     * @param string|null       $husb The husband's individual cross-reference pointer, or NULL.
+     * @param string|null       $wife The wife's individual cross-reference pointer, or NULL.
+     * @param list<string>      $chil The children's individual cross-reference pointers.
+     * @param list<EventDetail> $marr The marriage events.
      */
     public function __construct(
         public string $xref,

@@ -123,9 +123,9 @@ final class AnselDecoder
      * through unchanged, so a whole GEDCOM line can be decoded without disturbing its
      * structural framing.
      *
-     * @param string $ansel the raw ANSEL bytes
+     * @param string $ansel The raw ANSEL bytes.
      *
-     * @return string the decoded, NFC-normalised UTF-8 string
+     * @return string The decoded, NFC-normalised UTF-8 string.
      */
     public static function decode(string $ansel): string
     {

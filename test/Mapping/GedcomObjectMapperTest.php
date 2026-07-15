@@ -853,9 +853,9 @@ class GedcomObjectMapperTest extends TestCase
     /**
      * Maps the single SOUR record in the GEDCOM source onto the typed SourceRecord.
      *
-     * @param string $gedcom The GEDCOM source carrying one SOUR record
+     * @param string $gedcom The GEDCOM source carrying one SOUR record.
      *
-     * @return SourceRecord The hydrated source record
+     * @return SourceRecord The hydrated source record.
      */
     private function mapSource(string $gedcom): SourceRecord
     {
@@ -865,9 +865,9 @@ class GedcomObjectMapperTest extends TestCase
     /**
      * Maps the single INDI record in the GEDCOM source onto the typed IndividualRecord.
      *
-     * @param string $gedcom The GEDCOM source carrying one INDI record
+     * @param string $gedcom The GEDCOM source carrying one INDI record.
      *
-     * @return IndividualRecord The hydrated individual record
+     * @return IndividualRecord The hydrated individual record.
      */
     private function mapIndividual(string $gedcom): IndividualRecord
     {
@@ -880,11 +880,11 @@ class GedcomObjectMapperTest extends TestCase
      *
      * @template TRecord of object
      *
-     * @param string                $gedcom    The GEDCOM source carrying one level-0 record
-     * @param string                $recordUri The registry URI of that record's structure
-     * @param class-string<TRecord> $class     The typed record class to hydrate
+     * @param string                $gedcom    The GEDCOM source carrying one level-0 record.
+     * @param string                $recordUri The registry URI of that record's structure.
+     * @param class-string<TRecord> $class     The typed record class to hydrate.
      *
-     * @return TRecord The hydrated typed record
+     * @return TRecord The hydrated typed record.
      */
     private function mapRecordViaSchema(string $gedcom, string $recordUri, string $class): object
     {
@@ -1115,9 +1115,9 @@ class GedcomObjectMapperTest extends TestCase
     /**
      * Maps the single SUBM record in the GEDCOM source onto the typed SubmitterRecord.
      *
-     * @param string $gedcom The GEDCOM source carrying one SUBM record
+     * @param string $gedcom The GEDCOM source carrying one SUBM record.
      *
-     * @return SubmitterRecord The hydrated submitter record
+     * @return SubmitterRecord The hydrated submitter record.
      */
     private function mapSubmitter(string $gedcom): SubmitterRecord
     {

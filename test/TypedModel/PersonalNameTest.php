@@ -34,10 +34,10 @@ class PersonalNameTest extends TestCase
      * trailing slash is tolerated, a value with no slashes yields a given name only, and each
      * empty fragment collapses to NULL.
      *
-     * @param string|null $value           The raw slash-delimited name value
-     * @param string|null $expectedGiven   The expected derived given name
-     * @param string|null $expectedSurname The expected derived surname
-     * @param string|null $expectedSuffix  The expected derived suffix
+     * @param string|null $value           The raw slash-delimited name value.
+     * @param string|null $expectedGiven   The expected derived given name.
+     * @param string|null $expectedSurname The expected derived surname.
+     * @param string|null $expectedSuffix  The expected derived suffix.
      */
     #[Test]
     #[DataProvider('slashValueProvider')]

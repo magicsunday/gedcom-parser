@@ -25,8 +25,8 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class NoteRecord
 {
     /**
-     * @param string      $xref  The record cross-reference identifier
-     * @param string|null $value The note text (the record's line value), or NULL when empty
+     * @param string      $xref  The record cross-reference identifier.
+     * @param string|null $value The note text (the record's line value), or NULL when empty.
      */
     public function __construct(
         public string $xref,

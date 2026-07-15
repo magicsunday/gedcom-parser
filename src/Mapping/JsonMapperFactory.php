@@ -105,11 +105,11 @@ final class JsonMapperFactory
      * loud.
      *
      * @param mixed  $value The shaped payload (a bare string, or a shaped array)
-     * @param string $label The tag name for the error message
+     * @param string $label The tag name for the error message.
      *
      * @return string
      *
-     * @throws MappingException When the value is neither a string nor a shaped array
+     * @throws MappingException When the value is neither a string nor a shaped array.
      */
     private static function leafValue(mixed $value, string $label): string
     {
@@ -151,9 +151,9 @@ final class JsonMapperFactory
      *
      * @param mixed $value The shaped leaf payload (an array when it carries substructures)
      *
-     * @return string|null The PHRASE text, or NULL when the leaf carries no phrase
+     * @return string|null The PHRASE text, or NULL when the leaf carries no phrase.
      *
-     * @throws MappingException When the PHRASE leaf is itself mis-shaped
+     * @throws MappingException When the PHRASE leaf is itself mis-shaped.
      */
     private static function phraseOf(mixed $value): ?string
     {
@@ -175,7 +175,7 @@ final class JsonMapperFactory
      *
      * @return PlaceValue
      *
-     * @throws MappingException When the value is neither a string nor a shaped array
+     * @throws MappingException When the value is neither a string nor a shaped array.
      */
     private static function placeFromShaped(mixed $value): PlaceValue
     {
@@ -208,7 +208,7 @@ final class JsonMapperFactory
      * @return MapCoordinates|null The parsed coordinates, or NULL when the MAP is incomplete or
      *                             malformed
      *
-     * @throws MappingException When a LATI/LONG leaf is itself mis-shaped
+     * @throws MappingException When a LATI/LONG leaf is itself mis-shaped.
      */
     private static function coordinatesFromShaped(mixed $map): ?MapCoordinates
     {

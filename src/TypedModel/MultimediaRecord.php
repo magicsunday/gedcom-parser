@@ -25,8 +25,8 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class MultimediaRecord
 {
     /**
-     * @param string               $xref The record cross-reference identifier
-     * @param list<MultimediaFile> $file The referenced multimedia files
+     * @param string               $xref The record cross-reference identifier.
+     * @param list<MultimediaFile> $file The referenced multimedia files.
      */
     public function __construct(
         public string $xref,

@@ -80,13 +80,13 @@ class AgeValueTest extends TestCase
     }
 
     /**
-     * @param string           $raw      The raw AGE value
-     * @param AgeModifier|null $modifier The expected relational qualifier
-     * @param AgeKeyword|null  $keyword  The expected symbolic keyword
-     * @param int|null         $years    The expected years
-     * @param int|null         $months   The expected months
-     * @param int|null         $weeks    The expected weeks
-     * @param int|null         $days     The expected days
+     * @param string           $raw      The raw AGE value.
+     * @param AgeModifier|null $modifier The expected relational qualifier.
+     * @param AgeKeyword|null  $keyword  The expected symbolic keyword.
+     * @param int|null         $years    The expected years.
+     * @param int|null         $months   The expected months.
+     * @param int|null         $weeks    The expected weeks.
+     * @param int|null         $days     The expected days.
      */
     #[Test]
     #[DataProvider('ageProvider')]

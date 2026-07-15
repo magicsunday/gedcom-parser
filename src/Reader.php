@@ -232,7 +232,7 @@ class Reader
     /**
      * Reads the next line in the document.
      *
-     * @return bool Returns TRUE on success or FALSE on failure
+     * @return bool Returns TRUE on success or FALSE on failure.
      */
     public function read(): bool
     {
@@ -330,10 +330,10 @@ class Reader
      * splitting the internal buffer on any of the four GEDCOM 5.5.1 terminators (CR, LF,
      * CRLF, LFCR).
      *
-     * @return string the next line including its terminator, or an empty string at the end
+     * @return string The next line including its terminator, or an empty string at the end
      *                of the stream
      *
-     * @throws LineTooLongException if a single line exceeds the maximum permitted length
+     * @throws LineTooLongException If a single line exceeds the maximum permitted length.
      */
     private function nextLine(): string
     {
@@ -474,8 +474,8 @@ class Reader
      * Switches to UTF-16 decoding: consumes the byte-order mark and moves the bytes already
      * buffered while sniffing into the transcode pipe.
      *
-     * @param string $encoding  the resolved UTF-16 endianness constant
-     * @param int    $bomLength the number of BOM bytes to drop (0 when detected without a BOM)
+     * @param string $encoding  The resolved UTF-16 endianness constant.
+     * @param int    $bomLength The number of BOM bytes to drop (0 when detected without a BOM)
      *
      * @return void
      */
@@ -492,7 +492,7 @@ class Reader
      * a trailing partial code unit or a lone high surrogate so a character split across a
      * chunk boundary is completed by the next read.
      *
-     * @return string the transcoded UTF-8 bytes
+     * @return string The transcoded UTF-8 bytes.
      */
     private function drainUtf16(): string
     {
@@ -519,7 +519,7 @@ class Reader
      * Whether the given two-byte UTF-16 code unit (in the current endianness) is a high
      * surrogate, i.e. the first half of an astral-character surrogate pair.
      *
-     * @param string $unit the two raw bytes of one UTF-16 code unit
+     * @param string $unit The two raw bytes of one UTF-16 code unit.
      *
      * @return bool
      */
@@ -537,7 +537,7 @@ class Reader
      * encoding, reading further chunks up to CHAR_SNIFF_LIMIT bytes. Does not consume the
      * buffer — the header is still tokenised normally afterwards.
      *
-     * @return string the resolved ENCODING_* constant; ANSEL when no CHAR line is found
+     * @return string The resolved ENCODING_* constant; ANSEL when no CHAR line is found.
      */
     private function sniffCharacterSet(): string
     {
@@ -596,9 +596,9 @@ class Reader
     /**
      * Maps a HEAD.CHAR value to a source encoding constant.
      *
-     * @param string $characterSet the raw CHAR value
+     * @param string $characterSet The raw CHAR value.
      *
-     * @return string the matching ENCODING_* constant
+     * @return string The matching ENCODING_* constant.
      */
     private static function normaliseEncoding(string $characterSet): string
     {
@@ -654,9 +654,9 @@ class Reader
      * byte. An unsupported encoding makes iconv return FALSE; the probe's warning is swallowed so
      * the detection stays silent.
      *
-     * @param string $encoding The candidate iconv encoding name
+     * @param string $encoding The candidate iconv encoding name.
      *
-     * @return bool Whether iconv can transcode from the encoding
+     * @return bool Whether iconv can transcode from the encoding.
      */
     private static function iconvSupportsEncoding(string $encoding): bool
     {
@@ -675,7 +675,7 @@ class Reader
      * the same position. A terminator byte at the very end of the buffer is undecidable while
      * more data may follow, so the caller must read another chunk first.
      *
-     * @return int|null the absolute buffer offset one past the line's terminator, or NULL when
+     * @return int|null The absolute buffer offset one past the line's terminator, or NULL when
      *                  no complete, decidable terminator is present yet
      */
     private function locateTerminatorEnd(): ?int
@@ -742,7 +742,7 @@ class Reader
      * (returning FALSE) before the first read, at the end of the stream, or when called twice
      * without an intervening read.
      *
-     * @return bool Returns TRUE on success or FALSE on failure
+     * @return bool Returns TRUE on success or FALSE on failure.
      */
     public function back(): bool
     {

@@ -26,14 +26,14 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class IndividualRecord
 {
     /**
-     * @param string                   $xref The record cross-reference identifier
-     * @param list<PersonalName>       $name The individual's names
-     * @param string|null              $sex  The individual's sex, or NULL when absent
-     * @param list<EventDetail>        $birt The birth events
-     * @param list<EventDetail>        $deat The death events
-     * @param list<EventDetail>        $buri The burial events
-     * @param list<ChildToFamilyLink>  $famc The families in which the individual is a child
-     * @param list<SpouseToFamilyLink> $fams The families in which the individual is a partner
+     * @param string                   $xref The record cross-reference identifier.
+     * @param list<PersonalName>       $name The individual's names.
+     * @param string|null              $sex  The individual's sex, or NULL when absent.
+     * @param list<EventDetail>        $birt The birth events.
+     * @param list<EventDetail>        $deat The death events.
+     * @param list<EventDetail>        $buri The burial events.
+     * @param list<ChildToFamilyLink>  $famc The families in which the individual is a child.
+     * @param list<SpouseToFamilyLink> $fams The families in which the individual is a partner.
      */
     public function __construct(
         public string $xref,

@@ -68,11 +68,11 @@ class DateValueTest extends TestCase
     }
 
     /**
-     * @param string      $raw       The raw DATE_VALUE
-     * @param DateType    $type      The expected type
-     * @param int|null    $startYear The expected primary date year
-     * @param int|null    $endYear   The expected end date year
-     * @param string|null $phrase    The expected phrase
+     * @param string      $raw       The raw DATE_VALUE.
+     * @param DateType    $type      The expected type.
+     * @param int|null    $startYear The expected primary date year.
+     * @param int|null    $endYear   The expected end date year.
+     * @param string|null $phrase    The expected phrase.
      */
     #[Test]
     #[DataProvider('typeProvider')]

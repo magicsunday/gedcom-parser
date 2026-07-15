@@ -24,8 +24,8 @@ namespace MagicSunday\Gedcom\TypedModel;
 final readonly class MediaFormat
 {
     /**
-     * @param string|null $value The multimedia format (FORM), or NULL when absent
-     * @param string|null $type  The source media type (TYPE) classifying the file, or NULL
+     * @param string|null $value The multimedia format (FORM), or NULL when absent.
+     * @param string|null $type  The source media type (TYPE) classifying the file, or NULL.
      */
     public function __construct(
         public ?string $value = null,
