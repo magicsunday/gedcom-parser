@@ -101,6 +101,7 @@ return (new PhpCsFixer\Config())
             ],
         ],
     ])
+    ->setCacheFile(__DIR__ . '/.build/cache/.php-cs-fixer.cache')
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->exclude('.build')

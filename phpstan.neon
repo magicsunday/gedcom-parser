@@ -8,6 +8,8 @@ parameters:
     # that only the typed-model refactor (GH-20) can resolve. Raise to `max` with GH-20.
     level: 9
 
+    tmpDir: %currentWorkingDirectory%/.build/cache/.phpstan.cache
+
     paths:
         - %currentWorkingDirectory%/src/
 
