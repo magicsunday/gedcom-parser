@@ -16,7 +16,6 @@ use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
-use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\Schema;
@@ -39,11 +38,6 @@ use function sprintf;
  */
 final readonly class TypedGedcomParser
 {
-    /**
-     * The header record tag whose HEAD.PLAC.FORM declares the default place hierarchy.
-     */
-    private const string TAG_HEAD = 'HEAD';
-
     /**
      * @param Schema                      $schema        The compiled schema shaping each record node.
      * @param array<string, class-string> $recordClasses The target class per record tag.
@@ -90,16 +84,55 @@ final readonly class TypedGedcomParser
      */
     public function parse(StreamInterface $stream): Generator
     {
-        $treeReader = new GedcomTreeReader(new Reader($stream));
-        $node       = $treeReader->readRecord();
+        $recordStream = RecordStream::open($stream);
 
-        if (!$node instanceof GedcomNode) {
+        if (!$recordStream instanceof RecordStream) {
             return;
         }
 
-        // Build the mapper from the header (the first record) so a place hierarchy declared once as
-        // HEAD.PLAC.FORM is threaded as the default for every place that carries none of its own.
-        $header = $node->tag === self::TAG_HEAD ? $node : null;
+        // The streaming generator yields records only; the header-declared extension tags
+        // (HEAD.SCHMA) are surfaced by parseDocument(), which builds the whole aggregate.
+        yield from $this->mapRecords($recordStream->reader, $recordStream->firstRecord, $recordStream->header);
+    }
+
+    /**
+     * Parses the stream eagerly into a typed {@see GedcomDocument} aggregate, grouping every
+     * recognised record by its modelled type and carrying the header's extension-tag schema. Unlike
+     * {@see parse()} this holds the whole document in memory; prefer it when the caller needs random
+     * access to the records rather than a single streaming pass.
+     *
+     * @param StreamInterface $stream The GEDCOM stream to parse.
+     *
+     * @return GedcomDocument The populated aggregate.
+     */
+    public function parseDocument(StreamInterface $stream): GedcomDocument
+    {
+        $recordStream = RecordStream::open($stream);
+
+        if (!$recordStream instanceof RecordStream) {
+            return new GedcomDocument();
+        }
+
+        return GedcomDocument::fromRecords(
+            $this->mapRecords($recordStream->reader, $recordStream->firstRecord, $recordStream->header),
+            ExtensionTagReader::fromHeader($recordStream->header)
+        );
+    }
+
+    /**
+     * Maps the level-0 records from the first node onward, building the mapper from the header so a
+     * declared HEAD.PLAC.FORM is threaded as the default place hierarchy.
+     *
+     * @param GedcomTreeReader $treeReader The reader positioned after the first record.
+     * @param GedcomNode       $node       The first record node (the header when present).
+     * @param GedcomNode|null  $header     The parsed HEAD record, or NULL when the document has none.
+     *
+     * @return Generator<object> The typed records in document order.
+     *
+     * @throws MappingException When a record cannot be mapped.
+     */
+    private function mapRecords(GedcomTreeReader $treeReader, GedcomNode $node, ?GedcomNode $header): Generator
+    {
         $mapper = new GedcomObjectMapper($this->schema, JsonMapperFactory::fromHeader($header));
 
         do {
@@ -113,20 +146,5 @@ final readonly class TypedGedcomParser
 
             $node = $treeReader->readRecord();
         } while ($node instanceof GedcomNode);
-    }
-
-    /**
-     * Parses the stream eagerly into a typed {@see GedcomDocument} aggregate, grouping every
-     * recognised record by its modelled type. Unlike {@see parse()} this holds the whole document
-     * in memory; prefer it when the caller needs random access to the records rather than a single
-     * streaming pass.
-     *
-     * @param StreamInterface $stream The GEDCOM stream to parse.
-     *
-     * @return GedcomDocument The populated aggregate.
-     */
-    public function parseDocument(StreamInterface $stream): GedcomDocument
-    {
-        return GedcomDocument::fromRecords($this->parse($stream));
     }
 }

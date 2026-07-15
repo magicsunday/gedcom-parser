@@ -14,8 +14,6 @@ namespace MagicSunday\Gedcom\Mapping;
 use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Parse\GedcomNode;
-use MagicSunday\Gedcom\Parse\GedcomTreeReader;
-use MagicSunday\Gedcom\Reader;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use Psr\Http\Message\StreamInterface;
 
@@ -36,11 +34,6 @@ use function sprintf;
  */
 final readonly class GedcomDocumentReader
 {
-    /**
-     * The header record tag whose GEDC.VERS line carries the version.
-     */
-    private const string TAG_HEAD = 'HEAD';
-
     /**
      * @param RegistrySchemaLoader        $schemaLoader    The loader that compiles a version's schema.
      * @param GedcomVersionDetector       $versionDetector The detector resolving the header version.
@@ -83,15 +76,14 @@ final readonly class GedcomDocumentReader
      */
     public function read(StreamInterface $stream): GedcomDocument
     {
-        $treeReader = new GedcomTreeReader(new Reader($stream));
-        $node       = $treeReader->readRecord();
+        $recordStream = RecordStream::open($stream);
 
-        if (!$node instanceof GedcomNode) {
+        if (!$recordStream instanceof RecordStream) {
             return new GedcomDocument();
         }
 
         // The header is the first record; detect the version from it (or fall back when it is absent).
-        $header  = $node->tag === self::TAG_HEAD ? $node : null;
+        $header  = $recordStream->header;
         $version = $this->versionDetector->detect($header);
         $schema  = $this->schemaLoader->load($version);
 
@@ -107,9 +99,10 @@ final readonly class GedcomDocumentReader
 
         // The header may declare the place hierarchy FORM once (HEAD.PLAC.FORM); the mapper threads
         // it as the default so places without their own FORM still resolve their jurisdiction labels.
-        $mapper = new GedcomObjectMapper($schema, JsonMapperFactory::fromHeader($header));
-
-        $records = [];
+        $mapper     = new GedcomObjectMapper($schema, JsonMapperFactory::fromHeader($header));
+        $treeReader = $recordStream->reader;
+        $node       = $recordStream->firstRecord;
+        $records    = [];
 
         do {
             $className = $this->recordClasses[$node->tag] ?? null;
@@ -123,6 +116,6 @@ final readonly class GedcomDocumentReader
             $node = $treeReader->readRecord();
         } while ($node instanceof GedcomNode);
 
-        return GedcomDocument::fromRecords($records);
+        return GedcomDocument::fromRecords($records, ExtensionTagReader::fromHeader($header));
     }
 }

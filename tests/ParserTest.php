@@ -125,6 +125,32 @@ class ParserTest extends TestCase
     }
 
     /**
+     * A GEDCOM 7.0 header documents its custom extension tags with `HEAD.SCHMA.TAG` lines; the
+     * parser surfaces them as a tag-to-URI map on the aggregate.
+     */
+    #[Test]
+    public function parsesA70HeaderExtensionTagSchema(): void
+    {
+        $stream = (new StreamFactory())->createStream(<<<GEDCOM
+            0 HEAD
+            1 GEDC
+            2 VERS 7.0
+            1 SCHMA
+            2 TAG _LOC https://gedcom.io/terms/v7/LOC
+            0 @I1@ INDI
+            1 SEX M
+            0 TRLR
+            GEDCOM);
+
+        $stream->rewind();
+
+        $document = (new Parser($stream))->parse();
+
+        self::assertSame(['_LOC' => ['https://gedcom.io/terms/v7/LOC']], $document->extensionTags);
+        self::assertCount(1, $document->individuals);
+    }
+
+    /**
      * A cross-version record tag — a 7.0 `SNOTE` in a document whose header declares 5.5.1 (a
      * mixed-version file) — is not a record in the detected 5.5.1 schema, so it is tolerated and
      * skipped rather than aborting the parse; the records after it still map.
