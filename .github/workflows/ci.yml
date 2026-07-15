@@ -57,11 +57,8 @@ jobs:
               run: |
                   composer ci:test:php:unit
 
-            # Non-blocking until the typed-model refactor (GH-20): the untyped DataObject
-            # bag still emits mixed-return errors at level 9. Flip to a hard gate with GH-20.
             - name: PHPStan
               if: ${{ !cancelled() }}
-              continue-on-error: true
               run: |
                   composer ci:test:php:phpstan -- --error-format=github
 
@@ -75,11 +72,7 @@ jobs:
               run: |
                   composer ci:test:php:cgl
 
-            # Non-blocking until the typed-model refactor (GH-20): the remaining legacy
-            # per-structure Model/Interface/Trait boilerplate is duplicated by design and is
-            # being collapsed by GH-20. Flip to a hard gate once GH-20 retires it.
             - name: CPD
               if: ${{ !cancelled() }}
-              continue-on-error: true
               run: |
                   composer ci:test:php:cpd

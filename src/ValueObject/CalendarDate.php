@@ -233,9 +233,35 @@ final readonly class CalendarDate
     }
 
     /**
+     * Computes the shared Fliegel–Van Flandern prefix common to the Gregorian and Julian Julian Day
+     * Number formulas: the intermediate astronomical year offset and the running day accumulator up
+     * to (but excluding) each calendar's differing leap-year correction.
+     *
+     * @param int $year  The astronomical year (1 B.C. is 0).
+     * @param int $month The 1-based month.
+     * @param int $day   The day of the month.
+     *
+     * @return array{0: int, 1: int} The astronomical year offset and the common day accumulator.
+     */
+    private static function julianDayPrefix(int $year, int $month, int $day): array
+    {
+        $a = intdiv(14 - $month, 12);
+        $y = ($year + 4800) - $a;
+        $m = ($month + (12 * $a)) - 3;
+
+        return [
+            $y,
+            $day
+                + intdiv((153 * $m) + 2, 5)
+                + (365 * $y)
+                + (int) floor($y / 4),
+        ];
+    }
+
+    /**
      * Converts a proleptic Gregorian date to its Julian Day Number (Fliegel–Van Flandern).
      *
-     * @param int $year  The astronomical year (1 B.C. is 0)
+     * @param int $year  The astronomical year (1 B.C. is 0).
      * @param int $month The 1-based month.
      * @param int $day   The day of the month.
      *
@@ -243,14 +269,9 @@ final readonly class CalendarDate
      */
     private static function gregorianToJulianDay(int $year, int $month, int $day): int
     {
-        $a = intdiv(14 - $month, 12);
-        $y = ($year + 4800) - $a;
-        $m = ($month + (12 * $a)) - 3;
+        [$y, $accumulator] = self::julianDayPrefix($year, $month, $day);
 
-        return $day
-            + intdiv((153 * $m) + 2, 5)
-            + (365 * $y)
-            + (int) floor($y / 4)
+        return $accumulator
             - (int) floor($y / 100)
             + (int) floor($y / 400)
             - 32045;
@@ -259,7 +280,7 @@ final readonly class CalendarDate
     /**
      * Converts a proleptic Julian date to its Julian Day Number.
      *
-     * @param int $year  The astronomical year (1 B.C. is 0)
+     * @param int $year  The astronomical year (1 B.C. is 0).
      * @param int $month The 1-based month.
      * @param int $day   The day of the month.
      *
@@ -267,15 +288,9 @@ final readonly class CalendarDate
      */
     private static function julianToJulianDay(int $year, int $month, int $day): int
     {
-        $a = intdiv(14 - $month, 12);
-        $y = ($year + 4800) - $a;
-        $m = ($month + (12 * $a)) - 3;
+        [, $accumulator] = self::julianDayPrefix($year, $month, $day);
 
-        return $day
-            + intdiv((153 * $m) + 2, 5)
-            + (365 * $y)
-            + (int) floor($y / 4)
-            - 32083;
+        return $accumulator - 32083;
     }
 
     /**

@@ -69,8 +69,7 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test` — full local gate (lint + unit + phpstan + rector + cgl + cpd)
 * `composer ci:test:php:lint` — `phplint`
 * `composer ci:test:php:unit` — PHPUnit
-* `composer ci:test:php:phpstan` — PHPStan (currently `level: 9`; see the §3 gate / GH-20
-  for the `level: max` target)
+* `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
@@ -78,9 +77,10 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:rector` — Rector (apply)
 
 GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3 / 8.4 /
-8.5. The `phpstan` and `cpd` steps are `continue-on-error` until the typed-model refactor
-(GH-20) resolves the `mixed`-model errors and collapses the duplicated boilerplate; flip
-both to hard gates with GH-20.
+8.5. Every step is a **hard gate** — the typed-model refactor (GH-20) removed the untyped
+`DataObject` bag (so PHPStan is clean at `level: max`) and its per-structure boilerplate
+(so `cpd` finds no duplicates), and the former `continue-on-error` on `phpstan` / `cpd`
+is gone.
 
 **Git flow (house rules — override any sibling AGENTS.md that says otherwise):**
 
@@ -101,9 +101,8 @@ both to hard gates with GH-20.
 * ✅ PHPUnit green — positive **and** negative/edge paths; **zero** risky/notice/deprecation.
 * ✅ New behaviour covered by fixture-driven tests where applicable (the `test/files/*.ged`
   corpus — `allged.ged`, `ansel.ged`, the `LTER*` line-ending set).
-* ✅ PHPStan runs clean of any **new** error at `level: 9` (the pre-existing `mixed`-model
-  errors are tracked for GH-20; do not add to them, no baseline, no `@phpstan-ignore`);
-  Rector + php-cs-fixer clean.
+* ✅ PHPStan runs clean at `level: max` (no baseline, no `@phpstan-ignore`); Rector +
+  php-cs-fixer clean; `jscpd` finds no duplicates.
 * ✅ **Full reviewer audit loop** run and converged (see §4).
 * ✅ Conformance claims verified against `docs/spec/`.
 * ✅ `README.md` / docs updated when behaviour or the public API changes.
