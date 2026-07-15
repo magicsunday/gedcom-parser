@@ -61,19 +61,20 @@ Genealogically structured values are exposed as typed, `final readonly` value ob
 `MagicSunday\Gedcom\ValueObject`) alongside their raw strings, so you can sort, compare and
 render them without re-parsing:
 
-- `EventDetail::getDateValue(): ?DateValue` — the `DATE_VALUE` grammar (qualifiers `ABT` /
-  `CAL` / `EST`, ranges `BEF` / `AFT` / `BET … AND …`, periods `FROM` / `TO`, interpreted and
-  phrase dates) around one or two calendar-aware `CalendarDate`s (every GEDCOM calendar, plus
-  `B.C.` and dual `1699/00` years). `CalendarDate::toJulianDay()` gives a calendar-independent
-  Julian Day Number for sorting and comparison (Gregorian and Julian; the other calendars follow).
-- `PlaceStructure::getPlaceValue(): ?PlaceValue` — the comma-separated jurisdiction hierarchy,
-  with a `mapped()` view onto the place `FORM` labels and the `MAP` geographic coordinates
-  (`?MapCoordinates`, signed decimal degrees) when present.
-- `FamilyPersonAge`/`IndividualEventDetail::getAgeValue(): ?AgeValue` — the `AGE_AT_EVENT`
-  grammar (`< 8y`, `72y 3m 2d`, the GEDCOM 7.0 weeks unit `8w`, `CHILD` / `INFANT` / `STILLBORN`).
+- `EventDetail::$date` (`?DateValue`) — the `DATE_VALUE` grammar (qualifiers `ABT` / `CAL` /
+  `EST`, ranges `BEF` / `AFT` / `BET … AND …`, periods `FROM` / `TO`, interpreted and phrase
+  dates) around one or two calendar-aware `CalendarDate`s (every GEDCOM calendar, plus `B.C.`
+  and dual `1699/00` years). `CalendarDate::toJulianDay()` gives a calendar-independent Julian
+  Day Number for sorting and comparison (Gregorian and Julian; the other calendars follow).
+- `EventDetail::$plac` (`?PlaceValue`) — the comma-separated jurisdiction hierarchy, with a
+  `mapped()` view onto the place `FORM` labels (the place's own `FORM`, or the `HEAD.PLAC.FORM`
+  default the header declares once for every place that carries none) and the `MAP` geographic
+  coordinates (`?MapCoordinates`, signed decimal degrees) when present.
+- `EventDetail::$age` (`?AgeValue`) — the `AGE_AT_EVENT` grammar (`< 8y`, `72y 3m 2d`, the
+  GEDCOM 7.0 weeks unit `8w`, `CHILD` / `INFANT` / `STILLBORN`).
 
-Each accessor returns `null` when its tag is absent or empty; the parsed object keeps the
-original raw text.
+Each property is `null` when its tag is absent or empty; the parsed object keeps the original
+raw text.
 
 The parser reads any readable stream — including non-seekable ones such as a pipe
 (`cat tree.ged | your-app`) or a network response body — and accepts all four GEDCOM 5.5.1
@@ -104,8 +105,8 @@ the review workflow and the GEDCOM conformance rules — are documented in
 including the machine-readable 7.0 registry) are vendored under
 [`docs/spec/`](docs/spec/) as the normative reference for conformance work.
 
-### Schema-driven typed model (in progress)
-The parser is being refactored onto a schema-driven, fully typed model. A generic tree
+### Schema-driven typed model
+The parser is built on a schema-driven, fully typed model. A generic tree
 reader (`MagicSunday\Gedcom\Parse`) turns the flat reader lines into an immutable node
 tree; a declarative schema (`MagicSunday\Gedcom\Schema`) is compiled from the vendored
 registry for either GEDCOM version; and a mapping layer (`MagicSunday\Gedcom\Mapping`)
@@ -116,8 +117,8 @@ resolved regardless of the GEDCOM version — a bare payload string in 5.5.1, or
 a 7.0 substructure-bearing leaf (a `DATE` with `PHRASE`/`TIME`, a `PLAC` with `FORM`/`MAP`)
 produces. A GEDCOM 7.0 `DATE`/`AGE` carried only by its `PHRASE` substructure is threaded onto
 the value object as a phrase rather than dropped, and a `PLAC`'s `MAP` coordinates are exposed as
-signed decimal degrees. Until the untyped result model is fully replaced, the `phpstan` and `cpd`
-CI steps stay non-blocking.
+signed decimal degrees. The analysis runs clean at PHPStan `level: max` with no baseline — enforcing
+architecture boundaries via `phpat` — and `jscpd` finds no duplication, so both are hard CI gates.
 
 `TypedGedcomParser` ties the pipeline together: give it the GEDCOM version and a map of
 record tag to your typed record class, and it streams the level-0 records and maps each
