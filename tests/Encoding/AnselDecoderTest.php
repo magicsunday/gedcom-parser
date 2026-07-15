@@ -42,8 +42,8 @@ class AnselDecoderTest extends TestCase
     /**
      * Each ANSEL graphic base byte decodes to its Z39.47 Unicode scalar.
      *
-     * @param int    $byte     The ANSEL byte.
-     * @param string $expected The expected UTF-8 character.
+     * @param int<0, 255> $byte     The ANSEL byte.
+     * @param string      $expected The expected UTF-8 character.
      */
     #[DataProvider('baseCharacterProvider')]
     #[Test]
@@ -53,7 +53,7 @@ class AnselDecoderTest extends TestCase
     }
 
     /**
-     * @return array<string, array{0: int, 1: string}>
+     * @return array<string, array{0: int<0, 255>, 1: string}>
      */
     public static function baseCharacterProvider(): array
     {

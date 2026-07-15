@@ -352,7 +352,9 @@ class RegistrySchemaLoaderTest extends TestCase
             return;
         }
 
-        foreach (scandir($directory) ?: [] as $entry) {
+        $entries = scandir($directory);
+
+        foreach ($entries === false ? [] : $entries as $entry) {
             if ($entry === '.') {
                 continue;
             }
