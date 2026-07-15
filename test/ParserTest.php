@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test;
 
-use MagicSunday\Gedcom\Model\Gedcom;
-use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Parser;
 use MagicSunday\Gedcom\StreamFactory;
+use MagicSunday\Gedcom\TypedModel\GedcomDocument;
+use MagicSunday\Gedcom\TypedModel\IndividualRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,7 +24,7 @@ use function basename;
 use function glob;
 
 /**
- * Tests the high-level parser against a representative GEDCOM record.
+ * Tests the high-level parser: it reads a GEDCOM stream into the typed GedcomDocument aggregate.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -34,7 +34,8 @@ use function glob;
 class ParserTest extends TestCase
 {
     /**
-     * Parses an individual record and exposes its identifier, sex and personal name.
+     * Parses an individual record into a typed IndividualRecord exposing its identifier, sex and
+     * personal name (the raw slashed value plus the slash-free display name).
      */
     #[Test]
     public function parsePartial(): void
@@ -58,31 +59,32 @@ class ParserTest extends TestCase
 
         $stream->rewind();
 
-        $gedcom = (new Parser($stream))->parse();
+        $document = (new Parser($stream))->parse();
 
-        $individuals = $gedcom->getIndividual();
+        self::assertCount(1, $document->individuals);
 
-        self::assertCount(1, $individuals);
-
-        $individual = $individuals[0];
+        $individual = $document->individuals[0];
 
         self::assertInstanceOf(IndividualRecord::class, $individual);
-        self::assertSame('X116', $individual->getXref());
-        self::assertSame('M', $individual->getSex());
+        self::assertSame('X116', $individual->xref);
+        self::assertSame('M', $individual->sex);
         self::assertSame(
             'Lt. Cmndr. Max Joachim /der Edle/ von Musterhausen',
-            $individual->getNames()[0]->getName()
+            $individual->name[0]->value
+        );
+        self::assertSame(
+            'Lt. Cmndr. Max Joachim der Edle von Musterhausen',
+            $individual->name[0]->getDisplayName()
         );
     }
 
     /**
-     * A child-sealing (SLGC) ordinance parses without a fatal error. Before GH-33,
-     * loading the SealingChild model linked an invalid covariant return-type override on
-     * SealingChildInterface::getDateStatus(), an uncatchable class-load fatal; this pins
-     * that regression independently of the bundled fixtures.
+     * A record carrying a substructure that is not modelled (here a child-sealing SLGC ordinance,
+     * which is not in the typed model) is parsed without error, with the unmodelled substructure
+     * simply ignored rather than failing the record.
      */
     #[Test]
-    public function parsesSealingChildOrdinanceWithoutCovarianceFatal(): void
+    public function parsesAnUnmodelledSubstructureWithoutError(): void
     {
         $stream = (new StreamFactory())->createStream(<<<GEDCOM
             0 @I1@ INDI
@@ -94,74 +96,10 @@ class ParserTest extends TestCase
 
         $stream->rewind();
 
-        $gedcom = (new Parser($stream))->parse();
+        $document = (new Parser($stream))->parse();
 
-        self::assertCount(1, $gedcom->getIndividual());
-    }
-
-    /**
-     * The given name, surname and suffix are derived from the NAME slash convention when
-     * no explicit sub-tags are present, and the display name drops the surname slashes.
-     *
-     * @param string      $nameLine the GEDCOM NAME line under test
-     * @param string|null $given    the expected given name
-     * @param string|null $surname  the expected surname
-     * @param string|null $suffix   the expected name suffix
-     * @param string|null $display  the expected display name
-     */
-    #[DataProvider('nameFormProvider')]
-    #[Test]
-    public function derivesNamePartsFromSlashConvention(
-        string $nameLine,
-        ?string $given,
-        ?string $surname,
-        ?string $suffix,
-        ?string $display,
-    ): void {
-        $stream = (new StreamFactory())->createStream("0 @I1@ INDI\n" . $nameLine . "\n");
-        $stream->rewind();
-
-        $name = (new Parser($stream))->parse()->getIndividual()[0]->getNames()[0];
-
-        self::assertSame($given, $name->getGivenName());
-        self::assertSame($surname, $name->getSurname());
-        self::assertSame($suffix, $name->getNameSuffix());
-        self::assertSame($display, $name->getDisplayName());
-    }
-
-    /**
-     * One row per nameParts() branch: full form / missing trailing slash / no slash /
-     * surname only / empty name.
-     *
-     * @return array<string, array{0: string, 1: string|null, 2: string|null, 3: string|null, 4: string|null}>
-     */
-    public static function nameFormProvider(): array
-    {
-        return [
-            'full form'          => ['1 NAME John /Smith/ Jr', 'John', 'Smith', 'Jr', 'John Smith Jr'],
-            'missing trailing /' => ['1 NAME John /Smith', 'John', 'Smith', null, 'John Smith'],
-            'no slash'           => ['1 NAME John', 'John', null, null, 'John'],
-            'surname only'       => ['1 NAME /Smith/', null, 'Smith', null, 'Smith'],
-            'empty name'         => ['1 NAME', null, null, null, null],
-        ];
-    }
-
-    /**
-     * Explicit GIVN/SURN/NSFX sub-tags take precedence over the slash-derived name parts.
-     */
-    #[Test]
-    public function explicitNamePartsWinOverSlashDerivation(): void
-    {
-        $stream = (new StreamFactory())->createStream(
-            "0 @I1@ INDI\n1 NAME John /Smith/ Jr\n2 GIVN Johnny\n2 SURN Smithson\n2 NSFX Sr\n"
-        );
-        $stream->rewind();
-
-        $name = (new Parser($stream))->parse()->getIndividual()[0]->getNames()[0];
-
-        self::assertSame('Johnny', $name->getGivenName());
-        self::assertSame('Smithson', $name->getSurname());
-        self::assertSame('Sr', $name->getNameSuffix());
+        self::assertCount(1, $document->individuals);
+        self::assertSame('I1', $document->individuals[0]->xref);
     }
 
     /**
@@ -181,9 +119,9 @@ class ParserTest extends TestCase
     }
 
     /**
-     * Every bundled fixture parses into a Gedcom document without raising an exception.
+     * Every bundled fixture parses into a typed GedcomDocument without raising an exception.
      *
-     * @param string $file the absolute path to the GEDCOM fixture
+     * @param string $file The absolute path to the GEDCOM fixture.
      */
     #[DataProvider('fixtureProvider')]
     #[Test]
@@ -191,6 +129,6 @@ class ParserTest extends TestCase
     {
         $stream = (new StreamFactory())->createStreamFromFile($file);
 
-        self::assertInstanceOf(Gedcom::class, (new Parser($stream))->parse());
+        self::assertInstanceOf(GedcomDocument::class, (new Parser($stream))->parse());
     }
 }

@@ -40,17 +40,20 @@ use MagicSunday\Gedcom\StreamFactory;
 
 require 'vendor/autoload.php';
 
-$stream = (new StreamFactory())->createStreamFromFile('/path/to/your/tree.ged');
-$gedcom = (new Parser($stream))->parse();
+$stream   = (new StreamFactory())->createStreamFromFile('/path/to/your/tree.ged');
+$document = (new Parser($stream))->parse();
 
-foreach ($gedcom->getIndividual() as $individual) {
-    $name = $individual->getNames()[0] ?? null;
+foreach ($document->individuals as $individual) {
+    $name = $individual->name[0] ?? null;
 
-    echo $individual->getXref(), ': ', $name ? $name->getDisplayName() : '(unknown)', "\n";
+    echo $individual->xref, ': ', $name ? $name->getDisplayName() : '(unknown)', "\n";
 }
 ```
 
-You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
+`Parser::parse()` returns the typed `GedcomDocument` aggregate — it detects the GEDCOM version
+from the header and maps the standard records (INDI, FAM, SOUR, NOTE, REPO, OBJE, SUBM) onto their
+typed records grouped by type (`$document->individuals`, `->families`, …). You can also parse an
+in-memory GEDCOM string with `StreamFactory::createStream()`.
 
 ### Typed value objects
 

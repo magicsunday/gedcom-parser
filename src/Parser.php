@@ -11,72 +11,61 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
-use MagicSunday\Gedcom\Interfaces\GedcomInterface;
-use MagicSunday\Gedcom\Model\Gedcom;
-use MagicSunday\Gedcom\Parser\Custom;
-use MagicSunday\Gedcom\Parser\FamilyRecord;
-use MagicSunday\Gedcom\Parser\HeaderRecord;
-use MagicSunday\Gedcom\Parser\IndividualRecord;
-use MagicSunday\Gedcom\Parser\MultimediaRecord;
-use MagicSunday\Gedcom\Parser\NoteRecord;
-use MagicSunday\Gedcom\Parser\RepositoryRecord;
-use MagicSunday\Gedcom\Parser\SourceRecord;
-use MagicSunday\Gedcom\Parser\SubmissionRecord;
-use MagicSunday\Gedcom\Parser\SubmitterRecord;
+use MagicSunday\Gedcom\Mapping\GedcomDocumentReader;
+use MagicSunday\Gedcom\TypedModel\FamilyRecord;
+use MagicSunday\Gedcom\TypedModel\GedcomDocument;
+use MagicSunday\Gedcom\TypedModel\IndividualRecord;
+use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
+use MagicSunday\Gedcom\TypedModel\NoteRecord;
+use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
+use MagicSunday\Gedcom\TypedModel\SourceRecord;
+use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use Psr\Http\Message\StreamInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
- * A gedcom 5.5.1 parser.
+ * A GEDCOM parser producing the typed model.
+ *
+ * Reads a GEDCOM stream through the schema-driven pipeline and returns a typed {@see GedcomDocument}
+ * aggregate, detecting the document's version from its own header. The standard level-0 records
+ * (INDI, FAM, SOUR, NOTE, REPO, OBJE, SUBM) are mapped onto their typed records.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-class Parser extends AbstractParser
+final readonly class Parser
 {
     /**
-     * @param StreamInterface      $stream
-     * @param LoggerInterface|null $logger
-     */
-    public function __construct(StreamInterface $stream, ?LoggerInterface $logger = null)
-    {
-        $this->logger = $logger ?? new NullLogger();
-
-        parent::__construct(new Reader($stream), $this->logger);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getClassMap(): array
-    {
-        return [
-            GedcomInterface::TAG_HEAD => HeaderRecord::class,
-            GedcomInterface::TAG_FAM  => FamilyRecord::class,
-            GedcomInterface::TAG_INDI => IndividualRecord::class,
-            GedcomInterface::TAG_OBJE => MultimediaRecord::class,
-            GedcomInterface::TAG_NOTE => NoteRecord::class,
-            GedcomInterface::TAG_REPO => RepositoryRecord::class,
-            GedcomInterface::TAG_SOUR => SourceRecord::class,
-            GedcomInterface::TAG_SUBM => SubmitterRecord::class,
-            GedcomInterface::TAG_SUBN => SubmissionRecord::class,
-            GedcomInterface::TAG_TRLR => Custom::class,
-        ];
-    }
-
-    /**
-     * Parses a GEDCOM file.
+     * The standard GEDCOM 5.5.1 data-bearing level-0 record tags mapped onto their typed record
+     * classes. GEDCOM 7.0 renames the shared note to `SNOTE`; completing the 7.0 record set is
+     * tracked under GH-19.
      *
-     * @return Gedcom
+     * @var array<string, class-string>
      */
-    public function parse(): Gedcom
+    private const array RECORD_CLASSES = [
+        'INDI' => IndividualRecord::class,
+        'FAM'  => FamilyRecord::class,
+        'SOUR' => SourceRecord::class,
+        'NOTE' => NoteRecord::class,
+        'REPO' => RepositoryRecord::class,
+        'OBJE' => MultimediaRecord::class,
+        'SUBM' => SubmitterRecord::class,
+    ];
+
+    /**
+     * @param StreamInterface $stream The GEDCOM stream to parse.
+     */
+    public function __construct(private StreamInterface $stream)
     {
-        $gedcom = new Gedcom();
+    }
 
-        $this->process($gedcom);
-
-        return $gedcom;
+    /**
+     * Parses the GEDCOM stream into a typed aggregate.
+     *
+     * @return GedcomDocument The parsed document, its records grouped by type.
+     */
+    public function parse(): GedcomDocument
+    {
+        return GedcomDocumentReader::create(self::RECORD_CLASSES)->read($this->stream);
     }
 }
