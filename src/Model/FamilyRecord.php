@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\TypedModel;
+namespace MagicSunday\Gedcom\Model;
 
 /**
  * A typed GEDCOM family (FAM) record.

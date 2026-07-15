@@ -15,10 +15,10 @@ use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\SubmitterRecord;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\StreamFactory;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
-use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -49,7 +49,7 @@ class TypedGedcomParserTest extends TestCase
      * skipped.
      */
     #[Test]
-    public function parsesLevel0RecordsIntoTheTypedModel(): void
+    public function parsesLevel0RecordsIntoTheModel(): void
     {
         $stream = (new StreamFactory())->createStream(
             "0 HEAD\n1 SOUR SomeApp\n"

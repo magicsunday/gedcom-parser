@@ -14,6 +14,19 @@ namespace MagicSunday\Gedcom\Test\Mapping;
 use MagicSunday\Gedcom\Exception\MappingException;
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
+use MagicSunday\Gedcom\Model\ChildToFamilyLink;
+use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\FamilyRecord;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\MediaFormat;
+use MagicSunday\Gedcom\Model\MultimediaFile;
+use MagicSunday\Gedcom\Model\MultimediaRecord;
+use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\PersonalName;
+use MagicSunday\Gedcom\Model\RepositoryRecord;
+use MagicSunday\Gedcom\Model\SourceRecord;
+use MagicSunday\Gedcom\Model\SpouseToFamilyLink;
+use MagicSunday\Gedcom\Model\SubmitterRecord;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
@@ -22,19 +35,6 @@ use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\StreamFactory;
-use MagicSunday\Gedcom\TypedModel\ChildToFamilyLink;
-use MagicSunday\Gedcom\TypedModel\EventDetail;
-use MagicSunday\Gedcom\TypedModel\FamilyRecord;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
-use MagicSunday\Gedcom\TypedModel\MediaFormat;
-use MagicSunday\Gedcom\TypedModel\MultimediaFile;
-use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
-use MagicSunday\Gedcom\TypedModel\NoteRecord;
-use MagicSunday\Gedcom\TypedModel\PersonalName;
-use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
-use MagicSunday\Gedcom\TypedModel\SourceRecord;
-use MagicSunday\Gedcom\TypedModel\SpouseToFamilyLink;
-use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use MagicSunday\Gedcom\ValueObject\AgeKeyword;
 use MagicSunday\Gedcom\ValueObject\AgeModifier;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
@@ -98,7 +98,7 @@ class GedcomObjectMapperTest extends TestCase
      * name, and the collection of PHON values a list.
      */
     #[Test]
-    public function mapsASubmitterRecordOntoTheTypedModel(): void
+    public function mapsASubmitterRecordOntoTheModel(): void
     {
         $record = $this->mapSubmitter(
             "0 @SUBM1@ SUBM\n1 NAME John Doe\n1 PHON 555-1234\n1 PHON 555-5678\n0 TRLR\n"

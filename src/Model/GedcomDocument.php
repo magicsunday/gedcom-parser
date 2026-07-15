@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\TypedModel;
+namespace MagicSunday\Gedcom\Model;
 
 /**
  * An eager, typed aggregate of a parsed GEDCOM document.

@@ -9,11 +9,20 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\Test\TypedModel;
+namespace MagicSunday\Gedcom\Test\Model;
 
 use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\TypedGedcomParser;
+use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\FamilyRecord;
+use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\MultimediaRecord;
+use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\RepositoryRecord;
+use MagicSunday\Gedcom\Model\SourceRecord;
+use MagicSunday\Gedcom\Model\SubmitterRecord;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
@@ -21,15 +30,6 @@ use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
 use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\StreamFactory;
-use MagicSunday\Gedcom\TypedModel\EventDetail;
-use MagicSunday\Gedcom\TypedModel\FamilyRecord;
-use MagicSunday\Gedcom\TypedModel\GedcomDocument;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
-use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
-use MagicSunday\Gedcom\TypedModel\NoteRecord;
-use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
-use MagicSunday\Gedcom\TypedModel\SourceRecord;
-use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;

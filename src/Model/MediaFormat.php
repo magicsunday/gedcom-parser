@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace MagicSunday\Gedcom\TypedModel;
+namespace MagicSunday\Gedcom\Model;
 
 /**
  * The typed format of a multimedia file (the `FORM` substructure of an `OBJE.FILE`).

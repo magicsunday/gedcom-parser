@@ -12,14 +12,14 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom;
 
 use MagicSunday\Gedcom\Mapping\GedcomDocumentReader;
-use MagicSunday\Gedcom\TypedModel\FamilyRecord;
-use MagicSunday\Gedcom\TypedModel\GedcomDocument;
-use MagicSunday\Gedcom\TypedModel\IndividualRecord;
-use MagicSunday\Gedcom\TypedModel\MultimediaRecord;
-use MagicSunday\Gedcom\TypedModel\NoteRecord;
-use MagicSunday\Gedcom\TypedModel\RepositoryRecord;
-use MagicSunday\Gedcom\TypedModel\SourceRecord;
-use MagicSunday\Gedcom\TypedModel\SubmitterRecord;
+use MagicSunday\Gedcom\Model\FamilyRecord;
+use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\MultimediaRecord;
+use MagicSunday\Gedcom\Model\NoteRecord;
+use MagicSunday\Gedcom\Model\RepositoryRecord;
+use MagicSunday\Gedcom\Model\SourceRecord;
+use MagicSunday\Gedcom\Model\SubmitterRecord;
 use Psr\Http\Message\StreamInterface;
 
 /**
