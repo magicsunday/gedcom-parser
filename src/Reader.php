@@ -18,10 +18,13 @@ use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Exception\UnsupportedFileException;
 use Psr\Http\Message\StreamInterface;
 
+use function iconv;
 use function is_string;
 use function mb_convert_encoding;
 use function ord;
 use function preg_match;
+use function restore_error_handler;
+use function set_error_handler;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
@@ -270,6 +273,13 @@ class Reader
                         $line = AnselDecoder::decode($line);
                     } elseif ($this->encoding === self::ENCODING_CP1252) {
                         $decoded = mb_convert_encoding($line, 'UTF-8', self::ENCODING_CP1252);
+                        $line    = $decoded !== false ? $decoded : $line;
+                    } elseif (($this->encoding !== null) && str_starts_with($this->encoding, 'Windows-')) {
+                        // A non-1252 Windows codepage: mbstring's coverage of the 125x range is
+                        // partial (it throws for several of them), so transcode via iconv, which
+                        // carries the full range; undefined slots are skipped rather than losing
+                        // the whole line.
+                        $decoded = iconv($this->encoding, self::ENCODING_UTF8 . '//IGNORE', $line);
                         $line    = $decoded !== false ? $decoded : $line;
                     }
                 }
@@ -612,11 +622,24 @@ class Reader
                 throw new UnsupportedEncodingException($characterSet);
         }
 
-        // Not 5.5.1 charsets, but common in real Windows exports (ANSI, WINDOWS-1252, and
-        // multi-word values like "IBM WINDOWS"): decode as Windows-1252 rather than silently
-        // mangling their high bytes as the ANSEL default.
+        // A named single-byte Windows codepage (WINDOWS-1250, WINDOWS1251, CP1257, …) decodes with
+        // that exact codepage when the platform's iconv carries it; an unsupported number falls
+        // back to the Windows-1252 default rather than mangling the high bytes. The match is limited
+        // to the single-byte 125x family: those are ASCII-transparent over 0x00-0x7F, so the
+        // structural framing survives the per-line decode — multibyte Windows codepages (932, 936,
+        // …) are not, and their trail bytes would collide with the line terminator scan. GEDCOM
+        // 5.5.1 defines no Windows codepages, so this is a lenient real-world convenience, not a
+        // conformance requirement.
+        if (preg_match('/^(?:CP|WINDOWS-?)(125\d)$/', $normalised, $matches) === 1) {
+            $codepage = 'Windows-' . $matches[1];
+
+            return self::iconvSupportsEncoding($codepage) ? $codepage : self::ENCODING_CP1252;
+        }
+
+        // Not 5.5.1 charsets, but common in real Windows exports (ANSI and a bare, codepage-less
+        // WINDOWS / "IBM WINDOWS"): decode as Windows-1252, the correct default for that ambiguous
+        // case, rather than silently mangling their high bytes as the ANSEL default.
         if (($normalised === 'ANSI')
-            || ($normalised === 'CP1252')
             || str_contains($normalised, 'WINDOWS')
         ) {
             return self::ENCODING_CP1252;
@@ -624,6 +647,26 @@ class Reader
 
         // Any other unrecognised value falls back to the 5.5.1 default character set.
         return self::ENCODING_ANSEL;
+    }
+
+    /**
+     * Reports whether the platform's iconv carries the given encoding, probing with a single high
+     * byte. An unsupported encoding makes iconv return FALSE; the probe's warning is swallowed so
+     * the detection stays silent.
+     *
+     * @param string $encoding The candidate iconv encoding name
+     *
+     * @return bool Whether iconv can transcode from the encoding
+     */
+    private static function iconvSupportsEncoding(string $encoding): bool
+    {
+        set_error_handler(static fn (): bool => true);
+
+        try {
+            return iconv($encoding, self::ENCODING_UTF8, "\xB3") !== false;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**
