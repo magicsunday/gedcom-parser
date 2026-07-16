@@ -93,6 +93,18 @@ class Reader
     private const int CHUNK_SIZE = 8192;
 
     /**
+     * The maximum number of consecutive empty reads tolerated before a stream that never signals
+     * end of stream is treated as ended. Per the PSR-7 read() contract a non-blocking stream may
+     * momentarily yield nothing, so a single empty read is retried rather than treated as EOF; this
+     * bounds those retries so a stream that yields nothing this many times in a row without ever
+     * reporting EOF cannot spin the reader forever (the byte cap cannot catch this, since a stalled
+     * stream never advances the byte count). The bound is a spin count, not a time allowance — the
+     * retry has no backoff — but the blocking streams this parser consumes never return an empty
+     * read before EOF, so they never approach it.
+     */
+    private const int MAX_CONSECUTIVE_EMPTY_READS = 10000;
+
+    /**
      * The maximum number of leading bytes scanned for the HEAD.CHAR declaration when no BOM
      * decides the encoding. The (required) CHAR field always sits within the header.
      */
@@ -141,6 +153,14 @@ class Reader
      * @var int
      */
     private int $bytesRead = 0;
+
+    /**
+     * The number of consecutive empty reads seen since the last read that yielded bytes, used to
+     * detect a stream that never signals end of stream.
+     *
+     * @var int
+     */
+    private int $consecutiveEmptyReads = 0;
 
     /**
      * The last line read from input.
@@ -437,7 +457,13 @@ class Reader
         }
 
         if ($chunk === '') {
-            if ($this->stream->eof()) {
+            // An empty read means end of stream once eof() confirms it. Otherwise it is a
+            // momentary no-data yield from a non-blocking or slow stream and is retried — but
+            // only up to a bounded number of consecutive times, so a stream that never signals
+            // EOF is treated as ended rather than spinning the reader forever.
+            if ($this->stream->eof()
+                || (++$this->consecutiveEmptyReads >= self::MAX_CONSECUTIVE_EMPTY_READS)
+            ) {
                 $this->eofReached = true;
             }
 
@@ -446,6 +472,9 @@ class Reader
             // than emitted as a replacement character.
             return;
         }
+
+        // A read that yielded bytes resets the stalled-stream counter.
+        $this->consecutiveEmptyReads = 0;
 
         // UTF-16 is transcoded to UTF-8 before it enters the buffer, so the terminator scan
         // and every downstream step operate on single-byte UTF-8.
