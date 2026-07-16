@@ -17,11 +17,19 @@ use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\Schema\Substructure;
 use MagicSunday\JsonMapper;
+use phpDocumentor\Reflection\DocBlock\Tags\Param;
+use phpDocumentor\Reflection\DocBlockFactory;
+use phpDocumentor\Reflection\Types\ContextFactory;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
 use Throwable;
 
 use function array_key_exists;
+use function class_exists;
 use function count;
+use function in_array;
+use function preg_match_all;
 use function sprintf;
 use function str_starts_with;
 use function strtolower;
@@ -73,7 +81,7 @@ final readonly class GedcomObjectMapper
      */
     public function map(GedcomNode $node, StructureDefinition $definition, string $className): object
     {
-        $shaped = $this->shape($node, $definition, $this->consumedTags($className));
+        $shaped = $this->shape($node, $definition, $className);
 
         try {
             $mapped = $this->jsonMapper->map($shaped, $className);
@@ -156,20 +164,157 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Resolves the typed model class a schema-recognised container child maps to on the given class,
+     * so the nested shape can be made class-aware in turn. Returns NULL when the property maps to a
+     * value-object leaf (hydrated by a type handler, whose substructures must not be diverted), to a
+     * scalar, or is not modelled at all — in which case the nested shape does not divert. Memoized,
+     * since it is asked once per container child of every mapped record.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     * @param string            $property  The lowercased child tag / property name.
+     *
+     * @return class-string|null The nested model class, or NULL when the child is not a typed model.
+     */
+    private function nestedModelClass(?string $className, string $property): ?string
+    {
+        if ($className === null) {
+            return null;
+        }
+
+        /** @var array<string, class-string|null> $cache */
+        static $cache = [];
+
+        $key = $className . '::' . $property;
+
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
+        $class = $this->parameterClass($className, $property);
+
+        // A value-object leaf is hydrated from its raw payload by a type handler, so its
+        // substructures are that handler's input, not unmodelled tags — never shape it class-aware.
+        if (($class !== null) && in_array($class, JsonMapperFactory::LEAF_VALUE_TYPES, true)) {
+            $class = null;
+        }
+
+        return $cache[$key] = $class;
+    }
+
+    /**
+     * Resolves the class a constructor parameter holds — its single named type, or the element class
+     * of a `list<>`/`[]` collection read from the constructor's PHPDoc.
+     *
+     * @param class-string $className The class to inspect.
+     * @param string       $property  The lowercased parameter name.
+     *
+     * @return class-string|null The parameter's class, or NULL when it is a scalar, an array of
+     *                           scalars, or absent.
+     */
+    private function parameterClass(string $className, string $property): ?string
+    {
+        $constructor = (new ReflectionClass($className))->getConstructor();
+
+        if ($constructor === null) {
+            return null;
+        }
+
+        $parameter = null;
+
+        foreach ($constructor->getParameters() as $candidate) {
+            if (strtolower($candidate->getName()) === $property) {
+                $parameter = $candidate;
+
+                break;
+            }
+        }
+
+        if ($parameter === null) {
+            return null;
+        }
+
+        $type = $parameter->getType();
+
+        if (($type instanceof ReflectionNamedType) && !$type->isBuiltin() && class_exists($type->getName())) {
+            return $type->getName();
+        }
+
+        return $this->collectionElementClass($constructor, $parameter->getName());
+    }
+
+    /**
+     * Reads the element class of a collection-typed constructor parameter from the constructor's
+     * PHPDoc (`@param list<Foo> $bar` / `@param Foo[] $bar`), returning the first class it names.
+     *
+     * @param ReflectionMethod $constructor The constructor whose PHPDoc to read.
+     * @param string           $name        The parameter name.
+     *
+     * @return class-string|null The element class, or NULL when the parameter names no class.
+     */
+    private function collectionElementClass(ReflectionMethod $constructor, string $name): ?string
+    {
+        if ($constructor->getDocComment() === false) {
+            return null;
+        }
+
+        $context  = (new ContextFactory())->createFromReflector($constructor->getDeclaringClass());
+        $docBlock = DocBlockFactory::createInstance()->create($constructor, $context);
+
+        foreach ($docBlock->getTagsByName('param') as $tag) {
+            if (!$tag instanceof Param) {
+                continue;
+            }
+
+            if ($tag->getVariableName() !== $name) {
+                continue;
+            }
+
+            return $this->firstClassIn((string) $tag->getType());
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the first existing class named in a PHPDoc type expression (the type resolver writes
+     * every class fully qualified with a leading backslash), or NULL when it names none.
+     *
+     * @param string $type The PHPDoc type expression (e.g. `list<\App\Foo>`).
+     *
+     * @return class-string|null The first existing class, or NULL.
+     */
+    private function firstClassIn(string $type): ?string
+    {
+        if (preg_match_all('/\\\\([A-Za-z0-9_\\\\]+)/', $type, $matches) === false) {
+            return null;
+        }
+
+        foreach ($matches[1] as $candidate) {
+            if (class_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Shapes a node and its substructures into a property-name-keyed array.
      *
-     * @param GedcomNode               $node         The node to shape.
-     * @param StructureDefinition      $definition   The schema definition of the node's structure.
-     * @param array<string, true>|null $consumedTags The tags the target class models, keyed by the
-     *                                               lowercased tag; a recognised child absent from
-     *                                               it is preserved verbatim rather than dropped.
-     *                                               NULL for a nested shape, which does not divert
-     *                                               (its own class is resolved by a later increment).
+     * @param GedcomNode          $node       The node to shape.
+     * @param StructureDefinition $definition The schema definition of the node's structure.
+     * @param class-string|null   $className  The class this node is shaped into, so a schema-recognised
+     *                                        child the class does not model is preserved verbatim
+     *                                        rather than dropped. NULL when the class is unknown (a
+     *                                        substructure mapped by a value handler, not a typed
+     *                                        class), which does not divert.
      *
      * @return array<string, mixed>
      */
-    private function shape(GedcomNode $node, StructureDefinition $definition, ?array $consumedTags = null): array
+    private function shape(GedcomNode $node, StructureDefinition $definition, ?string $className = null): array
     {
+        $consumedTags = ($className !== null) ? $this->consumedTags($className) : null;
+
         $shaped = [];
 
         if ($node->identifier !== null) {
@@ -210,11 +355,12 @@ final readonly class GedcomObjectMapper
             $childDefinition = $this->schema->byUri($substructure->uri);
             $property        = strtolower($child->tag);
 
-            // A tag the schema permits here but the target class does not model as a property would
+            // A tag the schema permits here but the shaped class does not model as a property would
             // be shaped into a key the mapper silently drops. Preserve it verbatim on `$unknown`
-            // instead — exactly like an out-of-schema tag — so no recognised data is lost. Only the
-            // record-level pass carries the consumed tags; a nested shape passes NULL and does not
-            // divert, since its own class is resolved by a later increment.
+            // instead — exactly like an out-of-schema tag — so no recognised data is lost. This runs
+            // at every level whose class is known (the record and every nested typed model); a shape
+            // whose class is unknown (a value-handler leaf) carries no consumed tags and does not
+            // divert.
             if (($consumedTags !== null) && !array_key_exists($property, $consumedTags)) {
                 $unknown[] = $this->rawShape($child);
 
@@ -223,9 +369,12 @@ final readonly class GedcomObjectMapper
 
             // Recurse when the child's definition declares substructures, so a structured tag
             // always yields the same object shape regardless of which substructures this instance
-            // happens to carry; its own line value is preserved under the `value` key.
+            // happens to carry; its own line value is preserved under the `value` key. The nested
+            // shape is made class-aware for a child that maps to a typed model class, so its own
+            // unmodelled substructures are diverted too; a value-object leaf (resolved to NULL)
+            // stays class-unaware, since its substructures are its type handler's input.
             $value = (($childDefinition instanceof StructureDefinition) && ($childDefinition->substructures !== []))
-                ? $this->shape($child, $childDefinition)
+                ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
                 : ($child->value ?? $child->xref);
 
             if ($substructure->cardinality->isCollection()) {
