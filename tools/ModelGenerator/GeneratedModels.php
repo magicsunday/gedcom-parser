@@ -25,8 +25,15 @@ use MagicSunday\Gedcom\Schema\GedcomVersion;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-final readonly class GeneratedModels
+final class GeneratedModels
 {
+    /**
+     * Private constructor; this is a static-only manifest.
+     */
+    private function __construct()
+    {
+    }
+
     /**
      * The generation targets.
      *
