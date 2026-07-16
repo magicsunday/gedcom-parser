@@ -156,6 +156,13 @@ Blank and whitespace-only lines — which some exporters append, most commonly a
 trailer — are skipped rather than mis-parsed, while line numbers in error messages stay
 aligned with the physical file.
 
+Reading a stream is bounded, so hostile or broken input cannot exhaust memory or hang the
+reader: a single terminator-less line beyond `Reader::MAX_LINE_LENGTH` raises a
+`LineTooLongException`, the total byte count is capped as described in
+[Bounding the parse](#bounding-the-parse-resource-limit) above, and a stream that never
+signals end of stream is treated as ended after a bounded number of empty reads rather than
+spun forever. This matters most for the untrusted-network-stream case noted above.
+
 The source encoding is detected from the byte-order mark or the `HEAD.CHAR` declaration and
 transcoded to UTF-8: **ANSEL** (the 5.5.1 default, decoded via the bundled Z39.47 table),
 **UTF-8**, **UNICODE** (UTF-16, little- or big-endian) and **ASCII**. As a real-world convenience
