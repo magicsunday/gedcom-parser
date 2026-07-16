@@ -110,9 +110,9 @@ class ModelGeneratorTest extends TestCase
         $date = new StructureDefinition(
             'urn:date',
             'DATE',
-            'https://gedcom.io/terms/v7/type-Date#exact',
+            'https://gedcom.io/terms/v7/type-Date',
             null,
-            ['TIME' => [new Substructure('urn:time', Cardinality::fromToken('{0:1}'))]],
+            ['PHRASE' => [new Substructure('urn:phrase', Cardinality::fromToken('{0:1}'))]],
         );
 
         // An address carries a string payload AND substructures; the mapper shapes it as an array,

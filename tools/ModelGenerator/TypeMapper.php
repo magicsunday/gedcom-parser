@@ -11,12 +11,14 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 
+use MagicSunday\Gedcom\Model\ExactDate;
 use MagicSunday\Gedcom\Schema\Cardinality;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 
 use function preg_match;
+use function str_contains;
 use function str_starts_with;
 use function strtolower;
 
@@ -44,10 +46,21 @@ final class TypeMapper
         'Date'         => ['DateValue', DateValue::class],
         'DATE_VALUE'   => ['DateValue', DateValue::class],
         'DATE_PERIOD'  => ['DateValue', DateValue::class],
-        'DATE_EXACT'   => ['DateValue', DateValue::class],
         'PLACE_NAME'   => ['PlaceValue', PlaceValue::class],
         'Age'          => ['AgeValue', AgeValue::class],
         'AGE_AT_EVENT' => ['AgeValue', AgeValue::class],
+    ];
+
+    /**
+     * Value objects resolved by their GEDCOM tag rather than payload, because the tag is stable
+     * across versions while the payload URI is not (GEDCOM 7.0 `PLAC` carries `type-List#Text`, not
+     * `type-PLACE_NAME`). Each maps to the short class name and its fully-qualified import.
+     *
+     * @var array<string, array{0: string, 1: string}>
+     */
+    private const array VALUE_OBJECTS_BY_TAG = [
+        'PLAC' => ['PlaceValue', PlaceValue::class],
+        'AGE'  => ['AgeValue', AgeValue::class],
     ];
 
     /**
@@ -63,7 +76,7 @@ final class TypeMapper
     {
         $name = strtolower($tag);
 
-        [$inner, $import] = $this->innerType($payload);
+        [$inner, $import] = $this->innerType($tag, $payload);
 
         if ($cardinality->isCollection()) {
             return new PropertySpec($name, 'array', 'list<' . $inner . '>', '[]', 'The ' . $tag . ' values.', $import);
@@ -83,20 +96,36 @@ final class TypeMapper
      *
      * @return bool Whether the payload maps to a value object.
      */
-    public function mapsToValueObject(?string $payload): bool
+    public function mapsToValueObject(string $tag, ?string $payload): bool
     {
-        return $this->innerType($payload)[1] !== null;
+        return $this->innerType($tag, $payload)[1] !== null;
     }
 
     /**
-     * Resolves the inner (non-nullable, non-collection) type name and its import from a payload URI.
+     * Resolves the inner (non-nullable, non-collection) type name and its import from a tag and
+     * payload. Some value objects are resolved by tag (version-stable) and the exact-date structure
+     * maps to the TIME-bearing ExactDate model; otherwise the payload URI decides.
      *
+     * @param string      $tag     The substructure's GEDCOM tag.
      * @param string|null $payload The registry payload URI, or NULL.
      *
      * @return array{0: string, 1: string|null} The inner type and its fully-qualified import (NULL for a primitive).
      */
-    private function innerType(?string $payload): array
+    private function innerType(string $tag, ?string $payload): array
     {
+        // A value object whose tag is stable across versions even though its payload URI is not.
+        if (isset(self::VALUE_OBJECTS_BY_TAG[$tag])) {
+            return self::VALUE_OBJECTS_BY_TAG[$tag];
+        }
+
+        // An exact date (CHAN/CREA) carries a TIME, so it maps to the ExactDate model, not DateValue.
+        if (($tag === 'DATE')
+            && ($payload !== null)
+            && (str_contains($payload, '#exact') || str_contains($payload, 'DATE_EXACT'))
+        ) {
+            return ['ExactDate', ExactDate::class];
+        }
+
         if (($payload === null) || ($payload === '')) {
             return ['string', null];
         }

@@ -148,7 +148,7 @@ final readonly class ModelGenerator
             // (DATA) and a non-value-object payload with substructures (ADDR carries ADR1/CITY and a
             // string, which the mapper shapes as an array, not a scalar) both need their own class.
             if (($childDefinition->substructures !== [])
-                && !$this->typeMapper->mapsToValueObject($childDefinition->payload)
+                && !$this->typeMapper->mapsToValueObject($childDefinition->tag, $childDefinition->payload)
             ) {
                 continue;
             }
