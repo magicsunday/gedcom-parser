@@ -50,13 +50,15 @@ final readonly class RecordStream
     /**
      * Opens the stream and reads its first level-0 record, or NULL when the stream carries none.
      *
-     * @param StreamInterface $stream The GEDCOM stream to open.
+     * @param StreamInterface $stream   The GEDCOM stream to open.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting, or NULL
+     *                                  for the reader's default.
      *
      * @return self|null The opened record stream, or NULL when it is empty.
      */
-    public static function open(StreamInterface $stream): ?self
+    public static function open(StreamInterface $stream, ?int $maxBytes = null): ?self
     {
-        $reader = new GedcomTreeReader(new Reader($stream));
+        $reader = new GedcomTreeReader(new Reader($stream, $maxBytes));
         $node   = $reader->readRecord();
 
         if (!$node instanceof GedcomNode) {

@@ -65,14 +65,19 @@ final class GedcomZipReader
      * embedded-media access. The caller owns the returned handle and must {@see GedcomArchive::close()}
      * it when done.
      *
-     * @param string $path The path to the `.gdz` archive on disk.
+     * @param string   $path     The path to the `.gdz` archive on disk.
+     * @param int|null $maxBytes The maximum number of decompressed `gedcom.ged` bytes to read before
+     *                           aborting with an {@see Exception\InputTooLargeException},
+     *                           or NULL for {@see Reader::DEFAULT_MAX_BYTES}. The
+     *                           cap bounds the inflated dataset, so it defeats a decompression bomb;
+     *                           lower it when parsing untrusted archives.
      *
      * @return GedcomArchive The open archive handle exposing the parsed document and its media.
      *
      * @throws InvalidArchiveException     When the file cannot be opened as a ZIP archive.
      * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
      */
-    public static function openArchive(string $path): GedcomArchive
+    public static function openArchive(string $path, ?int $maxBytes = null): GedcomArchive
     {
         $archive = new ZipArchive();
         $opened  = $archive->open($path);
@@ -97,7 +102,7 @@ final class GedcomZipReader
         // the whole gedcom.ged stream here, so the document is fully materialised before returning.
         // A parse failure must close the archive too, since no handle is returned to close it.
         try {
-            $document = (new Parser((new StreamFactory())->createStreamFromResource($resource)))->parse();
+            $document = (new Parser((new StreamFactory())->createStreamFromResource($resource), $maxBytes))->parse();
         } catch (Throwable $throwable) {
             $archive->close();
 
@@ -111,16 +116,19 @@ final class GedcomZipReader
      * Reads a GEDZIP archive from a file path into the typed model, without keeping it open for
      * media access.
      *
-     * @param string $path The path to the `.gdz` archive on disk.
+     * @param string   $path     The path to the `.gdz` archive on disk.
+     * @param int|null $maxBytes The maximum number of decompressed `gedcom.ged` bytes to read before
+     *                           aborting, or NULL for the reader's default. Lower it when parsing
+     *                           untrusted archives.
      *
      * @return GedcomDocument The parsed document, its records grouped by type.
      *
      * @throws InvalidArchiveException     When the file cannot be opened as a ZIP archive.
      * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
      */
-    public static function readFile(string $path): GedcomDocument
+    public static function readFile(string $path, ?int $maxBytes = null): GedcomDocument
     {
-        $archive = self::openArchive($path);
+        $archive = self::openArchive($path, $maxBytes);
 
         try {
             return $archive->getDocument();
@@ -133,14 +141,19 @@ final class GedcomZipReader
      * Reads a GEDZIP archive from a stream into the typed model. Because the ZIP facility requires a
      * seekable file, the stream is first spooled to a temporary file, which is removed afterwards.
      *
-     * @param StreamInterface $stream The `.gdz` archive stream.
+     * @param StreamInterface $stream   The `.gdz` archive stream.
+     * @param int|null        $maxBytes The maximum number of decompressed `gedcom.ged` bytes to read
+     *                                  before aborting, or NULL for the reader's default. The cap
+     *                                  bounds the inflated dataset, not the compressed archive the
+     *                                  stream is first spooled to disk as. Lower it when parsing
+     *                                  untrusted archives.
      *
      * @return GedcomDocument The parsed document, its records grouped by type.
      *
      * @throws InvalidArchiveException     When the stream cannot be spooled or opened as a ZIP archive.
      * @throws MissingGedcomEntryException When the archive lacks the mandated `gedcom.ged` entry.
      */
-    public static function read(StreamInterface $stream): GedcomDocument
+    public static function read(StreamInterface $stream, ?int $maxBytes = null): GedcomDocument
     {
         $path = tempnam(sys_get_temp_dir(), 'gdz');
 
@@ -151,7 +164,7 @@ final class GedcomZipReader
         try {
             self::spool($stream, $path);
 
-            return self::readFile($path);
+            return self::readFile($path, $maxBytes);
         } finally {
             unlink($path);
         }

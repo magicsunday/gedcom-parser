@@ -68,15 +68,17 @@ final readonly class GedcomDocumentReader
     /**
      * Reads the stream into a typed aggregate, auto-detecting the schema version from the header.
      *
-     * @param StreamInterface $stream The GEDCOM stream to read.
+     * @param StreamInterface $stream   The GEDCOM stream to read.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting, or NULL
+     *                                  for the reader's default.
      *
      * @return GedcomDocument The populated aggregate (empty when the stream carries no records).
      *
      * @throws MappingException When no registry can be compiled for the detected version.
      */
-    public function read(StreamInterface $stream): GedcomDocument
+    public function read(StreamInterface $stream, ?int $maxBytes = null): GedcomDocument
     {
-        $recordStream = RecordStream::open($stream);
+        $recordStream = RecordStream::open($stream, $maxBytes);
 
         if (!$recordStream instanceof RecordStream) {
             return new GedcomDocument();

@@ -78,13 +78,15 @@ final readonly class TypedGedcomParser
      * order. Yielding keeps the whole file out of memory: the caller processes one record at a
      * time (wrap in `iterator_to_array()` for the full list).
      *
-     * @param StreamInterface $stream The GEDCOM stream to parse.
+     * @param StreamInterface $stream   The GEDCOM stream to parse.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting, or NULL
+     *                                  for the reader's default. Lower it when parsing untrusted input.
      *
      * @return Generator<object>
      */
-    public function parse(StreamInterface $stream): Generator
+    public function parse(StreamInterface $stream, ?int $maxBytes = null): Generator
     {
-        $recordStream = RecordStream::open($stream);
+        $recordStream = RecordStream::open($stream, $maxBytes);
 
         if (!$recordStream instanceof RecordStream) {
             return;
@@ -101,13 +103,15 @@ final readonly class TypedGedcomParser
      * {@see parse()} this holds the whole document in memory; prefer it when the caller needs random
      * access to the records rather than a single streaming pass.
      *
-     * @param StreamInterface $stream The GEDCOM stream to parse.
+     * @param StreamInterface $stream   The GEDCOM stream to parse.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting, or NULL
+     *                                  for the reader's default. Lower it when parsing untrusted input.
      *
      * @return GedcomDocument The populated aggregate.
      */
-    public function parseDocument(StreamInterface $stream): GedcomDocument
+    public function parseDocument(StreamInterface $stream, ?int $maxBytes = null): GedcomDocument
     {
-        $recordStream = RecordStream::open($stream);
+        $recordStream = RecordStream::open($stream, $maxBytes);
 
         if (!$recordStream instanceof RecordStream) {
             return new GedcomDocument();

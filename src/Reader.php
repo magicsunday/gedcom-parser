@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use InvalidArgumentException;
 use MagicSunday\Gedcom\Encoding\AnselDecoder;
+use MagicSunday\Gedcom\Exception\InputTooLargeException;
 use MagicSunday\Gedcom\Exception\LineTooLongException;
 use MagicSunday\Gedcom\Exception\UnableToParseLineException;
 use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
@@ -75,6 +77,17 @@ class Reader
     public const MAX_LINE_LENGTH = 65536;
 
     /**
+     * The default maximum number of bytes read from a source before the parse is aborted (see
+     * {@see InputTooLargeException} for the threat model). The default (512 MiB) sits above the
+     * tens-to-hundreds-of-MB range a legitimate large tree occupies, so it does not reject real data
+     * out of the box while still bounding an otherwise unbounded parse. It caps bytes *read*, not the
+     * object model the parse builds — which is a multiple of the input size — so a service parsing
+     * untrusted input should lower it to roughly its `memory_limit` divided by that expansion factor
+     * rather than rely on this ceiling; a caller with a genuinely huge trusted tree may raise it.
+     */
+    public const int DEFAULT_MAX_BYTES = 512 * 1024 * 1024;
+
+    /**
      * The number of bytes read from the underlying stream per chunk.
      */
     private const int CHUNK_SIZE = 8192;
@@ -113,6 +126,21 @@ class Reader
      * @var StreamInterface
      */
     private StreamInterface $stream;
+
+    /**
+     * The maximum number of bytes that may be read from the stream before the parse is aborted.
+     *
+     * @var int
+     */
+    private int $maxBytes;
+
+    /**
+     * The running total of bytes read from the stream so far, checked against the cap after each
+     * chunk.
+     *
+     * @var int
+     */
+    private int $bytesRead = 0;
 
     /**
      * The last line read from input.
@@ -210,11 +238,20 @@ class Reader
     /**
      * Reader constructor.
      *
-     * @param StreamInterface $stream
+     * @param StreamInterface $stream   The GEDCOM stream to read.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting, or NULL
+     *                                  for {@see self::DEFAULT_MAX_BYTES}. Must be positive.
+     *
+     * @throws InvalidArgumentException When a non-positive cap is given.
      */
-    public function __construct(StreamInterface $stream)
+    public function __construct(StreamInterface $stream, ?int $maxBytes = null)
     {
-        $this->stream = $stream;
+        if (($maxBytes !== null) && ($maxBytes <= 0)) {
+            throw new InvalidArgumentException('The maximum byte count must be a positive integer.');
+        }
+
+        $this->stream   = $stream;
+        $this->maxBytes = $maxBytes ?? self::DEFAULT_MAX_BYTES;
 
         // The .ged extension is only meaningful for an actual on-disk file (wrapper_type
         // "plainfile"). Every php:// wrapper (stdin, memory, fd) and anonymous pipe carries a
@@ -333,7 +370,8 @@ class Reader
      * @return string The next line including its terminator, or an empty string at the end
      *                of the stream
      *
-     * @throws LineTooLongException If a single line exceeds the maximum permitted length.
+     * @throws LineTooLongException   If a single line exceeds the maximum permitted length.
+     * @throws InputTooLargeException When the source exceeds the configured byte cap.
      */
     private function nextLine(): string
     {
@@ -382,10 +420,21 @@ class Reader
      * empty read as EOF.
      *
      * @return void
+     *
+     * @throws InputTooLargeException When the source exceeds the configured byte cap.
      */
     private function pullChunk(): void
     {
         $chunk = $this->stream->read(self::CHUNK_SIZE);
+
+        // Count the raw bytes actually read from the source — pre-transcode, so a UTF-16 or ANSEL
+        // stream is bounded on its true source size — and abort once the cap is passed. This is the
+        // single choke point every read path funnels through, so one check bounds them all.
+        $this->bytesRead += strlen($chunk);
+
+        if ($this->bytesRead > $this->maxBytes) {
+            throw new InputTooLargeException($this->maxBytes);
+        }
 
         if ($chunk === '') {
             if ($this->stream->eof()) {
