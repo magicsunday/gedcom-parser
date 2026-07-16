@@ -194,7 +194,7 @@ final readonly class GedcomObjectMapper
 
         // A value-object leaf is hydrated from its raw payload by a type handler, so its
         // substructures are that handler's input, not unmodelled tags — never shape it class-aware.
-        if (($class !== null) && in_array($class, JsonMapperFactory::LEAF_VALUE_TYPES, true)) {
+        if ($this->isLeafValueType($class)) {
             $class = null;
         }
 
@@ -213,10 +213,21 @@ final readonly class GedcomObjectMapper
      */
     private function parameterClass(string $className, string $property): ?string
     {
+        // Reflection + PHPDoc resolution is asked once per container child of every mapped record, so
+        // memoize the (deterministic) result per class + property.
+        /** @var array<string, class-string|null> $cache */
+        static $cache = [];
+
+        $key = $className . '::' . $property;
+
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
         $constructor = (new ReflectionClass($className))->getConstructor();
 
         if ($constructor === null) {
-            return null;
+            return $cache[$key] = null;
         }
 
         $parameter = null;
@@ -230,16 +241,48 @@ final readonly class GedcomObjectMapper
         }
 
         if ($parameter === null) {
-            return null;
+            return $cache[$key] = null;
         }
 
         $type = $parameter->getType();
 
         if (($type instanceof ReflectionNamedType) && !$type->isBuiltin() && class_exists($type->getName())) {
-            return $type->getName();
+            return $cache[$key] = $type->getName();
         }
 
-        return $this->collectionElementClass($constructor, $parameter->getName());
+        return $cache[$key] = $this->collectionElementClass($constructor, $parameter->getName());
+    }
+
+    /**
+     * Determines whether the given container child maps to a value-object leaf type (a handler-parsed
+     * leaf such as DATE/PLAC/AGE). Such a leaf carries its own `$unknown`, so it is worth shaping as
+     * an object to preserve an out-of-schema child even when it declares no schema substructures.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     * @param string            $property  The lowercased child tag / property name.
+     *
+     * @return bool True when the child maps to a value-object leaf type.
+     */
+    private function isLeafValueChild(?string $className, string $property): bool
+    {
+        if ($className === null) {
+            return false;
+        }
+
+        return $this->isLeafValueType($this->parameterClass($className, $property));
+    }
+
+    /**
+     * Determines whether the given class is a value-object leaf type — one the mapper hydrates from a
+     * raw payload through a registered type handler rather than from its shaped substructures.
+     *
+     * @param class-string|null $class The class to test, or NULL.
+     *
+     * @return bool True when the class is a value-object leaf type.
+     */
+    private function isLeafValueType(?string $class): bool
+    {
+        return ($class !== null) && in_array($class, JsonMapperFactory::LEAF_VALUE_TYPES, true);
     }
 
     /**
@@ -372,8 +415,16 @@ final readonly class GedcomObjectMapper
             // happens to carry; its own line value is preserved under the `value` key. The nested
             // shape is made class-aware for a child that maps to a typed model class, so its own
             // unmodelled substructures are diverted too; a value-object leaf (resolved to NULL)
-            // stays class-unaware, since its substructures are its type handler's input.
-            $value = (($childDefinition instanceof StructureDefinition) && ($childDefinition->substructures !== []))
+            // stays class-unaware, since its substructures are its type handler's input. A
+            // structureless value-object leaf (a 5.5.1 DATE/AGE) is also shaped as an object WHEN it
+            // actually carries children, so an out-of-schema tag beneath it reaches its handler's
+            // `$unknown` rather than being dropped with the bare string; a scalar leaf (no value
+            // class) keeps the plain string, having nowhere to preserve a child.
+            $recurse = ($childDefinition instanceof StructureDefinition)
+                && (($childDefinition->substructures !== [])
+                    || (($child->children !== []) && $this->isLeafValueChild($className, $property)));
+
+            $value = $recurse
                 ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
                 : ($child->value ?? $child->xref);
 

@@ -121,13 +121,15 @@ foreach ($document->individuals[0]->unknown as $raw) {
 
 The parsed value-object leaves (`DATE`/`PLAC`/`AGE`) also carry an `$unknown` list, so an
 out-of-schema tag directly beneath one is preserved on that value object too (e.g.
-`$individual->birt[0]->plac->unknown`) — wherever the leaf is shaped as a structured object (a
-`PLAC` always; a `DATE`/`AGE` in GEDCOM 7.0, where they declare substructures).
+`$individual->birt[0]->date->unknown`). A value-object leaf that carries a child is shaped as a
+structured object for this purpose even when it declares no substructures of its own (a GEDCOM 5.5.1
+`DATE`/`AGE`), so nothing beneath it is lost.
 
-Two narrow boundaries remain: a **scalar** field (such as `SEX`, a bare `?string`) has no object to
-carry an `$unknown`, so a tag beneath it cannot be preserved without modelling that field as an
-object; and a GEDCOM **5.5.1** `DATE`/`AGE`, which declares no substructures and is therefore shaped
-as a plain string, drops a tag beneath it before it reaches the value object.
+One boundary remains, and it is inherent rather than a gap to close: a **scalar** field (such as
+`SEX`, modelled as a bare `?string`) has no object to carry an `$unknown`, so a tag nested beneath it
+cannot be preserved without modelling that field as an object. Every object-bearing position — a
+record, a nested typed substructure, and a value-object leaf — now preserves what it does not
+consume.
 
 #### Bounding the parse (resource limit)
 
