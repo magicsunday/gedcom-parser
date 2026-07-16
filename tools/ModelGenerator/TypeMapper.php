@@ -31,20 +31,20 @@ use function strtolower;
 final class TypeMapper
 {
     /**
-     * The grammar value objects, keyed by the payload's `type-<name>` suffix. A payload not listed
-     * here (and not a pointer or enumeration) maps to a plain string.
+     * The grammar value objects, keyed by the payload's `type-<name>` base name (the `#fragment`, as
+     * in `type-Date#exact`, is ignored). Each maps to the short class name and its fully-qualified
+     * import. A payload not listed here (and not a pointer or enumeration) maps to a plain string.
      *
-     * @var array<string, string>
+     * @var array<string, array{0: string, 1: string}>
      */
     private const array VALUE_OBJECTS = [
-        'Date'         => 'DateValue',
-        'Date-exact'   => 'DateValue',
-        'DATE_VALUE'   => 'DateValue',
-        'DATE_PERIOD'  => 'DateValue',
-        'DATE_EXACT'   => 'DateValue',
-        'PLACE_NAME'   => 'PlaceValue',
-        'Age'          => 'AgeValue',
-        'AGE_AT_EVENT' => 'AgeValue',
+        'Date'         => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
+        'DATE_VALUE'   => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
+        'DATE_PERIOD'  => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
+        'DATE_EXACT'   => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
+        'PLACE_NAME'   => ['PlaceValue', 'MagicSunday\\Gedcom\\ValueObject\\PlaceValue'],
+        'Age'          => ['AgeValue', 'MagicSunday\\Gedcom\\ValueObject\\AgeValue'],
+        'AGE_AT_EVENT' => ['AgeValue', 'MagicSunday\\Gedcom\\ValueObject\\AgeValue'],
     ];
 
     /**
@@ -58,47 +58,50 @@ final class TypeMapper
      */
     public function forLeaf(string $tag, ?string $payload, Cardinality $cardinality): PropertySpec
     {
-        $name  = strtolower($tag);
-        $inner = $this->innerType($payload);
+        $name = strtolower($tag);
+
+        [$inner, $import] = $this->innerType($payload);
 
         if ($cardinality->isCollection()) {
-            return new PropertySpec($name, 'array', 'list<' . $inner . '>', '[]', 'The ' . $tag . ' values.');
+            return new PropertySpec($name, 'array', 'list<' . $inner . '>', '[]', 'The ' . $tag . ' values.', $import);
         }
 
-        return new PropertySpec($name, '?' . $inner, $inner . '|null', 'null', 'The ' . $tag . ' value.');
+        return new PropertySpec($name, '?' . $inner, $inner . '|null', 'null', 'The ' . $tag . ' value.', $import);
     }
 
     /**
-     * Resolves the inner (non-nullable, non-collection) type name from a payload URI.
+     * Resolves the inner (non-nullable, non-collection) type name and its import from a payload URI.
      *
      * @param string|null $payload The registry payload URI, or NULL.
      *
-     * @return string The inner type: a value-object class name, or `string`.
+     * @return array{0: string, 1: string|null} The inner type and its fully-qualified import (NULL for a primitive).
      */
-    private function innerType(?string $payload): string
+    private function innerType(?string $payload): array
     {
         if (($payload === null) || ($payload === '')) {
-            return 'string';
+            return ['string', null];
         }
 
         // A pointer payload (`@<…record-X>@`) is kept as the raw cross-reference string.
         if (str_starts_with($payload, '@<')) {
-            return 'string';
+            return ['string', null];
         }
 
         $matches = [];
 
-        if (preg_match('#/type-([A-Za-z0-9_-]+)$#', $payload, $matches) !== 1) {
-            return 'string';
+        // Capture the `type-<name>` base, tolerating a trailing `#fragment` such as `type-Date#exact`.
+        // The delimiter is `~`, not `#`, so the literal `#` of the fragment does not close the pattern.
+        if (preg_match('~/type-([A-Za-z0-9_-]+)(?:#[A-Za-z0-9_-]+)?$~', $payload, $matches) !== 1) {
+            return ['string', null];
         }
 
         $type = $matches[1];
 
         // Enumerations stay tolerant strings; the typed constant holders are comparison targets.
         if (($type === 'Enum') || ($type === 'List-Enum')) {
-            return 'string';
+            return ['string', null];
         }
 
-        return self::VALUE_OBJECTS[$type] ?? 'string';
+        return self::VALUE_OBJECTS[$type] ?? ['string', null];
     }
 }

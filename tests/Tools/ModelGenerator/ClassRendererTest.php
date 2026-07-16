@@ -93,4 +93,47 @@ class ClassRendererTest extends TestCase
 
         self::assertSame($expected, (new ClassRenderer())->render($spec));
     }
+
+    /**
+     * A class spec with no imports and no properties renders a bare class with an empty constructor.
+     */
+    #[Test]
+    public function itRendersAClassWithNoImportsOrProperties(): void
+    {
+        $spec = new ClassSpec('MagicSunday\\Gedcom\\Model', 'Blank', [], 'A blank class.', []);
+
+        $expected = <<<'PHP'
+            <?php
+
+            /**
+             * This file is part of the package magicsunday/gedcom-parser.
+             *
+             * For the full copyright and license information, please read the
+             * LICENSE file that was distributed with this source code.
+             */
+
+            declare(strict_types=1);
+
+            namespace MagicSunday\Gedcom\Model;
+
+            /**
+             * A blank class.
+             *
+             * This class is generated from the GEDCOM registry. Do not edit it by hand.
+             *
+             * @author  Rico Sonntag <mail@ricosonntag.de>
+             * @license https://opensource.org/licenses/MIT
+             * @link    https://github.com/magicsunday/gedcom-parser/
+             */
+            final readonly class Blank
+            {
+                public function __construct()
+                {
+                }
+            }
+
+            PHP;
+
+        self::assertSame($expected, (new ClassRenderer())->render($spec));
+    }
 }

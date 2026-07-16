@@ -61,7 +61,7 @@ final class ModelGenerator
     private readonly ClassRenderer $renderer;
 
     /**
-     * Constructor.
+     * Wires the type mapper and the class renderer.
      */
     public function __construct()
     {
@@ -87,9 +87,6 @@ final class ModelGenerator
         string $className,
         string $description,
     ): string {
-        /** @var array<string, true> $imports */
-        $imports = [];
-
         /** @var list<PropertySpec> $properties */
         $properties = [];
 
@@ -112,13 +109,12 @@ final class ModelGenerator
             }
 
             if (isset(self::KNOWN_MODELS[$tag])) {
-                [$short, $fqcn]  = self::KNOWN_MODELS[$tag];
-                $imports[$fqcn]  = true;
-                $name            = strtolower($tag);
+                [$short, $fqcn] = self::KNOWN_MODELS[$tag];
+                $name           = strtolower($tag);
 
                 $properties[] = $substructure->cardinality->isCollection()
-                    ? new PropertySpec($name, 'array', 'list<' . $short . '>', '[]', 'The ' . $tag . ' substructures.')
-                    : new PropertySpec($name, '?' . $short, $short . '|null', 'null', 'The ' . $tag . ' substructure.');
+                    ? new PropertySpec($name, 'array', 'list<' . $short . '>', '[]', 'The ' . $tag . ' substructures.', $fqcn)
+                    : new PropertySpec($name, '?' . $short, $short . '|null', 'null', 'The ' . $tag . ' substructure.', $fqcn);
 
                 continue;
             }
@@ -129,8 +125,11 @@ final class ModelGenerator
                 continue;
             }
 
-            // A container substructure needs its own generated class; deferred to the roll-out.
-            if ($childDefinition->substructures !== []) {
+            // A pure container — no payload of its own but bearing substructures — needs its own
+            // generated class and is deferred to the roll-out. A structure with a payload (a value
+            // object, enum, pointer or plain string) is mapped by its payload even when it also
+            // carries substructures (a DATE carries TIME/PHRASE, yet maps to a DateValue).
+            if (($childDefinition->payload === null) && ($childDefinition->substructures !== [])) {
                 continue;
             }
 
@@ -142,14 +141,23 @@ final class ModelGenerator
         }
 
         // Every generated class preserves the substructures the typed model does not consume.
-        $imports[self::RAW_SUBSTRUCTURE] = true;
-        $properties[]                    = new PropertySpec(
+        $properties[] = new PropertySpec(
             'unknown',
             'array',
             'list<RawSubstructure>',
             '[]',
             'Substructures the typed model did not consume (extension and out-of-place tags), preserved verbatim.',
+            self::RAW_SUBSTRUCTURE,
         );
+
+        /** @var array<string, true> $imports */
+        $imports = [];
+
+        foreach ($properties as $property) {
+            if ($property->import !== null) {
+                $imports[$property->import] = true;
+            }
+        }
 
         ksort($imports);
 

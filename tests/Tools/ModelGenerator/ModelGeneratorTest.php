@@ -11,9 +11,12 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Tools\ModelGenerator;
 
+use MagicSunday\Gedcom\Schema\Cardinality;
 use MagicSunday\Gedcom\Schema\GedcomVersion;
 use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
+use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
+use MagicSunday\Gedcom\Schema\Substructure;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassRenderer;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassSpec;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ModelGenerator;
@@ -47,6 +50,11 @@ use const TOKEN_PARSE;
 #[UsesClass(PropertySpec::class)]
 #[UsesClass(TypeMapper::class)]
 #[UsesClass(RegistrySchemaLoader::class)]
+#[UsesClass(Schema::class)]
+#[UsesClass(GedcomVersion::class)]
+#[UsesClass(StructureDefinition::class)]
+#[UsesClass(Substructure::class)]
+#[UsesClass(Cardinality::class)]
 class ModelGeneratorTest extends TestCase
 {
     /**
@@ -85,8 +93,48 @@ class ModelGeneratorTest extends TestCase
         self::assertStringContainsString('use MagicSunday\\Gedcom\\Model\\Note;', $php);
         self::assertStringContainsString('use MagicSunday\\Gedcom\\ValueObject\\RawSubstructure;', $php);
 
-        // The container substructures DATA/EVEN and the inline OBJE are deferred, not emitted.
-        self::assertFalse(str_contains($php, '$data'), 'DATA is a container substructure, deferred.');
-        self::assertFalse(str_contains($php, '$even'), 'EVEN is a container substructure, deferred.');
+        // DATA is a pure container (no payload of its own) → deferred to its own class, not emitted.
+        self::assertFalse(str_contains($php, '$data'), 'DATA is a pure container substructure, deferred.');
+    }
+
+    /**
+     * A leaf carrying a grammar value-object payload (`DATE` → `DateValue`) is emitted as that typed
+     * property AND its `use` import — even though a date also bears substructures — so the generated
+     * class references a defined type.
+     */
+    #[Test]
+    public function itImportsAValueObjectLeaf(): void
+    {
+        // A date carries a value payload and its own TIME/PHRASE substructures; it must map to the
+        // value object (by payload), not be deferred as a container.
+        $date = new StructureDefinition(
+            'urn:date',
+            'DATE',
+            'https://gedcom.io/terms/v7/type-Date#exact',
+            null,
+            ['TIME' => [new Substructure('urn:time', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $parent = new StructureDefinition(
+            'urn:parent',
+            'FOO',
+            null,
+            null,
+            ['DATE' => [new Substructure('urn:date', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $schema = new Schema(['urn:date' => $date, 'urn:parent' => $parent]);
+
+        $php = (new ModelGenerator())->generate(
+            $parent,
+            $schema,
+            'MagicSunday\\Gedcom\\Model\\Substructure\\Common',
+            'GeneratedFoo',
+            'A generated container.',
+        );
+
+        self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
+        self::assertStringContainsString('use MagicSunday\\Gedcom\\ValueObject\\DateValue;', $php);
+        self::assertStringContainsString('public ?DateValue $date = null,', $php);
     }
 }

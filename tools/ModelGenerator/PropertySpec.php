@@ -23,11 +23,13 @@ namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 final readonly class PropertySpec
 {
     /**
-     * @param string $name        The property name (the lowercased GEDCOM tag).
-     * @param string $phpType      The native PHP type declaration (e.g. `?string`, `array`).
-     * @param string $docType      The PHPDoc type (e.g. `string|null`, `list<Note>`).
-     * @param string $default      The default value literal (e.g. `null`, `[]`).
-     * @param string $description  The capitalised property description, ending with a period.
+     * @param string      $name        The property name (the lowercased GEDCOM tag).
+     * @param string      $phpType     The native PHP type declaration (e.g. `?string`, `array`).
+     * @param string      $docType     The PHPDoc type (e.g. `string|null`, `list<Note>`).
+     * @param string      $default     The default value literal (e.g. `null`, `[]`).
+     * @param string      $description The capitalised property description, ending with a period.
+     * @param string|null $import      The fully-qualified class the property's type must import, or
+     *                                 NULL for a primitive type needing none.
      */
     public function __construct(
         public string $name,
@@ -35,6 +37,7 @@ final readonly class PropertySpec
         public string $docType,
         public string $default,
         public string $description,
+        public ?string $import = null,
     ) {
     }
 }
