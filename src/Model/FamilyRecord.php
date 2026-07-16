@@ -32,6 +32,16 @@ final readonly class FamilyRecord
      * @param string|null              $wife    The wife's individual cross-reference pointer, or NULL.
      * @param list<string>             $chil    The children's individual cross-reference pointers.
      * @param list<EventDetail>        $marr    The marriage events.
+     * @param list<EventDetail>        $anul    The annulment events (ANUL).
+     * @param list<EventDetail>        $cens    The census events (CENS).
+     * @param list<EventDetail>        $div     The divorce events (DIV).
+     * @param list<EventDetail>        $divf    The divorce-filed events (DIVF).
+     * @param list<EventDetail>        $enga    The engagement events (ENGA).
+     * @param list<EventDetail>        $marb    The marriage-banns events (MARB).
+     * @param list<EventDetail>        $marc    The marriage-contract events (MARC).
+     * @param list<EventDetail>        $marl    The marriage-licence events (MARL).
+     * @param list<EventDetail>        $mars    The marriage-settlement events (MARS).
+     * @param list<AttributeDetail>    $resi    The residences (RESI).
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -44,6 +54,16 @@ final readonly class FamilyRecord
         public ?string $wife = null,
         public array $chil = [],
         public array $marr = [],
+        public array $anul = [],
+        public array $cens = [],
+        public array $div = [],
+        public array $divf = [],
+        public array $enga = [],
+        public array $marb = [],
+        public array $marc = [],
+        public array $marl = [],
+        public array $mars = [],
+        public array $resi = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
