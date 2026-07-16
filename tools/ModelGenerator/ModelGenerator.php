@@ -32,13 +32,10 @@ use function strtolower;
  * does not consume is lost. A substructure that is itself a container needs its own generated
  * class and is skipped until the full roll-out wires the whole structure graph.
  *
- * This is the generator ENGINE; its type-mapping table is deliberately minimal and refined,
- * structure by structure, by the full roll-out. Known table gaps deferred there: a same-tag
- * inline/pointer pair on a non-known tag maps only its first variant; a version-specific
- * value-object payload (GEDCOM 7.0 `PLAC` carries `type-List#Text`, not `type-PLACE_NAME`) is not
- * yet recognised; and the exact-date structure (`CHAN`/`CREA`.`DATE`, payload `type-Date#exact`)
- * maps to `DateValue` rather than the `TIME`-bearing {@see \MagicSunday\Gedcom\Model\ExactDate}. The
- * engine never yet writes committed classes, so these gaps do not affect the shipped model.
+ * This is the generator ENGINE; its type-mapping table is refined, structure by structure, by the
+ * full roll-out. One table gap remains deferred there: a same-tag inline/pointer pair on a
+ * non-known tag maps only its first variant. The engine never yet writes committed classes, so this
+ * does not affect the shipped model.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -148,7 +145,7 @@ final readonly class ModelGenerator
             // (DATA) and a non-value-object payload with substructures (ADDR carries ADR1/CITY and a
             // string, which the mapper shapes as an array, not a scalar) both need their own class.
             if (($childDefinition->substructures !== [])
-                && !$this->typeMapper->mapsToValueObject($childDefinition->payload)
+                && !$this->typeMapper->mapsToValueObject($childDefinition->tag, $childDefinition->payload)
             ) {
                 continue;
             }
