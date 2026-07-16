@@ -11,8 +11,11 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 
+use MagicSunday\Gedcom\Model\Note;
+use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 use function array_keys;
 use function ksort;
@@ -24,7 +27,7 @@ use function strtolower;
  * {@see TypeMapper} for its leaf substructures and the {@see ClassRenderer} for the output.
  *
  * A pointer structure keeps its target's cross-reference; a leaf substructure becomes a typed
- * property; a substructure already covered by a hand-written model (such as `NOTE` → {@see \MagicSunday\Gedcom\Model\Note})
+ * property; a substructure already covered by a hand-written model (such as `NOTE` → {@see Note})
  * reuses that class; and every class carries the `$unknown` catch-all so nothing the typed model
  * does not consume is lost. A substructure that is itself a container needs its own generated
  * class and is skipped until the full roll-out wires the whole structure graph.
@@ -41,7 +44,7 @@ use function strtolower;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-final class ModelGenerator
+final readonly class ModelGenerator
 {
     /**
      * Substructures already covered by a hand-written model, keyed by tag: the short class name and
@@ -52,24 +55,24 @@ final class ModelGenerator
      * @var array<string, array{0: string, 1: string}>
      */
     private const array KNOWN_MODELS = [
-        'NOTE' => ['Note', 'MagicSunday\\Gedcom\\Model\\Note'],
-        'SOUR' => ['SourceCitation', 'MagicSunday\\Gedcom\\Model\\Substructure\\Source\\SourceCitation'],
+        'NOTE' => ['Note', Note::class],
+        'SOUR' => ['SourceCitation', SourceCitation::class],
     ];
 
     /**
      * The fully-qualified name of the preserved-substructure value object every class carries.
      */
-    private const string RAW_SUBSTRUCTURE = 'MagicSunday\\Gedcom\\ValueObject\\RawSubstructure';
+    private const string RAW_SUBSTRUCTURE = RawSubstructure::class;
 
     /**
      * The type mapper resolving a leaf substructure's typed property.
      */
-    private readonly TypeMapper $typeMapper;
+    private TypeMapper $typeMapper;
 
     /**
      * The renderer emitting the class source.
      */
-    private readonly ClassRenderer $renderer;
+    private ClassRenderer $renderer;
 
     /**
      * Wires the type mapper and the class renderer.

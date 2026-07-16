@@ -12,6 +12,9 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 
 use MagicSunday\Gedcom\Schema\Cardinality;
+use MagicSunday\Gedcom\ValueObject\AgeValue;
+use MagicSunday\Gedcom\ValueObject\DateValue;
+use MagicSunday\Gedcom\ValueObject\PlaceValue;
 
 use function preg_match;
 use function str_starts_with;
@@ -38,13 +41,13 @@ final class TypeMapper
      * @var array<string, array{0: string, 1: string}>
      */
     private const array VALUE_OBJECTS = [
-        'Date'         => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
-        'DATE_VALUE'   => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
-        'DATE_PERIOD'  => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
-        'DATE_EXACT'   => ['DateValue', 'MagicSunday\\Gedcom\\ValueObject\\DateValue'],
-        'PLACE_NAME'   => ['PlaceValue', 'MagicSunday\\Gedcom\\ValueObject\\PlaceValue'],
-        'Age'          => ['AgeValue', 'MagicSunday\\Gedcom\\ValueObject\\AgeValue'],
-        'AGE_AT_EVENT' => ['AgeValue', 'MagicSunday\\Gedcom\\ValueObject\\AgeValue'],
+        'Date'         => ['DateValue', DateValue::class],
+        'DATE_VALUE'   => ['DateValue', DateValue::class],
+        'DATE_PERIOD'  => ['DateValue', DateValue::class],
+        'DATE_EXACT'   => ['DateValue', DateValue::class],
+        'PLACE_NAME'   => ['PlaceValue', PlaceValue::class],
+        'Age'          => ['AgeValue', AgeValue::class],
+        'AGE_AT_EVENT' => ['AgeValue', AgeValue::class],
     ];
 
     /**

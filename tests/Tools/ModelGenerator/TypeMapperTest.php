@@ -52,19 +52,19 @@ class TypeMapperTest extends TestCase
 
         return [
             // tag,   payload,   cardinality, phpType,      docType,          default, import
-            'single string'   => ['PAGE', 'http://www.w3.org/2001/XMLSchema#string', '{0:1}', '?string', 'string|null', 'null', null],
-            'single enum'     => ['QUAY', $enum, '{0:1}', '?string', 'string|null', 'null', null],
-            'single list-enum' => ['RESN', $list, '{0:1}', '?string', 'string|null', 'null', null],
-            'single date'     => ['DATE', $date, '{0:1}', '?DateValue', 'DateValue|null', 'null', $vo . 'DateValue'],
+            'single string'      => ['PAGE', 'http://www.w3.org/2001/XMLSchema#string', '{0:1}', '?string', 'string|null', 'null', null],
+            'single enum'        => ['QUAY', $enum, '{0:1}', '?string', 'string|null', 'null', null],
+            'single list-enum'   => ['RESN', $list, '{0:1}', '?string', 'string|null', 'null', null],
+            'single date'        => ['DATE', $date, '{0:1}', '?DateValue', 'DateValue|null', 'null', $vo . 'DateValue'],
             'date with fragment' => ['DATE', $exact, '{0:1}', '?DateValue', 'DateValue|null', 'null', $vo . 'DateValue'],
-            'single place'    => ['PLAC', $place, '{0:1}', '?PlaceValue', 'PlaceValue|null', 'null', $vo . 'PlaceValue'],
-            'single age'      => ['AGE', $age, '{0:1}', '?AgeValue', 'AgeValue|null', 'null', $vo . 'AgeValue'],
-            'pointer single'  => ['SUBM', '@<https://gedcom.io/terms/v7/record-SUBM>@', '{0:1}', '?string', 'string|null', 'null', null],
-            'null payload'    => ['TEXT', null, '{0:1}', '?string', 'string|null', 'null', null],
-            'empty payload'   => ['TEXT', '', '{0:1}', '?string', 'string|null', 'null', null],
-            'unknown type'    => ['FOO', 'https://gedcom.io/terms/v7/type-Weird', '{0:1}', '?string', 'string|null', 'null', null],
-            'list string'     => ['REFN', 'http://www.w3.org/2001/XMLSchema#string', '{0:M}', 'array', 'list<string>', '[]', null],
-            'list date'       => ['DATE', $date, '{0:M}', 'array', 'list<DateValue>', '[]', $vo . 'DateValue'],
+            'single place'       => ['PLAC', $place, '{0:1}', '?PlaceValue', 'PlaceValue|null', 'null', $vo . 'PlaceValue'],
+            'single age'         => ['AGE', $age, '{0:1}', '?AgeValue', 'AgeValue|null', 'null', $vo . 'AgeValue'],
+            'pointer single'     => ['SUBM', '@<https://gedcom.io/terms/v7/record-SUBM>@', '{0:1}', '?string', 'string|null', 'null', null],
+            'null payload'       => ['TEXT', null, '{0:1}', '?string', 'string|null', 'null', null],
+            'empty payload'      => ['TEXT', '', '{0:1}', '?string', 'string|null', 'null', null],
+            'unknown type'       => ['FOO', 'https://gedcom.io/terms/v7/type-Weird', '{0:1}', '?string', 'string|null', 'null', null],
+            'list string'        => ['REFN', 'http://www.w3.org/2001/XMLSchema#string', '{0:M}', 'array', 'list<string>', '[]', null],
+            'list date'          => ['DATE', $date, '{0:M}', 'array', 'list<DateValue>', '[]', $vo . 'DateValue'],
         ];
     }
 

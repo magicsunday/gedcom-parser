@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Tools\ModelGenerator;
 
+use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassRenderer;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassSpec;
 use MagicSunday\Gedcom\Tools\ModelGenerator\PropertySpec;
@@ -43,7 +44,7 @@ class ClassRendererTest extends TestCase
         $spec = new ClassSpec(
             'MagicSunday\\Gedcom\\Model\\Substructure\\Source',
             'Demo',
-            ['MagicSunday\\Gedcom\\Model\\Note'],
+            [Note::class],
             'A demo generated citation.',
             [
                 new PropertySpec('page', '?string', 'string|null', 'null', 'The page within the source.'),
