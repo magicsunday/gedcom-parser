@@ -230,6 +230,39 @@ class ReaderReadPathTest extends TestCase
     }
 
     /**
+     * A pathological stream that never yields a byte and never signals end of stream must not spin
+     * the reader forever: past a bounded number of consecutive empty reads the stalled stream is
+     * treated as ended, so read() reports end of stream instead of hanging. This complements
+     * {@see retriesReadWhenNoBytesAreMomentarilyAvailable()}, which pins that a single momentary
+     * empty read is still retried rather than ending the stream prematurely.
+     */
+    #[Test]
+    public function aStreamThatNeverSignalsEofIsNotSpunForever(): void
+    {
+        $stream = new class extends Stream {
+            public function __construct()
+            {
+                parent::__construct('php://temp', 'r+');
+            }
+
+            public function read(int $length): string
+            {
+                return '';
+            }
+
+            public function eof(): bool
+            {
+                return false;
+            }
+        };
+
+        self::assertFalse(
+            (new Reader($stream))->read(),
+            'A never-terminating stream must be treated as ended rather than spun forever.'
+        );
+    }
+
+    /**
      * back() is a no-op once the stream is exhausted: the end-of-stream empty line cannot be
      * put back, and a following read() still reports end of stream.
      */
