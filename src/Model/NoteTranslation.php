@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * A GEDCOM 7.0 note-text translation (the `TRAN` substructure of a shared note).
  *
@@ -27,14 +29,16 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class NoteTranslation
 {
     /**
-     * @param string|null $value The translated note text (the TRAN line value), or NULL when absent.
-     * @param string|null $lang  The BCP-47 language tag of the translation (TRAN.LANG), or NULL when absent.
-     * @param string|null $mime  The media type of the translated text (TRAN.MIME), or NULL when absent.
+     * @param string|null           $value   The translated note text (the TRAN line value), or NULL when absent.
+     * @param string|null           $lang    The BCP-47 language tag of the translation (TRAN.LANG), or NULL when absent.
+     * @param string|null           $mime    The media type of the translated text (TRAN.MIME), or NULL when absent.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?string $lang = null,
         public ?string $mime = null,
+        public array $unknown = [],
     ) {
     }
 }

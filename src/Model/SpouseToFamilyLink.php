@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * A typed spouse-to-family link (the individual's `FAMS` structure).
  *
@@ -24,10 +26,12 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class SpouseToFamilyLink
 {
     /**
-     * @param string $xref The linked family's cross-reference pointer.
+     * @param string                $xref    The linked family's cross-reference pointer.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public string $xref,
+        public array $unknown = [],
     ) {
     }
 }

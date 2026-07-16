@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * An inline GEDCOM note (the `NOTE` substructure carried inside another structure).
  *
@@ -27,16 +29,18 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class Note
 {
     /**
-     * @param string|null           $value The note text, or a pointer to a shared note in 5.5.1, or NULL when absent.
-     * @param string|null           $lang  The GEDCOM 7.0 BCP-47 language tag (NOTE.LANG), or NULL when absent.
-     * @param string|null           $mime  The GEDCOM 7.0 media type of the text (NOTE.MIME), or NULL when absent.
-     * @param list<NoteTranslation> $tran  The GEDCOM 7.0 translations of the note text (NOTE.TRAN); empty when none.
+     * @param string|null           $value   The note text, or a pointer to a shared note in 5.5.1, or NULL when absent.
+     * @param string|null           $lang    The GEDCOM 7.0 BCP-47 language tag (NOTE.LANG), or NULL when absent.
+     * @param string|null           $mime    The GEDCOM 7.0 media type of the text (NOTE.MIME), or NULL when absent.
+     * @param list<NoteTranslation> $tran    The GEDCOM 7.0 translations of the note text (NOTE.TRAN); empty when none.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?string $lang = null,
         public ?string $mime = null,
         public array $tran = [],
+        public array $unknown = [],
     ) {
     }
 }
