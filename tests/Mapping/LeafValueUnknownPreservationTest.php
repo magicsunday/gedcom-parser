@@ -113,6 +113,21 @@ class LeafValueUnknownPreservationTest extends TestCase
     }
 
     /**
+     * A GEDCOM 5.5.1 `DATE` declares no substructures, so it would ordinarily be shaped as a bare
+     * string; but when it actually carries an out-of-schema child, it is shaped as a structured
+     * object so the extension is preserved on the DateValue's `$unknown` — the date still parses.
+     */
+    #[Test]
+    public function preservesAnExtensionUnderAStructurelessLeafThatCarriesChildren(): void
+    {
+        $date = $this->parse("1 BIRT\n2 DATE 1 JAN 1900\n3 _CUSTOM x\n")->birt[0]->date;
+
+        self::assertNotNull($date);
+        self::assertSame('1 JAN 1900', $date->raw);
+        self::assertSame('x', $this->byTag($date->unknown)['_CUSTOM']->value ?? null);
+    }
+
+    /**
      * A recognised substructure the leaf's handler consumes (a `PLAC`'s `MAP`) is NOT routed into
      * `$unknown`: the coordinates are parsed and `$unknown` stays empty. Only out-of-schema tags land
      * on the value object's `$unknown`.
