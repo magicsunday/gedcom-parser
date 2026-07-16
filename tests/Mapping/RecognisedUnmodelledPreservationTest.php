@@ -34,7 +34,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * A level-0 record's schema-recognised substructure that the typed record does not model as a
- * property (e.g. `OCCU` on an individual) is no longer silently dropped: the object mapper diverts
+ * property (e.g. `REFN` on an individual) is no longer silently dropped: the object mapper diverts
  * it — like an out-of-schema tag — onto the record's `$unknown` list as a {@see RawSubstructure},
  * closing the recognised-but-unmodelled ("point 2") silent-loss gap at the record level (#143).
  *
@@ -61,18 +61,18 @@ use PHPUnit\Framework\TestCase;
 class RecognisedUnmodelledPreservationTest extends TestCase
 {
     /**
-     * A recognised-but-unmodelled `OCCU` is preserved on `$unknown` with its tag and value.
+     * A recognised-but-unmodelled `REFN` is preserved on `$unknown` with its tag and value.
      */
     #[Test]
     public function preservesARecognisedButUnmodelledRecordChild(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Baker\n0 TRLR\n"
+            "0 @I1@ INDI\n1 REFN ID-1\n0 TRLR\n"
         )->individuals[0];
 
         $byTag = $this->byTag($individual->unknown);
-        self::assertArrayHasKey('OCCU', $byTag);
-        self::assertSame('Baker', $byTag['OCCU']->value);
+        self::assertArrayHasKey('REFN', $byTag);
+        self::assertSame('ID-1', $byTag['REFN']->value);
     }
 
     /**
@@ -82,13 +82,13 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesTheNestedSubtreeOfAnUnmodelledChild(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Baker\n2 AGNC A guild\n0 TRLR\n"
+            "0 @I1@ INDI\n1 REFN ID-1\n2 TYPE user\n0 TRLR\n"
         )->individuals[0];
 
-        $occu = $this->byTag($individual->unknown)['OCCU'];
-        self::assertSame('Baker', $occu->value);
-        self::assertSame('AGNC', $occu->children[0]->tag);
-        self::assertSame('A guild', $occu->children[0]->value);
+        $refn = $this->byTag($individual->unknown)['REFN'];
+        self::assertSame('ID-1', $refn->value);
+        self::assertSame('TYPE', $refn->children[0]->tag);
+        self::assertSame('user', $refn->children[0]->value);
     }
 
     /**
@@ -98,11 +98,11 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesOutOfSchemaAndUnmodelledTogether(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Baker\n1 _CUSTOM extension\n0 TRLR\n"
+            "0 @I1@ INDI\n1 REFN ID-1\n1 _CUSTOM extension\n0 TRLR\n"
         )->individuals[0];
 
         $byTag = $this->byTag($individual->unknown);
-        self::assertSame('Baker', $byTag['OCCU']->value);
+        self::assertSame('ID-1', $byTag['REFN']->value);
         self::assertSame('extension', $byTag['_CUSTOM']->value);
     }
 
@@ -130,10 +130,10 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesARecordChildOnTheRecordNotANestedObject(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Baker\n1 BIRT\n2 DATE 1 JAN 1900\n0 TRLR\n"
+            "0 @I1@ INDI\n1 REFN ID-1\n1 BIRT\n2 DATE 1 JAN 1900\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertArrayHasKey('OCCU', $this->byTag($individual->unknown));
+        self::assertArrayHasKey('REFN', $this->byTag($individual->unknown));
         self::assertSame([], $individual->birt[0]->unknown);
     }
 
@@ -145,18 +145,18 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesEveryOccurrenceOfACollectionTag(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Baker\n1 OCCU Miller\n0 TRLR\n"
+            "0 @I1@ INDI\n1 REFN ID-1\n1 REFN ID-2\n0 TRLR\n"
         )->individuals[0];
 
-        $occupations = [];
+        $references = [];
 
         foreach ($individual->unknown as $substructure) {
-            if ($substructure->tag === 'OCCU') {
-                $occupations[] = $substructure->value;
+            if ($substructure->tag === 'REFN') {
+                $references[] = $substructure->value;
             }
         }
 
-        self::assertSame(['Baker', 'Miller'], $occupations);
+        self::assertSame(['ID-1', 'ID-2'], $references);
     }
 
     /**

@@ -294,7 +294,9 @@ surname and suffix from the `John /Doe/` slash convention (an explicit `GIVN`/`S
 `NSFX`/`NICK` piece always winning) and offers a slash-free `getDisplayName()` — its sex, its
 life events (birth, death, burial, baptism, christening, cremation, confirmation, emigration,
 immigration, naturalization, ordination, graduation, retirement, probate, will and the like, each a
-typed `EventDetail` list), and its child- and
+typed `EventDetail` list) and its attributes (occupation, residence, education, religion,
+nationality, title, description and the like, each a typed `AttributeDetail` list carrying the
+attribute's value and `TYPE` alongside the same event detail), and its child- and
 spouse-to-family links (`FAMC`/`FAMS`), a `FamilyRecord` exposes its partner and child
 cross-references and its marriage events — each event a typed `EventDetail` (date, place, age) —
 a `SourceRecord` exposes its descriptive fields (title, author, publication, abbreviation,

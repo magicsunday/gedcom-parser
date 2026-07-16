@@ -16,10 +16,11 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 /**
  * A typed GEDCOM individual (INDI) record.
  *
- * A nested typed record: alongside its cross-reference identifier it exposes its events as typed
- * {@see EventDetail} objects, each carrying the typed value-object leaves the mapping layer builds
- * from the parsed tree. Each event is a list because GEDCOM 5.5.1 permits it to repeat ({0:M},
- * e.g. conflicting sources).
+ * A nested typed record: alongside its cross-reference identifier it exposes its life events as
+ * typed {@see EventDetail} objects and its attributes as typed {@see AttributeDetail} objects, each
+ * carrying the typed value-object leaves the mapping layer builds from the parsed tree. Each is a
+ * list because GEDCOM permits the tag to repeat ({0:M}, e.g. conflicting sources or several
+ * occupations).
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -53,6 +54,20 @@ final readonly class IndividualRecord
      * @param list<EventDetail>        $will    The will events (WILL).
      * @param list<EventDetail>        $adop    The adoption events (ADOP).
      * @param list<EventDetail>        $cens    The census events (CENS).
+     * @param list<AttributeDetail>    $occu    The occupations (OCCU).
+     * @param list<AttributeDetail>    $resi    The residences (RESI).
+     * @param list<AttributeDetail>    $educ    The education attributes (EDUC).
+     * @param list<AttributeDetail>    $reli    The religious affiliations (RELI).
+     * @param list<AttributeDetail>    $cast    The caste attributes (CAST).
+     * @param list<AttributeDetail>    $dscr    The physical descriptions (DSCR).
+     * @param list<AttributeDetail>    $idno    The identifying numbers (IDNO).
+     * @param list<AttributeDetail>    $nati    The nationalities (NATI).
+     * @param list<AttributeDetail>    $nchi    The child-count attributes (NCHI).
+     * @param list<AttributeDetail>    $nmr     The marriage-count attributes (NMR).
+     * @param list<AttributeDetail>    $prop    The property attributes (PROP).
+     * @param list<AttributeDetail>    $ssn     The social-security numbers (SSN).
+     * @param list<AttributeDetail>    $titl    The nobility titles (TITL).
+     * @param list<AttributeDetail>    $fact    The generic facts (FACT).
      * @param list<ChildToFamilyLink>  $famc    The families in which the individual is a child.
      * @param list<SpouseToFamilyLink> $fams    The families in which the individual is a partner.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
@@ -87,6 +102,20 @@ final readonly class IndividualRecord
         public array $will = [],
         public array $adop = [],
         public array $cens = [],
+        public array $occu = [],
+        public array $resi = [],
+        public array $educ = [],
+        public array $reli = [],
+        public array $cast = [],
+        public array $dscr = [],
+        public array $idno = [],
+        public array $nati = [],
+        public array $nchi = [],
+        public array $nmr = [],
+        public array $prop = [],
+        public array $ssn = [],
+        public array $titl = [],
+        public array $fact = [],
         public array $famc = [],
         public array $fams = [],
         public array $uid = [],

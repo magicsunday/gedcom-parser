@@ -16,7 +16,7 @@ use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\GedcomVersionDetector;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\RecordStream;
-use MagicSunday\Gedcom\Model\EventDetail;
+use MagicSunday\Gedcom\Model\AttributeDetail;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Parse\GedcomNode;
@@ -36,16 +36,17 @@ use PHPUnit\Framework\TestCase;
 use function array_map;
 
 /**
- * The individual record now types the remaining standard GEDCOM life-event tags (baptism,
- * christening, cremation, emigration, …) as {@see EventDetail} lists — the same shape as birth and
- * death — so a consumer navigates them typed rather than reaching for `$unknown` (#132, additive
- * roll-out).
+ * The individual record now types the standard GEDCOM attribute tags (occupation, residence,
+ * education, …) as {@see AttributeDetail} lists — carrying the attribute's value, its `TYPE`, and the
+ * same date/place/age event detail — so a consumer navigates them typed rather than reaching for
+ * `$unknown` (#132, additive roll-out).
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 #[CoversClass(IndividualRecord::class)]
+#[CoversClass(AttributeDetail::class)]
 #[UsesClass(Parser::class)]
 #[UsesClass(StreamFactory::class)]
 #[UsesClass(Reader::class)]
@@ -60,71 +61,75 @@ use function array_map;
 #[UsesClass(Schema::class)]
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
-#[UsesClass(EventDetail::class)]
 #[UsesClass(RawSubstructure::class)]
-class IndividualEventsTest extends TestCase
+class IndividualAttributesTest extends TestCase
 {
     /**
-     * A baptism event is typed as an EventDetail, carrying its date and place, and is no longer
-     * left on `$unknown`.
+     * A value-bearing occupation is typed with its value, classifying TYPE and its event detail.
      */
     #[Test]
-    public function typesABaptismEvent(): void
+    public function typesAValueBearingOccupation(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 BAPM\n2 DATE 2 FEB 1900\n2 PLAC Berlin\n0 TRLR\n"
+            "0 @I1@ INDI\n1 OCCU Baker\n2 TYPE Trade\n2 DATE 1900\n2 PLAC Berlin\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertCount(1, $individual->bapm);
-        self::assertSame('2 FEB 1900', $individual->bapm[0]->date?->raw);
-        self::assertSame('Berlin', $individual->bapm[0]->plac?->raw);
+        self::assertCount(1, $individual->occu);
+
+        $occu = $individual->occu[0];
+        self::assertSame('Baker', $occu->value);
+        self::assertSame('Trade', $occu->type);
+        self::assertSame('1900', $occu->date?->raw);
+        self::assertSame('Berlin', $occu->plac?->raw);
         self::assertSame([], $this->tags($individual->unknown));
     }
 
     /**
-     * Several distinct life events are each typed onto their own property.
+     * A value-less residence (5.5.1 `RESI`) is typed with a NULL value and its place detail.
      */
     #[Test]
-    public function typesTheStandardLifeEvents(): void
+    public function typesAValuelessResidence(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 CHR\n2 DATE 3 MAR 1900\n1 CREM\n2 PLAC Hamburg\n1 EMIG\n2 DATE 1920\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RESI\n2 PLAC Hamburg\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertSame('3 MAR 1900', $individual->chr[0]->date?->raw);
-        self::assertSame('Hamburg', $individual->crem[0]->plac?->raw);
-        self::assertSame('1920', $individual->emig[0]->date?->raw);
+        self::assertCount(1, $individual->resi);
+        self::assertNull($individual->resi[0]->value);
+        self::assertSame('Hamburg', $individual->resi[0]->plac?->raw);
         self::assertSame([], $this->tags($individual->unknown));
     }
 
     /**
-     * The adoption and census life events are typed too.
+     * Several distinct attributes are each typed onto their own property, including a count-valued
+     * one (`NCHI`) and a title (`TITL`).
      */
     #[Test]
-    public function typesAdoptionAndCensus(): void
+    public function typesDistinctAttributes(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 ADOP\n2 DATE 1905\n1 CENS\n2 DATE 1910\n2 PLAC Munich\n0 TRLR\n"
+            "0 @I1@ INDI\n1 EDUC University\n1 NCHI 3\n1 TITL Baron\n1 RELI Catholic\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertSame('1905', $individual->adop[0]->date?->raw);
-        self::assertSame('1910', $individual->cens[0]->date?->raw);
-        self::assertSame('Munich', $individual->cens[0]->plac?->raw);
+        self::assertSame('University', $individual->educ[0]->value);
+        self::assertSame('3', $individual->nchi[0]->value);
+        self::assertSame('Baron', $individual->titl[0]->value);
+        self::assertSame('Catholic', $individual->reli[0]->value);
         self::assertSame([], $this->tags($individual->unknown));
     }
 
     /**
-     * A tag not modelled even after this batch (a user reference `REFN`) is still preserved on
-     * `$unknown`, unchanged.
+     * A tag beneath an attribute that AttributeDetail does not model (an extension) is still
+     * preserved on the attribute's own `$unknown`, not lost.
      */
     #[Test]
-    public function stillPreservesAStillUnmodelledTag(): void
+    public function preservesAnUnmodelledTagUnderAnAttribute(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 OCCU Baker\n2 _CUSTOM x\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->occu[0]->unknown));
     }
 
     /**
@@ -140,7 +145,7 @@ class IndividualEventsTest extends TestCase
     }
 
     /**
-     * Parses the given individual body into the first individual record.
+     * Parses the given GEDCOM records into the document.
      *
      * @param string $body The GEDCOM records.
      *
