@@ -103,24 +103,25 @@ its declared URIs (a `list`, since 7.0 allows a tag to be documented more than o
 
 #### Preserving unmodelled substructures
 
-A substructure whose tag the schema does not permit at its position — every extension (`_`-prefixed
-vendor tag such as `_WT_USER`) and any out-of-place tag — is not dropped: it is preserved verbatim on
-the carrying object's `$unknown` list as a `MagicSunday\Gedcom\ValueObject\RawSubstructure`
-(`->tag`, `->value`, `->xref`, `->children`), at every object-bearing level of the typed record model.
-So a custom or otherwise unrecognised tag remains reachable and walkable rather than being silently
-lost:
+A substructure the typed model does not consume is not dropped: it is preserved verbatim on the
+carrying object's `$unknown` list as a `MagicSunday\Gedcom\ValueObject\RawSubstructure` (`->tag`,
+`->value`, `->xref`, `->children`), at every object-bearing level of the typed record model. This
+covers both an extension (`_`-prefixed vendor tag such as `_WT_USER`) or out-of-place tag, and — at
+the **record** level — a tag the schema *does* permit but that the record does not yet model as a
+typed field (such as `OCCU` or `RESI` on an individual). So an unrecognised or not-yet-modelled tag
+remains reachable and walkable rather than being silently lost:
 
 ```php
 foreach ($document->individuals[0]->unknown as $raw) {
-    echo $raw->tag, ' = ', $raw->value ?? '', "\n"; // e.g. "_CUSTOM = …"
+    echo $raw->tag, ' = ', $raw->value ?? '', "\n"; // e.g. "_CUSTOM = …" or "OCCU = Baker"
 }
 ```
 
-Two boundaries remain, both narrowing as the typed model grows: a tag the schema *does* permit here
-but that is not yet modelled (it lands in a typed field once that structure is typed, not in
-`$unknown`), and a tag nested under a **leaf** substructure — a scalar field (such as `SEX`) or a
-parsed value object (`DATE`/`PLAC`/`AGE`) — which carries no `$unknown` list of its own, so an
-extension beneath a leaf is not yet captured.
+One boundary remains, narrowing as the typed model grows: a schema-recognised-but-unmodelled tag
+nested *below* the record level (under a modelled substructure such as an event) is not yet diverted,
+and a tag nested under a **leaf** substructure — a scalar field (such as `SEX`) or a parsed value
+object (`DATE`/`PLAC`/`AGE`) — carries no `$unknown` list of its own, so an extension beneath a leaf
+is not yet captured.
 
 #### Bounding the parse (resource limit)
 

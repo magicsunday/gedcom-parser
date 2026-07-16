@@ -17,6 +17,7 @@ use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\Schema\Substructure;
 use MagicSunday\JsonMapper;
+use ReflectionClass;
 use Throwable;
 
 use function array_key_exists;
@@ -72,7 +73,7 @@ final readonly class GedcomObjectMapper
      */
     public function map(GedcomNode $node, StructureDefinition $definition, string $className): object
     {
-        $shaped = $this->shape($node, $definition);
+        $shaped = $this->shape($node, $definition, $this->consumedTags($className));
 
         try {
             $mapped = $this->jsonMapper->map($shaped, $className);
@@ -124,14 +125,50 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Returns the tags the target class consumes as typed constructor properties, keyed by the
+     * lowercased tag, so the shaper can divert a schema-recognised child the class does not model.
+     *
+     * @param class-string $className The target class.
+     *
+     * @return array<string, true> The consumed tags, keyed by the lowercased property/tag name.
+     */
+    private function consumedTags(string $className): array
+    {
+        $constructor = (new ReflectionClass($className))->getConstructor();
+
+        if ($constructor === null) {
+            return [];
+        }
+
+        $tags = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            // The divert compares against the shaped key, which is strtolower($child->tag). This
+            // relies on the model invariant that every consumed property is named after its
+            // lowercased tag (a single lowercase token that the mapper's camel-case converter maps
+            // to itself), which both the hand-written records and the generator uphold. Were a
+            // property ever named in camelCase, its tag would be wrongly diverted here — align this
+            // with the mapper's name converter before introducing such a name.
+            $tags[strtolower($parameter->getName())] = true;
+        }
+
+        return $tags;
+    }
+
+    /**
      * Shapes a node and its substructures into a property-name-keyed array.
      *
-     * @param GedcomNode          $node       The node to shape.
-     * @param StructureDefinition $definition The schema definition of the node's structure.
+     * @param GedcomNode               $node         The node to shape.
+     * @param StructureDefinition      $definition   The schema definition of the node's structure.
+     * @param array<string, true>|null $consumedTags The tags the target class models, keyed by the
+     *                                               lowercased tag; a recognised child absent from
+     *                                               it is preserved verbatim rather than dropped.
+     *                                               NULL for a nested shape, which does not divert
+     *                                               (its own class is resolved by a later increment).
      *
      * @return array<string, mixed>
      */
-    private function shape(GedcomNode $node, StructureDefinition $definition): array
+    private function shape(GedcomNode $node, StructureDefinition $definition, ?array $consumedTags = null): array
     {
         $shaped = [];
 
@@ -172,6 +209,17 @@ final readonly class GedcomObjectMapper
 
             $childDefinition = $this->schema->byUri($substructure->uri);
             $property        = strtolower($child->tag);
+
+            // A tag the schema permits here but the target class does not model as a property would
+            // be shaped into a key the mapper silently drops. Preserve it verbatim on `$unknown`
+            // instead — exactly like an out-of-schema tag — so no recognised data is lost. Only the
+            // record-level pass carries the consumed tags; a nested shape passes NULL and does not
+            // divert, since its own class is resolved by a later increment.
+            if (($consumedTags !== null) && !array_key_exists($property, $consumedTags)) {
+                $unknown[] = $this->rawShape($child);
+
+                continue;
+            }
 
             // Recurse when the child's definition declares substructures, so a structured tag
             // always yields the same object shape regardless of which substructures this instance
