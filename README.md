@@ -292,7 +292,9 @@ The typed record set is still growing; only the modelled records are mapped toda
 `IndividualRecord` exposes its names — each a typed `PersonalName` that derives the given name,
 surname and suffix from the `John /Doe/` slash convention (an explicit `GIVN`/`SURN`/`NPFX`/`SPFX`/
 `NSFX`/`NICK` piece always winning) and offers a slash-free `getDisplayName()` — its sex, its
-birth, death and burial events, and its child- and
+life events (birth, death, burial, baptism, christening, cremation, confirmation, emigration,
+immigration, naturalization, ordination, graduation, retirement, probate, will and the like, each a
+typed `EventDetail` list), and its child- and
 spouse-to-family links (`FAMC`/`FAMS`), a `FamilyRecord` exposes its partner and child
 cross-references and its marriage events — each event a typed `EventDetail` (date, place, age) —
 a `SourceRecord` exposes its descriptive fields (title, author, publication, abbreviation,
