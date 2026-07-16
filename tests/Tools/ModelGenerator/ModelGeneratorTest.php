@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * This file is part of the package magicsunday/gedcom-parser.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace MagicSunday\Gedcom\Test\Tools\ModelGenerator;
+
+use MagicSunday\Gedcom\Schema\GedcomVersion;
+use MagicSunday\Gedcom\Schema\RegistrySchemaLoader;
+use MagicSunday\Gedcom\Schema\StructureDefinition;
+use MagicSunday\Gedcom\Tools\ModelGenerator\ClassRenderer;
+use MagicSunday\Gedcom\Tools\ModelGenerator\ClassSpec;
+use MagicSunday\Gedcom\Tools\ModelGenerator\ModelGenerator;
+use MagicSunday\Gedcom\Tools\ModelGenerator\PropertySpec;
+use MagicSunday\Gedcom\Tools\ModelGenerator\TypeMapper;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\TestCase;
+
+use function dirname;
+use function str_contains;
+use function token_get_all;
+
+use const TOKEN_PARSE;
+
+/**
+ * Tests the {@see ModelGenerator} end to end against the real vendored registry: generating the
+ * GEDCOM 5.5.1 pointer source-citation structure produces a syntactically valid, house-style typed
+ * class whose data shape (the cross-reference, `PAGE`, `QUAY`, the reused `Note` model and the
+ * `$unknown` catch-all) matches what the hand-written `SourceCitation` models — proving the
+ * schema-driven generation approach before the full roll-out.
+ *
+ * @author  Rico Sonntag <mail@ricosonntag.de>
+ * @license https://opensource.org/licenses/MIT
+ * @link    https://github.com/magicsunday/gedcom-parser/
+ */
+#[CoversClass(ModelGenerator::class)]
+#[UsesClass(ClassRenderer::class)]
+#[UsesClass(ClassSpec::class)]
+#[UsesClass(PropertySpec::class)]
+#[UsesClass(TypeMapper::class)]
+#[UsesClass(RegistrySchemaLoader::class)]
+class ModelGeneratorTest extends TestCase
+{
+    /**
+     * Generating the pointer source-citation structure yields a valid class carrying the modelled
+     * data shape.
+     */
+    #[Test]
+    public function itGeneratesThePointerSourceCitationDataShape(): void
+    {
+        $registry   = dirname(__DIR__, 3) . '/docs/spec/gedcom7-registries';
+        $schema     = (new RegistrySchemaLoader($registry))->load(GedcomVersion::V551);
+        $definition = $schema->byUri('https://gedcom.io/terms/v5.5.1/SOUR-XREF_SOUR');
+
+        self::assertInstanceOf(StructureDefinition::class, $definition);
+
+        $php = (new ModelGenerator())->generate(
+            $definition,
+            $schema,
+            'MagicSunday\\Gedcom\\Model\\Substructure\\Source',
+            'GeneratedSourceCitation',
+            'A generated source citation.',
+        );
+
+        // Syntactically valid PHP (TOKEN_PARSE makes token_get_all raise a ParseError on invalid
+        // input; a valid file tokenises to a non-empty list).
+        self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
+
+        // The pointer cross-reference, the leaf strings, the reused Note model and the safety net.
+        self::assertStringContainsString('final readonly class GeneratedSourceCitation', $php);
+        self::assertStringContainsString('public ?string $xref = null,', $php);
+        self::assertStringContainsString('public ?string $page = null,', $php);
+        self::assertStringContainsString('public ?string $quay = null,', $php);
+        self::assertStringContainsString('public array $note = [],', $php);
+        self::assertStringContainsString('@param list<Note>', $php);
+        self::assertStringContainsString('public array $unknown = [],', $php);
+        self::assertStringContainsString('use MagicSunday\\Gedcom\\Model\\Note;', $php);
+        self::assertStringContainsString('use MagicSunday\\Gedcom\\ValueObject\\RawSubstructure;', $php);
+
+        // The container substructures DATA/EVEN and the inline OBJE are deferred, not emitted.
+        self::assertFalse(str_contains($php, '$data'), 'DATA is a container substructure, deferred.');
+        self::assertFalse(str_contains($php, '$even'), 'EVEN is a container substructure, deferred.');
+    }
+}
