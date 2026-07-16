@@ -70,6 +70,22 @@ final class TypeMapper
     }
 
     /**
+     * Reports whether a payload maps to a grammar value object (whose custom mapping-layer handler
+     * accepts the shaped array the object mapper produces for a substructure-bearing child). A
+     * payload-bearing child that does NOT map to a value object cannot be a scalar leaf when it also
+     * carries substructures, since the mapper would then supply an array — such a child needs its
+     * own generated class instead.
+     *
+     * @param string|null $payload The registry payload URI, or NULL.
+     *
+     * @return bool Whether the payload maps to a value object.
+     */
+    public function mapsToValueObject(?string $payload): bool
+    {
+        return $this->innerType($payload)[1] !== null;
+    }
+
+    /**
      * Resolves the inner (non-nullable, non-collection) type name and its import from a payload URI.
      *
      * @param string|null $payload The registry payload URI, or NULL.

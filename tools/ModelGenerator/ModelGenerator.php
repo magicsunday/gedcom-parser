@@ -131,11 +131,14 @@ final class ModelGenerator
                 continue;
             }
 
-            // A pure container — no payload of its own but bearing substructures — needs its own
-            // generated class and is deferred to the roll-out. A structure with a payload (a value
-            // object, enum, pointer or plain string) is mapped by its payload even when it also
-            // carries substructures (a DATE carries TIME/PHRASE, yet maps to a DateValue).
-            if (($childDefinition->payload === null) && ($childDefinition->substructures !== [])) {
+            // A substructure-bearing child is deferred to its own generated class UNLESS its payload
+            // maps to a grammar value object, whose handler accepts the shaped array the mapper
+            // produces (a DATE carries TIME/PHRASE yet maps to a DateValue). A value-less container
+            // (DATA) and a non-value-object payload with substructures (ADDR carries ADR1/CITY and a
+            // string, which the mapper shapes as an array, not a scalar) both need their own class.
+            if (($childDefinition->substructures !== [])
+                && !$this->typeMapper->mapsToValueObject($childDefinition->payload)
+            ) {
                 continue;
             }
 

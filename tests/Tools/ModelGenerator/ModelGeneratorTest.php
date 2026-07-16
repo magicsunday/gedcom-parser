@@ -115,15 +115,28 @@ class ModelGeneratorTest extends TestCase
             ['TIME' => [new Substructure('urn:time', Cardinality::fromToken('{0:1}'))]],
         );
 
+        // An address carries a string payload AND substructures; the mapper shapes it as an array,
+        // so it must be deferred to its own class rather than mis-mapped to a scalar string.
+        $addr = new StructureDefinition(
+            'urn:addr',
+            'ADDR',
+            'http://www.w3.org/2001/XMLSchema#string',
+            null,
+            ['CITY' => [new Substructure('urn:city', Cardinality::fromToken('{0:1}'))]],
+        );
+
         $parent = new StructureDefinition(
             'urn:parent',
             'FOO',
             null,
             null,
-            ['DATE' => [new Substructure('urn:date', Cardinality::fromToken('{0:1}'))]],
+            [
+                'DATE' => [new Substructure('urn:date', Cardinality::fromToken('{0:1}'))],
+                'ADDR' => [new Substructure('urn:addr', Cardinality::fromToken('{0:1}'))],
+            ],
         );
 
-        $schema = new Schema(['urn:date' => $date, 'urn:parent' => $parent]);
+        $schema = new Schema(['urn:date' => $date, 'urn:addr' => $addr, 'urn:parent' => $parent]);
 
         $php = (new ModelGenerator())->generate(
             $parent,
@@ -136,5 +149,9 @@ class ModelGeneratorTest extends TestCase
         self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
         self::assertStringContainsString('use MagicSunday\\Gedcom\\ValueObject\\DateValue;', $php);
         self::assertStringContainsString('public ?DateValue $date = null,', $php);
+        self::assertFalse(
+            str_contains($php, '$addr'),
+            'A string payload that also bears substructures is deferred to its own class, not a scalar.',
+        );
     }
 }
