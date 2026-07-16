@@ -37,12 +37,15 @@ final class ModelGenerator
 {
     /**
      * Substructures already covered by a hand-written model, keyed by tag: the short class name and
-     * its fully-qualified import.
+     * its fully-qualified import. A tag listed here maps to that model regardless of its inline /
+     * pointer variants, so a same-tag pointer+inline pair (such as `SOUR` or `NOTE`) collapses onto
+     * the one model rather than the first variant only.
      *
      * @var array<string, array{0: string, 1: string}>
      */
     private const array KNOWN_MODELS = [
         'NOTE' => ['Note', 'MagicSunday\\Gedcom\\Model\\Note'],
+        'SOUR' => ['SourceCitation', 'MagicSunday\\Gedcom\\Model\\Substructure\\Source\\SourceCitation'],
     ];
 
     /**
@@ -102,6 +105,9 @@ final class ModelGenerator
         }
 
         foreach ($definition->substructures as $tag => $substructures) {
+            // A tag may declare more than one variant (an inline and a pointer form, e.g. SOUR/OBJE).
+            // A known model covers both variants at once; for any other same-tag pair only the first
+            // variant is mapped here, and unifying the rest is deferred to the roll-out.
             $substructure = $substructures[0] ?? null;
 
             if ($substructure === null) {
