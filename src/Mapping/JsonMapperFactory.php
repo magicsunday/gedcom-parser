@@ -124,6 +124,7 @@ final class JsonMapperFactory
                 static fn (mixed $value): DateValue => DateValue::fromGedcom(
                     self::leafValue($value, 'DATE'),
                     self::phraseOf($value),
+                    self::unknownFromShaped($value),
                 ),
             ),
         );
@@ -133,6 +134,7 @@ final class JsonMapperFactory
                 static fn (mixed $value): AgeValue => AgeValue::fromGedcom(
                     self::leafValue($value, 'AGE'),
                     self::phraseOf($value),
+                    self::unknownFromShaped($value),
                 ),
             ),
         );
@@ -338,7 +340,7 @@ final class JsonMapperFactory
 
         // A place carrying no FORM of its own inherits the header default: in GEDCOM 5.5.1 the
         // hierarchy is normally declared once as HEAD.PLAC.FORM, so a per-place FORM is the exception.
-        return PlaceValue::fromGedcom($name, $form ?? $defaultForm, $coordinates);
+        return PlaceValue::fromGedcom($name, $form ?? $defaultForm, $coordinates, self::unknownFromShaped($value));
     }
 
     /**

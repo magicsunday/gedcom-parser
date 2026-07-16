@@ -33,14 +33,15 @@ use function trim;
 final readonly class AgeValue
 {
     /**
-     * @param AgeModifier|null $modifier The relational qualifier, or NULL when the age is exact.
-     * @param AgeKeyword|null  $keyword  The symbolic keyword, or NULL when a duration is given.
-     * @param int|null         $years    The number of full years, or NULL when absent.
-     * @param int|null         $months   The number of months, or NULL when absent.
-     * @param int|null         $weeks    The number of weeks (GEDCOM 7.0 only), or NULL when absent.
-     * @param int|null         $days     The number of days, or NULL when absent.
-     * @param string           $raw      The original, unparsed AGE value.
-     * @param string|null      $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent.
+     * @param AgeModifier|null      $modifier The relational qualifier, or NULL when the age is exact.
+     * @param AgeKeyword|null       $keyword  The symbolic keyword, or NULL when a duration is given.
+     * @param int|null              $years    The number of full years, or NULL when absent.
+     * @param int|null              $months   The number of months, or NULL when absent.
+     * @param int|null              $weeks    The number of weeks (GEDCOM 7.0 only), or NULL when absent.
+     * @param int|null              $days     The number of days, or NULL when absent.
+     * @param string                $raw      The original, unparsed AGE value.
+     * @param string|null           $phrase   The GEDCOM 7.0 PHRASE substructure text, or NULL when absent.
+     * @param list<RawSubstructure> $unknown  Substructures nested under the AGE that its grammar does not consume (extensions and out-of-place tags), preserved verbatim.
      */
     public function __construct(
         public ?AgeModifier $modifier,
@@ -51,6 +52,7 @@ final readonly class AgeValue
         public ?int $days,
         public string $raw,
         public ?string $phrase = null,
+        public array $unknown = [],
     ) {
     }
 
@@ -61,10 +63,11 @@ final readonly class AgeValue
      * A value-less AGE carried solely by its PHRASE substructure records only the phrase; a valued
      * AGE that also carries a PHRASE keeps its parsed parts and records the phrase alongside.
      *
-     * @param string      $raw    The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`.
-     * @param string|null $phrase The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present.
+     * @param string                $raw     The raw AGE value, e.g. `72y 3m 2d`, `< 8y` or `CHILD`.
+     * @param string|null           $phrase  The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present.
+     * @param list<RawSubstructure> $unknown Substructures nested under the AGE that its grammar does not consume, preserved verbatim.
      */
-    public static function fromGedcom(string $raw, ?string $phrase = null): self
+    public static function fromGedcom(string $raw, ?string $phrase = null, array $unknown = []): self
     {
         $explicitPhrase = $phrase !== null ? trim($phrase) : null;
 
@@ -74,13 +77,25 @@ final readonly class AgeValue
 
         // A value-less GEDCOM 7.0 AGE may be carried solely by its PHRASE substructure.
         if (($explicitPhrase !== null) && (trim($raw) === '')) {
-            return new self(null, null, null, null, null, null, $raw, $explicitPhrase);
+            return new self(null, null, null, null, null, null, $raw, $explicitPhrase, $unknown);
         }
 
         $parsed = self::parse($raw);
 
         if ($explicitPhrase === null) {
-            return $parsed;
+            return ($unknown === [])
+                ? $parsed
+                : new self(
+                    $parsed->modifier,
+                    $parsed->keyword,
+                    $parsed->years,
+                    $parsed->months,
+                    $parsed->weeks,
+                    $parsed->days,
+                    $parsed->raw,
+                    $parsed->phrase,
+                    $unknown,
+                );
         }
 
         // A valued AGE that also carries an explicit PHRASE keeps its parsed parts and records it.
@@ -93,6 +108,7 @@ final readonly class AgeValue
             $parsed->days,
             $parsed->raw,
             $explicitPhrase,
+            $unknown,
         );
     }
 

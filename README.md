@@ -119,10 +119,15 @@ foreach ($document->individuals[0]->unknown as $raw) {
 }
 ```
 
-One boundary remains, narrowing as the typed model grows: a tag nested under a **leaf** substructure
-— a scalar field (such as `SEX`) or a parsed value object (`DATE`/`PLAC`/`AGE`), which carries no
-`$unknown` list of its own — is not yet captured, since the value object is hydrated from its raw
-payload rather than shaped class-aware.
+The parsed value-object leaves (`DATE`/`PLAC`/`AGE`) also carry an `$unknown` list, so an
+out-of-schema tag directly beneath one is preserved on that value object too (e.g.
+`$individual->birt[0]->plac->unknown`) — wherever the leaf is shaped as a structured object (a
+`PLAC` always; a `DATE`/`AGE` in GEDCOM 7.0, where they declare substructures).
+
+Two narrow boundaries remain: a **scalar** field (such as `SEX`, a bare `?string`) has no object to
+carry an `$unknown`, so a tag beneath it cannot be preserved without modelling that field as an
+object; and a GEDCOM **5.5.1** `DATE`/`AGE`, which declares no substructures and is therefore shaped
+as a plain string, drops a tag beneath it before it reaches the value object.
 
 #### Bounding the parse (resource limit)
 

@@ -32,30 +32,37 @@ use function trim;
 final readonly class PlaceValue
 {
     /**
-     * @param list<string>        $levels      The trimmed jurisdiction names, most specific first
-     *                                         (empties kept)
-     * @param string|null         $form        The raw place FORM, or NULL when none is declared.
-     * @param string              $raw         The original, unparsed PLACE_NAME value.
-     * @param MapCoordinates|null $coordinates The geographic coordinates from the MAP substructure,
-     *                                         or NULL when absent or malformed
+     * @param list<string>          $levels      The trimmed jurisdiction names, most specific first
+     *                                           (empties kept)
+     * @param string|null           $form        The raw place FORM, or NULL when none is declared.
+     * @param string                $raw         The original, unparsed PLACE_NAME value.
+     * @param MapCoordinates|null   $coordinates The geographic coordinates from the MAP substructure,
+     *                                           or NULL when absent or malformed
+     * @param list<RawSubstructure> $unknown     Substructures nested under the PLAC that its grammar does not consume (extensions and out-of-place tags), preserved verbatim.
      */
     public function __construct(
         public array $levels,
         public ?string $form,
         public string $raw,
         public ?MapCoordinates $coordinates = null,
+        public array $unknown = [],
     ) {
     }
 
     /**
      * Parses a raw GEDCOM PLACE_NAME (and optional FORM and coordinates) into a typed value object.
      *
-     * @param string              $place       The raw place name, e.g. `Cove, Cache, Utah, USA`.
-     * @param string|null         $form        The raw place FORM, e.g. `City, County, State, Country`.
-     * @param MapCoordinates|null $coordinates The geographic coordinates from the MAP substructure.
+     * @param string                $place       The raw place name, e.g. `Cove, Cache, Utah, USA`.
+     * @param string|null           $form        The raw place FORM, e.g. `City, County, State, Country`.
+     * @param MapCoordinates|null   $coordinates The geographic coordinates from the MAP substructure.
+     * @param list<RawSubstructure> $unknown     Substructures nested under the PLAC that its grammar does not consume, preserved verbatim.
      */
-    public static function fromGedcom(string $place, ?string $form = null, ?MapCoordinates $coordinates = null): self
-    {
+    public static function fromGedcom(
+        string $place,
+        ?string $form = null,
+        ?MapCoordinates $coordinates = null,
+        array $unknown = [],
+    ): self {
         $trimmed = trim($place);
         $levels  = $trimmed === '' ? [] : array_map(trim(...), explode(',', $trimmed));
 
@@ -67,7 +74,7 @@ final readonly class PlaceValue
             }
         }
 
-        return new self($levels, $form, $place, $coordinates);
+        return new self($levels, $form, $place, $coordinates, $unknown);
     }
 
     /**
