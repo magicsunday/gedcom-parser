@@ -16,6 +16,7 @@
 
 /.github/               export-ignore
 /tests/                 export-ignore
+/tools/                 export-ignore
 
 # Ship the machine-readable GEDCOM registry (docs/spec/gedcom7-registries) — it is runtime
 # data the schema loader compiles — but keep the large specification documents out. The docs
