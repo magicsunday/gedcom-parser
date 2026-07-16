@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 use function implode;
 use function preg_replace;
 use function str_replace;
@@ -35,14 +37,15 @@ use function trim;
 final readonly class PersonalName
 {
     /**
-     * @param string|null $value The slash-delimited name value, or NULL when absent.
-     * @param string|null $givn  The given name from the GIVN substructure, or NULL.
-     * @param string|null $surn  The surname from the SURN substructure, or NULL.
-     * @param string|null $npfx  The name prefix from the NPFX substructure, or NULL.
-     * @param string|null $spfx  The surname prefix from the SPFX substructure, or NULL.
-     * @param string|null $nsfx  The name suffix from the NSFX substructure, or NULL.
-     * @param string|null $nick  The nickname from the NICK substructure, or NULL.
-     * @param string|null $type  The name type from the TYPE substructure, or NULL.
+     * @param string|null           $value   The slash-delimited name value, or NULL when absent.
+     * @param string|null           $givn    The given name from the GIVN substructure, or NULL.
+     * @param string|null           $surn    The surname from the SURN substructure, or NULL.
+     * @param string|null           $npfx    The name prefix from the NPFX substructure, or NULL.
+     * @param string|null           $spfx    The surname prefix from the SPFX substructure, or NULL.
+     * @param string|null           $nsfx    The name suffix from the NSFX substructure, or NULL.
+     * @param string|null           $nick    The nickname from the NICK substructure, or NULL.
+     * @param string|null           $type    The name type from the TYPE substructure, or NULL.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
@@ -53,6 +56,7 @@ final readonly class PersonalName
         public ?string $nsfx = null,
         public ?string $nick = null,
         public ?string $type = null,
+        public array $unknown = [],
     ) {
     }
 

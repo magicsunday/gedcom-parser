@@ -148,6 +148,9 @@ final readonly class GedcomObjectMapper
         /** @var array<string, list<mixed>> $collections */
         $collections = [];
 
+        /** @var list<array<string, mixed>> $unknown */
+        $unknown = [];
+
         foreach ($node->children as $child) {
             // A substructure must sit exactly one level below its parent; a deeper child is a
             // malformed level skip and is dropped rather than mis-attributed.
@@ -158,6 +161,12 @@ final readonly class GedcomObjectMapper
             $substructure = $this->resolveSubstructure($definition, $child);
 
             if (!$substructure instanceof Substructure) {
+                // A child whose tag is not a permitted substructure here — an extension
+                // (`_`-prefixed vendor tag) or any tag out of the schema at this position — is
+                // preserved verbatim on the target's `$unknown` list rather than dropped, so no
+                // parsed data is silently lost. Its whole subtree is kept.
+                $unknown[] = $this->rawShape($child);
+
                 continue;
             }
 
@@ -184,7 +193,37 @@ final readonly class GedcomObjectMapper
             $shaped[$property] = $values;
         }
 
+        if ($unknown !== []) {
+            $shaped['unknown'] = $unknown;
+        }
+
         return $shaped;
+    }
+
+    /**
+     * Shapes an unconsumed node and its whole subtree into a raw property array carried under the
+     * `unknown` key, from which the mapper's {@see RawSubstructure} handler rebuilds the preserved
+     * substructure verbatim. Unlike {@see shape()} this applies no schema resolution and keeps every
+     * descendant, since the subtree is by definition outside the typed model.
+     *
+     * @param GedcomNode $node The unconsumed node to preserve.
+     *
+     * @return array<string, mixed> The raw shape: `tag`, `value`, `xref` and nested `children`.
+     */
+    private function rawShape(GedcomNode $node): array
+    {
+        $children = [];
+
+        foreach ($node->children as $child) {
+            $children[] = $this->rawShape($child);
+        }
+
+        return [
+            'tag'      => $node->tag,
+            'value'    => $node->value,
+            'xref'     => $node->xref,
+            'children' => $children,
+        ];
     }
 
     /**

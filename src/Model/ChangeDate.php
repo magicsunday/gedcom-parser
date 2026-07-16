@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * The change timestamp of a record (the `CHAN` substructure).
  *
@@ -27,14 +29,16 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class ChangeDate
 {
     /**
-     * @param ExactDate|null $date  The exact date (and optional time) the record was changed (CHAN.DATE), or NULL.
-     * @param list<Note>     $note  The inline notes documenting the change (CHAN.NOTE); empty when none.
-     * @param list<string>   $snote The GEDCOM 7.0 shared-note references documenting the change (CHAN.SNOTE); empty when none.
+     * @param ExactDate|null        $date    The exact date (and optional time) the record was changed (CHAN.DATE), or NULL.
+     * @param list<Note>            $note    The inline notes documenting the change (CHAN.NOTE); empty when none.
+     * @param list<string>          $snote   The GEDCOM 7.0 shared-note references documenting the change (CHAN.SNOTE); empty when none.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?ExactDate $date = null,
         public array $note = [],
         public array $snote = [],
+        public array $unknown = [],
     ) {
     }
 }

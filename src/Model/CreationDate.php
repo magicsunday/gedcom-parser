@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * The GEDCOM 7.0 creation timestamp of a record (the `CREA` substructure).
  *
@@ -25,10 +27,12 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class CreationDate
 {
     /**
-     * @param ExactDate|null $date The exact date (and optional time) the record was created (CREA.DATE), or NULL.
+     * @param ExactDate|null        $date    The exact date (and optional time) the record was created (CREA.DATE), or NULL.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?ExactDate $date = null,
+        public array $unknown = [],
     ) {
     }
 }

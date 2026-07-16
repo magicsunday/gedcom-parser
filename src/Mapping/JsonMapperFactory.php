@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\MapCoordinates;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 use MagicSunday\JsonMapper;
 use MagicSunday\JsonMapper\Converter\CamelCasePropertyNameConverter;
 use MagicSunday\JsonMapper\Value\ClosureTypeHandler;
@@ -135,7 +136,85 @@ final class JsonMapperFactory
             ),
         );
 
+        // A registered handler intercepts every RawSubstructure conversion — including each element
+        // of a `list<RawSubstructure> $unknown` — so the mapper rebuilds a preserved, unconsumed
+        // substructure subtree verbatim from the raw shape the object mapper emitted.
+        $mapper->addTypeHandler(
+            new ClosureTypeHandler(
+                RawSubstructure::class,
+                static fn (mixed $value): RawSubstructure => self::rawFromShaped($value),
+            ),
+        );
+
         return $mapper;
+    }
+
+    /**
+     * Rebuilds a preserved {@see RawSubstructure} from the raw shape emitted by the object mapper: a
+     * `tag`, an optional `value`/`xref` and a nested `children` list. The handler owns the recursion
+     * so the whole preserved subtree is rebuilt in one pass.
+     *
+     * @param mixed $value The raw shape (an array with `tag`/`value`/`xref`/`children`).
+     *
+     * @return RawSubstructure The rebuilt preserved substructure.
+     */
+    private static function rawFromShaped(mixed $value): RawSubstructure
+    {
+        if (!is_array($value)) {
+            // The object mapper always emits a shaped array; a non-array here is a mis-shape and
+            // preserves nothing rather than failing the whole parse.
+            return new RawSubstructure('');
+        }
+
+        $tag = $value['tag'] ?? null;
+
+        return new RawSubstructure(
+            is_string($tag) ? $tag : '',
+            self::nullableString($value['value'] ?? null),
+            self::nullableString($value['xref'] ?? null),
+            self::rawListFromShaped($value['children'] ?? []),
+        );
+    }
+
+    /**
+     * Rebuilds a `list<RawSubstructure>` from a shaped list, mapping each element through
+     * {@see rawFromShaped()} and treating a non-array input as an empty list.
+     *
+     * @param mixed $list The shaped list of raw substructures.
+     *
+     * @return list<RawSubstructure> The rebuilt substructures, or an empty list.
+     */
+    private static function rawListFromShaped(mixed $list): array
+    {
+        if (!is_array($list)) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($list as $raw) {
+            $result[] = self::rawFromShaped($raw);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Rebuilds the `list<RawSubstructure>` preserved under a shaped payload's `unknown` key, used by
+     * the closure-built {@see Note}/{@see NoteTranslation} which JsonMapper does not hydrate through
+     * their constructors.
+     *
+     * @param mixed $value The shaped payload that may carry an `unknown` list.
+     *
+     * @return list<RawSubstructure> The preserved substructures, or an empty list when none.
+     */
+    private static function unknownFromShaped(mixed $value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        return self::rawListFromShaped($value['unknown'] ?? []);
     }
 
     /**
@@ -308,6 +387,7 @@ final class JsonMapperFactory
                     self::nullableString($translation['value'] ?? null),
                     self::nullableString($translation['lang'] ?? null),
                     self::nullableString($translation['mime'] ?? null),
+                    self::unknownFromShaped($translation),
                 );
             }
         }
@@ -317,6 +397,7 @@ final class JsonMapperFactory
             self::nullableString($value['lang'] ?? null),
             self::nullableString($value['mime'] ?? null),
             $translations,
+            self::unknownFromShaped($value),
         );
     }
 

@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * A typed GEDCOM shared note (5.5.1 `NOTE`, 7.0 `SNOTE`) record.
  *
@@ -27,15 +29,16 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class NoteRecord
 {
     /**
-     * @param string                   $xref  The record cross-reference identifier.
-     * @param string|null              $value The note text (the record's line value), or NULL when empty.
-     * @param string|null              $lang  The GEDCOM 7.0 BCP-47 language tag (SNOTE.LANG), or NULL when absent.
-     * @param string|null              $mime  The GEDCOM 7.0 media type of the text (SNOTE.MIME), or NULL when absent.
-     * @param list<NoteTranslation>    $tran  The GEDCOM 7.0 translations of the note text (SNOTE.TRAN); empty when none.
-     * @param list<string>             $uid   The GEDCOM 7.0 unique identifiers (UID); empty when none.
-     * @param list<ExternalIdentifier> $exid  The GEDCOM 7.0 external identifiers (EXID); empty when none.
-     * @param CreationDate|null        $crea  The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
-     * @param ChangeDate|null          $chan  The record change timestamp (CHAN), or NULL when absent.
+     * @param string                   $xref    The record cross-reference identifier.
+     * @param string|null              $value   The note text (the record's line value), or NULL when empty.
+     * @param string|null              $lang    The GEDCOM 7.0 BCP-47 language tag (SNOTE.LANG), or NULL when absent.
+     * @param string|null              $mime    The GEDCOM 7.0 media type of the text (SNOTE.MIME), or NULL when absent.
+     * @param list<NoteTranslation>    $tran    The GEDCOM 7.0 translations of the note text (SNOTE.TRAN); empty when none.
+     * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
+     * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
+     * @param ChangeDate|null          $chan    The record change timestamp (CHAN), or NULL when absent.
+     * @param list<RawSubstructure>    $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public string $xref,
@@ -47,6 +50,7 @@ final readonly class NoteRecord
         public array $exid = [],
         public ?CreationDate $crea = null,
         public ?ChangeDate $chan = null,
+        public array $unknown = [],
     ) {
     }
 }

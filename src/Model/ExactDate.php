@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * A GEDCOM 7.0 exact date with an optional time of day (the `DATE` substructure of `CREA`/`CHAN`).
  *
@@ -26,12 +28,14 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class ExactDate
 {
     /**
-     * @param string|null $value The exact date text (the DATE line value), e.g. `1 JAN 2000`, or NULL when absent.
-     * @param string|null $time  The time of day accompanying the date (TIME), e.g. `12:00:00`, or NULL when absent.
+     * @param string|null           $value   The exact date text (the DATE line value), e.g. `1 JAN 2000`, or NULL when absent.
+     * @param string|null           $time    The time of day accompanying the date (TIME), e.g. `12:00:00`, or NULL when absent.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?string $time = null,
+        public array $unknown = [],
     ) {
     }
 }

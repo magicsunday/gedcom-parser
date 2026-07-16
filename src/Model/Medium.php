@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * The GEDCOM 7.0 medium classifying a multimedia file (the `MEDI` substructure of an `OBJE.FILE.FORM`).
  *
@@ -25,13 +27,15 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class Medium
 {
     /**
-     * @param string|null $value  The enumerated medium value (MEDI), e.g. `PHOTO`, or NULL when absent.
-     * @param string|null $phrase The human-readable description accompanying an `OTHER` medium (PHRASE),
-     *                            or NULL when absent.
+     * @param string|null           $value   The enumerated medium value (MEDI), e.g. `PHOTO`, or NULL when absent.
+     * @param string|null           $phrase  The human-readable description accompanying an `OTHER` medium (PHRASE),
+     *                                       or NULL when absent.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?string $phrase = null,
+        public array $unknown = [],
     ) {
     }
 }

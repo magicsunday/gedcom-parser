@@ -14,6 +14,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
  * The typed detail shared by GEDCOM events: when and where the event took place, and the
@@ -30,14 +31,16 @@ use MagicSunday\Gedcom\ValueObject\PlaceValue;
 final readonly class EventDetail
 {
     /**
-     * @param DateValue|null  $date The date the event took place, or NULL when absent.
-     * @param PlaceValue|null $plac The place the event took place, or NULL when absent.
-     * @param AgeValue|null   $age  The individual's age at the event, or NULL when absent.
+     * @param DateValue|null        $date    The date the event took place, or NULL when absent.
+     * @param PlaceValue|null       $plac    The place the event took place, or NULL when absent.
+     * @param AgeValue|null         $age     The individual's age at the event, or NULL when absent.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?DateValue $date = null,
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
+        public array $unknown = [],
     ) {
     }
 }

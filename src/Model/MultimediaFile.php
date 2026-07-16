@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * A typed multimedia file reference (the `FILE` substructure of an `OBJE` record).
  *
@@ -26,15 +28,17 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class MultimediaFile
 {
     /**
-     * @param string|null      $value The file reference — a path or URL (the FILE line value), or
-     *                                NULL when the FILE line carries no reference
-     * @param MediaFormat|null $form  The file format (FORM), or NULL when absent.
-     * @param string|null      $titl  The descriptive title (TITL), or NULL when absent.
+     * @param string|null           $value   The file reference — a path or URL (the FILE line value), or
+     *                                       NULL when the FILE line carries no reference.
+     * @param MediaFormat|null      $form    The file format (FORM), or NULL when absent.
+     * @param string|null           $titl    The descriptive title (TITL), or NULL when absent.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?MediaFormat $form = null,
         public ?string $titl = null,
+        public array $unknown = [],
     ) {
     }
 }

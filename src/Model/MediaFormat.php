@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
 /**
  * The typed format of a multimedia file (the `FORM` substructure of an `OBJE.FILE`).
  *
@@ -26,14 +28,16 @@ namespace MagicSunday\Gedcom\Model;
 final readonly class MediaFormat
 {
     /**
-     * @param string|null $value The multimedia format (FORM), or NULL when absent.
-     * @param string|null $type  The GEDCOM 5.5.1 free-text source media type (TYPE) classifying the file, or NULL.
-     * @param Medium|null $medi  The GEDCOM 7.0 enumerated medium (MEDI) classifying the file, or NULL.
+     * @param string|null           $value   The multimedia format (FORM), or NULL when absent.
+     * @param string|null           $type    The GEDCOM 5.5.1 free-text source media type (TYPE) classifying the file, or NULL.
+     * @param Medium|null           $medi    The GEDCOM 7.0 enumerated medium (MEDI) classifying the file, or NULL.
+     * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $value = null,
         public ?string $type = null,
         public ?Medium $medi = null,
+        public array $unknown = [],
     ) {
     }
 }
