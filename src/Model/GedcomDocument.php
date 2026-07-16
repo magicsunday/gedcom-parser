@@ -39,6 +39,8 @@ final readonly class GedcomDocument
      *                                                   mapped to their documented URIs (HEAD.SCHMA.TAG);
      *                                                   a tag may declare more than one URI. Empty for a
      *                                                   5.5.1 document.
+     * @param array<string, SourceRecord> $sourcesByXref The source records indexed by cross-reference, so
+     *                                                   a typed citation can resolve its pointer in O(1).
      */
     public function __construct(
         public array $individuals = [],
@@ -50,7 +52,21 @@ final readonly class GedcomDocument
         public array $submitters = [],
         public array $others = [],
         public array $extensionTags = [],
+        private array $sourcesByXref = [],
     ) {
+    }
+
+    /**
+     * Resolves a source record by its cross-reference identifier, backing the lazy `->source()`
+     * accessor on a typed source citation.
+     *
+     * @param string $xref The source cross-reference identifier (without the surrounding `@`).
+     *
+     * @return SourceRecord|null The referenced source record, or NULL when the document has none.
+     */
+    public function source(string $xref): ?SourceRecord
+    {
+        return $this->sourcesByXref[$xref] ?? null;
     }
 
     /**
@@ -94,6 +110,12 @@ final readonly class GedcomDocument
             }
         }
 
+        $sourcesByXref = [];
+
+        foreach ($sources as $source) {
+            $sourcesByXref[$source->xref] = $source;
+        }
+
         return new self(
             $individuals,
             $families,
@@ -104,6 +126,7 @@ final readonly class GedcomDocument
             $submitters,
             $others,
             $extensionTags,
+            $sourcesByXref,
         );
     }
 }

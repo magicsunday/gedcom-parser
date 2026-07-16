@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
@@ -34,12 +35,14 @@ final readonly class EventDetail
      * @param DateValue|null        $date    The date the event took place, or NULL when absent.
      * @param PlaceValue|null       $plac    The place the event took place, or NULL when absent.
      * @param AgeValue|null         $age     The individual's age at the event, or NULL when absent.
+     * @param list<SourceCitation>  $sour    The source citations supporting the event.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?DateValue $date = null,
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
+        public array $sour = [],
         public array $unknown = [],
     ) {
     }
