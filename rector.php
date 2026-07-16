@@ -25,6 +25,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         __DIR__ . '/src',
         __DIR__ . '/tests',
+        __DIR__ . '/tools',
     ]);
 
     // Keep the Rector caches inside the build directory rather than the repository root.
