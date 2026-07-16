@@ -100,6 +100,34 @@ schema (`HEAD.SCHMA.TAG`) is exposed on `$document->extensionTags` as a map of e
 its declared URIs (a `list`, since 7.0 allows a tag to be documented more than once; empty for a
 5.5.1 document). You can also parse an in-memory GEDCOM string with `StreamFactory::createStream()`.
 
+#### Bounding the parse (resource limit)
+
+Parsing accumulates the dataset in memory, so an oversized or hostile input is a denial-of-service
+surface — most sharply for GEDZIP, where a tiny archive's `gedcom.ged` entry can inflate to a huge
+dataset (a decompression bomb). The reader therefore caps the total number of bytes it reads from a
+source and aborts past the cap with a `MagicSunday\Gedcom\Exception\InputTooLargeException`. The cap
+is enforced at the single byte-reading choke point, so it bounds every read path uniformly — the
+plain `.ged` `Parser`, the version-fixed `TypedGedcomParser`, and the GEDZIP reader, where it counts
+the **decompressed** entry bytes and so bounds the parse independently of the compressed transport
+size.
+
+The cap defaults to `Reader::DEFAULT_MAX_BYTES` (512 MiB) — above the range a legitimate large tree
+occupies, so it does not reject real data out of the box while still turning an otherwise unbounded
+parse into a bounded one. It bounds the bytes *read*, not the in-memory object graph the parse builds
+(a multiple of the input size), so a service parsing untrusted input should size the cap against its
+PHP `memory_limit` (roughly `memory_limit` divided by the input-to-heap expansion factor) rather than
+rely on the default ceiling. It is caller-configurable through every entry point; lower it when
+parsing untrusted input, or raise it (up to `PHP_INT_MAX` for effectively unbounded) for a genuinely
+huge trusted tree:
+
+```php
+use MagicSunday\Gedcom\GedcomZipReader;
+use MagicSunday\Gedcom\Parser;
+
+$document = (new Parser($stream, 32 * 1024 * 1024))->parse();          // plain .ged, 32 MiB cap
+$document = GedcomZipReader::readFile('/path/to/tree.gdz', 32 * 1024 * 1024); // decompressed cap
+```
+
 ### Typed value objects
 
 Genealogically structured values are exposed as typed, `final readonly` value objects (in

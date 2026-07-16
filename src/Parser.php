@@ -57,10 +57,16 @@ final readonly class Parser
     ];
 
     /**
-     * @param StreamInterface $stream The GEDCOM stream to parse.
+     * @param StreamInterface $stream   The GEDCOM stream to parse.
+     * @param int|null        $maxBytes The maximum number of bytes to read before aborting with an
+     *                                  {@see Exception\InputTooLargeException},
+     *                                  or NULL for {@see Reader::DEFAULT_MAX_BYTES}. Lower it when
+     *                                  parsing untrusted input.
      */
-    public function __construct(private StreamInterface $stream)
-    {
+    public function __construct(
+        private StreamInterface $stream,
+        private ?int $maxBytes = null,
+    ) {
     }
 
     /**
@@ -70,6 +76,6 @@ final readonly class Parser
      */
     public function parse(): GedcomDocument
     {
-        return GedcomDocumentReader::create(self::RECORD_CLASSES)->read($this->stream);
+        return GedcomDocumentReader::create(self::RECORD_CLASSES)->read($this->stream, $this->maxBytes);
     }
 }
