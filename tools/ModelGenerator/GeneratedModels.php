@@ -49,6 +49,13 @@ final class GeneratedModels
                 'isRecord'    => false,
                 'description' => 'The data (transcribed text and its date) of a source citation.',
             ],
+            [
+                'version'     => GedcomVersion::V551,
+                'uri'         => 'https://gedcom.io/terms/v5.5.1/SOUR-XREF_SOUR-EVEN',
+                'class'       => 'SourceCitationEvent',
+                'isRecord'    => false,
+                'description' => 'The cited event of a source citation: its type and the informant role.',
+            ],
         ];
     }
 }

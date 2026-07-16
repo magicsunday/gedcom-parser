@@ -21,6 +21,7 @@ use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\SourceRecord;
+use MagicSunday\Gedcom\Model\Substructure\Common\SourceCitationEvent;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitationData;
 use MagicSunday\Gedcom\Parse\GedcomNode;
@@ -66,6 +67,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(SourceRecord::class)]
 #[UsesClass(Note::class)]
 #[UsesClass(SourceCitationData::class)]
+#[UsesClass(SourceCitationEvent::class)]
 class SourceCitationTest extends TestCase
 {
     /**
@@ -114,6 +116,26 @@ class SourceCitationTest extends TestCase
         self::assertCount(1, $citation->data->text);
         self::assertSame('a transcribed line', $citation->data->text[0]);
         self::assertNotNull($citation->data->date);
+    }
+
+    /**
+     * A citation carries its cited event (the generated {@see SourceCitationEvent}): the event type
+     * as its line value and the informant's ROLE.
+     */
+    #[Test]
+    public function aCitationCarriesItsCitedEvent(): void
+    {
+        $gedcom = "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 CHAR ASCII\n"
+            . "0 @I1@ INDI\n1 BIRT\n2 SOUR @S1@\n3 EVEN BIRT\n4 ROLE CHIL\n"
+            . "0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n";
+
+        $document = $this->parse($gedcom);
+
+        $citation = $document->individuals[0]->birt[0]->sour[0];
+
+        self::assertNotNull($citation->even);
+        self::assertSame('BIRT', $citation->even->value);
+        self::assertSame('CHIL', $citation->even->role);
     }
 
     /**
