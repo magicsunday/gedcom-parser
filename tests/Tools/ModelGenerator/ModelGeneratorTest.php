@@ -159,4 +159,35 @@ class ModelGeneratorTest extends TestCase
             'A string payload that also bears substructures is deferred to its own class, not a scalar.',
         );
     }
+
+    /**
+     * A structure carrying its own non-pointer payload (an event citation's enum value plus a ROLE
+     * substructure) emits a typed `value` property for that line value alongside the substructure.
+     */
+    #[Test]
+    public function itEmitsAValuePropertyForANonPointerPayload(): void
+    {
+        $even = new StructureDefinition(
+            'urn:even',
+            'EVEN',
+            'https://gedcom.io/terms/v7/type-Enum',
+            null,
+            ['ROLE' => [new Substructure('urn:role', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $role   = new StructureDefinition('urn:role', 'ROLE', 'https://gedcom.io/terms/v7/type-Enum', null, []);
+        $schema = new Schema(['urn:even' => $even, 'urn:role' => $role]);
+
+        $php = (new ModelGenerator())->generate(
+            $even,
+            $schema,
+            false,
+            'GeneratedCitedEvent',
+            'A generated cited event.',
+        );
+
+        self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
+        self::assertStringContainsString('public ?string $value = null,', $php);
+        self::assertStringContainsString('public ?string $role = null,', $php);
+    }
 }

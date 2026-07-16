@@ -15,6 +15,7 @@ use MagicSunday\Gedcom\Model\ExactDate;
 use MagicSunday\Gedcom\Schema\Cardinality;
 use MagicSunday\Gedcom\Tools\ModelGenerator\PropertySpec;
 use MagicSunday\Gedcom\Tools\ModelGenerator\TypeMapper;
+use MagicSunday\Gedcom\ValueObject\DateValue;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -93,5 +94,24 @@ class TypeMapperTest extends TestCase
         self::assertSame($docType, $property->docType);
         self::assertSame($default, $property->default);
         self::assertSame($import, $property->import);
+    }
+
+    /**
+     * A structure's own non-pointer payload maps to a `value` property typed from the payload.
+     */
+    #[Test]
+    public function itMapsAStructurePayloadToAValueProperty(): void
+    {
+        $mapper = new TypeMapper();
+
+        $enum = $mapper->forValue('https://gedcom.io/terms/v7/type-Enum');
+        self::assertSame('value', $enum->name);
+        self::assertSame('?string', $enum->phpType);
+        self::assertNull($enum->import);
+
+        $date = $mapper->forValue('https://gedcom.io/terms/v7/type-Date');
+        self::assertSame('value', $date->name);
+        self::assertSame('?DateValue', $date->phpType);
+        self::assertSame(DateValue::class, $date->import);
     }
 }

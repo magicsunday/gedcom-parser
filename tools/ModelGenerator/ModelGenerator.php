@@ -110,15 +110,18 @@ final readonly class ModelGenerator
         /** @var list<PropertySpec> $properties */
         $properties = [];
 
-        // A pointer structure keeps its referenced record's cross-reference.
-        if (($definition->payload !== null) && str_starts_with($definition->payload, '@<')) {
-            $properties[] = new PropertySpec(
-                'xref',
-                '?string',
-                'string|null',
-                'null',
-                'The referenced record cross-reference, or NULL when the structure is not a pointer.',
-            );
+        // A pointer structure keeps its referenced record's cross-reference; a structure carrying a
+        // non-pointer payload keeps that payload as its own typed line value.
+        if ($definition->payload !== null) {
+            $properties[] = str_starts_with($definition->payload, '@<')
+                ? new PropertySpec(
+                    'xref',
+                    '?string',
+                    'string|null',
+                    'null',
+                    'The referenced record cross-reference, or NULL when the structure is not a pointer.',
+                )
+                : $this->typeMapper->forValue($definition->payload);
         }
 
         foreach ($definition->substructures as $tag => $substructures) {

@@ -86,6 +86,21 @@ final class TypeMapper
     }
 
     /**
+     * Maps a structure's own (non-pointer) payload to its `value` property — the structure's line
+     * value, typed from the payload.
+     *
+     * @param string|null $payload The registry payload URI.
+     *
+     * @return PropertySpec The `value` property.
+     */
+    public function forValue(?string $payload): PropertySpec
+    {
+        [$inner, $import] = $this->innerType('', $payload);
+
+        return new PropertySpec('value', '?' . $inner, $inner . '|null', 'null', "The structure's line value.", $import);
+    }
+
+    /**
      * Reports whether a payload maps to a grammar value object (whose custom mapping-layer handler
      * accepts the shaped array the object mapper produces for a substructure-bearing child). A
      * payload-bearing child that does NOT map to a value object cannot be a scalar leaf when it also
