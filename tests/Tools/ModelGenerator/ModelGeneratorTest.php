@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\Schema\Substructure;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassRenderer;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ClassSpec;
+use MagicSunday\Gedcom\Tools\ModelGenerator\DomainClassifier;
 use MagicSunday\Gedcom\Tools\ModelGenerator\ModelGenerator;
 use MagicSunday\Gedcom\Tools\ModelGenerator\PropertySpec;
 use MagicSunday\Gedcom\Tools\ModelGenerator\TypeMapper;
@@ -47,6 +48,7 @@ use const TOKEN_PARSE;
 #[CoversClass(ModelGenerator::class)]
 #[UsesClass(ClassRenderer::class)]
 #[UsesClass(ClassSpec::class)]
+#[UsesClass(DomainClassifier::class)]
 #[UsesClass(PropertySpec::class)]
 #[UsesClass(TypeMapper::class)]
 #[UsesClass(RegistrySchemaLoader::class)]
@@ -73,10 +75,13 @@ class ModelGeneratorTest extends TestCase
         $php = (new ModelGenerator())->generate(
             $definition,
             $schema,
-            'MagicSunday\\Gedcom\\Model\\Substructure\\Source',
+            false,
             'GeneratedSourceCitation',
             'A generated source citation.',
         );
+
+        // The classifier places a SOUR substructure under the Source domain.
+        self::assertStringContainsString('namespace MagicSunday\\Gedcom\\Model\\Substructure\\Source;', $php);
 
         // Syntactically valid PHP (TOKEN_PARSE makes token_get_all raise a ParseError on invalid
         // input; a valid file tokenises to a non-empty list).
@@ -141,7 +146,7 @@ class ModelGeneratorTest extends TestCase
         $php = (new ModelGenerator())->generate(
             $parent,
             $schema,
-            'MagicSunday\\Gedcom\\Model\\Substructure\\Common',
+            false,
             'GeneratedFoo',
             'A generated container.',
         );

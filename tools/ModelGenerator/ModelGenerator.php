@@ -72,20 +72,27 @@ final readonly class ModelGenerator
     private ClassRenderer $renderer;
 
     /**
-     * Wires the type mapper and the class renderer.
+     * The classifier resolving the target namespace.
+     */
+    private DomainClassifier $classifier;
+
+    /**
+     * Wires the type mapper, the class renderer and the domain classifier.
      */
     public function __construct()
     {
         $this->typeMapper = new TypeMapper();
         $this->renderer   = new ClassRenderer();
+        $this->classifier = new DomainClassifier();
     }
 
     /**
-     * Generates the typed model class for the given structure.
+     * Generates the typed model class for the given structure, placing it in the namespace the
+     * domain classifier resolves for its tag.
      *
      * @param StructureDefinition $definition  The structure to generate a class for.
      * @param Schema              $schema      The schema resolving the structure's substructures.
-     * @param string              $namespace   The target namespace.
+     * @param bool                $isRecord    Whether the structure is a level-0 record.
      * @param string              $className   The target class name.
      * @param string              $description The one-line class description.
      *
@@ -94,10 +101,12 @@ final readonly class ModelGenerator
     public function generate(
         StructureDefinition $definition,
         Schema $schema,
-        string $namespace,
+        bool $isRecord,
         string $className,
         string $description,
     ): string {
+        $namespace = $this->classifier->namespaceFor($definition->tag, $isRecord);
+
         /** @var list<PropertySpec> $properties */
         $properties = [];
 
