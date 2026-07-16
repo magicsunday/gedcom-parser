@@ -12,10 +12,11 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\ValueObject;
 
 /**
- * A verbatim copy of a substructure whose tag the schema does not permit at its position — every
- * extension tag (a `_`-prefixed vendor tag such as `_WT_USER`) and any out-of-place tag. The mapper
- * preserves these on the carrying object's `$unknown` list instead of dropping them; the whole
- * subtree (including the raw children's own children) is retained and can be walked.
+ * A verbatim copy of a substructure the typed model did not consume — an extension tag (a
+ * `_`-prefixed vendor tag such as `_WT_USER`), any out-of-place tag, and every schema-recognised
+ * tag a record does not yet model as a typed property (e.g. `OCCU`, `RESI` on an individual). The
+ * mapper preserves these on the carrying object's `$unknown` list instead of dropping them; the
+ * whole subtree (including the raw children's own children) is retained and can be walked.
  *
  * This is a Model-layer leaf and deliberately mirrors — but does not reference — the parse-layer
  * node, so the typed model stays independent of the parser internals.
