@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 
 use MagicSunday\Gedcom\Schema\GedcomVersion;
+use MagicSunday\Gedcom\Schema\Schema;
+use MagicSunday\Gedcom\Schema\StructureDefinition;
 
 /**
  * The manifest of registry structures that are generated into committed model classes. It is the
@@ -56,6 +58,50 @@ final class GeneratedModels
                 'isRecord'    => false,
                 'description' => 'The cited event of a source citation: its type and the informant role.',
             ],
+            [
+                'version'     => GedcomVersion::V551,
+                'uri'         => 'https://gedcom.io/terms/v5.5.1/CALN',
+                'class'       => 'CallNumber',
+                'isRecord'    => false,
+                'description' => 'A repository call number: the identifier a repository files an item under, and its media type.',
+            ],
+            [
+                'version'     => GedcomVersion::V551,
+                'uri'         => 'https://gedcom.io/terms/v5.5.1/REPO-XREF_REPO',
+                'class'       => 'RepositoryCitation',
+                'isRecord'    => false,
+                'description' => 'A citation of a repository record, with the source call numbers held there and any notes.',
+            ],
         ];
+    }
+
+    /**
+     * Builds the generator's reference map: each generation target's substructure URI keyed to its
+     * short class name and fully-qualified import. A generated container passes this to the generator
+     * so that a nested substructure whose own class already exists is referenced as a typed property
+     * rather than deferred and dropped, closing the structure graph edge by edge.
+     *
+     * @param Schema           $schema     The schema resolving each target's tag.
+     * @param DomainClassifier $classifier The classifier resolving each target's namespace.
+     *
+     * @return array<string, array{0: string, 1: string}> The URI → [short class, FQCN] map.
+     */
+    public static function referenceMap(Schema $schema, DomainClassifier $classifier): array
+    {
+        $map = [];
+
+        foreach (self::targets() as $target) {
+            $definition = $schema->byUri($target['uri']);
+
+            if (!$definition instanceof StructureDefinition) {
+                continue;
+            }
+
+            $namespace = $classifier->namespaceFor($definition->tag, $target['isRecord']);
+
+            $map[$target['uri']] = [$target['class'], $namespace . '\\' . $target['class']];
+        }
+
+        return $map;
     }
 }

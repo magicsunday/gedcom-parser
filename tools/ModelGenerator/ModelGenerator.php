@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Tools\ModelGenerator;
 
 use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
+use MagicSunday\Gedcom\Schema\Cardinality;
 use MagicSunday\Gedcom\Schema\Schema;
 use MagicSunday\Gedcom\Schema\StructureDefinition;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
@@ -28,14 +29,15 @@ use function strtolower;
  *
  * A pointer structure keeps its target's cross-reference; a leaf substructure becomes a typed
  * property; a substructure already covered by a hand-written model (such as `NOTE` → {@see Note})
- * reuses that class; and every class carries the `$unknown` catch-all so nothing the typed model
- * does not consume is lost. A substructure that is itself a container needs its own generated
- * class and is skipped until the full roll-out wires the whole structure graph.
+ * reuses that class; a substructure whose own generated container class already exists (the
+ * reference map) is referenced as a typed property; and every class carries the `$unknown` catch-all
+ * so nothing the typed model does not consume is lost. A container substructure not yet in the
+ * reference map still needs its own generated class and is deferred until the roll-out adds it.
  *
  * This is the generator ENGINE; its type-mapping table is refined, structure by structure, by the
  * full roll-out. One table gap remains deferred there: a same-tag inline/pointer pair on a
- * non-known tag maps only its first variant. The engine never yet writes committed classes, so this
- * does not affect the shipped model.
+ * non-known tag maps only its first variant. No committed generated class exercises that gap yet, so
+ * it does not affect the shipped model.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -78,8 +80,19 @@ final readonly class ModelGenerator
 
     /**
      * Wires the type mapper, the class renderer and the domain classifier.
+     *
+     * @param array<string, array{0: string, 1: string}> $generatedByUri The reference map of
+     *                                                                   substructure URIs whose own
+     *                                                                   generated class already
+     *                                                                   exists, each keyed to its
+     *                                                                   short class name and its
+     *                                                                   fully-qualified import; a
+     *                                                                   substructure listed here is
+     *                                                                   referenced as a typed
+     *                                                                   property rather than
+     *                                                                   deferred.
      */
-    public function __construct()
+    public function __construct(private array $generatedByUri = [])
     {
         $this->typeMapper = new TypeMapper();
         $this->renderer   = new ClassRenderer();
@@ -134,13 +147,21 @@ final readonly class ModelGenerator
                 continue;
             }
 
+            // A hand-written model covers this tag (by tag, both its inline and pointer variant).
             if (isset(self::KNOWN_MODELS[$tag])) {
                 [$short, $fqcn] = self::KNOWN_MODELS[$tag];
-                $name           = strtolower($tag);
 
-                $properties[] = $substructure->cardinality->isCollection()
-                    ? new PropertySpec($name, 'array', 'list<' . $short . '>', '[]', 'The ' . $tag . ' substructures.', $fqcn)
-                    : new PropertySpec($name, '?' . $short, $short . '|null', 'null', 'The ' . $tag . ' substructure.', $fqcn);
+                $properties[] = $this->classReference($tag, $short, $fqcn, $substructure->cardinality);
+
+                continue;
+            }
+
+            // The substructure's own generated container class already exists (reference map): use
+            // it rather than deferring the container and dropping its data.
+            if (isset($this->generatedByUri[$substructure->uri])) {
+                [$short, $fqcn] = $this->generatedByUri[$substructure->uri];
+
+                $properties[] = $this->classReference($tag, $short, $fqcn, $substructure->cardinality);
 
                 continue;
             }
@@ -193,5 +214,25 @@ final readonly class ModelGenerator
         return $this->renderer->render(
             new ClassSpec($namespace, $className, array_keys($imports), $description, $properties),
         );
+    }
+
+    /**
+     * Builds the typed property referencing another model class (a hand-written model or an already
+     * generated container), keyed by the tag and pluralised to a `list<>` for a collection.
+     *
+     * @param string      $tag         The substructure's tag, giving the property name.
+     * @param string      $short       The referenced class's short name.
+     * @param string      $fqcn        The referenced class's fully-qualified import.
+     * @param Cardinality $cardinality The substructure's cardinality.
+     *
+     * @return PropertySpec The referencing property.
+     */
+    private function classReference(string $tag, string $short, string $fqcn, Cardinality $cardinality): PropertySpec
+    {
+        $name = strtolower($tag);
+
+        return $cardinality->isCollection()
+            ? new PropertySpec($name, 'array', 'list<' . $short . '>', '[]', 'The ' . $tag . ' substructures.', $fqcn)
+            : new PropertySpec($name, '?' . $short, $short . '|null', 'null', 'The ' . $tag . ' substructure.', $fqcn);
     }
 }

@@ -161,6 +161,92 @@ class ModelGeneratorTest extends TestCase
     }
 
     /**
+     * A substructure that is itself a container (it bears substructures) is normally deferred, but
+     * once it is listed in the generator's reference map — its own generated class exists — it is
+     * referenced as a typed property with its import, keyed and pluralised by cardinality. This is
+     * how the roll-out closes the structure graph rather than dropping every nested container.
+     */
+    #[Test]
+    public function itReferencesAGeneratedContainerSubstructure(): void
+    {
+        // BAR bears a substructure of its own, so without the reference map it would be deferred.
+        $bar = new StructureDefinition(
+            'urn:bar',
+            'BAR',
+            'http://www.w3.org/2001/XMLSchema#string',
+            null,
+            ['MEDI' => [new Substructure('urn:medi', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $medi   = new StructureDefinition('urn:medi', 'MEDI', 'https://gedcom.io/terms/v7/type-Enum', null, []);
+        $parent = new StructureDefinition(
+            'urn:parent',
+            'FOO',
+            null,
+            null,
+            ['BAR' => [new Substructure('urn:bar', Cardinality::fromToken('{0:M}'))]],
+        );
+
+        $schema = new Schema(['urn:bar' => $bar, 'urn:medi' => $medi, 'urn:parent' => $parent]);
+
+        // The reference map states BAR already has a generated class (Bar, in the Source domain).
+        $generatedByUri = [
+            'urn:bar' => ['Bar', 'MagicSunday\\Gedcom\\Model\\Substructure\\Source\\Bar'],
+        ];
+
+        $php = (new ModelGenerator($generatedByUri))->generate(
+            $parent,
+            $schema,
+            false,
+            'GeneratedFoo',
+            'A generated container referencing another generated container.',
+        );
+
+        self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
+        self::assertStringContainsString('use MagicSunday\\Gedcom\\Model\\Substructure\\Source\\Bar;', $php);
+        self::assertStringContainsString('@param list<Bar>', $php);
+        self::assertStringContainsString('public array $bar = [],', $php);
+    }
+
+    /**
+     * A single-cardinality reference maps to a nullable typed property rather than a list.
+     */
+    #[Test]
+    public function itReferencesASingleGeneratedContainerAsNullable(): void
+    {
+        $bar = new StructureDefinition(
+            'urn:bar',
+            'BAR',
+            'http://www.w3.org/2001/XMLSchema#string',
+            null,
+            ['MEDI' => [new Substructure('urn:medi', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $medi   = new StructureDefinition('urn:medi', 'MEDI', 'https://gedcom.io/terms/v7/type-Enum', null, []);
+        $parent = new StructureDefinition(
+            'urn:parent',
+            'FOO',
+            null,
+            null,
+            ['BAR' => [new Substructure('urn:bar', Cardinality::fromToken('{0:1}'))]],
+        );
+
+        $schema         = new Schema(['urn:bar' => $bar, 'urn:medi' => $medi, 'urn:parent' => $parent]);
+        $generatedByUri = ['urn:bar' => ['Bar', 'MagicSunday\\Gedcom\\Model\\Substructure\\Source\\Bar']];
+
+        $php = (new ModelGenerator($generatedByUri))->generate(
+            $parent,
+            $schema,
+            false,
+            'GeneratedFoo',
+            'A generated container referencing a single generated container.',
+        );
+
+        self::assertNotEmpty(token_get_all($php, TOKEN_PARSE));
+        self::assertStringContainsString('public ?Bar $bar = null,', $php);
+    }
+
+    /**
      * A structure carrying its own non-pointer payload (an event citation's enum value plus a ROLE
      * substructure) emits a typed `value` property for that line value alongside the substructure.
      */

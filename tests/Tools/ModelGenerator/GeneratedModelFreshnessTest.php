@@ -71,7 +71,11 @@ class GeneratedModelFreshnessTest extends TestCase
 
         self::assertInstanceOf(StructureDefinition::class, $definition);
 
-        $generated = (new ModelGenerator())->generate(
+        $classifier = new DomainClassifier();
+
+        // Regenerate from the SAME reference map the driver used, so a class that nests another
+        // generated container reproduces its typed reference rather than deferring it.
+        $generated = (new ModelGenerator(GeneratedModels::referenceMap($schema, $classifier)))->generate(
             $definition,
             $schema,
             $target['isRecord'],
@@ -79,7 +83,7 @@ class GeneratedModelFreshnessTest extends TestCase
             $target['description'],
         );
 
-        $namespace = (new DomainClassifier())->namespaceFor($definition->tag, $target['isRecord']);
+        $namespace = $classifier->namespaceFor($definition->tag, $target['isRecord']);
         $relative  = str_replace(['MagicSunday\\Gedcom\\', '\\'], ['', '/'], $namespace);
         $path      = $root . '/src/' . $relative . '/' . $target['class'] . '.php';
 
