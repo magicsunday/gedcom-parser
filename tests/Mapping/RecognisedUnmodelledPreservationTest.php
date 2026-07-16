@@ -122,23 +122,18 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     }
 
     /**
-     * A substructure recognised-but-unmodelled only at a NESTED level (AGNC under BIRT) is not
-     * diverted by the record-level pass (that deeper case is a separate increment): it appears
-     * neither on the record's `$unknown` nor on the nested event's own `$unknown`. The modelled
-     * event still types.
+     * A recognised-but-unmodelled tag stays at the level it occurs: a record-level child lands on
+     * the record's `$unknown`, not on a nested object's (the nested-level case is covered by
+     * {@see NestedUnmodelledPreservationTest}).
      */
     #[Test]
-    public function doesNotDivertNestedChildrenAtTheRecordPass(): void
+    public function preservesARecordChildOnTheRecordNotANestedObject(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n2 AGNC A hospital\n0 TRLR\n"
+            "0 @I1@ INDI\n1 OCCU Baker\n1 BIRT\n2 DATE 1 JAN 1900\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertCount(1, $individual->birt);
-        self::assertSame([], $individual->unknown);
-        // The nested AGNC is dropped (not yet diverted at the nested level), NOT pushed onto the
-        // event's own list — a bug propagating the consumed tags into the nested shape would put it
-        // here.
+        self::assertArrayHasKey('OCCU', $this->byTag($individual->unknown));
         self::assertSame([], $individual->birt[0]->unknown);
     }
 

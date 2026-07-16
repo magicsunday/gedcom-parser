@@ -50,6 +50,23 @@ use function trim;
 final class JsonMapperFactory
 {
     /**
+     * The value-object leaf types whose handler parses substructures the type does NOT expose as
+     * same-named constructor properties (a `DATE`'s `TIME`/`PHRASE`, a `PLAC`'s `MAP`/`LATI`/`LONG`).
+     * The object mapper must not shape these class-aware, or a class-aware pass would divert that
+     * handler input as an "unmodelled" tag and lose it. A modelled container that carries its own
+     * `$unknown` list and whose handler reads it (such as {@see Note}) is deliberately NOT listed:
+     * it IS shaped class-aware so its unmodelled substructures are preserved.
+     *
+     * @var list<class-string>
+     */
+    public const array LEAF_VALUE_TYPES = [
+        DateValue::class,
+        AgeValue::class,
+        PlaceValue::class,
+        RawSubstructure::class,
+    ];
+
+    /**
      * The place-structure tag whose header instance declares the default hierarchy FORM.
      */
     private const string TAG_PLAC = 'PLAC';
