@@ -11,13 +11,16 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Source\RepositoryCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
  * A typed GEDCOM source (SOUR) record.
  *
  * Describes a source of genealogical information — its title, author, publication facts and any
- * verbatim source text. Each descriptive field is a single optional text value ({0:1}).
+ * verbatim source text. Each descriptive field is a single optional text value ({0:1}); the
+ * repositories that hold the source (REPO, both the inline and pointer variant) are typed
+ * {@see RepositoryCitation}s carrying their call numbers.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -36,6 +39,7 @@ final readonly class SourceRecord
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
      * @param ChangeDate|null          $chan    The record change timestamp (CHAN), or NULL when absent.
+     * @param list<RepositoryCitation> $repo    The repositories holding the source (REPO); empty when none.
      * @param list<RawSubstructure>    $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -49,6 +53,7 @@ final readonly class SourceRecord
         public array $exid = [],
         public ?CreationDate $crea = null,
         public ?ChangeDate $chan = null,
+        public array $repo = [],
         public array $unknown = [],
     ) {
     }
