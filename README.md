@@ -5,9 +5,10 @@
 
 
 # GEDCOM parser
-A [GEDCOM](https://en.wikipedia.org/wiki/GEDCOM) 5.5.1 file parser for PHP. It reads a
-GEDCOM stream line by line and exposes the records (individuals, families, sources,
-notes, …) as an object model.
+A [GEDCOM](https://en.wikipedia.org/wiki/GEDCOM) 5.5.1 and 7.0 file parser for PHP. It reads
+a GEDCOM stream (or a GEDZIP `.gdz` archive) line by line and exposes the records
+(individuals, families, sources, notes, …) as a fully typed object model, detecting the
+document version from its own header.
 
 
 ## Requirements

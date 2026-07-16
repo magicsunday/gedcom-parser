@@ -1,6 +1,6 @@
 {
     "name": "magicsunday/gedcom-parser",
-    "description": "A streaming, spec-conformant GEDCOM 5.5.1 parser with a fully typed model for PHP 8.3+",
+    "description": "A streaming, spec-conformant GEDCOM 5.5.1 and 7.0 parser with a fully typed model for PHP 8.3+",
     "license": "MIT",
     "type": "library",
     "homepage": "https://github.com/magicsunday/gedcom-parser",
