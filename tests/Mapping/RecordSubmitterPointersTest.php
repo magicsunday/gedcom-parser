@@ -67,20 +67,20 @@ use function array_map;
 class RecordSubmitterPointersTest extends TestCase
 {
     /**
-     * An individual types its submitter and research-interest pointers; an unmodelled reference tag
-     * (REFN) stays on `$unknown`.
+     * An individual types its submitter and research-interest pointers; an unmodelled extension tag
+     * (`_CUSTOM`) stays on `$unknown`.
      */
     #[Test]
     public function typesAnIndividualsSubmitterAndInterestPointers(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 SUBM @U1@\n1 ANCI @U2@\n1 DESI @U3@\n1 REFN person-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 SUBM @U1@\n1 ANCI @U2@\n1 DESI @U3@\n1 _CUSTOM person-1\n0 TRLR\n"
         )->individuals[0];
 
         self::assertSame(['U1'], $individual->subm);
         self::assertSame(['U2'], $individual->anci);
         self::assertSame(['U3'], $individual->desi);
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**

@@ -16,10 +16,10 @@ use MagicSunday\Gedcom\Mapping\GedcomObjectMapper;
 use MagicSunday\Gedcom\Mapping\GedcomVersionDetector;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\RecordStream;
-use MagicSunday\Gedcom\Model\AttributeDetail;
-use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -37,17 +37,18 @@ use PHPUnit\Framework\TestCase;
 use function array_map;
 
 /**
- * The family record now types the remaining standard family event tags (divorce, engagement,
- * annulment, marriage banns/contract/licence/settlement, census) as {@see EventDetail} lists and its
- * residence attribute (RESI) as an {@see AttributeDetail} list — so a consumer navigates them typed
- * rather than reaching for `$unknown` (#132, additive roll-out). The version-divergent child count
- * (FAM.NCHI) is typed separately — see {@see FamilyChildCountTest}.
+ * The records now type their user reference numbers (`REFN`) — the submitter-assigned record
+ * identifiers — as typed {@see UserReference} objects rather than leaving them on `$unknown` (#132,
+ * additive roll-out). Each reference keeps its value and its optional originating-system type (the
+ * `REFN`.`TYPE` substructure), and the tag repeats, so the record exposes a list.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
+#[CoversClass(IndividualRecord::class)]
 #[CoversClass(FamilyRecord::class)]
+#[CoversClass(UserReference::class)]
 #[UsesClass(Parser::class)]
 #[UsesClass(StreamFactory::class)]
 #[UsesClass(Reader::class)]
@@ -62,70 +63,45 @@ use function array_map;
 #[UsesClass(Schema::class)]
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
-#[UsesClass(EventDetail::class)]
-#[UsesClass(AttributeDetail::class)]
 #[UsesClass(RawSubstructure::class)]
-class FamilyEventsTest extends TestCase
+class UserReferenceTest extends TestCase
 {
     /**
-     * The standard family events are each typed onto their own EventDetail property.
+     * An individual's user references are typed with their value and originating-system type; the
+     * tag repeats, and an unmodelled child stays on the reference's own `$unknown`.
      */
     #[Test]
-    public function typesTheStandardFamilyEvents(): void
+    public function typesAnIndividualsUserReferences(): void
     {
-        $family = $this->parse(
-            "0 @F1@ FAM\n1 DIV\n2 DATE 1930\n1 ENGA\n2 DATE 1919\n1 ANUL\n2 PLAC Rome\n0 TRLR\n"
-        )->families[0];
-
-        self::assertSame('1930', $family->div[0]->date?->raw);
-        self::assertSame('1919', $family->enga[0]->date?->raw);
-        self::assertSame('Rome', $family->anul[0]->plac?->raw);
-        self::assertSame([], $this->tags($family->unknown));
-    }
-
-    /**
-     * The residence attribute (RESI) is typed as an AttributeDetail; a still-unmodelled tag (a
-     * `_CUSTOM` extension) remains the positive `$unknown` control.
-     */
-    #[Test]
-    public function typesTheResidenceAttribute(): void
-    {
-        $family = $this->parse(
-            "0 @F1@ FAM\n1 _CUSTOM R1\n1 RESI\n2 PLAC Vienna\n0 TRLR\n"
-        )->families[0];
-
-        self::assertNull($family->resi[0]->value);
-        self::assertSame('Vienna', $family->resi[0]->plac?->raw);
-        self::assertSame(['_CUSTOM'], $this->tags($family->unknown));
-    }
-
-    /**
-     * The family events type identically under GEDCOM 7.0; a still-unmodelled tag (a `_CUSTOM`
-     * extension) remains the positive `$unknown` control.
-     */
-    #[Test]
-    public function typesFamilyEventsUnderGedcom70(): void
-    {
-        $family = $this->parse(
-            "0 @F1@ FAM\n1 DIV\n2 DATE 1930\n1 _CUSTOM R1\n0 TRLR\n",
+        $individual = $this->parse(
+            "0 @I1@ INDI\n1 REFN ID-1\n2 TYPE mysystem\n2 _CUSTOM extension\n1 REFN ID-2\n0 TRLR\n",
             '7.0'
-        )->families[0];
+        )->individuals[0];
 
-        self::assertSame('1930', $family->div[0]->date?->raw);
-        self::assertSame(['_CUSTOM'], $this->tags($family->unknown));
+        self::assertCount(2, $individual->refn);
+        self::assertSame('ID-1', $individual->refn[0]->value);
+        self::assertSame('mysystem', $individual->refn[0]->type);
+        self::assertSame(['_CUSTOM'], $this->tags($individual->refn[0]->unknown));
+        self::assertSame('ID-2', $individual->refn[1]->value);
+        self::assertNull($individual->refn[1]->type);
+        self::assertSame([], $this->tags($individual->unknown));
     }
 
     /**
-     * A tag still not modelled on the family (a `_CUSTOM` extension) is preserved on `$unknown`.
+     * A GEDCOM 5.5.1 family user reference keeps its value and its `REFN`.`TYPE` originating system.
      */
     #[Test]
-    public function stillPreservesAnUnmodelledFamilyTag(): void
+    public function typesA551FamilyUserReference(): void
     {
         $family = $this->parse(
-            "0 @F1@ FAM\n1 _CUSTOM F-1\n0 TRLR\n"
+            "0 @F1@ FAM\n1 REFN R-9\n2 TYPE legacy\n0 TRLR\n",
+            '5.5.1'
         )->families[0];
 
-        self::assertSame(['_CUSTOM'], $this->tags($family->unknown));
+        self::assertCount(1, $family->refn);
+        self::assertSame('R-9', $family->refn[0]->value);
+        self::assertSame('legacy', $family->refn[0]->type);
+        self::assertSame([], $this->tags($family->unknown));
     }
 
     /**

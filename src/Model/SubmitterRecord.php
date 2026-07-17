@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
@@ -31,6 +32,7 @@ final readonly class SubmitterRecord
      * @param string|null              $name    The submitter's name, or NULL when the record carries none.
      * @param list<string>             $phon    The submitter's phone numbers.
      * @param list<Note>               $note    The record-level notes (NOTE).
+     * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -42,6 +44,7 @@ final readonly class SubmitterRecord
         public ?string $name = null,
         public array $phon = [],
         public array $note = [],
+        public array $refn = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
@@ -36,6 +37,7 @@ final readonly class NoteRecord
      * @param string|null              $mime    The GEDCOM 7.0 media type of the text (SNOTE.MIME), or NULL when absent.
      * @param list<NoteTranslation>    $tran    The GEDCOM 7.0 translations of the note text (SNOTE.TRAN); empty when none.
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
+     * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -49,6 +51,7 @@ final readonly class NoteRecord
         public ?string $mime = null,
         public array $tran = [],
         public array $sour = [],
+        public array $refn = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,

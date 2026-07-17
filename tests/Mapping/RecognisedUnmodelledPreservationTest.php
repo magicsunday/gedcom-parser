@@ -34,7 +34,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * A level-0 record's schema-recognised substructure that the typed record does not model as a
- * property (e.g. `REFN` on an individual) is no longer silently dropped: the object mapper diverts
+ * property (e.g. `RFN` on an individual) is no longer silently dropped: the object mapper diverts
  * it — like an out-of-schema tag — onto the record's `$unknown` list as a {@see RawSubstructure},
  * closing the recognised-but-unmodelled ("point 2") silent-loss gap at the record level (#143).
  *
@@ -61,31 +61,32 @@ use PHPUnit\Framework\TestCase;
 class RecognisedUnmodelledPreservationTest extends TestCase
 {
     /**
-     * A recognised-but-unmodelled `REFN` is preserved on `$unknown` with its tag and value.
+     * A recognised-but-unmodelled `RFN` is preserved on `$unknown` with its tag and value.
      */
     #[Test]
     public function preservesARecognisedButUnmodelledRecordChild(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RFN ID-1\n0 TRLR\n"
         )->individuals[0];
 
         $byTag = $this->byTag($individual->unknown);
-        self::assertArrayHasKey('REFN', $byTag);
-        self::assertSame('ID-1', $byTag['REFN']->value);
+        self::assertArrayHasKey('RFN', $byTag);
+        self::assertSame('ID-1', $byTag['RFN']->value);
     }
 
     /**
-     * The whole subtree of a recognised-but-unmodelled container is preserved verbatim.
+     * The whole subtree beneath a recognised-but-unmodelled tag is preserved verbatim, including a
+     * nested child the tag's own grammar does not define.
      */
     #[Test]
     public function preservesTheNestedSubtreeOfAnUnmodelledChild(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n2 TYPE user\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RFN ID-1\n2 TYPE user\n0 TRLR\n"
         )->individuals[0];
 
-        $refn = $this->byTag($individual->unknown)['REFN'];
+        $refn = $this->byTag($individual->unknown)['RFN'];
         self::assertSame('ID-1', $refn->value);
         self::assertSame('TYPE', $refn->children[0]->tag);
         self::assertSame('user', $refn->children[0]->value);
@@ -98,11 +99,11 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesOutOfSchemaAndUnmodelledTogether(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n1 _CUSTOM extension\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RFN ID-1\n1 _CUSTOM extension\n0 TRLR\n"
         )->individuals[0];
 
         $byTag = $this->byTag($individual->unknown);
-        self::assertSame('ID-1', $byTag['REFN']->value);
+        self::assertSame('ID-1', $byTag['RFN']->value);
         self::assertSame('extension', $byTag['_CUSTOM']->value);
     }
 
@@ -130,28 +131,28 @@ class RecognisedUnmodelledPreservationTest extends TestCase
     public function preservesARecordChildOnTheRecordNotANestedObject(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n1 BIRT\n2 DATE 1 JAN 1900\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RFN ID-1\n1 BIRT\n2 DATE 1 JAN 1900\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertArrayHasKey('REFN', $this->byTag($individual->unknown));
+        self::assertArrayHasKey('RFN', $this->byTag($individual->unknown));
         self::assertSame([], $individual->birt[0]->unknown);
     }
 
     /**
-     * Each occurrence of a `{0:M}` recognised-but-unmodelled tag is preserved distinctly, not
-     * collapsed to one.
+     * Every occurrence of an unmodelled tag is preserved distinctly on `$unknown`, even when the tag
+     * repeats, rather than collapsed to one.
      */
     #[Test]
-    public function preservesEveryOccurrenceOfACollectionTag(): void
+    public function preservesEveryOccurrenceOfARepeatedUnmodelledTag(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n1 REFN ID-2\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RFN ID-1\n1 RFN ID-2\n0 TRLR\n"
         )->individuals[0];
 
         $references = [];
 
         foreach ($individual->unknown as $substructure) {
-            if ($substructure->tag === 'REFN') {
+            if ($substructure->tag === 'RFN') {
                 $references[] = $substructure->value;
             }
         }
