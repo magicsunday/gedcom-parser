@@ -71,6 +71,9 @@ final readonly class IndividualRecord
      * @param list<AttributeDetail>    $fact    The generic facts (FACT).
      * @param list<ChildToFamilyLink>  $famc    The families in which the individual is a child.
      * @param list<SpouseToFamilyLink> $fams    The families in which the individual is a partner.
+     * @param list<string>             $subm    The submitter cross-reference pointers (SUBM); empty when none.
+     * @param list<string>             $anci    The ancestor-interest submitter cross-reference pointers (ANCI); empty when none.
+     * @param list<string>             $desi    The descendant-interest submitter cross-reference pointers (DESI); empty when none.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
@@ -121,6 +124,9 @@ final readonly class IndividualRecord
         public array $fact = [],
         public array $famc = [],
         public array $fams = [],
+        public array $subm = [],
+        public array $anci = [],
+        public array $desi = [],
         public array $note = [],
         public array $sour = [],
         public array $uid = [],
