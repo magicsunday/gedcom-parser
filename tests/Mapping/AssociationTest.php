@@ -80,14 +80,14 @@ class AssociationTest extends TestCase
     public function typesAGedcom551Association(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 ASSO @I2@\n2 RELA Godfather\n1 REFN person-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 ASSO @I2@\n2 RELA Godfather\n1 _CUSTOM person-1\n0 TRLR\n"
         )->individuals[0];
 
         self::assertCount(1, $individual->asso);
         self::assertSame('I2', $individual->asso[0]->xref);
         self::assertSame('Godfather', $individual->asso[0]->rela);
         self::assertNull($individual->asso[0]->role);
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**

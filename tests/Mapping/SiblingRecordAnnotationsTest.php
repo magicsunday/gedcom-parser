@@ -78,22 +78,22 @@ use function array_map;
 class SiblingRecordAnnotationsTest extends TestCase
 {
     /**
-     * A multimedia record types both its notes and its source citations; an unmodelled reference tag
-     * (REFN) stays on `$unknown`.
+     * A multimedia record types both its notes and its source citations; an unmodelled extension tag
+     * (`_CUSTOM`) stays on `$unknown`.
      */
     #[Test]
     public function typesAMultimediaRecordsNotesAndSources(): void
     {
         $media = $this->parse(
             "0 @O1@ OBJE\n1 FILE http://example.test/portrait.jpg\n2 FORM jpg\n"
-            . "1 NOTE a media note\n1 SOUR a cited source\n1 REFN media-1\n0 TRLR\n"
+            . "1 NOTE a media note\n1 SOUR a cited source\n1 _CUSTOM media-1\n0 TRLR\n"
         )->multimedia[0];
 
         self::assertCount(1, $media->note);
         self::assertSame('a media note', $media->note[0]->value);
         self::assertCount(1, $media->sour);
         self::assertSame('a cited source', $media->sour[0]->value);
-        self::assertSame(['REFN'], $this->tags($media->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($media->unknown));
     }
 
     /**
@@ -117,19 +117,19 @@ class SiblingRecordAnnotationsTest extends TestCase
     }
 
     /**
-     * A source record types its record-level notes; an unmodelled reference tag (REFN) stays on
+     * A source record types its record-level notes; an unmodelled extension tag (`_CUSTOM`) stays on
      * `$unknown`.
      */
     #[Test]
     public function typesASourceRecordsNotes(): void
     {
         $source = $this->parse(
-            "0 @S1@ SOUR\n1 TITL A source\n1 NOTE a source note\n1 REFN source-1\n0 TRLR\n"
+            "0 @S1@ SOUR\n1 TITL A source\n1 NOTE a source note\n1 _CUSTOM source-1\n0 TRLR\n"
         )->sources[0];
 
         self::assertCount(1, $source->note);
         self::assertSame('a source note', $source->note[0]->value);
-        self::assertSame(['REFN'], $this->tags($source->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($source->unknown));
     }
 
     /**

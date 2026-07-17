@@ -114,17 +114,17 @@ class IndividualEventsTest extends TestCase
     }
 
     /**
-     * A tag not modelled even after this batch (a user reference `REFN`) is still preserved on
+     * A tag not modelled by the typed model (a `_CUSTOM` extension) is still preserved on
      * `$unknown`, unchanged.
      */
     #[Test]
     public function stillPreservesAStillUnmodelledTag(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 REFN ID-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 _CUSTOM ID-1\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**

@@ -46,7 +46,7 @@ use function array_map;
  *
  * Both the pointer and the GEDCOM 5.5.1 inline variants are lossless: a pointer citation resolves to
  * its {@see SourceRecord}, and an inline citation retains its free-text description on
- * {@see SourceCitation::$value}. A tag the record does not model (a user reference `REFN`) is
+ * {@see SourceCitation::$value}. A tag the record does not model (a `_CUSTOM` extension) is
  * preserved on `$unknown`.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
@@ -145,7 +145,7 @@ class RecordNotesAndSourcesTest extends TestCase
 
     /**
      * Under GEDCOM 7.0 the record-level note and (pointer-only) source citation type identically,
-     * while an unmodelled tag (a user reference REFN) is preserved on `$unknown` rather than silently
+     * while an unmodelled tag (a `_CUSTOM` extension) is preserved on `$unknown` rather than silently
      * lost or mis-mapped.
      */
     #[Test]
@@ -153,7 +153,7 @@ class RecordNotesAndSourcesTest extends TestCase
     {
         $document = $this->parse(
             "0 @I1@ INDI\n1 NOTE A personal note\n2 MIME text/plain\n2 LANG en\n"
-            . "1 SOUR @S1@\n2 PAGE p. 7\n1 REFN person-1\n"
+            . "1 SOUR @S1@\n2 PAGE p. 7\n1 _CUSTOM person-1\n"
             . "0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n",
             '7.0'
         );
@@ -169,7 +169,7 @@ class RecordNotesAndSourcesTest extends TestCase
         self::assertSame('p. 7', $individual->sour[0]->page);
         self::assertSame('S1', $individual->sour[0]->source($document)?->xref);
 
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**

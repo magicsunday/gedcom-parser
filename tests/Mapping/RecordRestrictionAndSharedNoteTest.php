@@ -69,17 +69,17 @@ class RecordRestrictionAndSharedNoteTest extends TestCase
 {
     /**
      * An individual types its restriction notice, preserving the GEDCOM 5.5.1 lower-case value
-     * verbatim; an unmodelled reference tag (REFN) stays on `$unknown`.
+     * verbatim; an unmodelled extension tag (`_CUSTOM`) stays on `$unknown`.
      */
     #[Test]
     public function typesAnIndividualsRestriction(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 RESN confidential\n1 REFN person-1\n0 TRLR\n"
+            "0 @I1@ INDI\n1 RESN confidential\n1 _CUSTOM person-1\n0 TRLR\n"
         )->individuals[0];
 
         self::assertSame('confidential', $individual->resn);
-        self::assertSame(['REFN'], $this->tags($individual->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**
