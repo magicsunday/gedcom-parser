@@ -31,6 +31,9 @@ final readonly class SubmitterRecord
      * @param string                   $xref    The record cross-reference identifier.
      * @param string|null              $name    The submitter's name, or NULL when the record carries none.
      * @param list<string>             $phon    The submitter's phone numbers.
+     * @param list<string>             $email   The submitter's email addresses (EMAIL); empty when none.
+     * @param list<string>             $fax     The submitter's fax numbers (FAX); empty when none.
+     * @param list<string>             $www     The submitter's web pages (WWW); empty when none.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
@@ -44,6 +47,9 @@ final readonly class SubmitterRecord
         public string $xref,
         public ?string $name = null,
         public array $phon = [],
+        public array $email = [],
+        public array $fax = [],
+        public array $www = [],
         public array $note = [],
         public array $snote = [],
         public array $refn = [],
