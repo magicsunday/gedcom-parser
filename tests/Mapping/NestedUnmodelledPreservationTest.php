@@ -39,7 +39,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * The recognised-but-unmodelled preservation now recurses into modelled nested containers: a tag the
- * schema permits under a modelled substructure (e.g. `AGNC` under a birth event, which
+ * schema permits under a modelled substructure (e.g. `ADDR` under a birth event, which
  * {@see EventDetail} does not model) is preserved on that nested object's own `$unknown` list rather
  * than dropped — while a value-object leaf (`DATE`/`PLAC`/`AGE`, hydrated by a type handler from its
  * raw payload) is NOT shaped class-aware, so its own substructures are never wrongly diverted (#143).
@@ -79,15 +79,15 @@ class NestedUnmodelledPreservationTest extends TestCase
     public function preservesARecognisedButUnmodelledTagUnderAModelledEvent(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n2 AGNC A hospital\n0 TRLR\n"
+            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n2 ADDR 123 Main St\n0 TRLR\n"
         )->individuals[0];
 
         self::assertCount(1, $individual->birt);
         self::assertSame([], $individual->unknown);
 
         $byTag = $this->byTag($individual->birt[0]->unknown);
-        self::assertArrayHasKey('AGNC', $byTag);
-        self::assertSame('A hospital', $byTag['AGNC']->value);
+        self::assertArrayHasKey('ADDR', $byTag);
+        self::assertSame('123 Main St', $byTag['ADDR']->value);
     }
 
     /**
