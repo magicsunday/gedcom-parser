@@ -32,6 +32,7 @@ final readonly class SubmitterRecord
      * @param string|null              $name    The submitter's name, or NULL when the record carries none.
      * @param list<string>             $phon    The submitter's phone numbers.
      * @param list<Note>               $note    The record-level notes (NOTE).
+     * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
@@ -44,6 +45,7 @@ final readonly class SubmitterRecord
         public ?string $name = null,
         public array $phon = [],
         public array $note = [],
+        public array $snote = [],
         public array $refn = [],
         public array $uid = [],
         public array $exid = [],
