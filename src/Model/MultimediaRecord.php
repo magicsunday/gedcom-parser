@@ -33,6 +33,8 @@ final readonly class MultimediaRecord
      * @param list<MultimediaFile>     $file    The referenced multimedia files.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
+     * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
+     * @param string|null              $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
@@ -45,12 +47,16 @@ final readonly class MultimediaRecord
         public array $file = [],
         public array $note = [],
         public array $sour = [],
+        // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
+        public array $snote = [],
+        public ?string $resn = null,
         public array $refn = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
         public ?ChangeDate $chan = null,
         public array $unknown = [],
+        // jscpd:ignore-end
     ) {
     }
 }

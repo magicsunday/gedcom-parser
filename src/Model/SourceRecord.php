@@ -37,6 +37,7 @@ final readonly class SourceRecord
      * @param string|null              $abbr    The short abbreviated title (ABBR), or NULL when absent.
      * @param string|null              $text    The verbatim source text (TEXT), or NULL when absent.
      * @param list<Note>               $note    The record-level notes (NOTE).
+     * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
@@ -52,7 +53,9 @@ final readonly class SourceRecord
         public ?string $publ = null,
         public ?string $abbr = null,
         public ?string $text = null,
+        // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
         public array $note = [],
+        public array $snote = [],
         public array $refn = [],
         public array $uid = [],
         public array $exid = [],
@@ -60,6 +63,7 @@ final readonly class SourceRecord
         public ?ChangeDate $chan = null,
         public array $repo = [],
         public array $unknown = [],
+        // jscpd:ignore-end
     ) {
     }
 }

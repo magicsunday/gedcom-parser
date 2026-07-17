@@ -34,6 +34,7 @@ final readonly class RepositoryRecord
      * @param list<string>             $email   The repository email addresses.
      * @param list<string>             $fax     The repository fax numbers.
      * @param list<Note>               $note    The record-level notes (NOTE).
+     * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
@@ -47,13 +48,16 @@ final readonly class RepositoryRecord
         public array $phon = [],
         public array $email = [],
         public array $fax = [],
+        // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
         public array $note = [],
+        public array $snote = [],
         public array $refn = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
         public ?ChangeDate $chan = null,
         public array $unknown = [],
+        // jscpd:ignore-end
     ) {
     }
 }
