@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Model;
 
 // jscpd:ignore-start — the shared imports and constructor tail coincide with the sibling detail model's; identical boilerplate, not real duplication.
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
+use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
@@ -57,6 +58,7 @@ final readonly class AttributeDetail
      * @param DateValue|null        $sdate   The GEDCOM 7.0 sort date (SDATE), or NULL when absent.
      * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<string>          $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<MultimediaLink>  $obje    The multimedia links tied to the attribute (OBJE).
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -80,6 +82,7 @@ final readonly class AttributeDetail
         public ?DateValue $sdate = null,
         public array $snote = [],
         public array $uid = [],
+        public array $obje = [],
         public array $unknown = [],
         // jscpd:ignore-end
     ) {
