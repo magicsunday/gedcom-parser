@@ -40,6 +40,10 @@ final readonly class EventDetail
      * @param string|null           $caus    The cause of the event (CAUS), or NULL when absent.
      * @param string|null           $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
      * @param list<Note>            $note    The notes on the event (NOTE).
+     * @param list<string>          $phon    The phone numbers (PHON); empty when none.
+     * @param list<string>          $email   The email addresses (EMAIL); empty when none.
+     * @param list<string>          $fax     The fax numbers (FAX); empty when none.
+     * @param list<string>          $www     The web pages (WWW); empty when none.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -51,6 +55,10 @@ final readonly class EventDetail
         public ?string $caus = null,
         public ?string $resn = null,
         public array $note = [],
+        public array $phon = [],
+        public array $email = [],
+        public array $fax = [],
+        public array $www = [],
         public array $unknown = [],
     ) {
     }
