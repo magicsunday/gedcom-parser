@@ -17,6 +17,7 @@ use MagicSunday\Gedcom\Mapping\GedcomVersionDetector;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\RecordStream;
 use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\MultimediaFile;
 use MagicSunday\Gedcom\Model\MultimediaRecord;
 use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\NoteRecord;
@@ -72,6 +73,7 @@ use function array_map;
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(Note::class)]
 #[UsesClass(SourceCitation::class)]
+#[UsesClass(MultimediaFile::class)]
 #[UsesClass(RawSubstructure::class)]
 class SiblingRecordAnnotationsTest extends TestCase
 {
@@ -95,18 +97,39 @@ class SiblingRecordAnnotationsTest extends TestCase
     }
 
     /**
-     * A source record types its record-level notes.
+     * The multimedia record types its notes and sources identically under GEDCOM 7.0.
+     */
+    #[Test]
+    public function typesAMultimediaRecordsNotesAndSourcesUnderGedcom70(): void
+    {
+        $media = $this->parse(
+            "0 @O1@ OBJE\n1 FILE http://example.test/portrait.jpg\n2 FORM image/jpeg\n"
+            . "1 NOTE a media note\n1 SOUR @S1@\n2 PAGE p. 3\n"
+            . "0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n",
+            '7.0'
+        )->multimedia[0];
+
+        self::assertCount(1, $media->note);
+        self::assertSame('a media note', $media->note[0]->value);
+        self::assertCount(1, $media->sour);
+        self::assertSame('p. 3', $media->sour[0]->page);
+        self::assertSame([], $this->tags($media->unknown));
+    }
+
+    /**
+     * A source record types its record-level notes; an unmodelled reference tag (REFN) stays on
+     * `$unknown`.
      */
     #[Test]
     public function typesASourceRecordsNotes(): void
     {
         $source = $this->parse(
-            "0 @S1@ SOUR\n1 TITL A source\n1 NOTE a source note\n0 TRLR\n"
+            "0 @S1@ SOUR\n1 TITL A source\n1 NOTE a source note\n1 REFN source-1\n0 TRLR\n"
         )->sources[0];
 
         self::assertCount(1, $source->note);
         self::assertSame('a source note', $source->note[0]->value);
-        self::assertSame([], $this->tags($source->unknown));
+        self::assertSame(['REFN'], $this->tags($source->unknown));
     }
 
     /**
