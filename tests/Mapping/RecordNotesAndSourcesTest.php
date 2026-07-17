@@ -46,8 +46,8 @@ use function array_map;
  *
  * Both the pointer and the GEDCOM 5.5.1 inline variants are lossless: a pointer citation resolves to
  * its {@see SourceRecord}, and an inline citation retains its free-text description on
- * {@see SourceCitation::$value}. The GEDCOM 7.0 shared-note pointer (`SNOTE`) is a distinct,
- * unmodelled tag preserved on `$unknown`.
+ * {@see SourceCitation::$value}. A tag the record does not model (a user reference `REFN`) is
+ * preserved on `$unknown`.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -145,16 +145,16 @@ class RecordNotesAndSourcesTest extends TestCase
 
     /**
      * Under GEDCOM 7.0 the record-level note and (pointer-only) source citation type identically,
-     * while the shared-note pointer (SNOTE) — a distinct tag this batch does not model — is preserved
-     * on `$unknown` rather than silently lost or mis-mapped.
+     * while an unmodelled tag (a user reference REFN) is preserved on `$unknown` rather than silently
+     * lost or mis-mapped.
      */
     #[Test]
-    public function typesTheNoteAndSourceAndPreservesSharedNoteUnderGedcom70(): void
+    public function typesTheNoteAndSourceUnderGedcom70(): void
     {
         $document = $this->parse(
             "0 @I1@ INDI\n1 NOTE A personal note\n2 MIME text/plain\n2 LANG en\n"
-            . "1 SOUR @S1@\n2 PAGE p. 7\n1 SNOTE @N1@\n"
-            . "0 @N1@ SNOTE A shared note\n0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n",
+            . "1 SOUR @S1@\n2 PAGE p. 7\n1 REFN person-1\n"
+            . "0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n",
             '7.0'
         );
 
@@ -169,7 +169,7 @@ class RecordNotesAndSourcesTest extends TestCase
         self::assertSame('p. 7', $individual->sour[0]->page);
         self::assertSame('S1', $individual->sour[0]->source($document)?->xref);
 
-        self::assertSame(['SNOTE'], $this->tags($individual->unknown));
+        self::assertSame(['REFN'], $this->tags($individual->unknown));
     }
 
     /**
