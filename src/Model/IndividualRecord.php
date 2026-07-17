@@ -11,10 +11,14 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+// jscpd:ignore-start — the record-level substructure imports coincide with the sibling record's; identical boilerplate, not real duplication.
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
+use MagicSunday\Gedcom\Model\Substructure\Common\LdsOrdinance;
 use MagicSunday\Gedcom\Model\Substructure\Common\NonOccurrence;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
+// jscpd:ignore-end
 
 /**
  * A typed GEDCOM individual (INDI) record.
@@ -78,6 +82,11 @@ final readonly class IndividualRecord
      * @param list<string>             $desi    The descendant-interest submitter cross-reference pointers (DESI); empty when none.
      * @param list<Association>        $asso    The associations to other individuals (ASSO).
      * @param list<NonOccurrence>      $no      The GEDCOM 7.0 asserted non-occurrences of events (NO).
+     * @param list<LdsOrdinance>       $bapl    The LDS baptism ordinances (BAPL).
+     * @param list<LdsOrdinance>       $conl    The LDS confirmation ordinances (CONL).
+     * @param list<LdsOrdinance>       $endl    The LDS endowment ordinances (ENDL).
+     * @param list<LdsOrdinance>       $inil    The LDS initiatory ordinances (INIL).
+     * @param list<LdsOrdinance>       $slgc    The LDS child-to-parents sealing ordinances (SLGC).
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
@@ -135,6 +144,11 @@ final readonly class IndividualRecord
         public array $desi = [],
         public array $asso = [],
         public array $no = [],
+        public array $bapl = [],
+        public array $conl = [],
+        public array $endl = [],
+        public array $inil = [],
+        public array $slgc = [],
         public array $note = [],
         public array $sour = [],
         public array $snote = [],
