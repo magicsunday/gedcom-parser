@@ -67,6 +67,23 @@ final class JsonMapperFactory
     ];
 
     /**
+     * Every type hydrated from a bare-string (or shaped-array) payload by a registered handler,
+     * rather than field-by-field from its constructor — the {@see LEAF_VALUE_TYPES} plus {@see Note}
+     * (which is handler-backed yet deliberately shaped class-aware). The object mapper must NOT force
+     * one of these into an object shape for a structureless tag: its handler already resolves the
+     * bare payload, so shaping it as `{xref}`/`{value}` would strip the value the handler expects. A
+     * constructor-hydrated model (such as an {@see \MagicSunday\Gedcom\Model\Substructure\Common\AliasLink})
+     * is NOT listed — it cannot accept a bare scalar, so a structureless pointer/value tag targeting
+     * it must be shaped.
+     *
+     * @var list<class-string>
+     */
+    public const array HANDLER_BACKED_TYPES = [
+        ...self::LEAF_VALUE_TYPES,
+        Note::class,
+    ];
+
+    /**
      * The place-structure tag whose header instance declares the default hierarchy FORM.
      */
     private const string TAG_PLAC = 'PLAC';

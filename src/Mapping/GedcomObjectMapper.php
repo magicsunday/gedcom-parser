@@ -202,6 +202,26 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Determines whether a structureless container child must be shaped into an object rather than
+     * kept as its bare value. This holds when the target property is a constructor-hydrated model
+     * (such as an {@see \MagicSunday\Gedcom\Model\Substructure\Common\AliasLink}), which cannot accept
+     * a bare scalar — its pointer/value must become the object's `xref`/`value`. A handler-backed
+     * model (a {@see \MagicSunday\Gedcom\Model\Note} whose registered handler already resolves the
+     * bare payload) is excluded, so its bare string reaches that handler unchanged.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     * @param string            $property  The lowercased child tag / property name.
+     *
+     * @return bool True when the child must be shaped as an object.
+     */
+    private function requiresObjectShape(?string $className, string $property): bool
+    {
+        $class = $this->nestedModelClass($className, $property);
+
+        return ($class !== null) && !in_array($class, JsonMapperFactory::HANDLER_BACKED_TYPES, true);
+    }
+
+    /**
      * Resolves the class a constructor parameter holds — its single named type, or the element class
      * of a `list<>`/`[]` collection read from the constructor's PHPDoc.
      *
@@ -419,10 +439,16 @@ final readonly class GedcomObjectMapper
             // structureless value-object leaf (a 5.5.1 DATE/AGE) is also shaped as an object WHEN it
             // actually carries children, so an out-of-schema tag beneath it reaches its handler's
             // `$unknown` rather than being dropped with the bare string; a scalar leaf (no value
-            // class) keeps the plain string, having nowhere to preserve a child.
+            // class) keeps the plain string, having nowhere to preserve a child. A tag whose
+            // definition declares no substructures but whose target property is a constructor-
+            // hydrated model (a 5.5.1 bare-pointer ALIA) is also shaped, so its pointer/value becomes
+            // the object's `xref`/`value` rather than a bare string the constructor cannot accept; a
+            // handler-backed model (Note) is excluded, since its handler already resolves the bare
+            // payload.
             $recurse = ($childDefinition instanceof StructureDefinition)
                 && (($childDefinition->substructures !== [])
-                    || (($child->children !== []) && $this->isLeafValueChild($className, $property)));
+                    || (($child->children !== []) && $this->isLeafValueChild($className, $property))
+                    || $this->requiresObjectShape($className, $property));
 
             $value = $recurse
                 ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
