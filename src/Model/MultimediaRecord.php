@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
@@ -29,6 +30,8 @@ final readonly class MultimediaRecord
     /**
      * @param string                   $xref    The record cross-reference identifier.
      * @param list<MultimediaFile>     $file    The referenced multimedia files.
+     * @param list<Note>               $note    The record-level notes (NOTE).
+     * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -38,6 +41,8 @@ final readonly class MultimediaRecord
     public function __construct(
         public string $xref,
         public array $file = [],
+        public array $note = [],
+        public array $sour = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
