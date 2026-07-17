@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
+use MagicSunday\Gedcom\Model\Substructure\Common\NonOccurrence;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
@@ -76,6 +77,7 @@ final readonly class IndividualRecord
      * @param list<string>             $anci    The ancestor-interest submitter cross-reference pointers (ANCI); empty when none.
      * @param list<string>             $desi    The descendant-interest submitter cross-reference pointers (DESI); empty when none.
      * @param list<Association>        $asso    The associations to other individuals (ASSO).
+     * @param list<NonOccurrence>      $no      The GEDCOM 7.0 asserted non-occurrences of events (NO).
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
@@ -132,6 +134,7 @@ final readonly class IndividualRecord
         public array $anci = [],
         public array $desi = [],
         public array $asso = [],
+        public array $no = [],
         public array $note = [],
         public array $sour = [],
         public array $snote = [],
