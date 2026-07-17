@@ -17,9 +17,9 @@ use MagicSunday\Gedcom\Mapping\GedcomVersionDetector;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\RecordStream;
 use MagicSunday\Gedcom\Model\AttributeDetail;
-use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\GedcomDocument;
+use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -37,11 +37,10 @@ use PHPUnit\Framework\TestCase;
 use function array_map;
 
 /**
- * The family record now types the remaining standard family event tags (divorce, engagement,
- * annulment, marriage banns/contract/licence/settlement, census) as {@see EventDetail} lists and its
- * residence attribute (RESI) as an {@see AttributeDetail} list — so a consumer navigates them typed
- * rather than reaching for `$unknown` (#132, additive roll-out). The version-divergent child count
- * (FAM.NCHI) is typed separately — see {@see FamilyChildCountTest}.
+ * The family record now types its child-count attribute (`FAM`.`NCHI`), which diverges across
+ * versions: GEDCOM 5.5.1 carries a bare non-negative count with no substructures, while GEDCOM 7.0
+ * carries a full family attribute (with its own notes, sources and other substructures). Both round-
+ * trip through the same version-agnostic `list<AttributeDetail>` (#132, #148).
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -62,70 +61,47 @@ use function array_map;
 #[UsesClass(Schema::class)]
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
-#[UsesClass(EventDetail::class)]
 #[UsesClass(AttributeDetail::class)]
+#[UsesClass(Note::class)]
 #[UsesClass(RawSubstructure::class)]
-class FamilyEventsTest extends TestCase
+class FamilyChildCountTest extends TestCase
 {
     /**
-     * The standard family events are each typed onto their own EventDetail property.
+     * A GEDCOM 5.5.1 family child count is a bare non-negative integer with no substructures — it
+     * must still be typed as an {@see AttributeDetail} carrying that count rather than being diverted
+     * to `$unknown` or collapsed to a bare string.
      */
     #[Test]
-    public function typesTheStandardFamilyEvents(): void
+    public function typesA551BareChildCount(): void
     {
         $family = $this->parse(
-            "0 @F1@ FAM\n1 DIV\n2 DATE 1930\n1 ENGA\n2 DATE 1919\n1 ANUL\n2 PLAC Rome\n0 TRLR\n"
+            "0 @F1@ FAM\n1 NCHI 3\n0 TRLR\n",
+            '5.5.1'
         )->families[0];
 
-        self::assertSame('1930', $family->div[0]->date?->raw);
-        self::assertSame('1919', $family->enga[0]->date?->raw);
-        self::assertSame('Rome', $family->anul[0]->plac?->raw);
+        self::assertCount(1, $family->nchi);
+        self::assertSame('3', $family->nchi[0]->value);
         self::assertSame([], $this->tags($family->unknown));
     }
 
     /**
-     * The residence attribute (RESI) is typed as an AttributeDetail; a still-unmodelled tag (a user
-     * reference REFN) remains the positive `$unknown` control.
+     * A GEDCOM 7.0 family child count is a full family attribute carrying its own count value plus
+     * substructures; the count round-trips into the same typed list, and an unmodelled child stays on
+     * the attribute's own `$unknown`.
      */
     #[Test]
-    public function typesTheResidenceAttribute(): void
+    public function typesA70ChildCountAttribute(): void
     {
         $family = $this->parse(
-            "0 @F1@ FAM\n1 REFN R1\n1 RESI\n2 PLAC Vienna\n0 TRLR\n"
-        )->families[0];
-
-        self::assertNull($family->resi[0]->value);
-        self::assertSame('Vienna', $family->resi[0]->plac?->raw);
-        self::assertSame(['REFN'], $this->tags($family->unknown));
-    }
-
-    /**
-     * The family events type identically under GEDCOM 7.0; a still-unmodelled tag (a user reference
-     * REFN) remains the positive `$unknown` control.
-     */
-    #[Test]
-    public function typesFamilyEventsUnderGedcom70(): void
-    {
-        $family = $this->parse(
-            "0 @F1@ FAM\n1 DIV\n2 DATE 1930\n1 REFN R1\n0 TRLR\n",
+            "0 @F1@ FAM\n1 NCHI 4\n2 TYPE stepchildren\n2 _CUSTOM extension\n0 TRLR\n",
             '7.0'
         )->families[0];
 
-        self::assertSame('1930', $family->div[0]->date?->raw);
-        self::assertSame(['REFN'], $this->tags($family->unknown));
-    }
-
-    /**
-     * A tag still not modelled on the family (a user reference `REFN`) is preserved on `$unknown`.
-     */
-    #[Test]
-    public function stillPreservesAnUnmodelledFamilyTag(): void
-    {
-        $family = $this->parse(
-            "0 @F1@ FAM\n1 REFN F-1\n0 TRLR\n"
-        )->families[0];
-
-        self::assertSame(['REFN'], $this->tags($family->unknown));
+        self::assertCount(1, $family->nchi);
+        self::assertSame('4', $family->nchi[0]->value);
+        self::assertSame('stepchildren', $family->nchi[0]->type);
+        self::assertSame(['_CUSTOM'], $this->tags($family->nchi[0]->unknown));
+        self::assertSame([], $this->tags($family->unknown));
     }
 
     /**

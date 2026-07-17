@@ -21,8 +21,8 @@ use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\ContextFactory;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
+use ReflectionParameter;
 use Throwable;
 
 use function array_key_exists;
@@ -222,6 +222,64 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Determines whether a container child's target property is a collection — an `array`-typed
+     * constructor parameter (a `list<>`). The shaped arity follows the model, not the schema
+     * cardinality, so a single-cardinality tag whose target is a list is still collected into one.
+     * Delegates to the memoized {@see constructorParameter()}, so the reflection lookup is cached.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     * @param string            $property  The lowercased child tag / property name.
+     *
+     * @return bool True when the target property is an array-typed collection.
+     */
+    private function isCollectionProperty(?string $className, string $property): bool
+    {
+        if ($className === null) {
+            return false;
+        }
+
+        $type = $this->constructorParameter($className, $property)?->getType();
+
+        return ($type instanceof ReflectionNamedType) && ($type->getName() === 'array');
+    }
+
+    /**
+     * Resolves the constructor parameter of the given class whose lowercased name matches the
+     * property, or NULL when the class has no constructor or no such parameter. Memoized, since the
+     * reflection lookup is asked once per container child of every mapped record.
+     *
+     * @param class-string $className The class to inspect.
+     * @param string       $property  The lowercased parameter name.
+     *
+     * @return ReflectionParameter|null The matching constructor parameter, or NULL.
+     */
+    private function constructorParameter(string $className, string $property): ?ReflectionParameter
+    {
+        /** @var array<string, ReflectionParameter|null> $cache */
+        static $cache = [];
+
+        $key = $className . '::' . $property;
+
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
+        $constructor = (new ReflectionClass($className))->getConstructor();
+
+        if ($constructor === null) {
+            return $cache[$key] = null;
+        }
+
+        foreach ($constructor->getParameters() as $candidate) {
+            if (strtolower($candidate->getName()) === $property) {
+                return $cache[$key] = $candidate;
+            }
+        }
+
+        return $cache[$key] = null;
+    }
+
+    /**
      * Resolves the class a constructor parameter holds — its single named type, or the element class
      * of a `list<>`/`[]` collection read from the constructor's PHPDoc.
      *
@@ -244,23 +302,9 @@ final readonly class GedcomObjectMapper
             return $cache[$key];
         }
 
-        $constructor = (new ReflectionClass($className))->getConstructor();
+        $parameter = $this->constructorParameter($className, $property);
 
-        if ($constructor === null) {
-            return $cache[$key] = null;
-        }
-
-        $parameter = null;
-
-        foreach ($constructor->getParameters() as $candidate) {
-            if (strtolower($candidate->getName()) === $property) {
-                $parameter = $candidate;
-
-                break;
-            }
-        }
-
-        if ($parameter === null) {
+        if (!$parameter instanceof ReflectionParameter) {
             return $cache[$key] = null;
         }
 
@@ -270,7 +314,7 @@ final readonly class GedcomObjectMapper
             return $cache[$key] = $type->getName();
         }
 
-        return $cache[$key] = $this->collectionElementClass($constructor, $parameter->getName());
+        return $cache[$key] = $this->collectionElementClass($parameter);
     }
 
     /**
@@ -309,18 +353,20 @@ final readonly class GedcomObjectMapper
      * Reads the element class of a collection-typed constructor parameter from the constructor's
      * PHPDoc (`@param list<Foo> $bar` / `@param Foo[] $bar`), returning the first class it names.
      *
-     * @param ReflectionMethod $constructor The constructor whose PHPDoc to read.
-     * @param string           $name        The parameter name.
+     * @param ReflectionParameter $parameter The constructor parameter whose PHPDoc type to read.
      *
      * @return class-string|null The element class, or NULL when the parameter names no class.
      */
-    private function collectionElementClass(ReflectionMethod $constructor, string $name): ?string
+    private function collectionElementClass(ReflectionParameter $parameter): ?string
     {
-        if ($constructor->getDocComment() === false) {
+        $constructor = $parameter->getDeclaringFunction();
+        $class       = $parameter->getDeclaringClass();
+
+        if (($class === null) || ($constructor->getDocComment() === false)) {
             return null;
         }
 
-        $context  = (new ContextFactory())->createFromReflector($constructor->getDeclaringClass());
+        $context  = (new ContextFactory())->createFromReflector($class);
         $docBlock = DocBlockFactory::createInstance()->create($constructor, $context);
 
         foreach ($docBlock->getTagsByName('param') as $tag) {
@@ -328,7 +374,7 @@ final readonly class GedcomObjectMapper
                 continue;
             }
 
-            if ($tag->getVariableName() !== $name) {
+            if ($tag->getVariableName() !== $parameter->getName()) {
                 continue;
             }
 
@@ -454,7 +500,12 @@ final readonly class GedcomObjectMapper
                 ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
                 : ($child->value ?? $child->xref);
 
-            if ($substructure->cardinality->isCollection()) {
+            // The shaped arity follows the MODEL's arity, not just the schema cardinality: a
+            // single-cardinality tag ({0:1}) whose target property is a `list<>` is still collected
+            // into a list, so a version that permits only one occurrence (a GEDCOM 5.5.1 FAM.NCHI
+            // bare count) hydrates the same `list<AttributeDetail>` the multi-occurrence GEDCOM 7.0
+            // form produces.
+            if ($substructure->cardinality->isCollection() || $this->isCollectionProperty($className, $property)) {
                 $collections[$property][] = $value;
             } elseif (!array_key_exists($property, $shaped)) {
                 // A single-cardinality substructure keeps its first occurrence; a duplicate in

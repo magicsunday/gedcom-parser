@@ -46,6 +46,7 @@ final readonly class FamilyRecord
      * @param list<EventDetail>        $marl    The marriage-licence events (MARL).
      * @param list<EventDetail>        $mars    The marriage-settlement events (MARS).
      * @param list<AttributeDetail>    $resi    The residences (RESI).
+     * @param list<AttributeDetail>    $nchi    The child-count attributes (NCHI); a bare count in GEDCOM 5.5.1, a full attribute in GEDCOM 7.0.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $subm    The submitter cross-reference pointers (SUBM); empty when none.
@@ -76,6 +77,7 @@ final readonly class FamilyRecord
         public array $marl = [],
         public array $mars = [],
         public array $resi = [],
+        public array $nchi = [],
         public array $note = [],
         public array $sour = [],
         public array $subm = [],
