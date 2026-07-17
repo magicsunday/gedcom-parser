@@ -76,6 +76,8 @@ final readonly class IndividualRecord
      * @param list<string>             $desi    The descendant-interest submitter cross-reference pointers (DESI); empty when none.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
+     * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
+     * @param string|null              $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -129,6 +131,8 @@ final readonly class IndividualRecord
         public array $desi = [],
         public array $note = [],
         public array $sour = [],
+        public array $snote = [],
+        public ?string $resn = null,
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
