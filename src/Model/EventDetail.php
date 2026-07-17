@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
@@ -44,6 +45,10 @@ final readonly class EventDetail
      * @param list<string>          $email   The email addresses (EMAIL); empty when none.
      * @param list<string>          $fax     The fax numbers (FAX); empty when none.
      * @param list<string>          $www     The web pages (WWW); empty when none.
+     * @param list<Association>     $asso    The GEDCOM 7.0 associations tied to the event (ASSO).
+     * @param DateValue|null        $sdate   The GEDCOM 7.0 sort date (SDATE), or NULL when absent.
+     * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
+     * @param list<string>          $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -59,6 +64,10 @@ final readonly class EventDetail
         public array $email = [],
         public array $fax = [],
         public array $www = [],
+        public array $asso = [],
+        public ?DateValue $sdate = null,
+        public array $snote = [],
+        public array $uid = [],
         public array $unknown = [],
     ) {
     }

@@ -11,11 +11,15 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+// jscpd:ignore-start — the shared imports and constructor tail coincide with the sibling detail model's; identical boilerplate, not real duplication.
+use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
 use MagicSunday\Gedcom\ValueObject\PlaceValue;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
+
+// jscpd:ignore-end
 
 /**
  * The typed detail shared by GEDCOM individual attributes (occupation, residence, education, …):
@@ -47,6 +51,10 @@ final readonly class AttributeDetail
      * @param list<string>          $email   The email addresses (EMAIL); empty when none.
      * @param list<string>          $fax     The fax numbers (FAX); empty when none.
      * @param list<string>          $www     The web pages (WWW); empty when none.
+     * @param list<Association>     $asso    The GEDCOM 7.0 associations tied to the attribute (ASSO).
+     * @param DateValue|null        $sdate   The GEDCOM 7.0 sort date (SDATE), or NULL when absent.
+     * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
+     * @param list<string>          $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -55,6 +63,7 @@ final readonly class AttributeDetail
         public ?DateValue $date = null,
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
+        // jscpd:ignore-start — the shared event-detail constructor tail coincides with the sibling detail model's.
         public array $sour = [],
         public ?string $caus = null,
         public ?string $resn = null,
@@ -63,7 +72,12 @@ final readonly class AttributeDetail
         public array $email = [],
         public array $fax = [],
         public array $www = [],
+        public array $asso = [],
+        public ?DateValue $sdate = null,
+        public array $snote = [],
+        public array $uid = [],
         public array $unknown = [],
+        // jscpd:ignore-end
     ) {
     }
 }
