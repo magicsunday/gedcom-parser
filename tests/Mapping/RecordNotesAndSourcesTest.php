@@ -20,6 +20,8 @@ use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\Note;
+use MagicSunday\Gedcom\Model\SourceRecord;
+use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -37,18 +39,15 @@ use PHPUnit\Framework\TestCase;
 use function array_map;
 
 /**
- * A record now types its own record-level notes (`NOTE`) — the cross-cutting annotation every record
- * carries — as a typed {@see Note} list, reusing the same class the substructures already use, so a
- * consumer navigates a record's notes typed rather than reaching for `$unknown` (#132, additive
- * roll-out).
+ * A record now types its own record-level notes (`NOTE`) and source citations (`SOUR`) — the
+ * cross-cutting annotations every record carries — as typed {@see Note} and {@see SourceCitation}
+ * lists, reusing the same classes the substructures already use, so a consumer navigates a record's
+ * notes and sources typed rather than reaching for `$unknown` (#132, additive roll-out).
  *
- * The record-level source citation (`SOUR`) is deliberately NOT modelled here: its 5.5.1 inline
- * variant (SOUR-SOURCE_DESCRIPTION) carries a free-text description as its line value, and the
- * reused {@see \MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation} has no field for that
- * value, so consuming it would silently drop the description that is currently preserved verbatim on
- * `$unknown`. It stays on `$unknown` pending a
- * lossless model (tracked separately). The GEDCOM 7.0 shared-note pointer (`SNOTE`) is likewise a
- * distinct, unmodelled tag preserved on `$unknown`.
+ * Both the pointer and the GEDCOM 5.5.1 inline variants are lossless: a pointer citation resolves to
+ * its {@see SourceRecord}, and an inline citation retains its free-text description on
+ * {@see SourceCitation::$value}. The GEDCOM 7.0 shared-note pointer (`SNOTE`) is a distinct,
+ * unmodelled tag preserved on `$unknown`.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -71,63 +70,104 @@ use function array_map;
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(Note::class)]
+#[UsesClass(SourceCitation::class)]
+#[UsesClass(SourceRecord::class)]
 #[UsesClass(RawSubstructure::class)]
 class RecordNotesAndSourcesTest extends TestCase
 {
     /**
-     * An individual's inline note and pointer note are both typed, while an unmodelled tag (a custom
-     * extension) and the deferred source citation are preserved on `$unknown`.
+     * An individual's inline and pointer notes and source citations are all typed: the pointer
+     * citation resolves to its source record and the inline citation keeps its description, while an
+     * unmodelled custom tag is preserved on `$unknown`.
      */
     #[Test]
-    public function typesAnIndividualsNotesAndDefersTheSourceCitation(): void
+    public function typesAnIndividualsNotesAndSources(): void
     {
-        $individual = $this->parse(
-            "0 @I1@ INDI\n1 NOTE A personal note\n1 NOTE @N1@\n1 SOUR A free-text citation\n1 _CUSTOM x\n"
-            . "0 @N1@ NOTE A shared note\n0 TRLR\n"
-        )->individuals[0];
+        $document = $this->parse(
+            "0 @I1@ INDI\n1 NOTE A personal note\n1 NOTE @N1@\n"
+            . "1 SOUR A free-text citation\n1 SOUR @S1@\n2 PAGE p. 5\n1 _CUSTOM x\n"
+            . "0 @N1@ NOTE A shared note\n0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n"
+        );
+
+        $individual = $document->individuals[0];
 
         self::assertCount(2, $individual->note);
         self::assertSame('A personal note', $individual->note[0]->value);
         self::assertSame('N1', $individual->note[1]->value);
 
-        // SOUR stays on $unknown (its inline description text would be lost by SourceCitation); the
-        // custom tag is the positive control proving $unknown is actually populated, not merely empty.
-        self::assertSame(['SOUR', '_CUSTOM'], $this->tags($individual->unknown));
+        self::assertCount(2, $individual->sour);
+        // The inline citation retains its free-text description and carries no pointer.
+        self::assertSame('A free-text citation', $individual->sour[0]->value);
+        self::assertNull($individual->sour[0]->xref);
+        // The pointer citation carries no inline value and resolves to its source record.
+        self::assertNull($individual->sour[1]->value);
+        self::assertSame('p. 5', $individual->sour[1]->page);
+        self::assertSame('S1', $individual->sour[1]->source($document)?->xref);
+
+        // Only the custom tag remains unmodelled — the positive control proving $unknown is populated.
+        self::assertSame(['_CUSTOM'], $this->tags($individual->unknown));
     }
 
     /**
-     * A family's record-level note is typed too.
+     * An inline source citation retains its description and preserves an unmodelled inline
+     * substructure (TEXT) on the citation's own `$unknown`, so no inline payload is silently lost
+     * alongside the retained value.
      */
     #[Test]
-    public function typesAFamilysNote(): void
+    public function anInlineSourceCitationPreservesUnmodelledSubstructuresOnItsOwnUnknown(): void
+    {
+        $individual = $this->parse(
+            "0 @I1@ INDI\n1 SOUR A free-text citation\n2 TEXT a transcript line\n0 TRLR\n"
+        )->individuals[0];
+
+        self::assertSame('A free-text citation', $individual->sour[0]->value);
+        self::assertSame(['TEXT'], $this->tags($individual->sour[0]->unknown));
+    }
+
+    /**
+     * A family's record-level note and source citation are typed too.
+     */
+    #[Test]
+    public function typesAFamilysNoteAndSource(): void
     {
         $family = $this->parse(
-            "0 @F1@ FAM\n1 NOTE A family note\n0 TRLR\n"
+            "0 @F1@ FAM\n1 NOTE A family note\n1 SOUR A free-text citation\n0 TRLR\n"
         )->families[0];
 
         self::assertCount(1, $family->note);
         self::assertSame('A family note', $family->note[0]->value);
+
+        self::assertCount(1, $family->sour);
+        self::assertSame('A free-text citation', $family->sour[0]->value);
+
         self::assertSame([], $this->tags($family->unknown));
     }
 
     /**
-     * Under GEDCOM 7.0 the record-level note types identically (carrying its MIME/LANG leaves), while
-     * the shared-note pointer (SNOTE) — a distinct tag this batch does not model — is preserved on
-     * `$unknown` rather than silently lost or mis-mapped.
+     * Under GEDCOM 7.0 the record-level note and (pointer-only) source citation type identically,
+     * while the shared-note pointer (SNOTE) — a distinct tag this batch does not model — is preserved
+     * on `$unknown` rather than silently lost or mis-mapped.
      */
     #[Test]
-    public function typesTheNoteAndPreservesSharedNoteUnderGedcom70(): void
+    public function typesTheNoteAndSourceAndPreservesSharedNoteUnderGedcom70(): void
     {
-        $individual = $this->parse(
-            "0 @I1@ INDI\n1 NOTE A personal note\n2 MIME text/plain\n2 LANG en\n1 SNOTE @N1@\n"
-            . "0 @N1@ SNOTE A shared note\n0 TRLR\n",
+        $document = $this->parse(
+            "0 @I1@ INDI\n1 NOTE A personal note\n2 MIME text/plain\n2 LANG en\n"
+            . "1 SOUR @S1@\n2 PAGE p. 7\n1 SNOTE @N1@\n"
+            . "0 @N1@ SNOTE A shared note\n0 @S1@ SOUR\n1 TITL A source\n0 TRLR\n",
             '7.0'
-        )->individuals[0];
+        );
+
+        $individual = $document->individuals[0];
 
         self::assertCount(1, $individual->note);
         self::assertSame('A personal note', $individual->note[0]->value);
         self::assertSame('text/plain', $individual->note[0]->mime);
         self::assertSame('en', $individual->note[0]->lang);
+
+        self::assertCount(1, $individual->sour);
+        self::assertSame('p. 7', $individual->sour[0]->page);
+        self::assertSame('S1', $individual->sour[0]->source($document)?->xref);
 
         self::assertSame(['SNOTE'], $this->tags($individual->unknown));
     }
