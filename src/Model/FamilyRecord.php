@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
@@ -46,6 +47,7 @@ final readonly class FamilyRecord
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
      * @param list<string>             $subm    The submitter cross-reference pointers (SUBM); empty when none.
+     * @param list<Association>        $asso    The associations to individuals (ASSO); empty when none.
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param string|null              $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
@@ -73,6 +75,7 @@ final readonly class FamilyRecord
         public array $note = [],
         public array $sour = [],
         public array $subm = [],
+        public array $asso = [],
         public array $snote = [],
         public ?string $resn = null,
         public array $uid = [],
