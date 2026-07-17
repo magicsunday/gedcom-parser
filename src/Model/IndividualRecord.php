@@ -15,6 +15,7 @@ namespace MagicSunday\Gedcom\Model;
 use MagicSunday\Gedcom\Model\Substructure\Common\AliasLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\LdsOrdinance;
+use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\NonOccurrence;
 use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
@@ -92,6 +93,7 @@ final readonly class IndividualRecord
      * @param list<LdsOrdinance>       $slgc    The LDS child-to-parents sealing ordinances (SLGC).
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
+     * @param list<MultimediaLink>     $obje    The multimedia links (OBJE).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param string|null              $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
@@ -156,6 +158,7 @@ final readonly class IndividualRecord
         public array $slgc = [],
         public array $note = [],
         public array $sour = [],
+        public array $obje = [],
         // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
         public array $snote = [],
         public ?string $resn = null,

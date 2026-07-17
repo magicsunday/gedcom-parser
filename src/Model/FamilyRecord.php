@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\LdsOrdinance;
+use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\NonOccurrence;
 use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
@@ -50,6 +51,7 @@ final readonly class FamilyRecord
      * @param list<AttributeDetail>    $nchi    The child-count attributes (NCHI); a bare count in GEDCOM 5.5.1, a full attribute in GEDCOM 7.0.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<SourceCitation>     $sour    The record-level source citations (SOUR).
+     * @param list<MultimediaLink>     $obje    The multimedia links (OBJE).
      * @param list<string>             $subm    The submitter cross-reference pointers (SUBM); empty when none.
      * @param list<Association>        $asso    The associations to individuals (ASSO); empty when none.
      * @param list<NonOccurrence>      $no      The GEDCOM 7.0 asserted non-occurrences of events (NO).
@@ -82,6 +84,7 @@ final readonly class FamilyRecord
         public array $nchi = [],
         public array $note = [],
         public array $sour = [],
+        public array $obje = [],
         public array $subm = [],
         public array $asso = [],
         public array $no = [],
