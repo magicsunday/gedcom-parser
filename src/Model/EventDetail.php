@@ -40,6 +40,8 @@ final readonly class EventDetail
      * @param string|null           $type    The user-supplied classification of the event (TYPE), or NULL when absent.
      * @param string|null           $caus    The cause of the event (CAUS), or NULL when absent.
      * @param string|null           $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
+     * @param string|null           $agnc    The responsible agency (AGNC), or NULL when absent.
+     * @param string|null           $reli    The religious affiliation (RELI), or NULL when absent.
      * @param list<Note>            $note    The notes on the event (NOTE).
      * @param list<string>          $phon    The phone numbers (PHON); empty when none.
      * @param list<string>          $email   The email addresses (EMAIL); empty when none.
@@ -59,6 +61,8 @@ final readonly class EventDetail
         public ?string $type = null,
         public ?string $caus = null,
         public ?string $resn = null,
+        public ?string $agnc = null,
+        public ?string $reli = null,
         public array $note = [],
         public array $phon = [],
         public array $email = [],
