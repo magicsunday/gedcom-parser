@@ -78,6 +78,7 @@ final readonly class IndividualRecord
      * @param list<AttributeDetail>    $ssn     The social-security numbers (SSN).
      * @param list<AttributeDetail>    $titl    The nobility titles (TITL).
      * @param list<AttributeDetail>    $fact    The generic facts (FACT).
+     * @param list<EventDetail>        $even    The generic events (EVEN).
      * @param list<ChildToFamilyLink>  $famc    The families in which the individual is a child.
      * @param list<SpouseToFamilyLink> $fams    The families in which the individual is a partner.
      * @param list<string>             $subm    The submitter cross-reference pointers (SUBM); empty when none.
@@ -143,6 +144,7 @@ final readonly class IndividualRecord
         public array $ssn = [],
         public array $titl = [],
         public array $fact = [],
+        public array $even = [],
         public array $famc = [],
         public array $fams = [],
         public array $subm = [],

@@ -34,6 +34,7 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 final readonly class EventDetail
 {
     /**
+     * @param string|null           $value   The event's line value — a generic event's descriptor (EVEN) or an event's `Y` occurrence assertion, or NULL when absent.
      * @param DateValue|null        $date    The date the event took place, or NULL when absent.
      * @param PlaceValue|null       $plac    The place the event took place, or NULL when absent.
      * @param AgeValue|null         $age     The individual's age at the event, or NULL when absent.
@@ -56,6 +57,7 @@ final readonly class EventDetail
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
+        public ?string $value = null,
         public ?DateValue $date = null,
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
