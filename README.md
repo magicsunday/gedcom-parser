@@ -319,7 +319,16 @@ exact-date grammar rather than the genealogical date grammar; it is `null` for a
 record's change timestamp (`CHAN`) is exposed as a typed `ChangeDate` — the same `ExactDate` plus any
 inline notes (`Note`, with their 7.0 language, media type and translations) and 7.0 shared-note
 references documenting the change; unlike the creation timestamp it exists in both GEDCOM versions, so
-it is populated for a 5.5.1 record too. Substructures not yet modelled are ignored rather than mapped.
+it is populated for a 5.5.1 record too.
+
+Beyond these, the records expose the cross-cutting substructures the rollout has typed: record-level
+notes (`NOTE`) and source citations (`SOUR`), submitter and research-interest pointers
+(`SUBM`/`ANCI`/`DESI`), associations to other individuals (`ASSO`), asserted non-occurrences (`NO`),
+LDS ordinances (`BAPL`/`CONL`/`ENDL`/`INIL`/`SLGC`/`SLGS`), aliases (`ALIA`), the version-aware child
+count (`FAM`.`NCHI`), user reference numbers (`REFN`), multimedia links (`OBJE`, pointer form),
+shared-note pointers (`SNOTE`) and the restriction notice (`RESN`) — each a typed value object or list.
+Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
+than dropped, so a later release can type them without losing anything today.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
