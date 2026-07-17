@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 // jscpd:ignore-start — the record-level substructure imports coincide with the sibling record's; identical boilerplate, not real duplication.
+use MagicSunday\Gedcom\Model\Substructure\Common\AliasLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\LdsOrdinance;
 use MagicSunday\Gedcom\Model\Substructure\Common\NonOccurrence;
@@ -81,6 +82,7 @@ final readonly class IndividualRecord
      * @param list<string>             $anci    The ancestor-interest submitter cross-reference pointers (ANCI); empty when none.
      * @param list<string>             $desi    The descendant-interest submitter cross-reference pointers (DESI); empty when none.
      * @param list<Association>        $asso    The associations to other individuals (ASSO).
+     * @param list<AliasLink>          $alia    The aliases to other individual records for the same person (ALIA).
      * @param list<NonOccurrence>      $no      The GEDCOM 7.0 asserted non-occurrences of events (NO).
      * @param list<LdsOrdinance>       $bapl    The LDS baptism ordinances (BAPL).
      * @param list<LdsOrdinance>       $conl    The LDS confirmation ordinances (CONL).
@@ -143,6 +145,7 @@ final readonly class IndividualRecord
         public array $anci = [],
         public array $desi = [],
         public array $asso = [],
+        public array $alia = [],
         public array $no = [],
         public array $bapl = [],
         public array $conl = [],
