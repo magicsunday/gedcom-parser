@@ -32,6 +32,7 @@ final readonly class RepositoryRecord
      * @param list<string>             $phon    The repository phone numbers.
      * @param list<string>             $email   The repository email addresses.
      * @param list<string>             $fax     The repository fax numbers.
+     * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -44,6 +45,7 @@ final readonly class RepositoryRecord
         public array $phon = [],
         public array $email = [],
         public array $fax = [],
+        public array $note = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
