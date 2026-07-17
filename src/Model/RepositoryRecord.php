@@ -19,7 +19,7 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
  *
  * Describes an archive or library that holds sources — its name (required by GEDCOM 5.5.1 but
  * tolerated as absent, so a bare record still maps) and its contact details. GEDCOM 5.5.1 permits
- * up to three of each contact number ({0:3}), so the phone, email and fax entries are lists.
+ * up to three of each contact number ({0:3}), so the phone, email, fax and web-page entries are lists.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -33,6 +33,7 @@ final readonly class RepositoryRecord
      * @param list<string>             $phon    The repository phone numbers.
      * @param list<string>             $email   The repository email addresses.
      * @param list<string>             $fax     The repository fax numbers.
+     * @param list<string>             $www     The repository web pages (WWW); empty when none.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
@@ -49,6 +50,7 @@ final readonly class RepositoryRecord
         public array $email = [],
         public array $fax = [],
         // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
+        public array $www = [],
         public array $note = [],
         public array $snote = [],
         public array $refn = [],
