@@ -36,6 +36,10 @@ final readonly class EventDetail
      * @param PlaceValue|null       $plac    The place the event took place, or NULL when absent.
      * @param AgeValue|null         $age     The individual's age at the event, or NULL when absent.
      * @param list<SourceCitation>  $sour    The source citations supporting the event.
+     * @param string|null           $type    The user-supplied classification of the event (TYPE), or NULL when absent.
+     * @param string|null           $caus    The cause of the event (CAUS), or NULL when absent.
+     * @param string|null           $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
+     * @param list<Note>            $note    The notes on the event (NOTE).
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -43,6 +47,10 @@ final readonly class EventDetail
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
         public array $sour = [],
+        public ?string $type = null,
+        public ?string $caus = null,
+        public ?string $resn = null,
+        public array $note = [],
         public array $unknown = [],
     ) {
     }

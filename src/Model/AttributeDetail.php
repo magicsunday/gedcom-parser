@@ -40,6 +40,9 @@ final readonly class AttributeDetail
      * @param PlaceValue|null       $plac    The place the attribute applies, or NULL when absent.
      * @param AgeValue|null         $age     The individual's age for the attribute, or NULL when absent.
      * @param list<SourceCitation>  $sour    The source citations supporting the attribute.
+     * @param string|null           $caus    The cause of the attribute (CAUS), or NULL when absent.
+     * @param string|null           $resn    The restriction notice (RESN), preserved verbatim, or NULL when absent.
+     * @param list<Note>            $note    The notes on the attribute (NOTE).
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -49,6 +52,9 @@ final readonly class AttributeDetail
         public ?PlaceValue $plac = null,
         public ?AgeValue $age = null,
         public array $sour = [],
+        public ?string $caus = null,
+        public ?string $resn = null,
+        public array $note = [],
         public array $unknown = [],
     ) {
     }
