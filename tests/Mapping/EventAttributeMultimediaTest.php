@@ -20,7 +20,7 @@ use MagicSunday\Gedcom\Model\AttributeDetail;
 use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
-use MagicSunday\Gedcom\Model\Note;
+use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -38,10 +38,10 @@ use PHPUnit\Framework\TestCase;
 use function array_map;
 
 /**
- * Events and attributes now type more of their shared `EVENT_DETAIL` substructures — the
- * classification (`TYPE`, events only), the cause (`CAUS`), the restriction notice (`RESN`) and the
- * notes (`NOTE`) — rather than leaving them on the detail's `$unknown` (#132, #166). The structured
- * address (`ADDR`) `EVENT_DETAIL` substructure remains a follow-up.
+ * Events and attributes now type their shared `EVENT_DETAIL` multimedia links (`OBJE`) as typed
+ * {@see MultimediaLink} objects rather than leaving them on the detail's `$unknown` (#132, #163). The
+ * pointer form keeps its multimedia-record cross-reference and its optional title, and a GEDCOM 5.5.1
+ * inline object preserves its embedded block on the link's own `$unknown`.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -64,68 +64,52 @@ use function array_map;
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(IndividualRecord::class)]
-#[UsesClass(Note::class)]
+#[UsesClass(MultimediaLink::class)]
 #[UsesClass(RawSubstructure::class)]
-class EventAttributeDetailExtrasTest extends TestCase
+class EventAttributeMultimediaTest extends TestCase
 {
     /**
-     * A death event types its classification, cause, restriction notice and notes; an unmodelled
-     * child (a structured address, deferred) stays on the event's own `$unknown`.
+     * A GEDCOM 7.0 event types its multimedia link (pointer plus overriding title).
      */
     #[Test]
-    public function typesTheEventDescriptorSubstructures(): void
+    public function typesTheEventMultimediaLink(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 DEAT\n2 TYPE Natural\n2 CAUS Heart failure\n2 RESN confidential\n"
-            . "2 NOTE a death note\n2 ADDR 123 Main St\n0 TRLR\n",
+            "0 @I1@ INDI\n1 DEAT\n2 OBJE @M1@\n3 TITL A photo\n0 @M1@ OBJE\n0 TRLR\n",
             '7.0'
         )->individuals[0];
 
         $event = $individual->deat[0];
-        self::assertSame('Natural', $event->type);
-        self::assertSame('Heart failure', $event->caus);
-        self::assertSame('confidential', $event->resn);
-        self::assertCount(1, $event->note);
-        self::assertSame('a death note', $event->note[0]->value);
-        self::assertSame(['ADDR'], $this->tags($event->unknown));
-    }
-
-    /**
-     * The same descriptor substructures type under GEDCOM 5.5.1, where they are equally part of the
-     * shared event detail.
-     */
-    #[Test]
-    public function typesTheEventDescriptorSubstructuresUnderGedcom551(): void
-    {
-        $individual = $this->parse(
-            "0 @I1@ INDI\n1 DEAT\n2 CAUS Old age\n2 NOTE a 551 note\n0 TRLR\n",
-            '5.5.1'
-        )->individuals[0];
-
-        $event = $individual->deat[0];
-        self::assertSame('Old age', $event->caus);
-        self::assertCount(1, $event->note);
-        self::assertSame('a 551 note', $event->note[0]->value);
+        self::assertCount(1, $event->obje);
+        self::assertSame('M1', $event->obje[0]->xref);
+        self::assertSame('A photo', $event->obje[0]->titl);
         self::assertSame([], $this->tags($event->unknown));
     }
 
     /**
-     * An attribute types its cause, restriction notice and notes alongside its value.
+     * A GEDCOM 5.5.1 attribute types its inline multimedia object; the embedded FILE block stays on
+     * the link's own `$unknown`.
      */
     #[Test]
-    public function typesTheAttributeDescriptorSubstructures(): void
+    public function typesA551AttributeInlineMultimedia(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 OCCU Farmer\n2 CAUS Inherited\n2 RESN confidential\n2 NOTE an occupation note\n0 TRLR\n",
-            '7.0'
+            "0 @I1@ INDI\n1 OCCU Farmer\n1 RESI\n2 OBJE\n3 FILE photo.jpg\n4 FORM jpeg\n3 TITL Old photo\n0 TRLR\n",
+            '5.5.1'
         )->individuals[0];
 
-        $attribute = $individual->occu[0];
-        self::assertSame('Farmer', $attribute->value);
-        self::assertSame('Inherited', $attribute->caus);
-        self::assertSame('confidential', $attribute->resn);
-        self::assertCount(1, $attribute->note);
-        self::assertSame('an occupation note', $attribute->note[0]->value);
+        $attribute = $individual->resi[0];
+        self::assertCount(1, $attribute->obje);
+        self::assertNull($attribute->obje[0]->xref);
+        self::assertSame('Old photo', $attribute->obje[0]->titl);
+
+        // The embedded FILE block is preserved verbatim on the link's own $unknown — its value and its
+        // nested FORM child, not merely the tag.
+        $file = $attribute->obje[0]->unknown[0];
+        self::assertSame('FILE', $file->tag);
+        self::assertSame('photo.jpg', $file->value);
+        self::assertSame(['FORM'], $this->tags($file->children));
+        self::assertSame('jpeg', $file->children[0]->value);
         self::assertSame([], $this->tags($attribute->unknown));
     }
 

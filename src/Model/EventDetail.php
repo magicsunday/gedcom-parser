@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
+use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
@@ -51,6 +52,7 @@ final readonly class EventDetail
      * @param DateValue|null        $sdate   The GEDCOM 7.0 sort date (SDATE), or NULL when absent.
      * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<string>          $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
+     * @param list<MultimediaLink>  $obje    The multimedia links tied to the event (OBJE).
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -72,6 +74,7 @@ final readonly class EventDetail
         public ?DateValue $sdate = null,
         public array $snote = [],
         public array $uid = [],
+        public array $obje = [],
         public array $unknown = [],
     ) {
     }
