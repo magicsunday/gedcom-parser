@@ -70,6 +70,7 @@ final readonly class IndividualRecord
      * @param list<AttributeDetail>    $fact    The generic facts (FACT).
      * @param list<ChildToFamilyLink>  $famc    The families in which the individual is a child.
      * @param list<SpouseToFamilyLink> $fams    The families in which the individual is a partner.
+     * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<string>             $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<ExternalIdentifier> $exid    The GEDCOM 7.0 external identifiers (EXID); empty when none.
      * @param CreationDate|null        $crea    The GEDCOM 7.0 record creation timestamp (CREA), or NULL when absent.
@@ -118,6 +119,7 @@ final readonly class IndividualRecord
         public array $fact = [],
         public array $famc = [],
         public array $fams = [],
+        public array $note = [],
         public array $uid = [],
         public array $exid = [],
         public ?CreationDate $crea = null,
