@@ -25,13 +25,13 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
  * stays an immutable leaf holding only the raw pointer and no back-reference into the document
  * (a duplicate source cross-reference, which GEDCOM forbids, resolves to the last such record).
  *
- * It models the pointer citation's cross-reference, `PAGE`, `QUAY`, inline notes, the `DATA`
+ * It models the pointer citation's cross-reference, the GEDCOM 5.5.1 inline source-description text
+ * (the SOUR line value of a non-pointer citation), `PAGE`, `QUAY`, inline notes, the `DATA`
  * substructure (a typed {@see SourceCitationData}) and the `EVEN` cited-event substructure (a typed
- * {@see SourceCitationEvent}). The GEDCOM 5.5.1 inline source-description text and source citations
- * carried by structures other than an event are not yet modelled: as schema-recognised-but-unmodelled
- * substructures they are currently dropped (deferred to a later increment of the typed-model
- * roll-out), NOT preserved on {@see $unknown} — which captures only tags the schema does not permit
- * at their position.
+ * {@see SourceCitationEvent}). A pointer citation carries an {@see $xref} and no {@see $value}; an
+ * inline citation carries a {@see $value} and no {@see $xref} — the two are mutually exclusive. Any
+ * further inline substructure the model does not expose (e.g. `TEXT`, `OBJE`) is preserved verbatim
+ * on {@see $unknown}.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -41,6 +41,7 @@ final readonly class SourceCitation
 {
     /**
      * @param string|null              $xref    The cited source record's cross-reference, or NULL when the citation is not a pointer.
+     * @param string|null              $value   The inline source-description text (GEDCOM 5.5.1 non-pointer citation), or NULL when the citation is a pointer.
      * @param string|null              $page    The location within the source (PAGE), or NULL when absent.
      * @param string|null              $quay    The certainty assessment (QUAY), or NULL when absent.
      * @param list<Note>               $note    The inline notes on the citation.
@@ -50,6 +51,7 @@ final readonly class SourceCitation
      */
     public function __construct(
         public ?string $xref = null,
+        public ?string $value = null,
         public ?string $page = null,
         public ?string $quay = null,
         public array $note = [],

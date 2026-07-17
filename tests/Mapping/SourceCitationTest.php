@@ -159,8 +159,7 @@ class SourceCitationTest extends TestCase
     /**
      * An inline (non-pointer) citation still yields a citation object, but carries no
      * cross-reference, so `->source()` returns NULL through the pointer guard rather than looking up
-     * the index. (Its source-description text is not yet modelled and is currently dropped — a
-     * documented deferral, exercised here only for the null-pointer resolution path.).
+     * the index. Its source-description text is retained on the citation's value.
      */
     #[Test]
     public function anInlineCitationHasNoPointerAndResolvesToNull(): void
@@ -174,6 +173,10 @@ class SourceCitationTest extends TestCase
 
         self::assertNull($citation->xref);
         self::assertNull($citation->source($document));
+
+        // The GEDCOM 5.5.1 inline variant carries its source description as the SOUR line value; it
+        // is retained on the typed citation rather than dropped.
+        self::assertSame('A free-text citation', $citation->value);
     }
 
     /**
@@ -192,6 +195,9 @@ class SourceCitationTest extends TestCase
 
         self::assertSame('S9', $citation->xref);
         self::assertNull($citation->source($document));
+
+        // A pointer citation carries no inline description; xref and value are mutually exclusive.
+        self::assertNull($citation->value);
     }
 
     /**
