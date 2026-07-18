@@ -54,6 +54,31 @@ class TypedGedcomParserTest extends TestCase
      * order, while the HEAD and TRLR transmission structures — which have no mapped class — are
      * skipped.
      */
+    /**
+     * A record written without its cross-reference identifier is skipped rather than aborting the
+     * stream. This matters more here than on the reading path: a generator that throws cannot be
+     * resumed, so one malformed record would end the iteration and cost every record after it.
+     */
+    #[Test]
+    public function skipsAnIdentifierLessRecordAndKeepsStreaming(): void
+    {
+        $stream = (new StreamFactory())->createStream(
+            "0 HEAD\n1 SOUR SomeApp\n"
+            . "0 INDI\n1 NAME /Doe/\n"
+            . "0 @I2@ INDI\n1 NAME /Roe/\n"
+            . "0 TRLR\n"
+        );
+        $stream->rewind();
+
+        $parser = TypedGedcomParser::create(GedcomVersion::V551, ['INDI' => IndividualRecord::class]);
+
+        $records = iterator_to_array($parser->parse($stream));
+
+        self::assertCount(1, $records, 'The stream survives the malformed record.');
+        self::assertInstanceOf(IndividualRecord::class, $records[0]);
+        self::assertSame('I2', $records[0]->xref, 'The record read after the malformed one is yielded.');
+    }
+
     #[Test]
     public function parsesLevel0RecordsIntoTheModel(): void
     {

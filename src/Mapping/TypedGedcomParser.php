@@ -142,6 +142,18 @@ final readonly class TypedGedcomParser
         do {
             $className = $this->recordClasses[$node->tag] ?? null;
 
+            // A record without its cross-reference identifier is malformed: the specification makes
+            // the identifier mandatory, so nothing can ever refer to such a record and the model
+            // cannot be built from it. Skip it rather than let it abort the stream and cost every
+            // well-formed record after it — the more so here, where a thrown generator cannot be
+            // resumed. This tests the condition itself rather than catching the failure, so a
+            // genuine mapping defect still surfaces loudly.
+            if ($node->identifier === null) {
+                $node = $treeReader->readRecord();
+
+                continue;
+            }
+
             // A cross-version tag (e.g. a stray 7.0 SNOTE under a 5.5.1 schema) is not a record in
             // the schema; skip it rather than aborting the stream.
             if (($className !== null) && $this->schema->definesRecord($node->tag)) {
