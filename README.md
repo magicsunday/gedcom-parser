@@ -336,7 +336,8 @@ attribute detail is typed, in both GEDCOM versions.
 Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
 than dropped, so a later release can type them without losing anything today. Where a tag the model
 types as a plain value nonetheless carries substructures of its own, those descendants appear on
-`$unknown` beneath a carrier bearing that tag, which holds no value itself. The one current
+`$unknown` beneath a carrier repeating that tag's own line, so a qualifier stays attributable to the
+entry it qualifies; only a carrier's children are unconsumed. The one current
 exception is the GEDCOM 7.0 `PLAC` structure, whose own substructures are neither typed nor preserved
 (see issue #179).
 
