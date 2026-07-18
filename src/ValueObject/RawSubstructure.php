@@ -18,6 +18,14 @@ namespace MagicSunday\Gedcom\ValueObject;
  * mapper preserves these on the carrying object's `$unknown` list instead of dropping them; the
  * whole subtree (including the raw children's own children) is retained and can be walked.
  *
+ * One entry is not itself an unconsumed substructure but a carrier for unconsumed ones: when a tag
+ * the model types as a plain value (a scalar such as `AGNC`, or a pointer list such as `SNOTE`)
+ * nonetheless carries substructures, those descendants have nowhere to live on the typed property,
+ * so they are preserved here beneath a carrier bearing that tag. Such a carrier holds no
+ * {@see $value} and no {@see $xref} of its own — the typed property already carries them — so a
+ * consumed tag is never reported as unconsumed, and reading {@see $children} yields exactly the
+ * substructures the model did not take.
+ *
  * This is a Model-layer leaf and deliberately mirrors — but does not reference — the parse-layer
  * node, so the typed model stays independent of the parser internals.
  *

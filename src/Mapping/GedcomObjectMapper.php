@@ -318,22 +318,26 @@ final readonly class GedcomObjectMapper
     }
 
     /**
-     * Determines whether the given container child maps to a value-object leaf type (a handler-parsed
-     * leaf such as DATE/PLAC/AGE). Such a leaf carries its own `$unknown`, so it is worth shaping as
-     * an object to preserve an out-of-schema child even when it declares no schema substructures.
+     * Determines whether the given container child maps to a handler-backed type (a handler-parsed
+     * leaf such as DATE/PLAC/AGE, or a NOTE). Such a target carries its own `$unknown`, so it is worth
+     * shaping as an object to preserve an out-of-schema child even when it declares no schema
+     * substructures — as a GEDCOM 5.5.1 NOTE does, whose extension children would otherwise be
+     * discarded along with the bare string the handler would receive instead.
      *
      * @param class-string|null $className The class being shaped, or NULL when it is unknown.
      * @param string            $property  The lowercased child tag / property name.
      *
-     * @return bool True when the child maps to a value-object leaf type.
+     * @return bool True when the child maps to a handler-backed type.
      */
-    private function isLeafValueChild(?string $className, string $property): bool
+    private function isHandlerBackedChild(?string $className, string $property): bool
     {
         if ($className === null) {
             return false;
         }
 
-        return $this->isLeafValueType($this->parameterClass($className, $property));
+        $class = $this->parameterClass($className, $property);
+
+        return ($class !== null) && in_array($class, JsonMapperFactory::HANDLER_BACKED_TYPES, true);
     }
 
     /**
@@ -482,23 +486,38 @@ final readonly class GedcomObjectMapper
             // shape is made class-aware for a child that maps to a typed model class, so its own
             // unmodelled substructures are diverted too; a value-object leaf (resolved to NULL)
             // stays class-unaware, since its substructures are its type handler's input. A
-            // structureless value-object leaf (a 5.5.1 DATE/AGE) is also shaped as an object WHEN it
-            // actually carries children, so an out-of-schema tag beneath it reaches its handler's
-            // `$unknown` rather than being dropped with the bare string; a scalar leaf (no value
-            // class) keeps the plain string, having nowhere to preserve a child. A tag whose
-            // definition declares no substructures but whose target property is a constructor-
-            // hydrated model (a 5.5.1 bare-pointer ALIA) is also shaped, so its pointer/value becomes
-            // the object's `xref`/`value` rather than a bare string the constructor cannot accept; a
-            // handler-backed model (Note) is excluded, since its handler already resolves the bare
-            // payload.
+            // structureless handler-backed target (a 5.5.1 DATE/AGE, or a 5.5.1 NOTE) is also shaped
+            // as an object WHEN it actually carries children, so an out-of-schema tag beneath it
+            // reaches its handler's `$unknown` rather than being dropped with the bare string; a
+            // scalar leaf (no value class) keeps the plain string, having nowhere to preserve a
+            // child of its own. A tag whose definition declares no substructures but whose target
+            // property is a constructor-hydrated model (a 5.5.1 bare-pointer ALIA) is also shaped,
+            // so its pointer/value becomes the object's `xref`/`value` rather than a bare string the
+            // constructor cannot accept; a handler-backed model (Note) is excluded, since its
+            // handler already resolves the bare payload.
             $recurse = ($childDefinition instanceof StructureDefinition)
                 && (($childDefinition->substructures !== [])
-                    || (($child->children !== []) && $this->isLeafValueChild($className, $property))
+                    || (($child->children !== []) && $this->isHandlerBackedChild($className, $property))
                     || $this->requiresObjectShape($className, $property));
 
             $value = $recurse
                 ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
                 : ($child->value ?? $child->xref);
+
+            // A child that keeps its plain payload — a scalar leaf such as AGNC, or a pointer list
+            // such as SNOTE — has nowhere to carry substructures of its own. Its subtree would
+            // therefore be lost the moment its container becomes typed, having previously survived
+            // whole on the untyped container's `$unknown`. Preserve those descendants on the
+            // container's own `$unknown` under a carrier bearing the child's tag, so typing a
+            // container never costs data. The carrier drops the child's own payload, which the
+            // typed property already holds, so nothing is reported as unconsumed twice.
+            if (!$recurse && ($child->children !== [])) {
+                $carrier          = $this->rawShape($child);
+                $carrier['value'] = null;
+                $carrier['xref']  = null;
+
+                $unknown[] = $carrier;
+            }
 
             // The shaped arity follows the MODEL's arity, not just the schema cardinality: a
             // single-cardinality tag ({0:1}) whose target property is a `list<>` is still collected

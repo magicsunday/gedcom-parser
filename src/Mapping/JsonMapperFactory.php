@@ -429,7 +429,10 @@ final class JsonMapperFactory
         }
 
         return new Note(
-            self::nullableString($value['value'] ?? null),
+            // A GEDCOM 5.5.1 note is either inline text or a pointer to a shared note, and both
+            // arrive in the same property. Fall back to the pointer when the note carries no line
+            // value, mirroring the plain-payload path the mapper uses for a childless note.
+            self::nullableString($value['value'] ?? $value['xref'] ?? null),
             self::nullableString($value['lang'] ?? null),
             self::nullableString($value['mime'] ?? null),
             $translations,
