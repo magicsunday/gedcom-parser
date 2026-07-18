@@ -109,6 +109,17 @@ final readonly class GedcomDocumentReader
         do {
             $className = $this->recordClasses[$node->tag] ?? null;
 
+            // A record without its cross-reference identifier is malformed: the specification makes
+            // the identifier mandatory, so nothing can ever refer to such a record and the model
+            // cannot be built from it. Skip it rather than let it abort the whole read and cost
+            // every well-formed record in the file. This tests the condition itself rather than
+            // catching the failure, so a genuine mapping defect still surfaces loudly.
+            if ($node->identifier === null) {
+                $node = $treeReader->readRecord();
+
+                continue;
+            }
+
             // A cross-version tag (e.g. a stray 7.0 SNOTE in a 5.5.1 document) is not a record in
             // the detected schema; skip it rather than aborting the whole read.
             if (($className !== null) && $schema->definesRecord($node->tag)) {
