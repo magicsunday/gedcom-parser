@@ -337,9 +337,9 @@ Substructures not yet modelled are preserved verbatim on the carrying object's `
 than dropped, so a later release can type them without losing anything today. Where a tag the model
 types as a plain value nonetheless carries substructures of its own, those descendants appear on
 `$unknown` beneath a carrier repeating that tag's own line, so a qualifier stays attributable to the
-entry it qualifies; only a carrier's children are unconsumed. The one current
-exception is the GEDCOM 7.0 `PLAC` structure, whose own substructures are neither typed nor preserved
-(see issue #179).
+entry it qualifies; only a carrier's children are unconsumed. This holds for a value object's own
+substructures too: a GEDCOM 7.0 place keeps the language, translations, notes and identifiers its
+grammar has no use for on the place's own `$unknown`.
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with

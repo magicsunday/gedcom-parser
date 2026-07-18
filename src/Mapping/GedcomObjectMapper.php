@@ -25,6 +25,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use Throwable;
 
+use function array_fill_keys;
 use function array_key_exists;
 use function class_exists;
 use function count;
@@ -164,11 +165,35 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Returns the substructure tags the handler of a value-object leaf reads, so the shape built for
+     * it can divert everything else to that leaf's own `$unknown` rather than let it fall away.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     * @param string            $property  The lowercased child tag / property name.
+     *
+     * @return array<string, true>|null The consumed tags, or NULL when the child is no such leaf.
+     */
+    private function handlerTags(?string $className, string $property): ?array
+    {
+        if ($className === null) {
+            return null;
+        }
+
+        $class = $this->parameterClass($className, $property);
+
+        if (($class === null) || !$this->isLeafValueType($class)) {
+            return null;
+        }
+
+        return array_fill_keys(JsonMapperFactory::HANDLER_CONSUMED_TAGS[$class] ?? [], true);
+    }
+
+    /**
      * Resolves the typed model class a schema-recognised container child maps to on the given class,
      * so the nested shape can be made class-aware in turn. Returns NULL when the property maps to a
-     * value-object leaf (hydrated by a type handler, whose substructures must not be diverted), to a
-     * scalar, or is not modelled at all — in which case the nested shape does not divert. Memoized,
-     * since it is asked once per container child of every mapped record.
+     * value-object leaf (hydrated by a type handler, whose substructures the handler's own consumed
+     * tags govern instead — see {@see handlerTags()}), to a scalar, or is not modelled at all.
+     * Memoized, since it is asked once per container child of every mapped record.
      *
      * @param class-string|null $className The class being shaped, or NULL when it is unknown.
      * @param string            $property  The lowercased child tag / property name.
@@ -414,19 +439,29 @@ final readonly class GedcomObjectMapper
     /**
      * Shapes a node and its substructures into a property-name-keyed array.
      *
-     * @param GedcomNode          $node       The node to shape.
-     * @param StructureDefinition $definition The schema definition of the node's structure.
-     * @param class-string|null   $className  The class this node is shaped into, so a schema-recognised
-     *                                        child the class does not model is preserved verbatim
-     *                                        rather than dropped. NULL when the class is unknown (a
-     *                                        substructure mapped by a value handler, not a typed
-     *                                        class), which does not divert.
+     * @param GedcomNode               $node        The node to shape.
+     * @param StructureDefinition      $definition  The schema definition of the node's structure.
+     * @param class-string|null        $className   The class this node is shaped into, so a schema-recognised
+     *                                              child the class does not model is preserved verbatim
+     *                                              rather than dropped. NULL when the class is unknown (a
+     *                                              substructure mapped by a value handler, not a typed
+     *                                              class), which does not divert.
+     * @param array<string, true>|null $handlerTags The tags a value-object leaf's handler consumes,
+     *                                              naming what must not be diverted when the shape is
+     *                                              built without a class. NULL for every other shape.
      *
      * @return array<string, mixed>
      */
-    private function shape(GedcomNode $node, StructureDefinition $definition, ?string $className = null): array
-    {
-        $consumedTags = ($className !== null) ? $this->consumedTags($className) : null;
+    private function shape(
+        GedcomNode $node,
+        StructureDefinition $definition,
+        ?string $className = null,
+        ?array $handlerTags = null,
+    ): array {
+        // A handler-backed leaf is shaped without its target class, so what it consumes cannot be
+        // read off a model; the caller names those tags instead. Everything else it carries is
+        // diverted as usual, so a child its grammar has no use for reaches its `$unknown`.
+        $consumedTags = $handlerTags ?? (($className !== null) ? $this->consumedTags($className) : null);
 
         $shaped = [];
 
@@ -511,7 +546,12 @@ final readonly class GedcomObjectMapper
                     || $this->requiresObjectShape($className, $property));
 
             $value = $recurse
-                ? $this->shape($child, $childDefinition, $this->nestedModelClass($className, $property))
+                ? $this->shape(
+                    $child,
+                    $childDefinition,
+                    $this->nestedModelClass($className, $property),
+                    $this->handlerTags($className, $property),
+                )
                 : ($child->value ?? $child->xref);
 
             // A child that keeps its plain payload — a scalar leaf such as AGNC, or a pointer list
