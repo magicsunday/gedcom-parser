@@ -158,10 +158,29 @@ final readonly class GedcomObjectMapper
             // to itself), which both the hand-written records and the generator uphold. Were a
             // property ever named in camelCase, its tag would be wrongly diverted here — align this
             // with the mapper's name converter before introducing such a name.
+            //
+            // The shaper compares its two payload keys against this set as well, so the same
+            // invariant covers them: a model that can hold a line value must name that parameter
+            // `value`, and one that can hold a pointer must name it `xref`. Naming either
+            // differently would have its payload quietly preserved as unconsumed instead.
             $tags[strtolower($parameter->getName())] = true;
         }
 
         return $tags;
+    }
+
+    /**
+     * Determines whether the given class is hydrated from its raw payload by a registered handler
+     * rather than field by field, so its payload must reach it whatever its constructor names.
+     *
+     * @param class-string|null $className The class being shaped, or NULL when it is unknown.
+     *
+     * @return bool True when a handler resolves the class's payload.
+     */
+    private function isHandlerBackedType(?string $className): bool
+    {
+        return ($className !== null)
+            && in_array($className, JsonMapperFactory::HANDLER_BACKED_TYPES, true);
     }
 
     /**
@@ -465,21 +484,60 @@ final readonly class GedcomObjectMapper
 
         $shaped = [];
 
+        // A payload written beside a structure the schema declares payload-less is malformed input.
+        // Offering it to a model that has nowhere to put it does not merely lose it — the rejected
+        // key takes the whole object with it, so one stray word beside a container costs every
+        // well-formed substructure below it. Keep it out of the shape and preserve it verbatim.
+        //
+        // A line value is either text or a pointer, so both alternatives are withheld on the same
+        // terms. Only a model's own constructor tells us which it can hold: a value-object leaf's
+        // consumed tags name its child tags, never its payload, and its grammar is what reads that
+        // payload — so a leaf is never withheld from. A record's own identifier is not a payload and
+        // is always kept.
+        // A handler-backed model is exempt for the same reason as a leaf: its payload is resolved by
+        // its handler, which reads keys its constructor never names — a NOTE holds either its text or
+        // a pointer to a shared note in one property.
+        $modelTags = (($handlerTags === null) && !$this->isHandlerBackedType($className))
+            ? $consumedTags
+            : null;
+
+        $strayValue = null;
+        $strayXref  = null;
+
         if ($node->identifier !== null) {
             $shaped['xref'] = $node->identifier;
         } elseif ($node->xref !== null) {
-            $shaped['xref'] = $node->xref;
+            if (($modelTags === null) || array_key_exists('xref', $modelTags)) {
+                $shaped['xref'] = $node->xref;
+            } else {
+                $strayXref = $node->xref;
+            }
         }
 
         if ($node->value !== null) {
-            $shaped['value'] = $node->value;
+            if (($modelTags === null) || array_key_exists('value', $modelTags)) {
+                $shaped['value'] = $node->value;
+            } else {
+                $strayValue = $node->value;
+            }
+        }
+
+        // The payload sits on the container's own line, ahead of its children, so it is preserved
+        // first and `$unknown` stays in document order.
+        /** @var list<array<string, mixed>> $unknown */
+        $unknown = [];
+
+        if (($strayValue !== null) || ($strayXref !== null)) {
+            $unknown[] = [
+                'tag'      => $node->tag,
+                'value'    => $strayValue,
+                'xref'     => $strayXref,
+                'children' => [],
+            ];
         }
 
         /** @var array<string, list<mixed>> $collections */
         $collections = [];
-
-        /** @var list<array<string, mixed>> $unknown */
-        $unknown = [];
 
         foreach ($node->children as $child) {
             // A substructure must sit exactly one level below its parent; a deeper child is a
