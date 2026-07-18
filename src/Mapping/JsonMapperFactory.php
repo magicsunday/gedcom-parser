@@ -466,6 +466,7 @@ final class JsonMapperFactory
             self::nullableString($value['lang'] ?? null),
             self::nullableString($value['mime'] ?? null),
             $translations,
+            self::nullableString($value['xref'] ?? null),
             self::unknownFromShaped($value),
         );
     }

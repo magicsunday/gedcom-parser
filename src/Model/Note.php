@@ -29,10 +29,11 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 final readonly class Note
 {
     /**
-     * @param string|null           $value   The note text, or a pointer to a shared note in 5.5.1, or NULL when absent.
+     * @param string|null           $value   The note text, or the pointer target when the note is a GEDCOM 5.5.1 pointer to a shared note (kept for compatibility; read {@see $xref} to tell the two apart), or NULL when absent.
      * @param string|null           $lang    The GEDCOM 7.0 BCP-47 language tag (NOTE.LANG), or NULL when absent.
      * @param string|null           $mime    The GEDCOM 7.0 media type of the text (NOTE.MIME), or NULL when absent.
      * @param list<NoteTranslation> $tran    The GEDCOM 7.0 translations of the note text (NOTE.TRAN); empty when none.
+     * @param string|null           $xref    The shared-note record's cross-reference pointer when the note is written as one, or NULL when it carries text. The grammar makes the two alternatives exclusive, so this is what distinguishes a pointer from a note whose text happens to look like one.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -40,6 +41,7 @@ final readonly class Note
         public ?string $lang = null,
         public ?string $mime = null,
         public array $tran = [],
+        public ?string $xref = null,
         public array $unknown = [],
     ) {
     }
