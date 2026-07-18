@@ -308,9 +308,10 @@ class SourceRecordDataTest extends TestCase
         self::assertSame('Some agency', $data->agnc);
         self::assertSame(['AGNC'], $this->tags($data->unknown));
         self::assertSame(['_CUSTOM'], $this->tags($data->unknown[0]->children));
-        self::assertNull(
+        self::assertSame(
+            'Some agency',
             $data->unknown[0]->value,
-            'The carrier holds only the unconsumed descendants, never the value the typed property already has.'
+            'The carrier names the occurrence its unconsumed descendants belong to.'
         );
     }
 

@@ -495,7 +495,17 @@ final readonly class GedcomObjectMapper
             // so its pointer/value becomes the object's `xref`/`value` rather than a bare string the
             // constructor cannot accept; a handler-backed model (Note) is excluded, since its
             // handler already resolves the bare payload.
+            // A tag whose target property holds a plain value — a string, or a list of them — cannot
+            // accept an object however the schema describes it. GEDCOM 7.0 lets a free-text phrase
+            // qualify many a value that GEDCOM 5.5.1 wrote bare (a family's HUSB/WIFE/CHIL pointer, a
+            // pedigree), which declares substructures and would otherwise shape into an object the
+            // property has to reject — discarding the value with it. Such a child therefore keeps its
+            // plain payload, and the qualifiers it carries are preserved below.
+            $targetIsPlainValue = ($className !== null)
+                && ($this->parameterClass($className, $property) === null);
+
             $recurse = ($childDefinition instanceof StructureDefinition)
+                && !$targetIsPlainValue
                 && (($childDefinition->substructures !== [])
                     || (($child->children !== []) && $this->isHandlerBackedChild($className, $property))
                     || $this->requiresObjectShape($className, $property));
@@ -508,15 +518,13 @@ final readonly class GedcomObjectMapper
             // such as SNOTE — has nowhere to carry substructures of its own. Its subtree would
             // therefore be lost the moment its container becomes typed, having previously survived
             // whole on the untyped container's `$unknown`. Preserve those descendants on the
-            // container's own `$unknown` under a carrier bearing the child's tag, so typing a
-            // container never costs data. The carrier drops the child's own payload, which the
-            // typed property already holds, so nothing is reported as unconsumed twice.
+            // container's own `$unknown` under a carrier reproducing the child's own line, so typing
+            // a container never costs data. The carrier repeats the payload the typed property
+            // already holds because that payload is what identifies the occurrence: where the
+            // property is a list, it is the only thing tying a qualifier to the entry it qualifies.
+            // Only the carrier's children are unconsumed.
             if (!$recurse && ($child->children !== [])) {
-                $carrier          = $this->rawShape($child);
-                $carrier['value'] = null;
-                $carrier['xref']  = null;
-
-                $unknown[] = $carrier;
+                $unknown[] = $this->rawShape($child);
             }
 
             // The shaped arity follows the MODEL's arity, not just the schema cardinality: a

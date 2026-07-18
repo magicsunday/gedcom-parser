@@ -19,12 +19,12 @@ namespace MagicSunday\Gedcom\ValueObject;
  * whole subtree (including the raw children's own children) is retained and can be walked.
  *
  * One entry is not itself an unconsumed substructure but a carrier for unconsumed ones: when a tag
- * the model types as a plain value (a scalar such as `AGNC`, or a pointer list such as `SNOTE`)
+ * the model types as a plain value (a scalar such as `AGNC`, or a pointer list such as `CHIL`)
  * nonetheless carries substructures, those descendants have nowhere to live on the typed property,
- * so they are preserved here beneath a carrier bearing that tag. Such a carrier holds no
- * {@see $value} and no {@see $xref} of its own — the typed property already carries them — so a
- * consumed tag is never reported as unconsumed, and reading {@see $children} yields exactly the
- * substructures the model did not take.
+ * so they are preserved here beneath a carrier reproducing that tag's own line. Only a carrier's
+ * {@see $children} are unconsumed; its {@see $value} and {@see $xref} repeat what the typed property
+ * already holds, because that is what identifies the occurrence — where the property is a list, it
+ * is the only thing tying a qualifier to the entry it qualifies.
  *
  * This is a Model-layer leaf and deliberately mirrors — but does not reference — the parse-layer
  * node, so the typed model stays independent of the parser internals.
