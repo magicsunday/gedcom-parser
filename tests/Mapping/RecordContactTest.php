@@ -38,8 +38,8 @@ use function array_map;
 /**
  * The submitter and repository records now type the remainder of their contact block — the submitter's
  * email addresses (`EMAIL`), fax numbers (`FAX`) and web pages (`WWW`), and the repository's web pages
- * (`WWW`) — rather than leaving them on `$unknown` (#132, #168). The structured address (`ADDR`)
- * remains a follow-up.
+ * (`WWW`) — rather than leaving them on `$unknown` (#132, #168). The structured address (`ADDR`) is
+ * typed as well; see {@see StructuredAddressTest}.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT

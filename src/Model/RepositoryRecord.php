@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Address;
 use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
@@ -31,6 +32,7 @@ final readonly class RepositoryRecord
      * @param string                   $xref    The record cross-reference identifier.
      * @param string|null              $name    The repository name (REPO-NAME), or NULL when the record carries none.
      * @param list<string>             $phon    The repository phone numbers.
+     * @param Address|null             $addr    The repository's postal address (ADDR), or NULL when absent.
      * @param list<string>             $email   The repository email addresses.
      * @param list<string>             $fax     The repository fax numbers.
      * @param list<string>             $www     The repository web pages (WWW); empty when none.
@@ -47,6 +49,7 @@ final readonly class RepositoryRecord
         public string $xref,
         public ?string $name = null,
         public array $phon = [],
+        public ?Address $addr = null,
         public array $email = [],
         public array $fax = [],
         // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.

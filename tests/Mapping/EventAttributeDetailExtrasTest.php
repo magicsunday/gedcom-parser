@@ -41,7 +41,8 @@ use function array_map;
  * Events and attributes now type more of their shared `EVENT_DETAIL` substructures — the
  * classification (`TYPE`, events only), the cause (`CAUS`), the restriction notice (`RESN`) and the
  * notes (`NOTE`) — rather than leaving them on the detail's `$unknown` (#132, #166). The structured
- * address (`ADDR`) `EVENT_DETAIL` substructure remains a follow-up.
+ * address (`ADDR`) is typed too, which completes the substructure set for an individual's events and
+ * attributes; a family event's `HUSB`/`WIFE` age blocks remain a follow-up.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -69,15 +70,15 @@ use function array_map;
 class EventAttributeDetailExtrasTest extends TestCase
 {
     /**
-     * A death event types its classification, cause, restriction notice and notes; an unmodelled
-     * child (a structured address, deferred) stays on the event's own `$unknown`.
+     * A death event types its classification, cause, restriction notice and notes; an extension the
+     * schema does not recognise stays on the event's own `$unknown`.
      */
     #[Test]
     public function typesTheEventDescriptorSubstructures(): void
     {
         $individual = $this->parse(
             "0 @I1@ INDI\n1 DEAT\n2 TYPE Natural\n2 CAUS Heart failure\n2 RESN confidential\n"
-            . "2 NOTE a death note\n2 ADDR 123 Main St\n0 TRLR\n",
+            . "2 NOTE a death note\n2 _CUSTOM Extension payload\n0 TRLR\n",
             '7.0'
         )->individuals[0];
 
@@ -87,7 +88,7 @@ class EventAttributeDetailExtrasTest extends TestCase
         self::assertSame('confidential', $event->resn);
         self::assertCount(1, $event->note);
         self::assertSame('a death note', $event->note[0]->value);
-        self::assertSame(['ADDR'], $this->tags($event->unknown));
+        self::assertSame(['_CUSTOM'], $this->tags($event->unknown));
     }
 
     /**

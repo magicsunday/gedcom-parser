@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Address;
 use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
@@ -31,6 +32,7 @@ final readonly class SubmitterRecord
      * @param string                   $xref    The record cross-reference identifier.
      * @param string|null              $name    The submitter's name, or NULL when the record carries none.
      * @param list<string>             $phon    The submitter's phone numbers.
+     * @param Address|null             $addr    The submitter's postal address (ADDR), or NULL when absent.
      * @param list<string>             $email   The submitter's email addresses (EMAIL); empty when none.
      * @param list<string>             $fax     The submitter's fax numbers (FAX); empty when none.
      * @param list<string>             $www     The submitter's web pages (WWW); empty when none.
@@ -47,6 +49,7 @@ final readonly class SubmitterRecord
         public string $xref,
         public ?string $name = null,
         public array $phon = [],
+        public ?Address $addr = null,
         public array $email = [],
         public array $fax = [],
         public array $www = [],
