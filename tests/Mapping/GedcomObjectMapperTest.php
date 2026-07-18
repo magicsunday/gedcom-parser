@@ -719,12 +719,12 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * A malformed, pointer-less family link (a `FAMC`/`FAMS` line with no cross-reference) carries
-     * no usable link, so it is tolerantly skipped rather than failing the whole record — a valid
-     * sibling link on the same individual still maps.
+     * A malformed, pointer-less family link (a `FAMC`/`FAMS` line with no cross-reference) carries no
+     * usable link, but it is mapped as an empty one rather than failing the record or vanishing from
+     * it — a valid sibling link on the same individual maps as it always did.
      */
     #[Test]
-    public function skipsAValuelessFamilyLinkAndKeepsTheValidOne(): void
+    public function mapsAValuelessFamilyLinkAsAnEmptyLinkAndKeepsTheValidOne(): void
     {
         $stream = (new StreamFactory())->createStream(
             "0 @I1@ INDI\n1 FAMC\n1 FAMS @F2@\n0 TRLR\n"
@@ -743,7 +743,13 @@ class GedcomObjectMapperTest extends TestCase
             ->map($node, $definition, IndividualRecord::class);
 
         self::assertInstanceOf(IndividualRecord::class, $record);
-        self::assertSame([], $record->famc, 'a pointer-less FAMC is skipped rather than mapped or fatal');
+        // A pointer-less FAMC carries nothing, but it is mapped rather than dropped, consistently
+        // with every other container the model tolerates empty (a spouse age without its age, an
+        // empty place line). It used to be skipped only because the missing pointer left the model
+        // unconstructible; now that the pointer is tolerant, the line no longer disappears.
+        self::assertCount(1, $record->famc, 'a pointer-less FAMC maps as an empty link rather than vanishing');
+        self::assertNull($record->famc[0]->xref);
+        self::assertNull($record->famc[0]->value);
 
         self::assertCount(1, $record->fams, 'the valid FAMS on the same record still maps');
         self::assertSame('F2', $record->fams[0]->xref);

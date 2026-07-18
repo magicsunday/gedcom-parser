@@ -35,23 +35,25 @@ use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 final readonly class Association
 {
     /**
-     * @param string                $xref    The associated individual's cross-reference pointer (or the GEDCOM 7.0 `@VOID@` placeholder).
+     * @param string|null           $xref    The associated individual's cross-reference pointer (or the GEDCOM 7.0 `@VOID@` placeholder), or NULL when the payload is not a pointer.
      * @param string|null           $rela    The GEDCOM 5.5.1 free-text relationship (RELA), or NULL when absent.
      * @param Role|null             $role    The GEDCOM 7.0 enumerated role (ROLE) with its optional phrase, or NULL when absent.
      * @param string|null           $phrase  The GEDCOM 7.0 free-text phrase qualifying the association pointer (PHRASE), or NULL when absent.
      * @param list<Note>            $note    The notes on the association (NOTE).
      * @param list<SourceCitation>  $sour    The source citations of the association (SOUR).
      * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
+     * @param string|null           $value   The non-pointer payload, preserved verbatim so a malformed association keeps its substructures, or NULL.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
-        public string $xref,
+        public ?string $xref = null,
         public ?string $rela = null,
         public ?Role $role = null,
         public ?string $phrase = null,
         public array $note = [],
         public array $sour = [],
         public array $snote = [],
+        public ?string $value = null,
         public array $unknown = [],
     ) {
     }
