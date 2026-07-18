@@ -645,7 +645,9 @@ final readonly class GedcomObjectMapper
             // already holds because that payload is what identifies the occurrence: where the
             // property is a list, it is the only thing tying a qualifier to the entry it qualifies.
             // Only the carrier's children are unconsumed.
-            if (!$recurse && ($child->children !== [])) {
+            $diverted = !$recurse && ($child->children !== []);
+
+            if ($diverted) {
                 $unknown[] = $this->rawShape($child);
             }
 
@@ -657,9 +659,16 @@ final readonly class GedcomObjectMapper
             if ($substructure->cardinality->isCollection() || $this->isCollectionProperty($className, $property)) {
                 $collections[$property][] = $value;
             } elseif (!array_key_exists($property, $shaped)) {
-                // A single-cardinality substructure keeps its first occurrence; a duplicate in
-                // malformed input is ignored rather than silently overwriting.
+                // A single-cardinality substructure keeps its first occurrence rather than letting a
+                // duplicate in malformed input silently overwrite it.
                 $shaped[$property] = $value;
+            } elseif (!$diverted) {
+                // A later occurrence of that substructure has no typed property left to reach, but
+                // it is still something the file said, so it is preserved verbatim rather than
+                // dropped — malformed input is precisely what the preservation exists for. A child
+                // already diverted above carries its own occurrence whole, so it must not be
+                // written a second time here.
+                $unknown[] = $this->rawShape($child);
             }
         }
 
