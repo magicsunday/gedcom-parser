@@ -106,8 +106,9 @@ its declared URIs (a `list`, since 7.0 allows a tag to be documented more than o
 A substructure the typed model does not consume is not dropped: it is preserved verbatim on the
 carrying object's `$unknown` list as a `MagicSunday\Gedcom\ValueObject\RawSubstructure` (`->tag`,
 `->value`, `->xref`, `->children`), at every object-bearing level of the typed record model. This
-covers both an extension (`_`-prefixed vendor tag such as `_WT_USER`) or out-of-place tag, and a tag
-the schema *does* permit but that the carrying object does not yet model as a typed field — whether
+covers an extension (`_`-prefixed vendor tag such as `_WT_USER`) or out-of-place tag, a tag
+the schema *does* permit but that the carrying object does not yet model as a typed field, and a tag
+that is modelled but could not be attributed (see the malformed-input cases below) — whether
 at the **record** level (such as `OCCU` or `RESI` on an individual, landing on the record's
 `$unknown`) or nested under a **modelled** substructure (such as an unmodelled tag under a birth
 event, landing on that event's own `$unknown`). So an unrecognised or not-yet-modelled tag remains
@@ -130,20 +131,26 @@ A **scalar** field (such as `SEX`, modelled as a bare `?string`) has no object o
 entry repeating that scalar's own line. Every object-bearing position — a record, a nested typed
 substructure, and a value-object leaf — preserves what it does not consume.
 
-A recognised substructure the schema permits only once but the file gives more than once is
-preserved on the same terms: the first occurrence maps to its typed field, and every later one lands
-verbatim on the carrying object's `$unknown`. Such an entry therefore repeats a tag whose typed field
-is *also* populated, which it shares with the scalar case above — but the two mean different things,
-and only the position tells them apart:
+Malformed input is preserved on the same terms rather than dropped, in two further cases. A
+recognised substructure the schema permits only once but the file gives more than once keeps its
+first occurrence typed and every later one verbatim. And a substructure whose **level skips one**
+(more than one below its parent) is not attributed at all — the level number is the only thing
+stating where a line belongs, so attributing it would invent a nesting the file never expressed —
+but it is preserved with its whole subtree on the container it sat in.
+
+An `$unknown` entry may therefore carry a tag that the model *does* have a field for, which means
+three different things depending on how it got there:
 
 ```php
 // 1 SEX M / 2 _SRC x        → the entry's own value IS consumed (it is $sex); its children are not.
 // 1 SEX M / 1 SEX F         → the entry's value is NOT consumed; $sex holds the first occurrence.
+// 0 @I1@ INDI / 2 SEX M     → the entry's value is NOT consumed; $sex is null, the level skipped one.
 ```
 
-So a consumer walking `$unknown` should not assume an entry whose tag matches a populated typed field
-is redundant with it. Where the duplicate repeats the same value the two are genuinely
-indistinguishable, which is a known limit of the shape rather than something the model resolves.
+So a consumer walking `$unknown` should not assume an entry whose tag matches a typed field is
+redundant with it — nor that the field is populated at all. Where a duplicate repeats the same value
+the first two are genuinely indistinguishable, which is a known limit of the shape rather than
+something the model resolves.
 
 #### Bounding the parse (resource limit)
 
