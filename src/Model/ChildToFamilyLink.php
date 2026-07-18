@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Pedigree;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
@@ -28,13 +29,13 @@ final readonly class ChildToFamilyLink
 {
     /**
      * @param string|null           $xref    The linked family's cross-reference pointer, or NULL when the payload is not a pointer.
-     * @param string|null           $pedi    The pedigree qualifying the linkage (PEDI), or NULL when absent.
+     * @param Pedigree|null         $pedi    The pedigree qualifying the linkage (PEDI), or NULL when absent.
      * @param string|null           $value   The non-pointer payload, preserved verbatim so a malformed link keeps its substructures, or NULL.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
         public ?string $xref = null,
-        public ?string $pedi = null,
+        public ?Pedigree $pedi = null,
         public ?string $value = null,
         public array $unknown = [],
     ) {

@@ -22,6 +22,7 @@ use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\SpouseToFamilyLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
+use MagicSunday\Gedcom\Model\Substructure\Common\Pedigree;
 use MagicSunday\Gedcom\Model\Substructure\Common\Role;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
@@ -69,6 +70,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(IndividualRecord::class)]
+#[UsesClass(Pedigree::class)]
 #[UsesClass(Role::class)]
 #[UsesClass(RawSubstructure::class)]
 class TolerantPointerTest extends TestCase
@@ -122,7 +124,7 @@ class TolerantPointerTest extends TestCase
         self::assertCount(1, $individual->famc);
         self::assertNull($individual->famc[0]->xref);
         self::assertSame('not-a-pointer', $individual->famc[0]->value);
-        self::assertSame('BIRTH', $individual->famc[0]->pedi);
+        self::assertSame('BIRTH', $individual->famc[0]->pedi?->value);
     }
 
     /**

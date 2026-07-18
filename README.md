@@ -307,7 +307,7 @@ title). A file's format classifies what it depicts version-specifically: GEDCOM 
 `MediaFormat::$type` (`TYPE`) or GEDCOM 7.0's enumerated `MediaFormat::$medi` (`MEDI`, a typed
 `Medium` carrying the enumerated value plus an optional `PHRASE` for the `OTHER` medium); each stays
 `null` in the other version. Enumerated GEDCOM 7.0 values (a medium, an individual's sex, a
-child-to-family pedigree, a name type) stay plain strings so an extension or unlisted value is
+a name type) stay plain strings so an extension or unlisted value is
 preserved, and the known standard values of each set are available as typed constants under
 `MagicSunday\Gedcom\Enumeration` (`MediumType`, `Sex`, `Pedigree`, `NameType` — e.g.
 `MediumType::PHOTO`, `Sex::FEMALE`) for discoverable comparison. Every record additionally exposes its GEDCOM 7.0 record-level external

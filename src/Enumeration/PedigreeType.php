@@ -24,7 +24,7 @@ namespace MagicSunday\Gedcom\Enumeration;
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-final class Pedigree
+final class PedigreeType
 {
     /**
      * The child is the adopted child of the parents.

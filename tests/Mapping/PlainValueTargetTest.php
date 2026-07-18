@@ -20,6 +20,7 @@ use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\Substructure\Common\Pedigree;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -51,6 +52,7 @@ use function array_map;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 #[CoversClass(GedcomObjectMapper::class)]
+#[CoversClass(Pedigree::class)]
 #[UsesClass(Parser::class)]
 #[UsesClass(StreamFactory::class)]
 #[UsesClass(Reader::class)]
@@ -159,16 +161,16 @@ class PlainValueTargetTest extends TestCase
             '7.0'
         )->individuals[0];
 
-        self::assertSame('BIRTH', $individual->famc[0]->pedi);
+        self::assertSame('BIRTH', $individual->famc[0]->pedi?->value);
         self::assertSame('F1', $individual->famc[0]->xref);
     }
 
     /**
-     * The phrase GEDCOM 7.0 permits on the pedigree is preserved on the link's own `$unknown`; the
-     * pedigree value itself is typed. Typing the phrase alongside it remains open (see issue #183).
+     * The phrase GEDCOM 7.0 permits on the pedigree is typed alongside the value it qualifies, so
+     * neither is left on `$unknown` (#183).
      */
     #[Test]
-    public function preservesThePhraseQualifyingAPedigree(): void
+    public function typesThePhraseQualifyingAPedigree(): void
     {
         $individual = $this->parse(
             "0 @I1@ INDI\n1 FAMC @F1@\n2 PEDI BIRTH\n3 PHRASE born into the family\n0 TRLR\n",
@@ -177,10 +179,11 @@ class PlainValueTargetTest extends TestCase
 
         $link = $individual->famc[0];
 
-        self::assertSame('BIRTH', $link->pedi);
-        self::assertSame(['PEDI'], $this->tags($link->unknown));
-        self::assertSame(['PHRASE'], $this->tags($link->unknown[0]->children));
-        self::assertSame('born into the family', $link->unknown[0]->children[0]->value);
+        $pedigree = $link->pedi;
+        self::assertInstanceOf(Pedigree::class, $pedigree);
+        self::assertSame('BIRTH', $pedigree->value);
+        self::assertSame('born into the family', $pedigree->phrase);
+        self::assertSame([], $this->tags($link->unknown), 'Nothing is left over once both are typed.');
     }
 
     /**
@@ -194,7 +197,27 @@ class PlainValueTargetTest extends TestCase
             '5.5.1'
         )->individuals[0];
 
-        self::assertSame('birth', $individual->famc[0]->pedi);
+        self::assertSame('birth', $individual->famc[0]->pedi?->value);
+    }
+
+    /**
+     * A pedigree outside the enumerated set survives parsing with its qualifier, so an extension is
+     * kept rather than rejected or diverted.
+     */
+    #[Test]
+    public function toleratesAnUnlistedPedigree(): void
+    {
+        $individual = $this->parse(
+            "0 @I1@ INDI\n1 FAMC @F1@\n2 PEDI _CUSTOM\n3 PHRASE a bespoke linkage\n0 TRLR\n",
+            '7.0'
+        )->individuals[0];
+
+        $pedigree = $individual->famc[0]->pedi;
+
+        self::assertInstanceOf(Pedigree::class, $pedigree);
+        self::assertSame('_CUSTOM', $pedigree->value);
+        self::assertSame('a bespoke linkage', $pedigree->phrase);
+        self::assertSame([], $this->tags($individual->famc[0]->unknown));
     }
 
     /**
