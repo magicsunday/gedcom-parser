@@ -227,8 +227,9 @@ with the value-object leaves (dates, places, ages) parsed by their own grammar. 
 resolved regardless of the GEDCOM version — a bare payload string in 5.5.1, or the shaped node
 a 7.0 substructure-bearing leaf (a `DATE` with `PHRASE`/`TIME`, a `PLAC` with `FORM`/`MAP`)
 produces. A GEDCOM 7.0 `DATE`/`AGE` carried only by its `PHRASE` substructure is threaded onto
-the value object as a phrase rather than dropped, and a `PLAC`'s `MAP` coordinates are exposed as
-signed decimal degrees. The analysis runs clean at PHPStan `level: max` with no baseline — enforcing
+the value object as a phrase rather than dropped, a 7.0 `DATE`/`SDATE` exposes its wall-clock `TIME`
+verbatim as `DateValue::$time` — the same form `ExactDate` keeps a record timestamp's time in — and a
+`PLAC`'s `MAP` coordinates are exposed as signed decimal degrees. The analysis runs clean at PHPStan `level: max` with no baseline — enforcing
 architecture boundaries via `phpat` — and `jscpd` finds no duplication, so both are hard CI gates.
 
 `TypedGedcomParser` ties the pipeline together: give it the GEDCOM version and a map of

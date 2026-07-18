@@ -114,21 +114,23 @@ class LeafSubstructurePreservationTest extends TestCase
     }
 
     /**
-     * A date keeps a substructure its grammar does not read, while the phrase it does read is
-     * consumed.
+     * A date keeps a substructure its grammar does not read, while the phrase and the time it does
+     * read are consumed into typed values.
      */
     #[Test]
     public function preservesTheDateSubstructuresTheGrammarDoesNotRead(): void
     {
         $date = $this->parse(
-            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n3 PHRASE around new year\n3 TIME 12:00\n0 TRLR\n",
+            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n3 PHRASE around new year\n3 TIME 12:00\n"
+            . "3 _CUSTOM Extension payload\n0 TRLR\n",
             '7.0'
         )->individuals[0]->birt[0]->date;
 
         self::assertNotNull($date);
         self::assertSame('around new year', $date->phrase, 'The phrase is the grammar’s own input.');
-        self::assertSame(['TIME'], $this->tags($date->unknown));
-        self::assertSame('12:00', $date->unknown[0]->value);
+        self::assertSame('12:00', $date->time, 'So is the time, as of #189.');
+        self::assertSame(['_CUSTOM'], $this->tags($date->unknown), 'Only what the grammar does not read is diverted.');
+        self::assertSame('Extension payload', $date->unknown[0]->value);
     }
 
     /**

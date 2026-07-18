@@ -108,7 +108,7 @@ final class JsonMapperFactory
      */
     public const array HANDLER_CONSUMED_TAGS = [
         PlaceValue::class => ['form', 'map'],
-        DateValue::class  => ['phrase'],
+        DateValue::class  => ['phrase', 'time'],
         AgeValue::class   => ['phrase'],
     ];
 
@@ -170,6 +170,7 @@ final class JsonMapperFactory
                 static fn (mixed $value): DateValue => DateValue::fromGedcom(
                     self::leafValue($value, 'DATE'),
                     self::phraseOf($value),
+                    self::timeOf($value),
                     self::unknownFromShaped($value),
                 ),
             ),
@@ -326,6 +327,19 @@ final class JsonMapperFactory
         }
 
         throw new MappingException(sprintf('Expected a string or shaped %s payload, got %s.', $label, get_debug_type($value)));
+    }
+
+    /**
+     * Resolves the wall-clock time a GEDCOM 7.0 date carries, from the shaped array its structure
+     * produces. A bare payload carries none.
+     *
+     * @param mixed $value The shaped leaf, or its bare payload.
+     *
+     * @return string|null The TIME text, or NULL when the date carries none.
+     */
+    private static function timeOf(mixed $value): ?string
+    {
+        return is_array($value) ? self::nullableString($value['time'] ?? null) : null;
     }
 
     /**
