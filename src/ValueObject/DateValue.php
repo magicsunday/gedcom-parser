@@ -37,6 +37,7 @@ final readonly class DateValue
      * @param CalendarDate|null     $endDate The end date of a range or period, or NULL.
      * @param string|null           $phrase  The free-text phrase of a phrase/interpreted date, or NULL.
      * @param string                $raw     The original, unparsed DATE_VALUE.
+     * @param string|null           $time    The GEDCOM 7.0 wall-clock time the date carries (TIME), preserved verbatim, or NULL when absent.
      * @param list<RawSubstructure> $unknown Substructures nested under the DATE that its grammar does not consume (extensions and out-of-place tags), preserved verbatim.
      */
     public function __construct(
@@ -45,6 +46,7 @@ final readonly class DateValue
         public ?CalendarDate $endDate,
         public ?string $phrase,
         public string $raw,
+        public ?string $time = null,
         public array $unknown = [],
     ) {
     }
@@ -59,9 +61,10 @@ final readonly class DateValue
      *
      * @param string                $value   The raw DATE_VALUE, e.g. `ABT 1900`, `BET 1900 AND 1910` or `INT 1900 (guess)`.
      * @param string|null           $phrase  The GEDCOM 7.0 PHRASE substructure text, or NULL when none is present.
+     * @param string|null           $time    The GEDCOM 7.0 TIME substructure text, or NULL when none is present.
      * @param list<RawSubstructure> $unknown Substructures nested under the DATE that its grammar does not consume, preserved verbatim.
      */
-    public static function fromGedcom(string $value, ?string $phrase = null, array $unknown = []): self
+    public static function fromGedcom(string $value, ?string $phrase = null, ?string $time = null, array $unknown = []): self
     {
         $explicitPhrase = $phrase !== null ? trim($phrase) : null;
 
@@ -72,20 +75,20 @@ final readonly class DateValue
         // A value-less GEDCOM 7.0 DATE may be carried solely by its PHRASE substructure, which is
         // then the date's only textual form (the empty date value is kept as the raw text).
         if (($explicitPhrase !== null) && (trim($value) === '')) {
-            return new self(DateType::Phrase, null, null, $explicitPhrase, $value, $unknown);
+            return new self(DateType::Phrase, null, null, $explicitPhrase, $value, $time, $unknown);
         }
 
         $parsed = self::parse($value);
 
         if ($explicitPhrase === null) {
-            return ($unknown === [])
+            return (($unknown === []) && ($time === null))
                 ? $parsed
-                : new self($parsed->type, $parsed->date, $parsed->endDate, $parsed->phrase, $parsed->raw, $unknown);
+                : new self($parsed->type, $parsed->date, $parsed->endDate, $parsed->phrase, $parsed->raw, $time, $unknown);
         }
 
         // A valued DATE that also carries an explicit PHRASE keeps its parsed form and records the
         // phrase, overriding any inline phrase from the value grammar.
-        return new self($parsed->type, $parsed->date, $parsed->endDate, $explicitPhrase, $parsed->raw, $unknown);
+        return new self($parsed->type, $parsed->date, $parsed->endDate, $explicitPhrase, $parsed->raw, $time, $unknown);
     }
 
     /**
