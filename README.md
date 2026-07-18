@@ -333,6 +333,8 @@ or adoption event, the family the child belongs to (`FAMC`, with the adopting pa
 value object or list. A family's events and attributes additionally expose the two partners' ages at
 them (`HUSB`.`AGE` and `WIFE`.`AGE`). With these, every substructure the schema permits on an event or
 attribute detail is typed, in both GEDCOM versions.
+A note written as a pointer to a shared note names it in `Note::$xref`; its `$value` carries the
+pointer target as well, so a consumer that renders the value sees the identifier rather than prose.
 Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
 than dropped, so a later release can type them without losing anything today. Where a tag the model
 types as a plain value nonetheless carries substructures of its own, those descendants appear on

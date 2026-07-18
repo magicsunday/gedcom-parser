@@ -170,6 +170,21 @@ final readonly class GedcomObjectMapper
     }
 
     /**
+     * Determines whether the given structure carries a cross-reference pointer as its payload, so a
+     * child resolving to it must keep that pointer distinguishable from a text of the same spelling.
+     *
+     * @param StructureDefinition|null $definition The resolved structure, or NULL when unknown.
+     *
+     * @return bool True when the structure's payload is a pointer.
+     */
+    private function isPointerPayload(?StructureDefinition $definition): bool
+    {
+        return ($definition instanceof StructureDefinition)
+            && ($definition->payload !== null)
+            && str_starts_with($definition->payload, '@<');
+    }
+
+    /**
      * Determines whether the given class is hydrated from its raw payload by a registered handler
      * rather than field by field, so its payload must reach it whatever its constructor names.
      *
@@ -600,7 +615,16 @@ final readonly class GedcomObjectMapper
             $recurse = ($childDefinition instanceof StructureDefinition)
                 && !$targetIsPlainValue
                 && (($childDefinition->substructures !== [])
-                    || (($child->children !== []) && $this->isHandlerBackedChild($className, $property))
+                    // A handler-backed target is shaped when it carries children, so an
+                    // out-of-schema tag beneath it reaches its handler's `$unknown`; and when the
+                    // structure it resolved to is a pointer, so the pointer survives as one. The
+                    // grammar makes a pointer and a text two different things, and collapsing both
+                    // into one payload would leave a note whose text happens to look like a
+                    // cross-reference indistinguishable from a real one. The test is on the resolved
+                    // structure, not on the parsed line: a date or age whose value merely looks like
+                    // a pointer must keep its payload, since its own grammar is what reads it.
+                    || ($this->isHandlerBackedChild($className, $property)
+                        && (($child->children !== []) || $this->isPointerPayload($childDefinition)))
                     || $this->requiresObjectShape($className, $property));
 
             $value = $recurse

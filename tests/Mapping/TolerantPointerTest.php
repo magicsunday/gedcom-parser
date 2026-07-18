@@ -19,6 +19,7 @@ use MagicSunday\Gedcom\Mapping\RecordStream;
 use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
+use MagicSunday\Gedcom\Model\Note;
 use MagicSunday\Gedcom\Model\SpouseToFamilyLink;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\Role;
@@ -50,6 +51,7 @@ use PHPUnit\Framework\TestCase;
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
 #[CoversClass(Association::class)]
+#[CoversClass(Note::class)]
 #[CoversClass(ChildToFamilyLink::class)]
 #[CoversClass(SpouseToFamilyLink::class)]
 #[UsesClass(Parser::class)]
@@ -138,6 +140,46 @@ class TolerantPointerTest extends TestCase
         self::assertNull($individual->fams[0]->xref);
         self::assertSame('not-a-pointer', $individual->fams[0]->value);
         self::assertSame('F2', $individual->fams[1]->xref, 'The valid sibling link is unaffected.');
+    }
+
+    /**
+     * A note written as a pointer to a shared note keeps that pointer apart from its text, so a note
+     * whose text happens to look like a cross-reference is no longer mistaken for one.
+     */
+    #[Test]
+    public function tellsANotePointerApartFromNoteText(): void
+    {
+        $document = $this->parse(
+            "0 @I1@ INDI\n1 NOTE @N1@\n1 NOTE N1\n1 NOTE Some prose\n0 @N1@ NOTE Shared\n0 TRLR\n",
+            '5.5.1'
+        );
+
+        $notes = $document->individuals[0]->note;
+        self::assertCount(3, $notes);
+
+        self::assertSame('N1', $notes[0]->xref, 'The pointer form names the shared note it refers to.');
+        self::assertSame('N1', $notes[0]->value, 'The existing value keeps carrying the pointer target.');
+        self::assertNull($notes[1]->xref, 'Text that merely looks like a cross-reference is not one.');
+        self::assertSame('N1', $notes[1]->value);
+        self::assertNull($notes[2]->xref);
+        self::assertSame('Some prose', $notes[2]->value);
+    }
+
+    /**
+     * The pointer shaping is keyed on the structure the child resolves to, not on how its line
+     * happens to look: a date or age whose value reads like a cross-reference keeps that value,
+     * since its own grammar is what parses it.
+     */
+    #[Test]
+    public function keepsThePayloadOfALeafWhoseValueLooksLikeAPointer(): void
+    {
+        $event = $this->parse(
+            "0 @I1@ INDI\n1 BIRT\n2 DATE @X1@\n2 AGE @A1@\n0 TRLR\n",
+            '5.5.1'
+        )->individuals[0]->birt[0];
+
+        self::assertSame('X1', $event->date?->raw, 'The date keeps its payload.');
+        self::assertSame('A1', $event->age?->raw, 'So does the age.');
     }
 
     /**
