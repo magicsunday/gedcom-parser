@@ -11,8 +11,9 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Test\Enumeration;
 
-use MagicSunday\Gedcom\Enumeration\Pedigree;
+use MagicSunday\Gedcom\Enumeration\PedigreeType;
 use MagicSunday\Gedcom\Model\ChildToFamilyLink;
+use MagicSunday\Gedcom\Model\Substructure\Common\Pedigree;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -20,14 +21,15 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Tests the PEDI enumeration constant holder: its constants carry the raw spec values, its value
- * list stays in sync with the vendored registry, and the carrying model field remains a tolerant
- * string.
+ * list stays in sync with the vendored registry, and the carrying model keeps the value tolerantly
+ * on a typed pedigree.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
  * @link    https://github.com/magicsunday/gedcom-parser/
  */
-#[CoversClass(Pedigree::class)]
+#[CoversClass(PedigreeType::class)]
+#[UsesClass(Pedigree::class)]
 #[UsesClass(ChildToFamilyLink::class)]
 class PedigreeTest extends TestCase
 {
@@ -38,7 +40,7 @@ class PedigreeTest extends TestCase
     #[Test]
     public function eachConstantNameEqualsItsRawSpecValue(): void
     {
-        EnumerationRegistry::assertConstantNamesEqualValues(Pedigree::class);
+        EnumerationRegistry::assertConstantNamesEqualValues(PedigreeType::class);
     }
 
     /**
@@ -47,19 +49,23 @@ class PedigreeTest extends TestCase
     #[Test]
     public function theValueListMatchesTheRegistry(): void
     {
-        EnumerationRegistry::assertMatchesRegistry('PEDI', Pedigree::values());
+        EnumerationRegistry::assertMatchesRegistry('PEDI', PedigreeType::values());
     }
 
     /**
-     * The carrying model field stays a tolerant string: a known value round-trips as its constant,
-     * and an unlisted or extension value is preserved rather than rejected.
+     * The carrying model keeps the value tolerantly: a known one round-trips as its constant, and an
+     * unlisted or extension value is preserved rather than rejected. The value now lives on a typed
+     * pedigree so the phrase qualifying it has a home too, but its tolerance is unchanged.
      */
     #[Test]
-    public function theModelFieldRemainsATolerantString(): void
+    public function theModelFieldRemainsATolerantValue(): void
     {
-        self::assertSame(Pedigree::BIRTH, (new ChildToFamilyLink('F1', Pedigree::BIRTH))->pedi);
+        $known = new ChildToFamilyLink('F1', new Pedigree(PedigreeType::BIRTH));
+        self::assertSame(PedigreeType::BIRTH, $known->pedi?->value);
 
-        self::assertNotContains('_CUSTOM', Pedigree::values(), 'an extension value is not a known standard value');
-        self::assertSame('_CUSTOM', (new ChildToFamilyLink('F1', '_CUSTOM'))->pedi, 'an extension value is preserved on the model');
+        self::assertNotContains('_CUSTOM', PedigreeType::values(), 'an extension value is not a known standard value');
+
+        $extension = new ChildToFamilyLink('F1', new Pedigree('_CUSTOM'));
+        self::assertSame('_CUSTOM', $extension->pedi?->value, 'an extension value is preserved on the model');
     }
 }

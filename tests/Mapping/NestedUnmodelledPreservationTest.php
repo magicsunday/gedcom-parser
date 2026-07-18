@@ -22,6 +22,7 @@ use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
 use MagicSunday\Gedcom\Model\Note;
+use MagicSunday\Gedcom\Model\Substructure\Common\Pedigree;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Parser;
@@ -67,6 +68,7 @@ use function array_keys;
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(IndividualRecord::class)]
 #[UsesClass(ChildToFamilyLink::class)]
+#[UsesClass(Pedigree::class)]
 #[UsesClass(EventDetail::class)]
 #[UsesClass(ChangeDate::class)]
 #[UsesClass(Note::class)]
@@ -91,7 +93,7 @@ class NestedUnmodelledPreservationTest extends TestCase
 
         // The modelled sibling must still be consumed: diverting everything would pass a bare
         // "STAT was preserved" assertion while the container had stopped typing altogether.
-        self::assertSame('birth', $individual->famc[0]->pedi);
+        self::assertSame('birth', $individual->famc[0]->pedi?->value);
 
         $byTag = $this->byTag($individual->famc[0]->unknown);
         self::assertSame(['STAT'], array_keys($byTag), 'Only the unmodelled tag is diverted.');
@@ -99,19 +101,19 @@ class NestedUnmodelledPreservationTest extends TestCase
     }
 
     /**
-     * The same holds under GEDCOM 7.0, where the status is a separate registry structure. The
-     * modelled sibling asserted here is the pointer rather than the pedigree, because the GEDCOM 7.0
-     * pedigree does not currently type at all (see issue #183).
+     * The same holds under GEDCOM 7.0, where the status is a separate registry structure and the
+     * pedigree types as it does under the earlier version.
      */
     #[Test]
     public function preservesARecognisedButUnmodelledTagUnderAModelledContainerInGedcom7(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 FAMC @F1@\n2 STAT CHALLENGED\n0 TRLR\n",
+            "0 @I1@ INDI\n1 FAMC @F1@\n2 PEDI BIRTH\n2 STAT CHALLENGED\n0 TRLR\n",
             '7.0'
         )->individuals[0];
 
         self::assertSame('F1', $individual->famc[0]->xref);
+        self::assertSame('BIRTH', $individual->famc[0]->pedi?->value, 'The modelled sibling still types.');
 
         $byTag = $this->byTag($individual->famc[0]->unknown);
         self::assertSame(['STAT'], array_keys($byTag));

@@ -711,7 +711,7 @@ class GedcomObjectMapperTest extends TestCase
         self::assertCount(1, $record->famc, 'a single FAMC maps to a one-element list');
         $childLink = $record->famc[0];
         self::assertSame('F1', $childLink->xref, 'the FAMC pointer maps to the family cross-reference');
-        self::assertSame('birth', $childLink->pedi, 'the PEDI substructure is threaded through');
+        self::assertSame('birth', $childLink->pedi?->value, 'the PEDI substructure is threaded through');
 
         self::assertCount(2, $record->fams, 'the repeatable FAMS links map to a list');
         self::assertContainsOnlyInstancesOf(SpouseToFamilyLink::class, $record->fams);

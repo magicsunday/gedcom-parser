@@ -605,8 +605,8 @@ final readonly class GedcomObjectMapper
             // handler already resolves the bare payload.
             // A tag whose target property holds a plain value — a string, or a list of them — cannot
             // accept an object however the schema describes it. GEDCOM 7.0 lets a free-text phrase
-            // qualify many a value that GEDCOM 5.5.1 wrote bare (a family's HUSB/WIFE/CHIL pointer, a
-            // pedigree), which declares substructures and would otherwise shape into an object the
+            // qualify many a value that GEDCOM 5.5.1 wrote bare (a family's HUSB/WIFE/CHIL pointer), which
+            // declares substructures and would otherwise shape into an object the
             // property has to reject — discarding the value with it. Such a child therefore keeps its
             // plain payload, and the qualifiers it carries are preserved below.
             $targetIsPlainValue = ($className !== null)
