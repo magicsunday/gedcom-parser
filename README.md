@@ -105,10 +105,10 @@ its declared URIs (a `list`, since 7.0 allows a tag to be documented more than o
 
 A substructure the typed model does not consume is not dropped: it is preserved verbatim on the
 carrying object's `$unknown` list as a `MagicSunday\Gedcom\ValueObject\RawSubstructure` (`->tag`,
-`->value`, `->xref`, `->children`), at every object-bearing level of the typed record model. This
-covers an extension (`_`-prefixed vendor tag such as `_WT_USER`) or out-of-place tag, a tag
-the schema *does* permit but that the carrying object does not yet model as a typed field, and a tag
-that is modelled but could not be attributed (see the malformed-input cases below) — whether
+`->value`, `->xref`, `->children`, `->level`), at every object-bearing level of the typed record
+model. This covers an extension (`_`-prefixed vendor tag such as `_WT_USER`) or out-of-place tag, a
+tag the schema *does* permit but that the carrying object does not yet model as a typed field, and a
+tag that is modelled but could not be attributed (see the malformed-input cases below) — whether
 at the **record** level (such as `OCCU` or `RESI` on an individual, landing on the record's
 `$unknown`) or nested under a **modelled** substructure (such as an unmodelled tag under a birth
 event, landing on that event's own `$unknown`). So an unrecognised or not-yet-modelled tag remains
@@ -148,9 +148,16 @@ three different things depending on how it got there:
 ```
 
 So a consumer walking `$unknown` should not assume an entry whose tag matches a typed field is
-redundant with it — nor that the field is populated at all. Where a duplicate repeats the same value
-the first two are genuinely indistinguishable, which is a known limit of the shape rather than
-something the model resolves.
+redundant with it — nor that the field is populated at all. `->level` records the level the line was
+actually written at. Where the container's own level is known — on a record, which is always level 0
+— that tells the third case apart from a well-placed out-of-schema tag; on a nested carrier the model
+does not expose the container's level, so use `->level` to reconstruct the line's position rather than
+to classify it. Where a duplicate repeats the same value the first two cases remain genuinely
+indistinguishable, which is a known limit of the shape rather than something the model resolves.
+
+Two things `->level` does not give you. A continuation folded into its line is not separately
+represented, so one entry may stand for several source lines; and the shape records no sibling order,
+so a preserved subtree tells you the levels but not the order two children appeared in.
 
 #### Bounding the parse (resource limit)
 

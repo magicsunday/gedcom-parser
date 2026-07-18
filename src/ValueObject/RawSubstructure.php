@@ -27,14 +27,16 @@ namespace MagicSunday\Gedcom\ValueObject;
  * is the only thing tying a qualifier to the entry it qualifies.
  *
  * An entry may also be a line the model *does* type but could not attribute — one whose level skips
- * a step, which the grammar gives no enclosing structure at all. Two consequences follow, and both
- * are limits of this shape rather than of the parse. The container it lands on is the nearest
- * preceding shallower line, a deliberate recovery choice rather than something the file stated. And
- * because the level is not carried here, such an entry is indistinguishable from one whose tag is
- * simply out of schema at that position. A continuation (`CONC`/`CONT`) reaches this list the same
- * way when its level skips: it is a pseudo-structure rather than a substructure, and one that could
- * not be folded into the line it meant to continue, so it is kept verbatim rather than dropped —
- * but it is not a substructure of the entry it sits under.
+ * a step, which the grammar gives no enclosing structure at all. The container it lands on is then
+ * the nearest preceding shallower line: a deliberate recovery rather than something the file stated,
+ * and the one place this shape answers a question the grammar leaves open. {@see self::$level}
+ * records the level the line was actually written at, which tells such an entry apart from one whose
+ * tag is simply out of schema at that position and keeps the original line reconstructible.
+ *
+ * A continuation (`CONC`/`CONT`) reaches this list the same way when its level skips: it is a
+ * pseudo-structure rather than a substructure, and one that could no longer be folded into the line
+ * it meant to continue, so it is kept verbatim rather than dropped — but it is not a substructure of
+ * the entry it sits under.
  *
  * This is a Model-layer leaf and deliberately mirrors — but does not reference — the parse-layer
  * node, so the typed model stays independent of the parser internals.
@@ -50,12 +52,15 @@ final readonly class RawSubstructure
      * @param string|null           $value    The line value, or NULL when the line carries none.
      * @param string|null           $xref     The cross-reference pointer target, or NULL when it is not a pointer.
      * @param list<RawSubstructure> $children The nested substructures, preserved verbatim in document order.
+     * @param int|null              $level    The level the line was written at. A folded continuation is
+     *                                        part of the line it continues, so it has no level of its own.
      */
     public function __construct(
         public string $tag,
         public ?string $value = null,
         public ?string $xref = null,
         public array $children = [],
+        public ?int $level = null,
     ) {
     }
 }
