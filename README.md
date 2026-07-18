@@ -125,11 +125,25 @@ out-of-schema tag directly beneath one is preserved on that value object too (e.
 structured object for this purpose even when it declares no substructures of its own (a GEDCOM 5.5.1
 `DATE`/`AGE`), so nothing beneath it is lost.
 
-One boundary remains, and it is inherent rather than a gap to close: a **scalar** field (such as
-`SEX`, modelled as a bare `?string`) has no object to carry an `$unknown`, so a tag nested beneath it
-cannot be preserved without modelling that field as an object. Every object-bearing position — a
-record, a nested typed substructure, and a value-object leaf — now preserves what it does not
-consume.
+A **scalar** field (such as `SEX`, modelled as a bare `?string`) has no object of its own to carry an
+`$unknown`, so a tag nested beneath one is preserved on the **carrying object** instead, under an
+entry repeating that scalar's own line. Every object-bearing position — a record, a nested typed
+substructure, and a value-object leaf — preserves what it does not consume.
+
+A recognised substructure the schema permits only once but the file gives more than once is
+preserved on the same terms: the first occurrence maps to its typed field, and every later one lands
+verbatim on the carrying object's `$unknown`. Such an entry therefore repeats a tag whose typed field
+is *also* populated, which it shares with the scalar case above — but the two mean different things,
+and only the position tells them apart:
+
+```php
+// 1 SEX M / 2 _SRC x        → the entry's own value IS consumed (it is $sex); its children are not.
+// 1 SEX M / 1 SEX F         → the entry's value is NOT consumed; $sex holds the first occurrence.
+```
+
+So a consumer walking `$unknown` should not assume an entry whose tag matches a populated typed field
+is redundant with it. Where the duplicate repeats the same value the two are genuinely
+indistinguishable, which is a known limit of the shape rather than something the model resolves.
 
 #### Bounding the parse (resource limit)
 
