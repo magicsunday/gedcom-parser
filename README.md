@@ -326,7 +326,9 @@ notes (`NOTE`) and source citations (`SOUR`), submitter and research-interest po
 (`SUBM`/`ANCI`/`DESI`), associations to other individuals (`ASSO`), asserted non-occurrences (`NO`),
 LDS ordinances (`BAPL`/`CONL`/`ENDL`/`INIL`/`SLGC`/`SLGS`), aliases (`ALIA`), the version-aware child
 count (`FAM`.`NCHI`), user reference numbers (`REFN`), multimedia links (`OBJE`, pointer form),
-shared-note pointers (`SNOTE`) and the restriction notice (`RESN`) — each a typed value object or list.
+shared-note pointers (`SNOTE`), the restriction notice (`RESN`), the generic events and facts
+(`EVEN`/`FACT`) and, on a birth, christening or adoption event, the family the child belongs to
+(`FAMC`, with the adopting parent) — each a typed value object or list.
 Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
 than dropped, so a later release can type them without losing anything today.
 
