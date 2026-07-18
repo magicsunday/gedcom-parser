@@ -45,9 +45,9 @@ use function file_get_contents;
  * typed {@see Address} rather than leaving it on the carrying object's `$unknown` (#132, #166, #168).
  *
  * The structure is identical in both GEDCOM versions: a free-form address as the line value, refined
- * by the optional street lines (`ADR1`–`ADR3`), city, state, postal code and country. With it every
- * substructure the schema permits on an individual's event and attribute detail is typed; a family
- * event's `HUSB`/`WIFE` age blocks remain a follow-up.
+ * by the optional street lines (`ADR1`–`ADR3`), city, state, postal code and country. The address was
+ * the last untyped substructure of an individual's event and attribute detail; the family-event age
+ * blocks ({@see FamilyEventAgeTest}) complete the set for family events.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT

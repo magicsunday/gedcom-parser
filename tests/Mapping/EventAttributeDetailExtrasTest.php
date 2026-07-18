@@ -42,7 +42,7 @@ use function array_map;
  * classification (`TYPE`, events only), the cause (`CAUS`), the restriction notice (`RESN`) and the
  * notes (`NOTE`) — rather than leaving them on the detail's `$unknown` (#132, #166). The structured
  * address (`ADDR`) is typed too, which completes the substructure set for an individual's events and
- * attributes; a family event's `HUSB`/`WIFE` age blocks remain a follow-up.
+ * attributes, and the family-event age blocks complete it for family events too.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
