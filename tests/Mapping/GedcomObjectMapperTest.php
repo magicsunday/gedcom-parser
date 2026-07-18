@@ -590,17 +590,26 @@ class GedcomObjectMapperTest extends TestCase
     }
 
     /**
-     * A substructure at a skipped level (more than one below its parent) is dropped rather than
-     * mis-attributed to the record.
+     * A substructure at a skipped level (more than one below its parent) is not attributed to the
+     * record, but is preserved verbatim rather than dropped (#208).
+     *
+     * The level number is the only thing that says where a line belongs, so a skip is malformed and
+     * must not reach the typed field it would otherwise have matched. That was already true; what it
+     * used to cost was the line itself, which made this the one branch of the loop with no
+     * preservation beside it.
      */
     #[Test]
-    public function dropsASubstructureAtASkippedLevel(): void
+    public function preservesASubstructureAtASkippedLevelWithoutAttributingIt(): void
     {
         // The PHON sits at level 2 directly under the level-0 record, skipping level 1.
         $record = $this->mapSubmitter("0 @SUBM1@ SUBM\n2 PHON 555-9999\n1 NAME John Doe\n0 TRLR\n");
 
         self::assertSame('John Doe', $record->name);
         self::assertSame([], $record->phon, 'the level-skipped PHON is not attributed to the submitter');
+
+        self::assertCount(1, $record->unknown, 'the level-skipped PHON is kept rather than dropped');
+        self::assertSame('PHON', $record->unknown[0]->tag);
+        self::assertSame('555-9999', $record->unknown[0]->value);
     }
 
     /**

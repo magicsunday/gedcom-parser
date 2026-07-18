@@ -47,9 +47,10 @@ use function strtolower;
  * The property name is the lowercased tag (`NAME` becomes `name`); standard GEDCOM tags are
  * uppercase, so distinct tags never collide. A tag that the schema splits into an inline-value
  * and a cross-reference-pointer variant (`NOTE`, `SOUR`, `OBJE`, `REPO`) shares one property; the
- * variant is disambiguated by whether the parsed line carries a pointer. A child whose level is
- * not exactly the parent's level plus one is skipped, enforcing the substructure-nesting rule the
- * version-agnostic tree builder deliberately leaves to this layer.
+ * variant is disambiguated by whether the parsed line carries a pointer. A child whose level is not
+ * exactly the parent's level plus one does not reach the field its tag would have matched, enforcing
+ * the substructure-nesting rule the version-agnostic tree builder deliberately leaves to this layer;
+ * it is preserved verbatim on the carrying object's `$unknown` rather than dropped.
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
  * @license https://opensource.org/licenses/MIT
@@ -555,9 +556,22 @@ final readonly class GedcomObjectMapper
         $collections = [];
 
         foreach ($node->children as $child) {
-            // A substructure must sit exactly one level below its parent; a deeper child is a
-            // malformed level skip and is dropped rather than mis-attributed.
+            // A substructure must sit exactly one level below its parent. Both grammars enclose a
+            // line in the nearest preceding line ONE level shallower, so a deeper child has no
+            // enclosing structure at all — not a different one. It therefore must not reach the
+            // field its tag would otherwise have matched, since attributing it would invent a
+            // nesting the file never expressed. It is still something the file said, so it is
+            // preserved verbatim with its whole subtree rather than dropped, as every other way a
+            // child can fail to reach a typed field already is.
+            //
+            // Which container it lands on — the nearest preceding shallower line, whatever the tree
+            // builder nested it under — is a lenient recovery rather than a spec-derived answer, and
+            // the level that made the line malformed is not carried into the preserved copy (#212).
+            // A continuation whose level skips arrives here too, as a pseudo-structure that could
+            // not be folded; keeping it is still better than dropping it.
             if ($child->level !== ($node->level + 1)) {
+                $unknown[] = $this->rawShape($child);
+
                 continue;
             }
 
