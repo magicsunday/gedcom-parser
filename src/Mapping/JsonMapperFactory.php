@@ -29,7 +29,9 @@ use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 
 use function array_key_exists;
+use function array_map;
 use function get_debug_type;
+use function in_array;
 use function is_array;
 use function is_string;
 use function sprintf;
@@ -370,6 +372,10 @@ final class JsonMapperFactory
      * substructure, so its shaped node is an array; the place name is resolved as a leaf value and
      * the FORM hierarchy passed through so the value object can map the jurisdiction labels.
      *
+     * A MAP that could not be typed is preserved on the place's own `$unknown`. It is appended
+     * there rather than kept in source order among the other diverted substructures: the shape does
+     * not record where a child stood, so its position among its siblings is not recoverable.
+     *
      * @param mixed       $value       The shaped PLAC payload (an array, or a plain string when form-less).
      * @param string|null $defaultForm The header-declared default hierarchy FORM (HEAD.PLAC.FORM), or NULL.
      *
@@ -382,6 +388,7 @@ final class JsonMapperFactory
         $name        = self::leafValue($value, 'PLAC');
         $form        = null;
         $coordinates = null;
+        $unreadable  = null;
 
         if (is_array($value)) {
             if (array_key_exists('form', $value)) {
@@ -393,14 +400,33 @@ final class JsonMapperFactory
                 $form      = trim($localForm) === '' ? null : $localForm;
             }
 
-            if (array_key_exists('map', $value)) {
+            // A MAP always shapes to an array: it declares the axis substructures, so the shaping
+            // recurses into it even when the line carries a payload where the axes belong.
+            if (array_key_exists('map', $value) && is_array($value['map'])) {
                 $coordinates = self::coordinatesFromShaped($value['map']);
+
+                // The substructures a MAP carries are preserved on the coordinates it builds, so a
+                // MAP that yields none — a missing or malformed axis, or a payload where the axes
+                // belong — would take everything it carried with it. Divert it to the place whole
+                // instead, the same contract any other unmodelled structure has. When the axes DO
+                // parse, only a payload on the MAP line itself is left over, since the specification
+                // gives MAP none; that alone is diverted, so the axes are not repeated beside the
+                // position they built.
+                $unreadable = $coordinates instanceof MapCoordinates
+                    ? self::strayMapPayload($value['map'])
+                    : self::unreadableCoordinates($value['map']);
             }
+        }
+
+        $unknown = self::unknownFromShaped($value);
+
+        if ($unreadable instanceof RawSubstructure) {
+            $unknown[] = $unreadable;
         }
 
         // A place carrying no FORM of its own inherits the header default: in GEDCOM 5.5.1 the
         // hierarchy is normally declared once as HEAD.PLAC.FORM, so a per-place FORM is the exception.
-        return PlaceValue::fromGedcom($name, $form ?? $defaultForm, $coordinates, self::unknownFromShaped($value));
+        return PlaceValue::fromGedcom($name, $form ?? $defaultForm, $coordinates, $unknown);
     }
 
     /**
@@ -408,19 +434,15 @@ final class JsonMapperFactory
      * required LATI/LONG leaves, so it is shaped as an array; each axis is resolved as a leaf value
      * and handed to the value object, which returns NULL when either axis is malformed or absent.
      *
-     * @param mixed $map The shaped MAP payload (an array carrying the LATI/LONG leaves)
+     * @param array<array-key, mixed> $map The shaped MAP payload (an array carrying the LATI/LONG leaves)
      *
      * @return MapCoordinates|null The parsed coordinates, or NULL when the MAP is incomplete or
      *                             malformed
      *
      * @throws MappingException When a LATI/LONG leaf is itself mis-shaped.
      */
-    private static function coordinatesFromShaped(mixed $map): ?MapCoordinates
+    private static function coordinatesFromShaped(array $map): ?MapCoordinates
     {
-        if (!is_array($map)) {
-            return null;
-        }
-
         if (!array_key_exists('lati', $map) || !array_key_exists('long', $map)) {
             return null;
         }
@@ -430,6 +452,91 @@ final class JsonMapperFactory
             self::leafValue($map['long'], 'LONG'),
             self::unknownFromShaped($map),
         );
+    }
+
+    /**
+     * Rebuilds a MAP that yielded no coordinates as a raw substructure, so what it carried survives
+     * on the place instead of falling away with the position that could not be built (#188).
+     *
+     * The axes are put back whether they were absent, malformed or out of range: an axis the grammar
+     * rejected is still what the file said, and on this path nothing else preserves it. An axis
+     * rebuilt from its typed key comes first, in the canonical latitude-then-longitude order rather
+     * than the order the file used — the shape does not record the position of a child, so the
+     * source order cannot be recovered here. An axis that was already diverted as a carrier keeps
+     * its place among the preserved substructures that follow.
+     *
+     * @param array<array-key, mixed> $map The shaped MAP payload.
+     *
+     * @return RawSubstructure The MAP as written.
+     *
+     * @throws MappingException When an axis leaf is itself mis-shaped.
+     */
+    private static function unreadableCoordinates(array $map): RawSubstructure
+    {
+        $preserved = self::unknownFromShaped($map);
+        $carried   = array_map(
+            static fn (RawSubstructure $entry): string => $entry->tag . "\0" . ($entry->value ?? ''),
+            $preserved
+        );
+        $children = [];
+
+        foreach (['lati' => 'LATI', 'long' => 'LONG'] as $key => $tag) {
+            if (!array_key_exists($key, $map)) {
+                continue;
+            }
+
+            // A value-less axis carries no line value; the grammar helper resolves it to the empty
+            // string, which is not what a raw substructure means by "no value".
+            $axis  = self::leafValue($map[$key], $tag);
+            $value = $axis === '' ? null : $axis;
+
+            // An axis line bearing substructures of its own was already diverted whole by the
+            // shaping, and that carrier repeats the axis value; rebuilding the axis from its typed
+            // key as well would write the line twice. The match is on the value too, not the tag
+            // alone: when the same axis appears more than once, the carrier belongs to a different
+            // occurrence than the typed key holds, and skipping on the tag would delete that one.
+            if (in_array($tag . "\0" . ($value ?? ''), $carried, true)) {
+                continue;
+            }
+
+            $children[] = new RawSubstructure($tag, $value);
+        }
+
+        foreach ($preserved as $entry) {
+            $children[] = $entry;
+        }
+
+        return new RawSubstructure(
+            'MAP',
+            self::nullableString($map['value'] ?? null),
+            self::nullableString($map['xref'] ?? null),
+            $children,
+        );
+    }
+
+    /**
+     * Preserves a payload a MAP line carries of its own, for the case where the axes beneath it DO
+     * build a position.
+     *
+     * The specification gives MAP no payload, so a value or a pointer on that line is malformed
+     * input the coordinates have nowhere to hold. It would otherwise be the one part of a MAP that
+     * survives when the axes fail and is dropped when they succeed.
+     *
+     * @param array<array-key, mixed> $map The shaped MAP payload.
+     *
+     * @return RawSubstructure|null The payload as a raw MAP, or NULL when the line carried none.
+     */
+    private static function strayMapPayload(array $map): ?RawSubstructure
+    {
+        $value = self::nullableString($map['value'] ?? null);
+        $xref  = self::nullableString($map['xref'] ?? null);
+
+        if (($value === null) && ($xref === null)) {
+            return null;
+        }
+
+        // The axes were consumed into the position, so only the stray payload is left to preserve.
+        return new RawSubstructure('MAP', $value, $xref);
     }
 
     /**
