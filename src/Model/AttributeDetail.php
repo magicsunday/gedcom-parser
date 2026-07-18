@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Model;
 
 // jscpd:ignore-start — the shared imports and constructor tail coincide with the sibling detail model's; identical boilerplate, not real duplication.
+use MagicSunday\Gedcom\Model\Substructure\Common\Address;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
@@ -51,6 +52,7 @@ final readonly class AttributeDetail
      * @param string|null           $reli    The religious affiliation (RELI), or NULL when absent.
      * @param list<Note>            $note    The notes on the attribute (NOTE).
      * @param list<string>          $phon    The phone numbers (PHON); empty when none.
+     * @param Address|null          $addr    The postal address the attribute applies at (ADDR), or NULL when absent.
      * @param list<string>          $email   The email addresses (EMAIL); empty when none.
      * @param list<string>          $fax     The fax numbers (FAX); empty when none.
      * @param list<string>          $www     The web pages (WWW); empty when none.
@@ -75,6 +77,7 @@ final readonly class AttributeDetail
         public ?string $reli = null,
         public array $note = [],
         public array $phon = [],
+        public ?Address $addr = null,
         public array $email = [],
         public array $fax = [],
         public array $www = [],

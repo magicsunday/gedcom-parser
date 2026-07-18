@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Model;
 
+use MagicSunday\Gedcom\Model\Substructure\Common\Address;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\EventFamilyChild;
 use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
@@ -55,6 +56,7 @@ final readonly class EventDetail
      * @param list<string>          $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<string>          $uid     The GEDCOM 7.0 unique identifiers (UID); empty when none.
      * @param list<MultimediaLink>  $obje    The multimedia links tied to the event (OBJE).
+     * @param Address|null          $addr    The postal address the event took place at (ADDR), or NULL when absent.
      * @param EventFamilyChild|null $famc    The family the child belongs to (FAMC) on a birth, christening or adoption event, or NULL when absent.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
@@ -79,6 +81,7 @@ final readonly class EventDetail
         public array $snote = [],
         public array $uid = [],
         public array $obje = [],
+        public ?Address $addr = null,
         public ?EventFamilyChild $famc = null,
         public array $unknown = [],
     ) {

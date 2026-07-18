@@ -17,6 +17,7 @@ use MagicSunday\Gedcom\Mapping\GedcomVersionDetector;
 use MagicSunday\Gedcom\Mapping\JsonMapperFactory;
 use MagicSunday\Gedcom\Mapping\RecordStream;
 use MagicSunday\Gedcom\Model\ChangeDate;
+use MagicSunday\Gedcom\Model\ChildToFamilyLink;
 use MagicSunday\Gedcom\Model\EventDetail;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Model\IndividualRecord;
@@ -37,11 +38,13 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
+use function array_keys;
+
 /**
  * The recognised-but-unmodelled preservation now recurses into modelled nested containers: a tag the
- * schema permits under a modelled substructure (e.g. `ADDR` under a birth event, which
- * {@see EventDetail} does not model) is preserved on that nested object's own `$unknown` list rather
- * than dropped — while a value-object leaf (`DATE`/`PLAC`/`AGE`, hydrated by a type handler from its
+ * schema permits under a modelled substructure (e.g. the child-to-family status `STAT`, which
+ * {@see ChildToFamilyLink} does not model) is preserved on that nested object's own `$unknown` list
+ * rather than dropped — while a value-object leaf (`DATE`/`PLAC`/`AGE`, hydrated by a type handler from its
  * raw payload) is NOT shaped class-aware, so its own substructures are never wrongly diverted (#143).
  *
  * @author  Rico Sonntag <mail@ricosonntag.de>
@@ -63,6 +66,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(GedcomVersion::class)]
 #[UsesClass(GedcomDocument::class)]
 #[UsesClass(IndividualRecord::class)]
+#[UsesClass(ChildToFamilyLink::class)]
 #[UsesClass(EventDetail::class)]
 #[UsesClass(ChangeDate::class)]
 #[UsesClass(Note::class)]
@@ -72,22 +76,46 @@ use PHPUnit\Framework\TestCase;
 class NestedUnmodelledPreservationTest extends TestCase
 {
     /**
-     * A tag recognised under a modelled event but not modelled by the event is preserved on the
-     * event's own `$unknown` list, not dropped.
+     * A tag recognised under a modelled container but not modelled by it is preserved on that
+     * container's own `$unknown` list, not dropped.
      */
     #[Test]
-    public function preservesARecognisedButUnmodelledTagUnderAModelledEvent(): void
+    public function preservesARecognisedButUnmodelledTagUnderAModelledContainer(): void
     {
         $individual = $this->parse(
-            "0 @I1@ INDI\n1 BIRT\n2 DATE 1 JAN 1900\n2 ADDR 123 Main St\n0 TRLR\n"
+            "0 @I1@ INDI\n1 FAMC @F1@\n2 PEDI birth\n2 STAT CHALLENGED\n0 TRLR\n"
         )->individuals[0];
 
-        self::assertCount(1, $individual->birt);
+        self::assertCount(1, $individual->famc);
         self::assertSame([], $individual->unknown);
 
-        $byTag = $this->byTag($individual->birt[0]->unknown);
-        self::assertArrayHasKey('ADDR', $byTag);
-        self::assertSame('123 Main St', $byTag['ADDR']->value);
+        // The modelled sibling must still be consumed: diverting everything would pass a bare
+        // "STAT was preserved" assertion while the container had stopped typing altogether.
+        self::assertSame('birth', $individual->famc[0]->pedi);
+
+        $byTag = $this->byTag($individual->famc[0]->unknown);
+        self::assertSame(['STAT'], array_keys($byTag), 'Only the unmodelled tag is diverted.');
+        self::assertSame('CHALLENGED', $byTag['STAT']->value);
+    }
+
+    /**
+     * The same holds under GEDCOM 7.0, where the status is a separate registry structure. The
+     * modelled sibling asserted here is the pointer rather than the pedigree, because the GEDCOM 7.0
+     * pedigree does not currently type at all (see issue #183).
+     */
+    #[Test]
+    public function preservesARecognisedButUnmodelledTagUnderAModelledContainerInGedcom7(): void
+    {
+        $individual = $this->parse(
+            "0 @I1@ INDI\n1 FAMC @F1@\n2 STAT CHALLENGED\n0 TRLR\n",
+            '7.0'
+        )->individuals[0];
+
+        self::assertSame('F1', $individual->famc[0]->xref);
+
+        $byTag = $this->byTag($individual->famc[0]->unknown);
+        self::assertSame(['STAT'], array_keys($byTag));
+        self::assertSame('CHALLENGED', $byTag['STAT']->value);
     }
 
     /**
@@ -172,13 +200,15 @@ class NestedUnmodelledPreservationTest extends TestCase
     /**
      * Parses the given individual body into the typed document.
      *
-     * @param string $body The GEDCOM records after the header.
+     * @param string $body    The GEDCOM records after the header.
+     * @param string $version The GEDCOM version to declare in the header.
      *
      * @return GedcomDocument The parsed document.
      */
-    private function parse(string $body): GedcomDocument
+    private function parse(string $body, string $version = '5.5.1'): GedcomDocument
     {
-        $gedcom = "0 HEAD\n1 GEDC\n2 VERS 5.5.1\n1 CHAR ASCII\n" . $body;
+        $charset = $version === '5.5.1' ? "1 CHAR ASCII\n" : '';
+        $gedcom  = "0 HEAD\n1 GEDC\n2 VERS " . $version . "\n" . $charset . $body;
 
         $stream = (new StreamFactory())->createStream($gedcom);
         $stream->rewind();
