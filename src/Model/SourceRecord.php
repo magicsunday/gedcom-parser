@@ -13,6 +13,7 @@ namespace MagicSunday\Gedcom\Model;
 
 use MagicSunday\Gedcom\Model\Substructure\Common\UserReference;
 use MagicSunday\Gedcom\Model\Substructure\Source\RepositoryCitation;
+use MagicSunday\Gedcom\Model\Substructure\Source\SourceRecordData;
 use MagicSunday\Gedcom\ValueObject\RawSubstructure;
 
 /**
@@ -36,6 +37,7 @@ final readonly class SourceRecord
      * @param string|null              $publ    The publication facts (PUBL), or NULL when absent.
      * @param string|null              $abbr    The short abbreviated title (ABBR), or NULL when absent.
      * @param string|null              $text    The verbatim source text (TEXT), or NULL when absent.
+     * @param SourceRecordData|null    $data    The data block describing what the source records (DATA), or NULL when absent.
      * @param list<Note>               $note    The record-level notes (NOTE).
      * @param list<string>             $snote   The GEDCOM 7.0 shared-note cross-reference pointers (SNOTE); empty when none.
      * @param list<UserReference>      $refn    The user reference numbers (REFN); empty when none.
@@ -53,6 +55,7 @@ final readonly class SourceRecord
         public ?string $publ = null,
         public ?string $abbr = null,
         public ?string $text = null,
+        public ?SourceRecordData $data = null,
         // jscpd:ignore-start — the shared record-metadata constructor tail coincides with the sibling record's; identical boilerplate, not real duplication.
         public array $note = [],
         public array $snote = [],

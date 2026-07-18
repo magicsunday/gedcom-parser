@@ -327,10 +327,15 @@ notes (`NOTE`) and source citations (`SOUR`), submitter and research-interest po
 LDS ordinances (`BAPL`/`CONL`/`ENDL`/`INIL`/`SLGC`/`SLGS`), aliases (`ALIA`), the version-aware child
 count (`FAM`.`NCHI`), user reference numbers (`REFN`), multimedia links (`OBJE`, pointer form),
 shared-note pointers (`SNOTE`), the restriction notice (`RESN`), the generic events and facts
-(`EVEN`/`FACT`) and, on a birth, christening or adoption event, the family the child belongs to
-(`FAMC`, with the adopting parent) — each a typed value object or list.
+(`EVEN`/`FACT`), the source record's data block (`DATA`, with the events it records) and, on a birth,
+christening or adoption event, the family the child belongs to (`FAMC`, with the adopting parent) —
+each a typed value object or list.
 Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
-than dropped, so a later release can type them without losing anything today.
+than dropped, so a later release can type them without losing anything today. Where a tag the model
+types as a plain value nonetheless carries substructures of its own, those descendants appear on
+`$unknown` beneath a carrier bearing that tag, which holds no value itself. The one current
+exception is the GEDCOM 7.0 `PLAC` structure, whose own substructures are neither typed nor preserved
+(see issue #179).
 
 ### Run tests
 All PHP tooling runs through the build container. Run the full check with
