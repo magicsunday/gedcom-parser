@@ -330,9 +330,9 @@ shared-note pointers (`SNOTE`), the restriction notice (`RESN`), the generic eve
 (`EVEN`/`FACT`), the source record's data block (`DATA`, with the events it records), the structured
 postal address (`ADDR`, with its city, state, postal code and country) and, on a birth, christening
 or adoption event, the family the child belongs to (`FAMC`, with the adopting parent) — each a typed
-value object or list. With the address in place, every substructure the schema permits on an
-individual's event and attribute detail is typed; a family event's `HUSB`/`WIFE` age blocks remain on
-`$unknown`.
+value object or list. A family's events and attributes additionally expose the two partners' ages at
+them (`HUSB`.`AGE` and `WIFE`.`AGE`). With these, every substructure the schema permits on an event or
+attribute detail is typed, in both GEDCOM versions.
 Substructures not yet modelled are preserved verbatim on the carrying object's `$unknown` list rather
 than dropped, so a later release can type them without losing anything today. Where a tag the model
 types as a plain value nonetheless carries substructures of its own, those descendants appear on

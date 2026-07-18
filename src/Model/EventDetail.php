@@ -15,6 +15,7 @@ use MagicSunday\Gedcom\Model\Substructure\Common\Address;
 use MagicSunday\Gedcom\Model\Substructure\Common\Association;
 use MagicSunday\Gedcom\Model\Substructure\Common\EventFamilyChild;
 use MagicSunday\Gedcom\Model\Substructure\Common\MultimediaLink;
+use MagicSunday\Gedcom\Model\Substructure\Common\SpouseAge;
 use MagicSunday\Gedcom\Model\Substructure\Source\SourceCitation;
 use MagicSunday\Gedcom\ValueObject\AgeValue;
 use MagicSunday\Gedcom\ValueObject\DateValue;
@@ -58,6 +59,8 @@ final readonly class EventDetail
      * @param list<MultimediaLink>  $obje    The multimedia links tied to the event (OBJE).
      * @param Address|null          $addr    The postal address the event took place at (ADDR), or NULL when absent.
      * @param EventFamilyChild|null $famc    The family the child belongs to (FAMC) on a birth, christening or adoption event, or NULL when absent.
+     * @param SpouseAge|null        $husb    The husband's age at a family event (HUSB), or NULL when absent.
+     * @param SpouseAge|null        $wife    The wife's age at a family event (WIFE), or NULL when absent.
      * @param list<RawSubstructure> $unknown Substructures the typed model did not consume (extension and out-of-schema tags), preserved verbatim.
      */
     public function __construct(
@@ -83,6 +86,8 @@ final readonly class EventDetail
         public array $obje = [],
         public ?Address $addr = null,
         public ?EventFamilyChild $famc = null,
+        public ?SpouseAge $husb = null,
+        public ?SpouseAge $wife = null,
         public array $unknown = [],
     ) {
     }
