@@ -29,24 +29,27 @@ use function trim;
 final readonly class MapCoordinates
 {
     /**
-     * @param float $latitude  The latitude in signed decimal degrees (north positive, south negative)
-     * @param float $longitude The longitude in signed decimal degrees (east positive, west negative)
+     * @param float                 $latitude  The latitude in signed decimal degrees (north positive, south negative)
+     * @param float                 $longitude The longitude in signed decimal degrees (east positive, west negative)
+     * @param list<RawSubstructure> $unknown   Substructures the coordinate grammar does not read, preserved verbatim.
      */
     public function __construct(
         public float $latitude,
         public float $longitude,
+        public array $unknown = [],
     ) {
     }
 
     /**
      * Parses a raw GEDCOM MAP latitude/longitude pair into typed coordinates.
      *
-     * @param string $latitude  The raw LATI payload, e.g. `N42.3601`.
-     * @param string $longitude The raw LONG payload, e.g. `W71.0589`.
+     * @param string                $latitude  The raw LATI payload, e.g. `N42.3601`.
+     * @param string                $longitude The raw LONG payload, e.g. `W71.0589`.
+     * @param list<RawSubstructure> $unknown   Substructures the coordinate grammar does not read, preserved verbatim.
      *
      * @return self|null The parsed coordinates, or NULL when either axis is malformed or absent.
      */
-    public static function fromGedcom(string $latitude, string $longitude): ?self
+    public static function fromGedcom(string $latitude, string $longitude, array $unknown = []): ?self
     {
         $parsedLatitude  = self::parseAxis($latitude, 'N', 'S', 90.0);
         $parsedLongitude = self::parseAxis($longitude, 'E', 'W', 180.0);
@@ -55,7 +58,7 @@ final readonly class MapCoordinates
             return null;
         }
 
-        return new self($parsedLatitude, $parsedLongitude);
+        return new self($parsedLatitude, $parsedLongitude, $unknown);
     }
 
     /**
