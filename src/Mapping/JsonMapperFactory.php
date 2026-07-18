@@ -51,7 +51,9 @@ final class JsonMapperFactory
 {
     /**
      * The value-object leaf types whose handler parses substructures the type does NOT expose as
-     * same-named constructor properties (a `DATE`'s `TIME`/`PHRASE`, a `PLAC`'s `MAP`/`LATI`/`LONG`).
+     * same-named constructor properties (a `DATE`'s `PHRASE`, a `PLAC`'s `MAP`/`LATI`/`LONG`). Which of
+     * a leaf's children its grammar actually reads is named in {@see HANDLER_CONSUMED_TAGS}; the rest
+     * are preserved on that leaf's own `$unknown` — a GEDCOM 7.0 `DATE`'s `TIME` among them.
      * The object mapper must not shape these class-aware, or a class-aware pass would divert that
      * handler input as an "unmodelled" tag and lose it. A modelled container that carries its own
      * `$unknown` list and whose handler reads it (such as {@see Note}) is deliberately NOT listed:
@@ -81,6 +83,33 @@ final class JsonMapperFactory
     public const array HANDLER_BACKED_TYPES = [
         ...self::LEAF_VALUE_TYPES,
         Note::class,
+    ];
+
+    /**
+     * The substructure tags each value-object leaf's grammar reads out of the shape it is given,
+     * keyed by that leaf.
+     *
+     * Such a leaf is shaped without knowing its target class, so the mapper cannot derive from the
+     * model which of its children the grammar will consume. Naming them here lets a child the
+     * grammar does not read be preserved on the leaf's own `$unknown` instead of falling away with
+     * the rest of the shape — a GEDCOM 7.0 place carries a language, translations and notes that the
+     * place grammar has no use for, and they must survive all the same.
+     *
+     * This keys {@see LEAF_VALUE_TYPES} only. A handler-backed type that IS shaped class-aware — a
+     * {@see Note} — derives its consumed tags from its own constructor and must not be listed here,
+     * or the two would drift apart. {@see RawSubstructure} is deliberately absent: it is never the
+     * target of a shaped child, only the carrier the preserved ones are rebuilt into.
+     *
+     * Adding a leaf to {@see LEAF_VALUE_TYPES} without an entry here would divert its grammar's own
+     * input away from it, so `LeafSubstructurePreservationTest` pins the two lists against each
+     * other.
+     *
+     * @var array<class-string, list<string>>
+     */
+    public const array HANDLER_CONSUMED_TAGS = [
+        PlaceValue::class => ['form', 'map'],
+        DateValue::class  => ['phrase'],
+        AgeValue::class   => ['phrase'],
     ];
 
     /**
@@ -133,7 +162,7 @@ final class JsonMapperFactory
         // A GEDCOM value-object leaf is parsed from its raw payload through its own grammar rather
         // than mapped field by field, so each is registered as a custom type. A leaf that also
         // declares substructures is shaped as an array carrying its own line value under the
-        // `value` key (a GEDCOM 7.0 DATE/AGE carries PHRASE/TIME; PLAC carries FORM), so each
+        // `value` key (a GEDCOM 7.0 DATE/AGE carries PHRASE; PLAC carries FORM), so each
         // handler resolves the leaf value from either a bare string or that shaped array.
         $mapper->addTypeHandler(
             new ClosureTypeHandler(
@@ -256,7 +285,7 @@ final class JsonMapperFactory
     /**
      * Resolves the string leaf payload of a value-object node. A leaf that also declares
      * substructures is shaped as an array carrying its own line value under the `value` key (a
-     * GEDCOM 7.0 DATE/AGE carries PHRASE/TIME), so the value is taken from that key; a value-less
+     * GEDCOM 7.0 DATE/AGE carries PHRASE), so the value is taken from that key; a value-less
      * leaf resolves to the empty string. A non-string, non-array payload is a mis-shape and fails
      * loud.
      *
