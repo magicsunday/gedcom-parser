@@ -414,6 +414,7 @@ final class JsonMapperFactory
         return MapCoordinates::fromGedcom(
             self::leafValue($map['lati'], 'LATI'),
             self::leafValue($map['long'], 'LONG'),
+            self::unknownFromShaped($map),
         );
     }
 

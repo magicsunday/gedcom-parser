@@ -195,6 +195,31 @@ class LeafSubstructurePreservationTest extends TestCase
     }
 
     /**
+     * The preservation reaches a leaf nested inside another: a child of the coordinates beneath a
+     * place is kept on the coordinates' own `$unknown`, while the axes their grammar reads still
+     * build the position.
+     */
+    #[Test]
+    public function preservesTheCoordinateSubstructuresTheGrammarDoesNotRead(): void
+    {
+        $place = $this->parse(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston\n3 MAP\n4 LATI N42.3\n4 LONG W71.0\n"
+            . "4 _SRC surveyed\n0 TRLR\n",
+            '7.0'
+        )->individuals[0]->birt[0]->plac;
+
+        self::assertInstanceOf(PlaceValue::class, $place);
+
+        $coordinates = $place->coordinates;
+        self::assertInstanceOf(MapCoordinates::class, $coordinates);
+        self::assertSame(42.3, $coordinates->latitude, 'The axes still reach the coordinate grammar.');
+        self::assertSame(-71.0, $coordinates->longitude);
+
+        self::assertSame(['_SRC'], $this->tags($coordinates->unknown));
+        self::assertSame('surveyed', $coordinates->unknown[0]->value);
+    }
+
+    /**
      * Every value-object leaf must name the tags its grammar reads, or the mapper would divert that
      * grammar's own input away from it — the very loss this preservation exists to prevent.
      */
