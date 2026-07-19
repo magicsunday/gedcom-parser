@@ -39,7 +39,7 @@
         "ext-mbstring": "*",
         "ext-zip": "*",
         "magicsunday/jsonmapper": "^3.1",
-        "phpdocumentor/reflection-docblock": "^5.0",
+        "phpdocumentor/reflection-docblock": "^5.0 || ^6.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0 || ^2.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
@@ -49,7 +49,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.85",
-        "infection/infection": "^0.32",
+        "infection/infection": "^0.32 || ^0.34",
         "overtrue/phplint": "^9.0",
         "phpat/phpat": "^0.12.4",
         "phpstan/phpstan": "^2.0",
