@@ -134,7 +134,7 @@ repositories, so a difference here is a defect rather than a local rule):**
 * ✅ **Full reviewer audit loop** run and converged (see §4).
 * ✅ Conformance claims verified against `docs/spec/`.
 * ✅ `README.md` / docs updated when behaviour or the public API changes.
-* ✅ Tracking issue updated; the issue is linked/closed from the commit (`GH-<N>: …`).
+* ✅ Tracking issue updated; the PR body closes it (`Closes #<N>`).
 
 ---
 
