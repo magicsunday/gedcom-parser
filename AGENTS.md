@@ -85,12 +85,37 @@ GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3
 (so `cpd` finds no duplicates), and the former `continue-on-error` on `phpstan` / `cpd`
 is gone.
 
-**Git flow (house rules — override any sibling AGENTS.md that says otherwise):**
+**Git flow (the shared magicsunday convention — identical across the sibling
+repositories, so a difference here is a defect rather than a local rule):**
 
 * **Branch naming: exactly `GH-<N>`** (bare issue number, no descriptive suffix).
-* **Commit subject: `GH-<N>: <Capital-verb imperative>`** (e.g. `GH-26: Tokenise
-  two-digit levels`). **No** Conventional-Commit prefixes (`feat:`/`fix:`/`chore:`…),
-  no lowercase starts. Commits and all dev-facing GitHub text are **English**.
+* **Commit subject:** a subject starting with `GH-` must match `^GH-\d+: [A-ZÄÖÜ]`;
+  every other subject must match `^[A-ZÄÖÜ]` — a capitalised imperative either way
+  (`GH-26: Tokenise two-digit levels`, or `Bump the composer group` for work that
+  belongs to no issue). The patterns check only the leading capital; two starts are
+  banned whatever their case: **Conventional-Commit prefixes** (`feat:`, `Fix:`,
+  `chore:`…) and path-like starts (`src/Reader.php: …`, `Src/Reader.php: …`).
+    * The two patterns are deliberately kept separate: `^(GH-\d+: )?[A-ZÄÖÜ]` (wrong)
+      stops enforcing the capital *after* the prefix, because the optional group can be
+      skipped and the `G` of `GH-` then satisfies `[A-ZÄÖÜ]` on its own —
+      `GH-12: fix typo` would pass. Keying on the subject rather than on the branch
+      also keeps this check decidable for commits already on `main`, where the issue
+      branch no longer exists.
+    * The same two patterns apply to the **pull-request title**, which under
+      squash-merge is the subject that reaches `main`.
+    * The normative definition lives in
+      `magicsunday/.github/.github/workflows/commit-convention.yml@main`, which
+      self-tests a decision table before applying it. No workflow here calls that gate,
+      so the rule in this repository is documentation only; wherever it is wired, the
+      workflow is authoritative and this text is what gets fixed.
+* The `GH-<N>: ` prefix marks work that belongs to the issue — a commit on that branch
+  whose concern is something else (a drive-by lint fix, a dependency bump) keeps its own
+  unprefixed subject. Merge and revert commits keep the subject git generates. Not every
+  git-written subject is exempt, though: `fixup!` and `squash!` start lowercase and
+  violate the rule, so autosquash them before opening the PR.
+* The PR body closes the issue with a `Closes #<N>` keyword. The `GH-<N>: ` subject
+  prefix is not a GitHub link and closes nothing.
+* Commits and all dev-facing GitHub text are **English**.
 * **Never** add a `Co-Authored-By:` trailer.
 * Granular, logical commits — one concern each; style/CGL fixes separate from features.
 * `ci:test` green **before every commit**. Commit only verified-working code.
