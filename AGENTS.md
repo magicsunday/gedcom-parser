@@ -92,17 +92,21 @@ repositories, so a difference here is a defect rather than a local rule):**
 * **Commit subject:** a subject starting with `GH-` must match `^GH-\d+: [A-ZÄÖÜ]`;
   every other subject must match `^[A-ZÄÖÜ]` — a capitalised imperative either way
   (`GH-26: Tokenise two-digit levels`, or `Bump the composer group` for work that
-  belongs to no issue). The patterns check only the leading capital; two starts are
-  banned whatever their case: **Conventional-Commit prefixes** (`feat:`, `Fix:`,
-  `chore:`…) and path-like starts (`src/Reader.php: …`, `Src/Reader.php: …`).
+  belongs to no issue). Those two patterns test only the leading capital; two starts
+  are rejected ahead of them, in any case, by checks of their own: a
+  **Conventional-Commit prefix** (`feat:`, `Fix:`, `chore:`… — the subject is
+  lowercased first, so a capital `Fix:` does not slip through) and a **path-like
+  start** (`src/Reader.php: …`, `Src/Reader.php: …` — a slash before the first colon).
     * The two patterns are deliberately kept separate: `^(GH-\d+: )?[A-ZÄÖÜ]` (wrong)
       stops enforcing the capital *after* the prefix, because the optional group can be
       skipped and the `G` of `GH-` then satisfies `[A-ZÄÖÜ]` on its own —
       `GH-12: fix typo` would pass. Keying on the subject rather than on the branch
       also keeps this check decidable for commits already on `main`, where the issue
       branch no longer exists.
-    * The same two patterns apply to the **pull-request title**, which under
-      squash-merge is the subject that reaches `main`.
+    * The gate checks the **pull-request title** as well, because under squash-merge
+      the title can become the subject on `main` — a multi-commit PR uses it, a
+      single-commit PR keeps that commit's own subject — so it must satisfy the same
+      rule either way.
     * The normative definition lives in
       `magicsunday/.github/.github/workflows/commit-convention.yml@main`, which
       self-tests a decision table before applying it. No workflow here calls that gate,
