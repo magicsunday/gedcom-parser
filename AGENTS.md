@@ -85,12 +85,41 @@ GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3
 (so `cpd` finds no duplicates), and the former `continue-on-error` on `phpstan` / `cpd`
 is gone.
 
-**Git flow (house rules — override any sibling AGENTS.md that says otherwise):**
+**Git flow (the shared magicsunday convention — identical across the sibling
+repositories, so a difference here is a defect rather than a local rule):**
 
 * **Branch naming: exactly `GH-<N>`** (bare issue number, no descriptive suffix).
-* **Commit subject: `GH-<N>: <Capital-verb imperative>`** (e.g. `GH-26: Tokenise
-  two-digit levels`). **No** Conventional-Commit prefixes (`feat:`/`fix:`/`chore:`…),
-  no lowercase starts. Commits and all dev-facing GitHub text are **English**.
+* **Commit subject:** a subject starting with `GH-` must match `^GH-\d+: [A-ZÄÖÜ]`;
+  every other subject must match `^[A-ZÄÖÜ]` — a capitalised imperative either way
+  (`GH-26: Tokenise two-digit levels`, or `Bump the composer group` for work that
+  belongs to no issue). Those two patterns test only the leading capital; two starts
+  are rejected ahead of them, in any case, by checks of their own: a
+  **Conventional-Commit prefix** (`feat:`, `Fix:`, `chore:`… — the subject is
+  lowercased first, so a capital `Fix:` does not slip through) and a **path-like
+  start** (`src/Reader.php: …`, `Src/Reader.php: …` — a slash before the first colon).
+    * The two patterns are deliberately kept separate: `^(GH-\d+: )?[A-ZÄÖÜ]` (wrong)
+      stops enforcing the capital *after* the prefix, because the optional group can be
+      skipped and the `G` of `GH-` then satisfies `[A-ZÄÖÜ]` on its own —
+      `GH-12: fix typo` would pass. Keying on the subject rather than on the branch
+      also keeps this check decidable for commits already on `main`, where the issue
+      branch no longer exists.
+    * The gate checks the **pull-request title** as well, because under squash-merge
+      the title can become the subject on `main` — a multi-commit PR uses it, a
+      single-commit PR keeps that commit's own subject — so it must satisfy the same
+      rule either way.
+    * The normative definition lives in
+      `magicsunday/.github/.github/workflows/commit-convention.yml@main`, which
+      self-tests a decision table before applying it. No workflow here calls that gate,
+      so the rule in this repository is documentation only; wherever it is wired, the
+      workflow is authoritative and this text is what gets fixed.
+* The `GH-<N>: ` prefix marks work that belongs to the issue — a commit on that branch
+  whose concern is something else (a drive-by lint fix, a dependency bump) keeps its own
+  unprefixed subject. Merge and revert commits keep the subject git generates. Not every
+  git-written subject is exempt, though: `fixup!` and `squash!` start lowercase and
+  violate the rule, so autosquash them before opening the PR.
+* The PR body closes the issue with a `Closes #<N>` keyword. The `GH-<N>: ` subject
+  prefix is not a GitHub link and closes nothing.
+* Commits and all dev-facing GitHub text are **English**.
 * **Never** add a `Co-Authored-By:` trailer.
 * Granular, logical commits — one concern each; style/CGL fixes separate from features.
 * `ci:test` green **before every commit**. Commit only verified-working code.
@@ -109,7 +138,7 @@ is gone.
 * ✅ **Full reviewer audit loop** run and converged (see §4).
 * ✅ Conformance claims verified against `docs/spec/`.
 * ✅ `README.md` / docs updated when behaviour or the public API changes.
-* ✅ Tracking issue updated; the issue is linked/closed from the commit (`GH-<N>: …`).
+* ✅ Tracking issue updated; the PR body closes it (`Closes #<N>`).
 
 ---
 
