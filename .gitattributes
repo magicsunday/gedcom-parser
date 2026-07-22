@@ -1,4 +1,5 @@
 # Keep development-only files out of the Composer / `git archive` distribution.
+/.coderabbit.yaml      export-ignore
 # Runtime consumers get src/, composer.json, LICENSE, README.md and the machine-readable
 # GEDCOM registry (runtime data the schema loader compiles) only.
 
