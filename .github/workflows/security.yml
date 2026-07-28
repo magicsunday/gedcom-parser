@@ -16,6 +16,13 @@ jobs:
         permissions:
             contents: read
             security-events: write
+        with:
+            # The vendored upstream specification exceeds the engine's default
+            # 1 MB target limit, so without this the scan reports it as a file
+            # it was given and could not read. Named exactly rather than by
+            # its directory: everything else under docs/spec scans fine, and
+            # excluding the directory would drop all of it from the report.
+            excludes: docs/spec/FamilySearchGEDCOMv7.pdf
 
     zizmor:
         uses: magicsunday/.github/.github/workflows/zizmor.yml@main
