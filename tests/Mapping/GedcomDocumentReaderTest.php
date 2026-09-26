@@ -326,7 +326,7 @@ class GedcomDocumentReaderTest extends TestCase
     public static function fixtureProvider(): array
     {
         $cases = [];
-        $files = glob(dirname(__DIR__) . '/files/*.ged');
+        $files = glob(__DIR__ . '/../files/*.ged');
 
         foreach ($files === false ? [] : $files as $file) {
             $cases[basename($file)] = [$file];
