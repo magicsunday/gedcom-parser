@@ -25,7 +25,6 @@ use function array_map;
 use function array_unique;
 use function basename;
 use function count;
-use function dirname;
 use function glob;
 
 /**
@@ -113,7 +112,7 @@ class ConformanceCorpusTest extends TestCase
      */
     public static function corpusFiles(): iterable
     {
-        $directory = dirname(__DIR__) . '/files';
+        $directory = __DIR__ . '/../files';
         $paths     = glob($directory . '/*.ged');
 
         if ($paths === false) {
