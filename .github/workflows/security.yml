@@ -16,6 +16,11 @@ jobs:
         permissions:
             contents: read
             security-events: write
+        # The vendored GEDCOM 7.0 spec PDF (1021433 bytes) is over Semgrep's
+        # 1 MB per-file limit, so the shared scan-completeness gate rejects its
+        # `exceeded_size_limit` skip unless it is declared here.
+        with:
+            excludes: 'docs/spec/FamilySearchGEDCOMv7.pdf'
 
     zizmor:
         uses: magicsunday/.github/.github/workflows/zizmor.yml@main
