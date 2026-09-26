@@ -290,6 +290,11 @@ class Reader
      * Reads the next line in the document.
      *
      * @return bool Returns TRUE on success or FALSE on failure.
+     *
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
      */
     public function read(): bool
     {
@@ -480,7 +485,7 @@ class Reader
         // and every downstream step operate on single-byte UTF-8.
         if (($this->encoding === self::ENCODING_UTF16LE) || ($this->encoding === self::ENCODING_UTF16BE)) {
             $this->rawPending .= $chunk;
-            $this->buffer .= $this->drainUtf16();
+            $this->buffer     .= $this->drainUtf16();
 
             return;
         }
@@ -493,6 +498,9 @@ class Reader
      * consumes a UTF-8 BOM. Runs once, before the first line is served.
      *
      * @return void
+     *
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
      */
     private function resolveEncoding(): void
     {
@@ -616,6 +624,9 @@ class Reader
      * buffer — the header is still tokenised normally afterwards.
      *
      * @return string The resolved ENCODING_* constant; ANSEL when no CHAR line is found.
+     *
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
      */
     private function sniffCharacterSet(): string
     {
@@ -677,6 +688,8 @@ class Reader
      * @param string $characterSet The raw CHAR value.
      *
      * @return string The matching ENCODING_* constant.
+     *
+     * @throws UnsupportedEncodingException When the declared character set is UNICODE without a BOM, which cannot be decoded byte-framed.
      */
     private static function normaliseEncoding(string $characterSet): string
     {

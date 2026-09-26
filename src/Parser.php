@@ -11,6 +11,11 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom;
 
+use MagicSunday\Gedcom\Exception\InputTooLargeException;
+use MagicSunday\Gedcom\Exception\LineTooLongException;
+use MagicSunday\Gedcom\Exception\MappingException;
+use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Mapping\GedcomDocumentReader;
 use MagicSunday\Gedcom\Model\FamilyRecord;
 use MagicSunday\Gedcom\Model\GedcomDocument;
@@ -59,7 +64,7 @@ final readonly class Parser
     /**
      * @param StreamInterface $stream   The GEDCOM stream to parse.
      * @param int|null        $maxBytes The maximum number of bytes to read before aborting with an
-     *                                  {@see Exception\InputTooLargeException},
+     *                                  {@see InputTooLargeException},
      *                                  or NULL for {@see Reader::DEFAULT_MAX_BYTES}. Lower it when
      *                                  parsing untrusted input.
      */
@@ -73,6 +78,12 @@ final readonly class Parser
      * Parses the GEDCOM stream into a typed aggregate.
      *
      * @return GedcomDocument The parsed document, its records grouped by type.
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws MappingException             When a record cannot be mapped.
      */
     public function parse(): GedcomDocument
     {

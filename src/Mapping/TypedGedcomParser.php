@@ -12,7 +12,11 @@ declare(strict_types=1);
 namespace MagicSunday\Gedcom\Mapping;
 
 use Generator;
+use MagicSunday\Gedcom\Exception\InputTooLargeException;
+use MagicSunday\Gedcom\Exception\LineTooLongException;
 use MagicSunday\Gedcom\Exception\MappingException;
+use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Model\GedcomDocument;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
@@ -83,6 +87,12 @@ final readonly class TypedGedcomParser
      *                                  for the reader's default. Lower it when parsing untrusted input.
      *
      * @return Generator<object>
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws MappingException             When a record cannot be mapped.
      */
     public function parse(StreamInterface $stream, ?int $maxBytes = null): Generator
     {
@@ -108,6 +118,12 @@ final readonly class TypedGedcomParser
      *                                  for the reader's default. Lower it when parsing untrusted input.
      *
      * @return GedcomDocument The populated aggregate.
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws MappingException             When a record cannot be mapped.
      */
     public function parseDocument(StreamInterface $stream, ?int $maxBytes = null): GedcomDocument
     {
@@ -133,7 +149,11 @@ final readonly class TypedGedcomParser
      *
      * @return Generator<object> The typed records in document order.
      *
-     * @throws MappingException When a record cannot be mapped.
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
+     * @throws MappingException             When a record cannot be mapped.
      */
     private function mapRecords(GedcomTreeReader $treeReader, GedcomNode $node, ?GedcomNode $header): Generator
     {
