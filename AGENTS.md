@@ -22,9 +22,9 @@ the machine-readable 7.0 YAML registry).
 * No `mixed`, no `empty()`, no nested ternaries. Prefer `final` classes and value objects.
 * One class per file; the test namespace mirrors the source tree (`MagicSunday\Gedcom\Test\…`).
 * PHPDoc + inline comments in **English**. Every method and constant gets a real docblock.
-  Note: this repo's php-cs-fixer (`@Symfony` → `phpdoc_annotation_without_dot`) **lowercases**
-  the first word of `@param`/`@return`/`@throws`/`@var` descriptions and drops the trailing
-  dot — follow that (run `composer ci:cgl`); do not "correct" them to capitalised.
+  The php-cs-fixer ruleset comes from `magicsunday/coding-standard` (`php-cs-fixer/base.php`),
+  which disables `phpdoc_annotation_without_dot`: `@param`/`@return`/`@throws`/`@var`
+  descriptions are no longer lowercased or stripped of their dot — run `composer ci:cgl`.
 * The parser is in-memory and read-only over a stream; do **not** add network/DB I/O.
 
 **Parser guardrails (conformance-critical)**
@@ -66,14 +66,19 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 
 **Composer scripts** (bin-dir `.build/bin`, vendor-dir `.build/vendor`):
 
-* `composer ci:test` — full local gate (lint + unit + phpstan + rector + cgl + cpd)
+* `composer ci:test` — full local gate (lint + unit + phpstan + rector + cgl + cpd + deptrac + templates)
 * `composer ci:test:php:lint` — `phplint`
 * `composer ci:test:php:unit` — PHPUnit
-* `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate; also runs
-  the `phpat` architecture rules in `tests/Architecture/ArchitectureTest.php`)
+* `composer ci:test:php:phpstan` — PHPStan (`level: max`, no baseline — a hard gate; config
+  extends `magicsunday/coding-standard`'s `phpstan/base.neon`, checked exceptions included)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
+* `composer ci:test:php:deptrac` — Deptrac layer boundaries (`deptrac.yaml`; imports the shared
+  `deptrac/layers.yaml` and adds this library's own layers — the former phpat rules)
+* `composer ci:test:php:templates` — `check-consumer-config.php`, keeps `phpunit.xml`,
+  `.jscpd.json`, `.phplint.yml`, `.editorconfig` and `deptrac.yaml` in step with the
+  coding-standard templates
 * `composer ci:test:php:mutation` — `infection` mutation testing (**local-only**, not in `ci.yml`;
   `minCoveredMsi: 70`, config in `infection.json5`)
 * `composer ci:cgl` — php-cs-fixer (apply)

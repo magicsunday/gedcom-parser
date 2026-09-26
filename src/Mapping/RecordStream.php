@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Mapping;
 
+use MagicSunday\Gedcom\Exception\InputTooLargeException;
+use MagicSunday\Gedcom\Exception\LineTooLongException;
+use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Parse\GedcomNode;
 use MagicSunday\Gedcom\Parse\GedcomTreeReader;
 use MagicSunday\Gedcom\Reader;
@@ -55,6 +59,11 @@ final readonly class RecordStream
      *                                  for the reader's default.
      *
      * @return self|null The opened record stream, or NULL when it is empty.
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
      */
     public static function open(StreamInterface $stream, ?int $maxBytes = null): ?self
     {

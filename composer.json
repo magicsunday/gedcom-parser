@@ -48,16 +48,8 @@
         "symfony/yaml": "^7.4 || ^8.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.85",
         "infection/infection": "^0.32 || ^0.34",
-        "overtrue/phplint": "^9.0",
-        "phpat/phpat": "^0.12.4",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^12.0",
-        "rector/rector": "^2.0"
+        "magicsunday/coding-standard": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -83,6 +75,9 @@
         "ci:test:php:cpd": [
             "npx --yes jscpd@^5.0.11 --config .jscpd.json --skip-comments --no-tips"
         ],
+        "ci:test:php:deptrac": [
+            "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache"
+        ],
         "ci:test:php:lint": [
             "phplint --configuration .phplint.yml"
         ],
@@ -96,6 +91,9 @@
         "ci:test:php:rector": [
             "@ci:rector --dry-run"
         ],
+        "ci:test:php:templates": [
+            "check-consumer-config.php ."
+        ],
         "ci:test:php:unit": [
             "phpunit --configuration phpunit.xml"
         ],
@@ -108,7 +106,9 @@
             "@ci:test:php:phpstan",
             "@ci:test:php:rector",
             "@ci:test:php:cgl",
-            "@ci:test:php:cpd"
+            "@ci:test:php:cpd",
+            "@ci:test:php:deptrac",
+            "@ci:test:php:templates"
         ],
         "post-update-cmd": [
             "npm install --prefix .build jscpd@^5.0.11"

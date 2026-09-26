@@ -37,8 +37,7 @@ class ReaderTest extends TestCase
     #[Test]
     public function openFileNotFound(): void
     {
-        $this->expectException(StreamException::class);
-        $this->expectExceptionMessage('The file ' . __DIR__ . '/files/file-note-found.ged cannot be opened.');
+        $this->expectExceptionObject(new StreamException('The file ' . __DIR__ . '/files/file-note-found.ged cannot be opened.'));
 
         (new StreamFactory())->createStreamFromFile(__DIR__ . '/files/file-note-found.ged');
     }
@@ -49,8 +48,7 @@ class ReaderTest extends TestCase
     #[Test]
     public function openWithInvalidFilename(): void
     {
-        $this->expectException(UnsupportedFileException::class);
-        $this->expectExceptionMessage('Can only read .ged files.');
+        $this->expectExceptionObject(new UnsupportedFileException('Can only read .ged files.'));
 
         new Reader((new StreamFactory())->createStreamFromFile(__DIR__ . '/files/not-supported-file.txt'));
     }

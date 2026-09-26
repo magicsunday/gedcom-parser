@@ -77,3 +77,13 @@ jobs:
               if: ${{ !cancelled() }}
               run: |
                   composer ci:test:php:cpd
+
+            - name: Deptrac
+              if: ${{ !cancelled() }}
+              run: |
+                  composer ci:test:php:deptrac
+
+            - name: Templates
+              if: ${{ !cancelled() }}
+              run: |
+                  composer ci:test:php:templates

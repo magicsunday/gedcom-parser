@@ -32,6 +32,8 @@ class StreamFactory implements StreamFactoryInterface
      * @param string $content String content with which to populate the stream.
      *
      * @return StreamInterface
+     *
+     * @throws StreamException If the content cannot be written to the temporary stream.
      */
     public function createStream(string $content = ''): StreamInterface
     {

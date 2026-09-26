@@ -1,18 +1,11 @@
 includes:
-    - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-strict-rules/rules.neon
-    - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-phpunit/extension.neon
-    - %currentWorkingDirectory%/.build/vendor/phpstan/phpstan-phpunit/rules.neon
-    - %currentWorkingDirectory%/.build/vendor/phpat/phpat/extension.neon
+    - %currentWorkingDirectory%/.build/vendor/magicsunday/coding-standard/phpstan/base.neon
 
 parameters:
-    # The typed-model refactor (GH-20) removed the untyped DataObject bag and its mixed-return
-    # errors, so the analysis now runs clean at the strictest level with no baseline.
-    level: max
-
-    # Report the failing rule method name (not just the class pair) when an architecture rule breaks.
-    phpat:
-        show_rule_names: true
+    # level: max and the rule packs (strict, deprecation, phpunit) come from the shared base.
+    phpVersion:
+        min: 80300
+        max: 80500
 
     tmpDir: %currentWorkingDirectory%/.build/cache/.phpstan.cache
 
@@ -24,15 +17,10 @@ parameters:
     excludePaths:
         - %currentWorkingDirectory%/.build/
 
-    fileExtensions:
-        - php
-
-    # Ignored validations
-    treatPhpDocTypesAsCertain: false
-
-services:
-    # Architecture rules enforced by phpat during the analysis (see tests/Architecture).
-    -
-        class: MagicSunday\Gedcom\Test\Architecture\ArchitectureTest
-        tags:
-            - phpat.test
+    ignoreErrors:
+        # A test method that calls a throwing API documents nothing by carrying @throws: PHPUnit
+        # catches whatever it throws and turns it into a failure (or an expectException pass).
+        # Checked-exception contracts are enforced on src/ and tools/, where callers depend on them.
+        -
+            identifier: missingType.checkedException
+            path: %currentWorkingDirectory%/tests/*

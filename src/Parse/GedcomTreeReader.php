@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace MagicSunday\Gedcom\Parse;
 
+use MagicSunday\Gedcom\Exception\InputTooLargeException;
+use MagicSunday\Gedcom\Exception\LineTooLongException;
+use MagicSunday\Gedcom\Exception\UnableToParseLineException;
+use MagicSunday\Gedcom\Exception\UnsupportedEncodingException;
 use MagicSunday\Gedcom\Reader;
 
 /**
@@ -54,6 +58,11 @@ final readonly class GedcomTreeReader
      * Reads the next level-0 record and its complete substructure subtree.
      *
      * @return GedcomNode|null The next record node, or NULL at end of stream.
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
      */
     public function readRecord(): ?GedcomNode
     {
@@ -69,6 +78,11 @@ final readonly class GedcomTreeReader
      * deeper line as a child and putting back the first line that is not part of this subtree.
      *
      * @return GedcomNode The node for the current line.
+     *
+     * @throws InputTooLargeException       When the source exceeds the configured byte cap.
+     * @throws LineTooLongException         If a single line exceeds the maximum permitted length.
+     * @throws UnableToParseLineException   If a line does not match the GEDCOM line grammar.
+     * @throws UnsupportedEncodingException When the declared character set cannot be decoded.
      */
     private function buildCurrentNode(): GedcomNode
     {

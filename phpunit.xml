@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Aligned with templates/phpunit.xml.dist of magicsunday/coding-standard; the
+    strictness flags are the house standard and are checked by
+    `composer ci:test:php:templates`.
+-->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation=".build/vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap=".build/vendor/autoload.php"
+         cacheDirectory=".build/cache/.phpunit.cache"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+         failOnPhpunitDeprecation="true"
+         failOnPhpunitNotice="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         executionOrder="depends,defects"
          colors="true"
          columns="max"
-         stderr="true"
-         bootstrap="./.build/vendor/autoload.php"
-         cacheDirectory=".build/cache/.phpunit.cache"
->
+         stderr="true">
     <testsuites>
-        <testsuite name="Integration Tests">
+        <testsuite name="Unit">
             <directory>tests</directory>
-            <!-- phpat architecture rules run inside PHPStan, not PHPUnit. -->
+            <!-- tests/Architecture holds rule classes (PHPStan or otherwise),
+                 never a PHPUnit test — exclude it unconditionally so PHPUnit
+                 does not warn on a non-TestCase. -->
             <exclude>tests/Architecture</exclude>
         </testsuite>
     </testsuites>
-    <source>
+
+    <source restrictNotices="true"
+            restrictWarnings="true"
+            ignoreIndirectDeprecations="true">
         <include>
-            <directory suffix=".php">src</directory>
+            <directory>src</directory>
         </include>
     </source>
 </phpunit>
