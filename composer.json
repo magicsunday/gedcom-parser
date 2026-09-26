@@ -76,7 +76,7 @@
             "npx --yes jscpd@^5.0.11 --config .jscpd.json --skip-comments --no-tips"
         ],
         "ci:test:php:deptrac": [
-            "deptrac analyse --no-progress"
+            "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache"
         ],
         "ci:test:php:lint": [
             "phplint --configuration .phplint.yml"
