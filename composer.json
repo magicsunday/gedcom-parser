@@ -49,7 +49,7 @@
     },
     "require-dev": {
         "infection/infection": "^0.32 || ^0.34",
-        "magicsunday/coding-standard": "^2.0"
+        "magicsunday/coding-standard": "^2.1"
     },
     "autoload": {
         "psr-4": {
