@@ -10,15 +10,10 @@
 declare(strict_types=1);
 
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
-use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
-use Rector\DeadCode\Rector\ClassMethod\RemoveUselessParamTagRector;
-use Rector\DeadCode\Rector\ClassMethod\RemoveUselessReturnTagRector;
 use Rector\DeadCode\Rector\Property\RemoveUselessVarTagRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
-use Rector\Set\ValueObject\LevelSetList;
-use Rector\Set\ValueObject\SetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\ParamTypeByMethodCallTypeRector;
 
 return static function (RectorConfig $rectorConfig): void {
@@ -44,35 +39,18 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->cacheDirectory($rectorCacheDirectory);
     $rectorConfig->containerCacheDirectory($rectorContainerCacheDirectory);
+    $rectorConfig->phpstanConfig(__DIR__ . '/phpstan.neon');
 
+    // The shared rule sets and skips; 80300 is this package's PHP floor.
+    (require __DIR__ . '/.build/vendor/magicsunday/coding-standard/rector/base.php')($rectorConfig, 80300);
+
+    // Package-local skips on top of the shared ones.
     $rectorConfig->skip([
         __DIR__ . '/.build',
-    ]);
-
-    $rectorConfig->phpstanConfig('phpstan.neon');
-    $rectorConfig->importNames();
-    $rectorConfig->removeUnusedImports();
-    $rectorConfig->disableParallel();
-
-    // Define what rule sets will be applied
-    $rectorConfig->sets([
-        SetList::EARLY_RETURN,
-        SetList::TYPE_DECLARATION,
-        SetList::CODING_STYLE,
-        SetList::CODE_QUALITY,
-        SetList::DEAD_CODE,
-        LevelSetList::UP_TO_PHP_83,
-    ]);
-
-    // Skip some rules
-    $rectorConfig->skip([
-        CatchExceptionNameMatchingTypeRector::class,
         ClassPropertyAssignToConstructorPromotionRector::class,
         LocallyCalledStaticMethodToNonStaticRector::class,
         ParamTypeByMethodCallTypeRector::class,
         ReadOnlyPropertyRector::class,
-        RemoveUselessParamTagRector::class,
-        RemoveUselessReturnTagRector::class,
         RemoveUselessVarTagRector::class,
     ]);
 };

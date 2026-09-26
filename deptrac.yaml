@@ -1,0 +1,145 @@
+# Deptrac configuration (replaces the former phpat ArchitectureTest).
+#
+# The canonical layer definitions and the allowed-dependency ruleset are imported
+# from magicsunday/coding-standard; of those, only `Model` matches a directory of
+# this library (src/Model). The remaining layers below are this library's own and
+# reproduce the boundaries the phpat rules pinned: the public Parser entry point
+# orchestrates the schema-driven Mapping hub, which reads bytes through the
+# low-level I/O primitives (Io) and drives the generic node-tree reader (Parse),
+# the per-version Schema, the immutable Model records and their parsed ValueObject
+# leaves. Encoding, Enumeration and Exception are shared leaves. Dependencies may
+# only point downward.
+#
+# Deptrac rulesets are allow-lists: a layer may depend only on the layers listed
+# under it (and on classes outside every layer, e.g. PHP built-ins or PSR
+# interfaces, which are reported as uncovered but do not fail the run).
+imports:
+    - .build/vendor/magicsunday/coding-standard/deptrac/layers.yaml
+
+deptrac:
+    paths:
+        - src
+
+    layers:
+        -
+            name: ValueObject
+            collectors:
+                -
+                    type: directory
+                    value: 'src/ValueObject/.*'
+        -
+            name: Enumeration
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Enumeration/.*'
+        -
+            name: Encoding
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Encoding/.*'
+        -
+            name: Exception
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Exception/.*'
+        -
+            name: Mapping
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Mapping/.*'
+        -
+            name: Parse
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Parse/.*'
+        -
+            name: Schema
+            collectors:
+                -
+                    type: directory
+                    value: 'src/Schema/.*'
+        -
+            # The low-level I/O classes at the root namespace: the line tokeniser,
+            # the PSR-7 stream, its factory and the GEDZIP archive reader.
+            name: Io
+            collectors:
+                -
+                    type: classNameRegex
+                    value: '#^MagicSunday\\Gedcom\\(Reader|Stream|StreamFactory|GedcomZipReader|GedcomArchive)$#'
+        -
+            # The public entry point assembling the pipeline.
+            name: Parser
+            collectors:
+                -
+                    type: classNameRegex
+                    value: '#^MagicSunday\\Gedcom\\Parser$#'
+
+    ruleset:
+        # Value objects are parsed leaves with no knowledge of mapping, schema,
+        # records or I/O.
+        ValueObject:
+            - Enumeration
+            - Exception
+        # Records are immutable data holding only value objects, not knowledge of
+        # how they are built.
+        Model:
+            - ValueObject
+            - Enumeration
+            - Exception
+        # The ANSEL decoder is a self-contained byte-level converter.
+        Encoding:
+            - Enumeration
+            - Exception
+        # The enumeration constant holders are self-contained comparison targets.
+        Enumeration:
+            - Exception
+        # Domain exceptions are shared leaves carrying only structured context.
+        Exception:
+            - Enumeration
+        # The generic node-tree reader is agnostic of the schema-driven typed
+        # mapping above it, and never depends back on the public Parser.
+        Parse:
+            - Enumeration
+            - Exception
+            - Io
+        # The schema is a declarative per-version description, decoupled from I/O
+        # and the mapper.
+        Schema:
+            - Enumeration
+            - Exception
+        # The Mapping hub may use every lower layer, but never depends back on the
+        # public Parser entry point — that would close a cycle.
+        Mapping:
+            - Model
+            - ValueObject
+            - Enumeration
+            - Encoding
+            - Exception
+            - Parse
+            - Schema
+            - Io
+        Io:
+            - Model
+            - ValueObject
+            - Enumeration
+            - Encoding
+            - Exception
+            - Mapping
+            - Parse
+            - Schema
+            - Parser
+        Parser:
+            - Model
+            - ValueObject
+            - Enumeration
+            - Encoding
+            - Exception
+            - Mapping
+            - Parse
+            - Schema
+            - Io
