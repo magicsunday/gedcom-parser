@@ -3,12 +3,16 @@
 # The canonical layer definitions and the allowed-dependency ruleset are imported
 # from magicsunday/coding-standard; of those, only `Model` matches a directory of
 # this library (src/Model). The remaining layers below are this library's own and
-# reproduce the boundaries the phpat rules pinned: the public Parser entry point
-# orchestrates the schema-driven Mapping hub, which reads bytes through the
-# low-level I/O primitives (Io) and drives the generic node-tree reader (Parse),
-# the per-version Schema, the immutable Model records and their parsed ValueObject
-# leaves. Encoding, Enumeration and Exception are shared leaves. Dependencies may
-# only point downward.
+# reproduce the boundaries the phpat rules pinned. From the top down: the public
+# entry points (Entry: Parser, GedcomZipReader, GedcomArchive and its FilePath
+# resolver) drive the schema-driven Mapping hub, which builds on the generic
+# node-tree reader (Parse), the per-version Schema, the immutable Model records and
+# their parsed ValueObject leaves; Mapping and Parse read lines through the
+# low-level input primitives (Io: the tokeniser and the PSR-7 stream). Encoding,
+# Enumeration and Exception are shared leaves. Dependencies may only point
+# downward, so the layer graph is acyclic — `check-deptrac-cycles.php` (part of
+# `composer ci:test:php:deptrac`) fails on any cycle in the dependencies Deptrac
+# actually measured, and `deptrac debug:unassigned` fails on a class in no layer.
 #
 # Deptrac rulesets are allow-lists: a layer may depend only on the layers listed
 # under it (and on classes outside every layer, e.g. PHP built-ins or PSR
@@ -64,20 +68,22 @@ deptrac:
                     type: directory
                     value: 'src/Schema/.*'
         -
-            # The low-level I/O classes at the root namespace: the line tokeniser,
-            # the PSR-7 stream, its factory and the GEDZIP archive reader.
+            # The low-level input primitives at the root namespace: the line
+            # tokeniser, the PSR-7 stream and its factory.
             name: Io
             collectors:
                 -
                     type: classNameRegex
-                    value: '#^MagicSunday\\Gedcom\\(Reader|Stream|StreamFactory|GedcomZipReader|GedcomArchive)$#'
+                    value: '#^MagicSunday\\Gedcom\\(Reader|Stream|StreamFactory)$#'
         -
-            # The public entry point assembling the pipeline.
-            name: Parser
+            # The public entry points assembling the pipeline: the Parser, the
+            # GEDZIP archive reader and the archive handle it returns, plus the
+            # FilePath resolver only that handle uses to address its entries.
+            name: Entry
             collectors:
                 -
                     type: classNameRegex
-                    value: '#^MagicSunday\\Gedcom\\Parser$#'
+                    value: '#^MagicSunday\\Gedcom\\(Parser|GedcomZipReader|GedcomArchive|FilePath)$#'
 
     ruleset:
         # Value objects are parsed leaves with no knowledge of mapping, schema,
@@ -95,14 +101,20 @@ deptrac:
         Encoding:
             - Enumeration
             - Exception
-        # The enumeration constant holders are self-contained comparison targets.
-        Enumeration:
+        # The enumeration constant holders are self-contained comparison targets
+        # and the domain exceptions are shared leaves carrying only structured
+        # context: neither depends on anything, not even on each other, so no
+        # pair of leaves can close a cycle.
+        Enumeration: []
+        Exception: []
+        # The low-level input primitives sit directly above the leaves: the
+        # tokeniser decodes through Encoding and throws domain exceptions, and
+        # knows nothing of the tree, the mapping or the entry points built on it.
+        Io:
+            - Encoding
             - Exception
-        # Domain exceptions are shared leaves carrying only structured context.
-        Exception:
-            - Enumeration
-        # The generic node-tree reader is agnostic of the schema-driven typed
-        # mapping above it, and never depends back on the public Parser.
+        # The generic node-tree reader consumes the tokeniser and is agnostic of
+        # the schema-driven typed mapping above it.
         Parse:
             - Enumeration
             - Exception
@@ -113,7 +125,7 @@ deptrac:
             - Enumeration
             - Exception
         # The Mapping hub may use every lower layer, but never depends back on the
-        # public Parser entry point — that would close a cycle.
+        # entry points above it — that would close a cycle.
         Mapping:
             - Model
             - ValueObject
@@ -123,17 +135,9 @@ deptrac:
             - Parse
             - Schema
             - Io
-        Io:
-            - Model
-            - ValueObject
-            - Enumeration
-            - Encoding
-            - Exception
-            - Mapping
-            - Parse
-            - Schema
-            - Parser
-        Parser:
+        # The public entry points are the top of the graph: they may use every
+        # layer below, and no layer depends on them.
+        Entry:
             - Model
             - ValueObject
             - Enumeration

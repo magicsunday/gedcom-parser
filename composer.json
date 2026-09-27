@@ -49,7 +49,7 @@
     },
     "require-dev": {
         "infection/infection": "^0.32 || ^0.34",
-        "magicsunday/coding-standard": "^2.1"
+        "magicsunday/coding-standard": "^2.3"
     },
     "autoload": {
         "psr-4": {
@@ -76,7 +76,11 @@
             "npx --yes jscpd@^5.0.11 --config .jscpd.json --skip-comments --no-tips"
         ],
         "ci:test:php:deptrac": [
-            "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache"
+            "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache",
+            "deptrac debug:unassigned --cache-file=.build/cache/.deptrac.cache",
+            "@php -r \"is_dir('.build') || mkdir('.build', 0777, true);\"",
+            "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache --formatter=graphviz-dot --output=.build/deptrac-layers.dot",
+            "check-deptrac-cycles.php .build/deptrac-layers.dot"
         ],
         "ci:test:php:lint": [
             "phplint --configuration .phplint.yml"

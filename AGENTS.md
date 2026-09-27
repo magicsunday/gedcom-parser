@@ -75,7 +75,13 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
 * `composer ci:test:php:cpd` — `jscpd` copy/paste detection
 * `composer ci:test:php:deptrac` — Deptrac layer boundaries (`deptrac.yaml`; imports the shared
-  `deptrac/layers.yaml` and adds this library's own layers — the former phpat rules)
+  `deptrac/layers.yaml` and adds this library's own layers — the former phpat rules), then
+  `deptrac debug:unassigned` (every `src/` class must belong to a layer) and coding-standard's
+  `check-deptrac-cycles.php` over Deptrac's `graphviz-dot` output (the layer graph Deptrac
+  actually measured must be acyclic). Layers from the top down: `Entry` (`Parser`,
+  `GedcomZipReader`, `GedcomArchive`, `FilePath`) → `Mapping` → `Parse` / `Schema` / `Model` →
+  `Io` (`Reader`, `Stream`, `StreamFactory`) / `ValueObject` → the `Encoding`, `Enumeration` and
+  `Exception` leaves; nothing depends on `Entry`, and `Io` never reaches up into the pipeline
 * `composer ci:test:php:templates` — `check-consumer-config.php`, keeps `phpunit.xml`,
   `.jscpd.json`, `.phplint.yml`, `.editorconfig` and `deptrac.yaml` in step with the
   coding-standard templates
@@ -139,8 +145,10 @@ Compose, never hand-pick a subset. See the repository's audit tooling / the user
 
 ```
 src/
-    Reader.php, Stream.php, StreamFactory.php   # line tokeniser + PSR-7 stream
-    Parser.php                                  # public entry point → typed GedcomDocument
+    Reader.php, Stream.php, StreamFactory.php   # line tokeniser + PSR-7 stream (layer Io)
+    Parser.php                                  # public entry point → typed GedcomDocument (layer Entry)
+    GedcomZipReader.php, GedcomArchive.php      # GEDZIP entry points (layer Entry)
+    FilePath.php                                # OBJE.FILE → archive entry resolver (layer Entry)
     Parse/**                                    # generic node-tree reader
     Schema/**                                   # registry-compiled per-version schema
     Mapping/**                                  # schema-driven mapper + typed parser/reader
