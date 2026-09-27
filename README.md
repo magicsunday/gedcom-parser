@@ -251,7 +251,10 @@ produces. A GEDCOM 7.0 `DATE`/`AGE` carried only by its `PHRASE` substructure is
 the value object as a phrase rather than dropped, a 7.0 `DATE`/`SDATE` exposes its wall-clock `TIME`
 verbatim as `DateValue::$time` — the same form `ExactDate` keeps a record timestamp's time in — and a
 `PLAC`'s `MAP` coordinates are exposed as signed decimal degrees. The analysis runs clean at PHPStan `level: max` with no baseline, the layer boundaries are
-enforced by Deptrac (`deptrac.yaml`), and `jscpd` finds no duplication — all hard CI gates.
+enforced by Deptrac (`deptrac.yaml`: the entry points `Parser`/`GedcomZipReader`/`GedcomArchive`
+sit on top of `Mapping`, which builds on `Parse`, `Schema`, `Model` and the `Reader`/`Stream`
+input primitives — an acyclic layer graph, checked as such), and `jscpd` finds no duplication —
+all hard CI gates.
 
 `TypedGedcomParser` ties the pipeline together: give it the GEDCOM version and a map of
 record tag to your typed record class, and it streams the level-0 records and maps each
@@ -382,7 +385,7 @@ composer ci:test:php:phpstan   # PHPStan (static analysis)
 composer ci:test:php:rector    # Rector (dry-run)
 composer ci:test:php:cgl       # php-cs-fixer (dry-run)
 composer ci:test:php:cpd       # jscpd (copy/paste detection)
-composer ci:test:php:deptrac   # Deptrac (layer boundaries)
+composer ci:test:php:deptrac   # Deptrac (layer boundaries, unassigned classes, layer cycles)
 composer ci:test:php:templates # coding-standard template lockstep check
 ```
 
