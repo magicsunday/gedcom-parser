@@ -1,8 +1,10 @@
 # Deptrac configuration (replaces the former phpat ArchitectureTest).
 #
 # The canonical layer definitions and the allowed-dependency ruleset are imported
-# from magicsunday/coding-standard; of those, only `Model` matches a directory of
-# this library (src/Model). The remaining layers below are this library's own and
+# from magicsunday/coding-standard (^3.0: one strict, acyclic order
+# Support < Enum < Model, Configuration < Contract < Repository, Adapter, Service
+# < Facade < Module); of those, only `Model` matches a directory of this library
+# (src/Model), and the rules below only widen it by this library's own leaves. The remaining layers below are this library's own and
 # reproduce the boundaries the phpat rules pinned. From the top down: the public
 # entry points (Entry: Parser, GedcomZipReader, GedcomArchive and its FilePath
 # resolver) drive the schema-driven Mapping hub, which builds on the generic
