@@ -549,6 +549,7 @@ final readonly class GedcomObjectMapper
                 'value'    => $strayValue,
                 'xref'     => $strayXref,
                 'children' => [],
+                'level'    => $node->level,
             ];
         }
 
@@ -565,10 +566,11 @@ final readonly class GedcomObjectMapper
             // child can fail to reach a typed field already is.
             //
             // Which container it lands on — the nearest preceding shallower line, whatever the tree
-            // builder nested it under — is a lenient recovery rather than a spec-derived answer, and
-            // the level that made the line malformed is not carried into the preserved copy (#212).
-            // A continuation whose level skips arrives here too, as a pseudo-structure that could
-            // not be folded; keeping it is still better than dropping it.
+            // builder nested it under — is a lenient recovery rather than a spec-derived answer. The
+            // preserved copy carries the level the line was written at, so that recovery stays
+            // visible downstream and the original line is reconstructible. A continuation whose
+            // level skips arrives here too, as a pseudo-structure that could not be folded; keeping
+            // it is still better than dropping it.
             if ($child->level !== ($node->level + 1)) {
                 $unknown[] = $this->rawShape($child);
 
@@ -694,6 +696,15 @@ final readonly class GedcomObjectMapper
             $shaped['unknown'] = $unknown;
         }
 
+        // A shape with no target class is consumed by a value-object handler rather than mapped
+        // property by property, so the node's own level can travel with it without colliding with a
+        // model property. A handler that has to rebuild part of its payload as a preserved entry —
+        // a MAP whose coordinates would not build — needs it, or that entry would be the one branch
+        // root with no level while its own children carry theirs.
+        if ($className === null) {
+            $shaped['level'] = $node->level;
+        }
+
         return $shaped;
     }
 
@@ -705,7 +716,7 @@ final readonly class GedcomObjectMapper
      *
      * @param GedcomNode $node The unconsumed node to preserve.
      *
-     * @return array<string, mixed> The raw shape: `tag`, `value`, `xref` and nested `children`.
+     * @return array<string, mixed> The raw shape: `tag`, `value`, `xref`, nested `children` and `level`.
      */
     private function rawShape(GedcomNode $node): array
     {
@@ -720,6 +731,7 @@ final readonly class GedcomObjectMapper
             'value'    => $node->value,
             'xref'     => $node->xref,
             'children' => $children,
+            'level'    => $node->level,
         ];
     }
 

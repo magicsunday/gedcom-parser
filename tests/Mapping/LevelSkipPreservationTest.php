@@ -221,6 +221,47 @@ class LevelSkipPreservationTest extends TestCase
     }
 
     /**
+     * A preserved entry carries the level of the line it was read from, which is what tells a
+     * level-skipped entry apart from one whose tag is simply out of schema at that position (#212).
+     *
+     * Without it the two are identical in the model, and the one property that made the line
+     * malformed is the one the preservation loses.
+     */
+    #[Test]
+    public function carriesTheLevelOfTheLineItPreserved(): void
+    {
+        $individual = $this->parse(
+            "0 @I1@ INDI\n2 SEX M\n1 _VEND foo\n",
+            '7.0'
+        )->individuals[0];
+
+        self::assertSame(['SEX', '_VEND'], $this->tags($individual->unknown));
+
+        self::assertSame(2, $individual->unknown[0]->level, 'The skipped line kept the level it was written at.');
+        self::assertSame(1, $individual->unknown[1]->level, 'A well-placed out-of-schema tag keeps its own.');
+    }
+
+    /**
+     * The level reaches a preserved subtree too, so a whole malformed branch stays reconstructible
+     * rather than only its root.
+     */
+    #[Test]
+    public function carriesTheLevelThroughAPreservedSubtree(): void
+    {
+        $individual = $this->parse(
+            "0 @I1@ INDI\n2 BIRT\n3 DATE 1 JAN 1900\n",
+            '7.0'
+        )->individuals[0];
+
+        $preserved = $individual->unknown[0];
+        self::assertSame('BIRT', $preserved->tag);
+        self::assertSame(2, $preserved->level);
+
+        self::assertSame('DATE', $preserved->children[0]->tag);
+        self::assertSame(3, $preserved->children[0]->level, 'A preserved child keeps its own level.');
+    }
+
+    /**
      * A well-formed record gains nothing, so the preservation fires on the skip alone rather than on
      * every child the loop walks.
      */

@@ -378,6 +378,55 @@ class LeafSubstructurePreservationTest extends TestCase
     }
 
     /**
+     * A rebuilt `MAP` carries the level of the line it stood on, and its axes the level below it, so
+     * one preserved subtree does not mix entries that have a level with entries that do not (#212).
+     *
+     * The axes here come from two different places — one rebuilt from its typed key, one diverted
+     * whole as a carrier — and both must agree, which is exactly what a level read from the node
+     * alone would not have given.
+     */
+    #[Test]
+    public function givesARebuiltCoordinateTheLevelsOfTheLinesItStoodOn(): void
+    {
+        $place = $this->parse(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston\n3 MAP\n4 LATI N99.9\n5 _Q z\n4 LONG W71.0\n0 TRLR\n",
+            '7.0'
+        )->individuals[0]->birt[0]->plac;
+
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertNull($place->coordinates);
+
+        $map = $place->unknown[0];
+        self::assertSame('MAP', $map->tag);
+        self::assertSame(3, $map->level, 'The MAP keeps the level of its own line.');
+
+        foreach ($map->children as $axis) {
+            self::assertSame(4, $axis->level, $axis->tag . ' sits one level below the MAP.');
+        }
+
+        self::assertSame(5, $map->children[1]->children[0]->level, 'The carrier keeps its subtree levels.');
+    }
+
+    /**
+     * The stray-payload carrier keeps its level too. It reproduces exactly one real line, so a null
+     * there would be the plainest possible loss of something the file stated.
+     */
+    #[Test]
+    public function givesAStrayMapPayloadTheLevelOfItsLine(): void
+    {
+        $place = $this->parse(
+            "0 @I1@ INDI\n1 BIRT\n2 PLAC Boston\n3 MAP surveyed\n4 LATI N42.3\n4 LONG W71.0\n0 TRLR\n",
+            '7.0'
+        )->individuals[0]->birt[0]->plac;
+
+        self::assertInstanceOf(PlaceValue::class, $place);
+        self::assertInstanceOf(MapCoordinates::class, $place->coordinates);
+
+        self::assertSame('surveyed', $place->unknown[0]->value);
+        self::assertSame(3, $place->unknown[0]->level);
+    }
+
+    /**
      * The GEDCOM versions whose registries define the place structure.
      *
      * @return iterable<string, array{string}> The version, keyed by itself.
