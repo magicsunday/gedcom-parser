@@ -73,7 +73,7 @@
             "@ci:cgl --dry-run"
         ],
         "ci:test:php:cpd": [
-            "npx --yes jscpd@^5.0.11 --config .jscpd.json --skip-comments --no-tips"
+            "node_modules/.bin/jscpd --config .jscpd.json --skip-comments --no-tips --fail-on-empty"
         ],
         "ci:test:php:deptrac": [
             "deptrac analyse --no-progress --cache-file=.build/cache/.deptrac.cache",
@@ -113,9 +113,6 @@
             "@ci:test:php:cpd",
             "@ci:test:php:deptrac",
             "@ci:test:php:templates"
-        ],
-        "post-update-cmd": [
-            "npm install --prefix .build jscpd@^5.0.11"
         ]
     }
 }

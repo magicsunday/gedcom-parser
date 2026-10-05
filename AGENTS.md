@@ -73,7 +73,10 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
   extends `magicsunday/coding-standard`'s `phpstan/base.neon`, checked exceptions included)
 * `composer ci:test:php:rector` — Rector dry-run
 * `composer ci:test:php:cgl` — php-cs-fixer dry-run
-* `composer ci:test:php:cpd` — `jscpd` copy/paste detection
+* `composer ci:test:php:cpd` — `jscpd` copy/paste detection. It runs the installed
+  `node_modules/.bin/jscpd`, so run `npm ci` once first. jscpd is pinned to an exact version in
+  `package.json`. CI runs it as its own job through the shared `cpd.yml` workflow of the `.github`
+  repository, reported as `cpd / Copy-paste detection`.
 * `composer ci:test:php:deptrac` — Deptrac layer boundaries (`deptrac.yaml`; imports the shared
   `deptrac/layers.yaml` and adds this library's own layers — the former phpat rules), then
   `deptrac debug:unassigned` (every `src/` class must belong to a layer) and coding-standard's
@@ -90,8 +93,8 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
 * `composer ci:cgl` — php-cs-fixer (apply)
 * `composer ci:rector` — Rector (apply)
 
-GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps on PHP 8.3 / 8.4 /
-8.5. Every step is a **hard gate** — the typed-model refactor (GH-20) removed the untyped
+GitHub Actions (`.github/workflows/ci.yml`) runs these granular steps, except `cpd` (its own
+job, see above), on PHP 8.3 / 8.4 / 8.5. Every step is a **hard gate** — the typed-model refactor (GH-20) removed the untyped
 `DataObject` bag (so PHPStan is clean at `level: max`) and its per-structure boilerplate
 (so `cpd` finds no duplicates), and the former `continue-on-error` on `phpstan` / `cpd`
 is gone.
