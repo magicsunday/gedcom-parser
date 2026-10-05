@@ -384,12 +384,12 @@ composer ci:test:php:unit      # PHPUnit
 composer ci:test:php:phpstan   # PHPStan (static analysis)
 composer ci:test:php:rector    # Rector (dry-run)
 composer ci:test:php:cgl       # php-cs-fixer (dry-run)
-composer ci:test:php:cpd       # jscpd (copy/paste detection)
+composer ci:test:php:cpd       # jscpd (copy/paste detection, needs `npm ci` once)
 composer ci:test:php:deptrac   # Deptrac (layer boundaries, unassigned classes, layer cycles)
 composer ci:test:php:templates # coding-standard template lockstep check
 ```
 
-The same steps run on PHP 8.3, 8.4 and 8.5 in GitHub Actions
-([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). The `phpstan` and
-`cpd` steps are currently non-blocking while the typed-model refactor is in
-progress.
+The same steps, except `cpd`, run on PHP 8.3, 8.4 and 8.5 in GitHub Actions
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). Copy/paste detection
+runs as its own job through the shared `cpd.yml` workflow of the `.github`
+repository. Every step is a hard gate.
