@@ -21,6 +21,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\ContextFactory;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use Throwable;
@@ -146,7 +147,7 @@ final readonly class GedcomObjectMapper
     {
         $constructor = (new ReflectionClass($className))->getConstructor();
 
-        if ($constructor === null) {
+        if (!$constructor instanceof ReflectionMethod) {
             return [];
         }
 
@@ -326,7 +327,7 @@ final readonly class GedcomObjectMapper
 
         $constructor = (new ReflectionClass($className))->getConstructor();
 
-        if ($constructor === null) {
+        if (!$constructor instanceof ReflectionMethod) {
             return $cache[$key] = null;
         }
 
@@ -426,7 +427,7 @@ final readonly class GedcomObjectMapper
         $constructor = $parameter->getDeclaringFunction();
         $class       = $parameter->getDeclaringClass();
 
-        if (($class === null) || ($constructor->getDocComment() === false)) {
+        if ((!$class instanceof ReflectionClass) || ($constructor->getDocComment() === false)) {
             return null;
         }
 
