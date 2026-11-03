@@ -33,6 +33,7 @@ use function array_map;
 use function get_debug_type;
 use function in_array;
 use function is_array;
+use function is_int;
 use function is_string;
 use function sprintf;
 use function trim;
@@ -219,10 +220,11 @@ final class JsonMapperFactory
 
     /**
      * Rebuilds a preserved {@see RawSubstructure} from the raw shape emitted by the object mapper: a
-     * `tag`, an optional `value`/`xref` and a nested `children` list. The handler owns the recursion
-     * so the whole preserved subtree is rebuilt in one pass.
+     * `tag`, an optional `value`/`xref`, a nested `children` list and the `level` the line was
+     * written at. The handler owns the recursion so the whole preserved subtree is rebuilt in one
+     * pass.
      *
-     * @param mixed $value The raw shape (an array with `tag`/`value`/`xref`/`children`).
+     * @param mixed $value The raw shape (an array with `tag`/`value`/`xref`/`children`/`level`).
      *
      * @return RawSubstructure The rebuilt preserved substructure.
      */
@@ -234,13 +236,15 @@ final class JsonMapperFactory
             return new RawSubstructure('');
         }
 
-        $tag = $value['tag'] ?? null;
+        $tag   = $value['tag'] ?? null;
+        $level = $value['level'] ?? null;
 
         return new RawSubstructure(
             is_string($tag) ? $tag : '',
             self::nullableString($value['value'] ?? null),
             self::nullableString($value['xref'] ?? null),
             self::rawListFromShaped($value['children'] ?? []),
+            is_int($level) ? $level : null,
         );
     }
 
@@ -473,6 +477,7 @@ final class JsonMapperFactory
      */
     private static function unreadableCoordinates(array $map): RawSubstructure
     {
+        $level     = self::levelOf($map);
         $preserved = self::unknownFromShaped($map);
         $carried   = array_map(
             static fn (RawSubstructure $entry): string => $entry->tag . "\0" . ($entry->value ?? ''),
@@ -499,7 +504,9 @@ final class JsonMapperFactory
                 continue;
             }
 
-            $children[] = new RawSubstructure($tag, $value);
+            // An axis sits exactly one level below the MAP it belongs to, which the grammar fixes
+            // even though the shape does not record where the line stood among its siblings.
+            $children[] = new RawSubstructure($tag, $value, null, [], $level === null ? null : $level + 1);
         }
 
         foreach ($preserved as $entry) {
@@ -511,6 +518,7 @@ final class JsonMapperFactory
             self::nullableString($map['value'] ?? null),
             self::nullableString($map['xref'] ?? null),
             $children,
+            $level,
         );
     }
 
@@ -536,7 +544,24 @@ final class JsonMapperFactory
         }
 
         // The axes were consumed into the position, so only the stray payload is left to preserve.
-        return new RawSubstructure('MAP', $value, $xref);
+        return new RawSubstructure('MAP', $value, $xref, [], self::levelOf($map));
+    }
+
+    /**
+     * Reads the level a shaped payload was read from.
+     *
+     * Only a shape built without a target class carries one — those are the payloads a value-object
+     * handler consumes, and the only ones from which an entry is ever rebuilt.
+     *
+     * @param array<array-key, mixed> $shape The shaped payload.
+     *
+     * @return int|null The level of the line the shape was built from, or NULL when it carries none.
+     */
+    private static function levelOf(array $shape): ?int
+    {
+        $level = $shape['level'] ?? null;
+
+        return is_int($level) ? $level : null;
     }
 
     /**
