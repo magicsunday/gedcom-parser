@@ -89,7 +89,7 @@ docker run --rm -v "$PWD:/app" -w /app --entrypoint php \
   `.jscpd.json`, `.phplint.yml`, `.editorconfig` and `deptrac.yaml` in step with the
   coding-standard templates
 * `composer ci:test:php:mutation` — `infection` mutation testing (**local-only**, not in `ci.yml`;
-  `minCoveredMsi: 70`, config in `infection.json5`)
+  the covered-MSI floor and the rest are configured in `infection.json5`)
 * `composer ci:cgl` — php-cs-fixer (apply)
 * `composer ci:rector` — Rector (apply)
 
