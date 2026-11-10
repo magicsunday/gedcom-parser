@@ -20,6 +20,7 @@
 /deptrac.yaml           export-ignore
 
 /.github/               export-ignore
+/renovate.json          export-ignore
 /tests/                 export-ignore
 /tools/                 export-ignore
 
