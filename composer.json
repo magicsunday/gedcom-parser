@@ -48,7 +48,7 @@
         "symfony/yaml": "^7.4 || ^8.0"
     },
     "require-dev": {
-        "infection/infection": "^0.32 || ^0.34",
+        "infection/infection": "^0.32 || ^0.34 || ^0.35",
         "magicsunday/coding-standard": "^3.0"
     },
     "autoload": {
